@@ -54,8 +54,13 @@ func (app App) GetHandler() http.Handler {
 	return r
 }
 
+/**
+ * Checks URL is a valid URL for a page or folder. Valid URL consist of parts separated by /.
+ * Each part may only contain letters, digits, dash and underscore, but must not start with underscore.
+ */
 func isValidUrl(urlPath string) bool {
-	return urlPath == "" || regexp.MustCompile("^[a-z0-9_-]+(/[a-z0-9_-]+)*$").MatchString(urlPath)
+	urlRegex := regexp.MustCompile("^[a-z0-9-][a-z0-9_-]*(/[a-z0-9-][a-z0-9_-]*)*$")
+	return urlPath == "" || urlRegex.MatchString(urlPath)
 }
 
 func getBreadcrumbs(urlPath string) []Breadcrumb {

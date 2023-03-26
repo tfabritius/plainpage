@@ -95,8 +95,7 @@ const createPage = async () => {
     const msgBox = await ElMessageBox.prompt('Please enter page name', 'New page', {
       confirmButtonText: 'OK',
       cancelButtonText: 'Cancel',
-      inputPattern:
-      /^[a-z0-9_-]+$/,
+      inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
       inputErrorMessage: 'Invalid name (allowed: [a-z0-9_-])',
     })
     name = msgBox.value
@@ -114,8 +113,7 @@ const createFolder = async () => {
     const msgBox = await ElMessageBox.prompt('Please enter folder name', 'New folder', {
       confirmButtonText: 'OK',
       cancelButtonText: 'Cancel',
-      inputPattern:
-      /^[a-z0-9_-]+$/,
+      inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
       inputErrorMessage: 'Invalid name (allowed: [a-z0-9_-])',
     })
     name = msgBox.value

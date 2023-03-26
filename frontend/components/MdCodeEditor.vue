@@ -161,5 +161,33 @@ const extensions = [
 </template>
 
 <style>
+/* Remove dotted outline when focussed */
 .cm-editor.cm-focused { outline: none }
+
+.cm-scroller::-webkit-scrollbar {
+  /* 6px thumb + 2px border on each side */
+  width: 10px;
+}
+.cm-scroller::-webkit-scrollbar-track {
+   /* Set the background of the track to transparent */
+  background: transparent;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb {
+  background: #DDDEE0;
+  border-radius: 6px;
+
+  /* Transparent border */
+  border: 2px solid transparent;
+
+  /* Don't show background color under the border */
+  background-clip: content-box;
+}
+
+.cm-scroller::-webkit-scrollbar-thumb:hover {
+  background: #C7C9CC;
+
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
 </style>

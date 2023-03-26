@@ -5,7 +5,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex justify-between border-b border-b-gray-300 border-b-solid p-1">
+  <div class="flex justify-between p-1">
     <div>
       <MdToolbarButton icon="lucide:bold" @click="emit('click', 'bold')" />
       <MdToolbarButton icon="lucide:italic" @click="emit('click', 'italic')" />

@@ -202,9 +202,9 @@ const onToolbarClick = (action: string) => {
 
 <template>
   <div class="border border-gray-300 border-solid">
-    <MdEditorToolbar @click="onToolbarClick" />
+    <MdEditorToolbar class="border-b border-b-gray-300 border-b-solid " @click="onToolbarClick" />
     <div class="flex">
-      <div class="flex-1">
+      <div class="flex-1 border-r border-r-gray-300 border-r-solid">
         <MdCodeEditor ref="codeEditorRef" v-model="markdown" @scroll="onEditorScroll" />
       </div>
 

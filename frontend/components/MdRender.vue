@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { marked } from 'marked'
+import dompurify from 'dompurify'
 
 const props = defineProps<{
   markdown: string
@@ -8,7 +9,10 @@ const props = defineProps<{
 const renderer = new marked.Renderer()
 renderer.link = (href: string, title: string, text: string) => `<a markdown-link title="${title ?? ''}" href="${href}">${text}</a>`
 
-const html = computed(() => marked.parse(props.markdown, { gfm: true, renderer }),
+const html = computed(
+  () => dompurify.sanitize(
+    marked.parse(props.markdown, { gfm: true, renderer }),
+  ),
 )
 
 onMounted(() => {

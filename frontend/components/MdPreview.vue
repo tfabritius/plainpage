@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { marked } from 'marked'
+import dompurify from 'dompurify'
 import { ElScrollbar } from 'element-plus'
 
 import type { Segment } from '~/types/'
@@ -21,7 +22,8 @@ const renderSegmentsToHtml = (segments: Segment[]): string => {
   return segments.map((segment) => {
     const tokens = segment.tokens
     const content = marked.parser(tokens, { gfm: true, renderer })
-    return `<div class="segment" data-segment="${segment.idx}">${content}</div>`
+    const sanitizedContent = dompurify.sanitize(content)
+    return `<div class="segment" data-segment="${segment.idx}">${sanitizedContent}</div>`
   }).join('')
 }
 

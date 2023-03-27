@@ -236,8 +236,8 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
 
 <template>
   <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
-  <ElCard v-else>
-    <template #header>
+  <Layout v-else>
+    <template #breadcrumbs>
       <ElBreadcrumb v-if="!notFound" :separator-icon="ChevronIcon">
         <ElBreadcrumbItem :to="{ path: '/' }">
           <Icon name="ic:outline-home" />
@@ -247,63 +247,57 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
           {{ crumb.name }}
         </ElBreadcrumbItem>
       </ElBreadcrumb>
+    </template>
 
-      <div class="flex justify-between items-center">
-        <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
-          <ElLink :href="href" :underline="false" @click="navigate">
-            <h1 class="hover:underline font-light flex items-center">
-              <Icon v-if="folder" name="ci:folder" class="mr-1" />
-              <span v-if="folder || page?.meta.title">{{ pageTitle }}</span>
-              <span v-else class="italic">
-                {{ pageTitle }}
-              </span>
-            </h1>
-          </ElLink>
-        </NuxtLink>
+    <template #title>
+      <Icon v-if="folder" name="ci:folder" class="mr-1" />
+      <span v-if="folder || page?.meta.title">{{ pageTitle }}</span>
+      <span v-else class="italic">
+        {{ pageTitle }}
+      </span>
+    </template>
 
-        <div class="flex items-center">
-          <div v-if="!editing">
-            <ElButton v-if="page" class="m-1" @click="onEditPage">
-              <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">Edit</span>
-            </ElButton>
+    <template #actions>
+      <div v-if="!editing">
+        <ElButton v-if="page" class="m-1" @click="onEditPage">
+          <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">Edit</span>
+        </ElButton>
 
-            <ElButton v-if="folder" class="m-1" @click="createPage">
-              <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
-            </ElButton>
-            <span />
-            <ElButton v-if="folder" class="m-1" @click="createFolder">
-              <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
-            </ElButton>
+        <ElButton v-if="folder" class="m-1" @click="createPage">
+          <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
+        </ElButton>
+        <span />
+        <ElButton v-if="folder" class="m-1" @click="createFolder">
+          <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
+        </ElButton>
 
-            <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
-              <ElButton>
-                <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">More</span>
-              </ElButton>
-              <template #dropdown>
-                <ElDropdownMenu>
-                  <ElDropdownItem :icon="ReloadIcon" command="reload">
-                    Reload
-                  </ElDropdownItem>
-                  <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
-                    Revisions
-                  </ElDropdownItem>
-                  <ElDropdownItem v-if="(page || folder) && route.path !== '/'" :icon="DeleteIcon" command="delete">
-                    Delete
-                  </ElDropdownItem>
-                </ElDropdownMenu>
-              </template>
-            </ElDropdown>
-          </div>
+        <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
+          <ElButton>
+            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">More</span>
+          </ElButton>
+          <template #dropdown>
+            <ElDropdownMenu>
+              <ElDropdownItem :icon="ReloadIcon" command="reload">
+                Reload
+              </ElDropdownItem>
+              <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
+                Revisions
+              </ElDropdownItem>
+              <ElDropdownItem v-if="(page || folder) && route.path !== '/'" :icon="DeleteIcon" command="delete">
+                Delete
+              </ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
+      </div>
 
-          <div v-if="editing">
-            <ElButton class="ml-2" @click="onCancelEdit">
-              <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">Cancel</span>
-            </ElButton>
-            <ElButton type="success" @click="onSavePage">
-              <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
-            </ElButton>
-          </div>
-        </div>
+      <div v-if="editing">
+        <ElButton class="ml-2" @click="onCancelEdit">
+          <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">Cancel</span>
+        </ElButton>
+        <ElButton type="success" @click="onSavePage">
+          <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
+        </ElButton>
       </div>
     </template>
 
@@ -337,5 +331,5 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
         <PageEditor v-model="editablePage" />
       </div>
     </div>
-  </ElCard>
+  </Layout>
 </template>

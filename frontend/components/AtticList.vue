@@ -18,24 +18,10 @@ const { data } = await useAsyncData(`/api/_attic${urlPath.value}`, async () => {
     .map(e => ({ ...e, date: new Date(e.rev * 1000) }))
     .sort((a, b) => b.rev - a.rev)
 })
-
-const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
 </script>
 
 <template>
-  <Layout>
-    <template #breadcrumbs>
-      <ElBreadcrumb :separator-icon="ChevronIcon">
-        <ElBreadcrumbItem :to="{ path: '/' }">
-          <Icon name="ic:outline-home" />
-        </ElBreadcrumbItem>
-
-        <ElBreadcrumbItem v-for="crumb in breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
-          {{ crumb.name }}
-        </ElBreadcrumbItem>
-      </ElBreadcrumb>
-    </template>
-
+  <Layout :breadcrumbs="breadcrumbs">
     <template #title>
       Old revisions of: {{ title }}
     </template>

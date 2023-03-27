@@ -70,7 +70,6 @@ watch(editing, (editing) => {
   }
 }, { immediate: true })
 
-const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
 const RevisionsIcon = h(Icon, { name: 'ic:baseline-restore' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
@@ -198,19 +197,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
   <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" :breadcrumbs="data?.breadcrumbs ?? []" />
   <AtticPage v-else-if="revQuery !== undefined" :breadcrumbs="data?.breadcrumbs ?? []" :url-path="urlPath" :revision="revQuery" />
   <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
-  <Layout v-else>
-    <template #breadcrumbs>
-      <ElBreadcrumb v-if="!notFound" :separator-icon="ChevronIcon">
-        <ElBreadcrumbItem :to="{ path: '/' }">
-          <Icon name="ic:outline-home" />
-        </ElBreadcrumbItem>
-
-        <ElBreadcrumbItem v-for="crumb in data?.breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
-          {{ crumb.name }}
-        </ElBreadcrumbItem>
-      </ElBreadcrumb>
-    </template>
-
+  <Layout v-else :breadcrumbs="data?.breadcrumbs ?? []">
     <template #title>
       <span v-if="page?.meta.title">{{ pageTitle }}</span>
       <span v-else class="italic">

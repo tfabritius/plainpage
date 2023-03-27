@@ -1,11 +1,30 @@
 <script setup lang="ts">
+import type { Breadcrumb } from '~/types'
+import { Icon } from '#components'
+
+const _props = defineProps<{
+  breadcrumbs?: Breadcrumb[]
+}>()
+
+const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
+
 const route = useRoute()
 </script>
 
 <template>
   <ElCard>
     <template #header>
-      <slot name="breadcrumbs" />
+      <div v-if="breadcrumbs">
+        <ElBreadcrumb :separator-icon="ChevronIcon">
+          <ElBreadcrumbItem :to="{ path: '/' }">
+            <Icon name="ic:outline-home" />
+          </ElBreadcrumbItem>
+
+          <ElBreadcrumbItem v-for="crumb in breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
+            {{ crumb.name }}
+          </ElBreadcrumbItem>
+        </ElBreadcrumb>
+      </div>
 
       <div class="flex justify-between items-center">
         <div>

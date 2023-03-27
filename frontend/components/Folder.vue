@@ -23,7 +23,6 @@ const pageTitle = computed(() => {
 
 useHead(() => ({ title: pageTitle.value }))
 
-const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
@@ -117,19 +116,7 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
 </script>
 
 <template>
-  <Layout>
-    <template #breadcrumbs>
-      <ElBreadcrumb :separator-icon="ChevronIcon">
-        <ElBreadcrumbItem :to="{ path: '/' }">
-          <Icon name="ic:outline-home" />
-        </ElBreadcrumbItem>
-
-        <ElBreadcrumbItem v-for="crumb in breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
-          {{ crumb.name }}
-        </ElBreadcrumbItem>
-      </ElBreadcrumb>
-    </template>
-
+  <Layout :breadcrumbs="breadcrumbs">
     <template #title>
       <Icon name="ci:folder" class="mr-1" />
       {{ pageTitle }}

@@ -44,25 +44,11 @@ const pageTitle = computed(() => {
 useHead(() => ({ title: pageTitle.value }))
 
 const revDate = computed(() => new Date(Number(revision.value) * 1000))
-
-const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
 </script>
 
 <template>
   <NetworkError v-if="error || !data" :msg="error?.message || ''" @refresh="refresh" />
-  <Layout v-else>
-    <template #breadcrumbs>
-      <ElBreadcrumb :separator-icon="ChevronIcon">
-        <ElBreadcrumbItem :to="{ path: '/' }">
-          <Icon name="ic:outline-home" />
-        </ElBreadcrumbItem>
-
-        <ElBreadcrumbItem v-for="crumb in breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
-          {{ crumb.name }}
-        </ElBreadcrumbItem>
-      </ElBreadcrumb>
-    </template>
-
+  <Layout v-else :breadcrumbs="breadcrumbs">
     <template #title>
       <span v-if="data.page?.meta.title">{{ pageTitle }}</span>
       <span v-else class="italic">{{ pageTitle }}</span>

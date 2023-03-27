@@ -8,6 +8,17 @@ import type { GetResponse, Page } from '~/types/'
 const route = useRoute()
 const urlPath = computed(() => route.path === '/' ? '' : route.path)
 
+const revQuery = computed(() => {
+  const data = route.query.rev
+  if (data === undefined || data === null) {
+    return data
+  }
+  if (Array.isArray(data)) {
+    return null
+  }
+  return data
+})
+
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
@@ -135,13 +146,13 @@ const onDeletePage = async () => {
   }
 }
 
-const handleDropdownMenuCommand = (command: string | number | object) => {
+const handleDropdownMenuCommand = async (command: string | number | object) => {
   if (command === 'reload') {
     refresh()
   } else if (command === 'delete') {
     onDeletePage()
   } else if (command === 'rev') {
-    ElMessage('Not implemented yet')
+    await navigateTo({ query: { rev: null } })
   } else {
     throw new Error(`Unhandled command ${command}`)
   }
@@ -184,6 +195,8 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
 
 <template>
   <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
+  <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" :breadcrumbs="data?.breadcrumbs ?? []" />
+  <AtticPage v-else-if="revQuery !== undefined" :breadcrumbs="data?.breadcrumbs ?? []" :url-path="urlPath" :revision="revQuery" />
   <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
   <Layout v-else>
     <template #breadcrumbs>

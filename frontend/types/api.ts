@@ -21,3 +21,7 @@ export interface FolderEntry {
   name: string
   isFolder: boolean
 }
+
+export interface AtticEntry {
+  rev: number
+}

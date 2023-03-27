@@ -8,13 +8,19 @@ const route = useRoute()
       <slot name="breadcrumbs" />
 
       <div class="flex justify-between items-center">
-        <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
-          <ElLink :href="href" :underline="false" @click="navigate">
-            <h1 class="hover:underline font-light flex items-center">
-              <slot name="title" />
-            </h1>
-          </ElLink>
-        </NuxtLink>
+        <div>
+          <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
+            <ElLink :href="href" :underline="false" @click="navigate">
+              <h1 class="hover:underline font-light flex items-center">
+                <slot name="title" />
+              </h1>
+            </ElLink>
+          </NuxtLink>
+
+          <div class="flex items-center text-sm">
+            <slot name="subtitle" />
+          </div>
+        </div>
 
         <div class="flex items-center">
           <slot name="actions" />

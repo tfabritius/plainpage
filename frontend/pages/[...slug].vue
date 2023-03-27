@@ -6,6 +6,7 @@ import { Icon } from '#components'
 import type { GetResponse, Page } from '~/types/'
 
 const route = useRoute()
+const urlPath = computed(() => route.path === '/' ? '' : route.path)
 
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
@@ -35,11 +36,7 @@ const allowCreate = computed(() => data.value?.allowCreate === true)
 const folder = computed(() => data.value?.folder ?? null)
 
 const pageTitle = computed(() => {
-  if (folder.value && route.path === '/') {
-    return 'Home'
-  } else if (folder.value) {
-    return data.value?.breadcrumbs.slice(-1)[0]?.name
-  } else if (page.value) {
+  if (page.value) {
     return page.value.meta.title || 'Untitled'
   }
   return 'Not found'
@@ -84,55 +81,6 @@ const createThisFolder = async () => {
   refresh()
 }
 
-const createPage = async () => {
-  let name
-  try {
-    const msgBox = await ElMessageBox.prompt('Please enter page name', 'New page', {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
-      inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      inputErrorMessage: 'Invalid name (allowed: [a-z0-9_-])',
-    })
-    name = msgBox.value
-  } catch (e) {
-    return
-  }
-
-  const urlPath = route.path === '/' ? `/${name}` : `${route.path}/${name}`
-  await navigateTo({ path: urlPath, query: { edit: 'true' } }, { replace: true })
-}
-
-const createFolder = async () => {
-  let name
-  try {
-    const msgBox = await ElMessageBox.prompt('Please enter folder name', 'New folder', {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
-      inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      inputErrorMessage: 'Invalid name (allowed: [a-z0-9_-])',
-    })
-    name = msgBox.value
-  } catch (e) {
-    return
-  }
-
-  try {
-    const urlPath = route.path === '/' ? `/${name}` : `${route.path}/${name}`
-    await $fetch(`/_api/pages/${urlPath}`, { method: 'PUT', body: { page: null } })
-
-    ElMessage({
-      message: 'Folder created',
-      type: 'success',
-    })
-    await navigateTo(urlPath)
-  } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
-    })
-  }
-}
-
 const onEditPage = () => {
   editing.value = true
 }
@@ -156,10 +104,10 @@ const onSavePage = async () => {
   }
 }
 
-const onDeletePageOrFolder = async () => {
+const onDeletePage = async () => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure to delete this ${page.value ? 'page' : 'folder'}?`,
+      'Are you sure to delete this page?',
       {
         confirmButtonText: 'Delete',
         cancelButtonText: 'Cancel',
@@ -174,7 +122,7 @@ const onDeletePageOrFolder = async () => {
     await $fetch(`/_api/pages${route.path}`, { method: 'DELETE' })
 
     ElMessage({
-      message: `${page.value ? 'Page' : 'Folder'} deleted`,
+      message: 'Page deleted',
       type: 'success',
     })
 
@@ -191,7 +139,7 @@ const handleDropdownMenuCommand = (command: string | number | object) => {
   if (command === 'reload') {
     refresh()
   } else if (command === 'delete') {
-    onDeletePageOrFolder()
+    onDeletePage()
   } else if (command === 'rev') {
     ElMessage('Not implemented yet')
   } else {
@@ -236,6 +184,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
 
 <template>
   <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
+  <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
   <Layout v-else>
     <template #breadcrumbs>
       <ElBreadcrumb v-if="!notFound" :separator-icon="ChevronIcon">
@@ -250,8 +199,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
     </template>
 
     <template #title>
-      <Icon v-if="folder" name="ci:folder" class="mr-1" />
-      <span v-if="folder || page?.meta.title">{{ pageTitle }}</span>
+      <span v-if="page?.meta.title">{{ pageTitle }}</span>
       <span v-else class="italic">
         {{ pageTitle }}
       </span>
@@ -261,14 +209,6 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
       <div v-if="!editing">
         <ElButton v-if="page" class="m-1" @click="onEditPage">
           <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">Edit</span>
-        </ElButton>
-
-        <ElButton v-if="folder" class="m-1" @click="createPage">
-          <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
-        </ElButton>
-        <span />
-        <ElButton v-if="folder" class="m-1" @click="createFolder">
-          <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
         </ElButton>
 
         <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
@@ -283,7 +223,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
               <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
                 Revisions
               </ElDropdownItem>
-              <ElDropdownItem v-if="(page || folder) && route.path !== '/'" :icon="DeleteIcon" command="delete">
+              <ElDropdownItem v-if="page" :icon="DeleteIcon" command="delete">
                 Delete
               </ElDropdownItem>
             </ElDropdownMenu>
@@ -301,8 +241,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
       </div>
     </template>
 
-    <Folder v-if="folder" :folder="folder" />
-    <div v-else-if="page">
+    <div v-if="page">
       <PageView v-if="!editing" :page="page" />
       <PageEditor v-else v-model="editablePage" />
     </div>

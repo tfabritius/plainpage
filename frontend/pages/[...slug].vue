@@ -240,20 +240,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div v-if="!folder && !page && !notFound" class="flex h-screen">
-    <div class="m-auto text-center text-gray-500">
-      <Icon name="ci:cloud-off" size="5em" />
-
-      <div class="m-2">
-        {{ error?.message }}
-      </div>
-
-      <ElButton @click="refresh()">
-        <Icon name="ci:arrows-reload-01" class="mr-1" />
-        Try again
-      </ElButton>
-    </div>
-  </div>
+  <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
   <div v-else class="p-2">
     <div class="flex justify-between">
       <NuxtLink v-slot="{ navigate, href }" custom to="/">

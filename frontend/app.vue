@@ -31,5 +31,6 @@ useHead(() => ({ titleTemplate: `%s | ${appName}` }))
       </ElLink>
     </div>
     <NuxtPage />
+    <NuxtLoadingIndicator />
   </div>
 </template>

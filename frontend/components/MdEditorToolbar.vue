@@ -15,7 +15,7 @@ const emit = defineEmits<{
       <MdToolbarButton icon="lucide:subscript" @click="emit('click', 'subscript')" />
       <span class="text-gray mx-2">|</span>
 
-      <ElDropdown trigger="hover" style="font-size:inherit;color:inherit;line-height:inherit">
+      <ElDropdown trigger="hover" style="font-size:inherit;color:inherit;line-height:inherit;display:inline-block">
         <MdToolbarButton icon="lucide:heading" />
         <template #dropdown>
           <MdToolbarButton icon="lucide:heading-1" style="font-size:initial" @click="emit('click', 'heading-1')" />

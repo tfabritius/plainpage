@@ -5,7 +5,13 @@ const props = defineProps<{
 </script>
 
 <template>
-  <span class="inline-block hover:text-blue-500 hover:bg-gray-100 w-5 h-5 p-1 text-center cursor-pointer">
+  <button class="inline-block hover:text-blue-500 hover:bg-gray-100 bg-white p-1 text-center cursor-pointer border-0">
     <Icon :name="props.icon" />
-  </span>
+  </button>
 </template>
+
+<style scoped>
+button {
+  font-size: 1rem;
+}
+</style>

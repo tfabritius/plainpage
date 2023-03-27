@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -47,6 +48,10 @@ func (app App) GetHandler() http.Handler {
 		r.Delete("/*", app.deletePageOrFolder)
 	})
 
+	r.Route("/_api/attic", func(r chi.Router) {
+		r.Get("/*", app.getAttic)
+	})
+
 	serveFallback := spa.ServeFileContents("index.html", app.Frontend)
 	r.With(spa.Catch404Middleware(serveFallback)).
 		Handle("/*", http.FileServer(app.Frontend))
@@ -83,7 +88,7 @@ func getBreadcrumbs(urlPath string) []Breadcrumb {
 func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
-	response := GetResponse{}
+	response := GetPageResponse{}
 
 	if !isValidUrl(urlPath) {
 		w.WriteHeader(http.StatusNotFound)
@@ -92,7 +97,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 		response.Breadcrumbs = getBreadcrumbs(urlPath)
 
 		if app.Storage.IsPage(urlPath) {
-			page, err := app.Storage.ReadPage(urlPath)
+			page, err := app.Storage.ReadPage(urlPath, nil)
 			if err != nil {
 				panic(err)
 			}
@@ -189,4 +194,44 @@ func (app App) deletePageOrFolder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
+	urlPath := chi.URLParam(r, "*")
+	queryRev := r.URL.Query().Get("rev")
+
+	if !isValidUrl(urlPath) || !app.Storage.IsPage(urlPath) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	var revision int64
+	if queryRev == "" {
+		list, err := app.Storage.ListAttic(urlPath)
+		if err != nil {
+			panic(err)
+		}
+
+		render.JSON(w, r, list)
+	} else {
+		var err error
+		revision, err = strconv.ParseInt(queryRev, 10, 64)
+		if err != nil {
+			http.Error(w, "Invalid query parameter: rev", http.StatusBadRequest)
+			return
+		}
+
+		if !app.Storage.IsAtticPage(urlPath, revision) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+
+		page, err := app.Storage.ReadPage(urlPath, &revision)
+		if err != nil {
+			panic(err)
+		}
+
+		response := GetPageResponse{Page: &page}
+		render.JSON(w, r, response)
+	}
 }

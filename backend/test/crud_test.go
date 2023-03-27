@@ -25,7 +25,7 @@ func TestCRUD(t *testing.T) {
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetResponse](api("GET", "/_api/pages/foo", nil))
+		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Folder)
 		r.Equal("Foo", body.Page.Meta.Title)
@@ -37,7 +37,7 @@ func TestCRUD(t *testing.T) {
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetResponse](api("GET", "/_api/pages/foo", nil))
+		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
 		fmt.Println(body)
 		r.Equal(200, res.Code)
 		r.Equal("Updated foo", body.Page.Meta.Title)
@@ -59,7 +59,7 @@ func TestCRUD(t *testing.T) {
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetResponse](api("GET", "/_api/pages/foo", nil))
+		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
 		fmt.Println(body)
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
@@ -68,7 +68,7 @@ func TestCRUD(t *testing.T) {
 
 	// List root folder
 	{
-		body, res := jsonbody[server.GetResponse](api("GET", "/_api/pages", nil))
+		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages", nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder, 1)
@@ -83,7 +83,7 @@ func TestCRUD(t *testing.T) {
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetResponse](api("GET", "/_api/pages/foo/bar", nil))
+		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo/bar", nil))
 		fmt.Println(body)
 		r.Equal(200, res.Code)
 		r.Equal("Bar", body.Page.Meta.Title)
@@ -91,7 +91,7 @@ func TestCRUD(t *testing.T) {
 
 	// List folder
 	{
-		body, res := jsonbody[server.GetResponse](api("GET", "/_api/pages/foo", nil))
+		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder, 1)

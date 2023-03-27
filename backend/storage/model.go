@@ -6,14 +6,20 @@ type Storage interface {
 	// IsPage checks if page exists at given path
 	IsPage(urlPath string) bool
 
+	// IsAtticPage checks if page and revision exist
+	IsAtticPage(urlPath string, revision int64) bool
+
 	// IsFolder checks if folder exists at given path
 	IsFolder(urlPath string) bool
 
 	// ReadPage returns page at given path
-	ReadPage(urlPath string) (Page, error)
+	ReadPage(urlPath string, revision *int64) (Page, error)
 
 	// ReadPage returns folder entries at given path
 	ReadFolder(urlPath string) ([]FolderEntry, error)
+
+	// ListAttic returns relevent entries in attic
+	ListAttic(urlPath string) ([]AtticEntry, error)
 
 	// CreateFolder creates new folder at given path
 	CreateFolder(urlPath string) error
@@ -48,4 +54,8 @@ type FolderEntry struct {
 	Url      string `json:"url"`
 	Name     string `json:"name"`
 	IsFolder bool   `json:"isFolder"`
+}
+
+type AtticEntry struct {
+	Revision int64 `json:"rev"`
 }

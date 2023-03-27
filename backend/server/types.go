@@ -7,7 +7,7 @@ type Breadcrumb struct {
 	Url  string `json:"url"`
 }
 
-type GetResponse struct {
+type GetPageResponse struct {
 	Page        *storage.Page         `json:"page"`
 	Folder      []storage.FolderEntry `json:"folder"`
 	AllowCreate bool                  `json:"allowCreate"`

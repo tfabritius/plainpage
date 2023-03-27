@@ -50,12 +50,23 @@ func (fss *fsStorage) getFsPathOfPage(urlPath string) string {
 	return filepath.Join(fss.DataDir, "pages", urlPath+".md")
 }
 
+func (fss *fsStorage) getFsPathOfAtticPage(urlPath string, revision int64) string {
+	revStr := strconv.FormatInt(revision, 10)
+	return filepath.Join(fss.DataDir, "attic", urlPath+"."+revStr+".md")
+}
+
 func (fss *fsStorage) getFsPathOfFolder(urlPath string) string {
 	return filepath.Join(fss.DataDir, "pages", urlPath)
 }
 
 func (fss *fsStorage) IsPage(urlPath string) bool {
 	fsPath := fss.getFsPathOfPage(urlPath)
+	_, err := os.Stat(fsPath)
+	return !errors.Is(err, os.ErrNotExist)
+}
+
+func (fss *fsStorage) IsAtticPage(urlPath string, revision int64) bool {
+	fsPath := fss.getFsPathOfAtticPage(urlPath, revision)
 	_, err := os.Stat(fsPath)
 	return !errors.Is(err, os.ErrNotExist)
 }
@@ -126,8 +137,13 @@ func (fss *fsStorage) DeleteEmptyFolder(urlPath string) error {
 	return err
 }
 
-func (fss *fsStorage) ReadPage(urlPath string) (Page, error) {
-	fsPath := fss.getFsPathOfPage(urlPath)
+func (fss *fsStorage) ReadPage(urlPath string, revision *int64) (Page, error) {
+	var fsPath string
+	if revision == nil {
+		fsPath = fss.getFsPathOfPage(urlPath)
+	} else {
+		fsPath = fss.getFsPathOfAtticPage(urlPath, *revision)
+	}
 
 	// read the file's content
 	bytes, err := os.ReadFile(fsPath)
@@ -198,6 +214,52 @@ func (fss *fsStorage) ReadFolder(urlPath string) ([]FolderEntry, error) {
 	return folderEntries, nil
 }
 
+func (fss *fsStorage) ListAttic(urlPath string) ([]AtticEntry, error) {
+	pageName := path.Base(urlPath)
+	parentDir := filepath.Dir(fss.getFsPathOfAtticPage(urlPath, 0))
+
+	// Open the directory
+	dir, err := os.Open(parentDir)
+	if err != nil {
+		return nil, fmt.Errorf("could not open directory: %w", err)
+	}
+	defer dir.Close()
+
+	// Get a list of all files in the directory
+	fileInfos, err := dir.Readdir(0)
+	if err != nil {
+		return nil, fmt.Errorf("could not read directory: %w", err)
+	}
+
+	atticEntries := []AtticEntry{}
+	for _, fi := range fileInfos {
+		if fi.IsDir() {
+			continue
+		}
+
+		// Check if name start with page name
+		name, found := strings.CutPrefix(fi.Name(), pageName+".")
+		if !found {
+			continue
+		}
+
+		// Check if name end with file extension
+		name, found = strings.CutSuffix(name, ".md")
+		if !found {
+			continue
+		}
+
+		rev, err := strconv.ParseInt(name, 10, 64)
+		if err != nil {
+			continue
+		}
+
+		atticEntries = append(atticEntries, AtticEntry{Revision: rev})
+	}
+
+	return atticEntries, nil
+}
+
 func (fss *fsStorage) createDir(file string) error {
 	dir := filepath.Dir(file)
 
@@ -212,8 +274,7 @@ func (fss *fsStorage) createDir(file string) error {
 // savePageToAttic saves serialized page to attic directory
 func (fss *fsStorage) savePageToAttic(urlPath string, serializedPage string) error {
 	timestampInt := time.Now().Unix()
-	timestampStr := strconv.FormatInt(timestampInt, 10)
-	atticFile := filepath.Join(fss.DataDir, "attic", urlPath+"."+timestampStr+".md")
+	atticFile := fss.getFsPathOfAtticPage(urlPath, timestampInt)
 
 	// creates folders in atticPath
 	if err := fss.createDir(atticFile); err != nil {

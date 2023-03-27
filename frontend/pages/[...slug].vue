@@ -5,8 +5,6 @@ import { Icon } from '#components'
 
 import type { GetResponse, Page } from '~/types/'
 
-const appName = 'PlainPage'
-
 const route = useRoute()
 
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
@@ -47,10 +45,7 @@ const pageTitle = computed(() => {
   return 'Not found'
 })
 
-useHead(() => ({
-  titleTemplate: `%s | ${appName}`,
-  title: pageTitle.value,
-}),
+useHead(() => ({ title: pageTitle.value }),
 )
 
 const editQuery = useRouteQuery('edit')
@@ -241,122 +236,106 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
 
 <template>
   <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
-  <div v-else class="p-2">
-    <div class="flex justify-between">
-      <NuxtLink v-slot="{ navigate, href }" custom to="/">
-        <ElLink :underline="false" :href="href" @click="navigate">
-          <span class="text-xl font-light flex items-center">
-            <Icon name="ci:file-blank" />
-            <span>{{ appName }}</span>
-          </span>
-        </ElLink>
-      </NuxtLink>
+  <ElCard v-else>
+    <template #header>
+      <ElBreadcrumb v-if="!notFound" :separator-icon="ChevronIcon">
+        <ElBreadcrumbItem :to="{ path: '/' }">
+          <Icon name="ic:outline-home" />
+        </ElBreadcrumbItem>
 
-      <ElLink :underline="false" @click="ElMessage('Not implemented yet')">
-        <Icon name="ic:baseline-login" class="mr-1" /> <span class="font-normal">Sign in</span>
-      </ElLink>
-    </div>
-    <ElCard>
-      <template #header>
-        <ElBreadcrumb v-if="!notFound" :separator-icon="ChevronIcon">
-          <ElBreadcrumbItem :to="{ path: '/' }">
-            <Icon name="ic:outline-home" />
-          </ElBreadcrumbItem>
+        <ElBreadcrumbItem v-for="crumb in data?.breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
+          {{ crumb.name }}
+        </ElBreadcrumbItem>
+      </ElBreadcrumb>
 
-          <ElBreadcrumbItem v-for="crumb in data?.breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
-            {{ crumb.name }}
-          </ElBreadcrumbItem>
-        </ElBreadcrumb>
+      <div class="flex justify-between items-center">
+        <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
+          <ElLink :href="href" :underline="false" @click="navigate">
+            <h1 class="hover:underline font-light flex items-center">
+              <Icon v-if="folder" name="ci:folder" class="mr-1" />
+              <span v-if="folder || page?.meta.title">{{ pageTitle }}</span>
+              <span v-else class="italic">
+                {{ pageTitle }}
+              </span>
+            </h1>
+          </ElLink>
+        </NuxtLink>
 
-        <div class="flex justify-between items-center">
-          <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
-            <ElLink :href="href" :underline="false" @click="navigate">
-              <h1 class="hover:underline font-light flex items-center">
-                <Icon v-if="folder" name="ci:folder" class="mr-1" />
-                <span v-if="folder || page?.meta.title">{{ pageTitle }}</span>
-                <span v-else class="italic">
-                  {{ pageTitle }}
-                </span>
-              </h1>
-            </ElLink>
-          </NuxtLink>
+        <div class="flex items-center">
+          <div v-if="!editing">
+            <ElButton v-if="page" class="m-1" @click="onEditPage">
+              <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">Edit</span>
+            </ElButton>
 
-          <div class="flex items-center">
-            <div v-if="!editing">
-              <ElButton v-if="page" class="m-1" @click="onEditPage">
-                <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">Edit</span>
+            <ElButton v-if="folder" class="m-1" @click="createPage">
+              <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
+            </ElButton>
+            <span />
+            <ElButton v-if="folder" class="m-1" @click="createFolder">
+              <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
+            </ElButton>
+
+            <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
+              <ElButton>
+                <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">More</span>
               </ElButton>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem :icon="ReloadIcon" command="reload">
+                    Reload
+                  </ElDropdownItem>
+                  <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
+                    Revisions
+                  </ElDropdownItem>
+                  <ElDropdownItem v-if="(page || folder) && route.path !== '/'" :icon="DeleteIcon" command="delete">
+                    Delete
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+          </div>
 
-              <ElButton v-if="folder" class="m-1" @click="createPage">
-                <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
-              </ElButton>
-              <span />
-              <ElButton v-if="folder" class="m-1" @click="createFolder">
-                <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
-              </ElButton>
-
-              <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
-                <ElButton>
-                  <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">More</span>
-                </ElButton>
-                <template #dropdown>
-                  <ElDropdownMenu>
-                    <ElDropdownItem :icon="ReloadIcon" command="reload">
-                      Reload
-                    </ElDropdownItem>
-                    <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
-                      Revisions
-                    </ElDropdownItem>
-                    <ElDropdownItem v-if="(page || folder) && route.path !== '/'" :icon="DeleteIcon" command="delete">
-                      Delete
-                    </ElDropdownItem>
-                  </ElDropdownMenu>
-                </template>
-              </ElDropdown>
-            </div>
-
-            <div v-if="editing">
-              <ElButton class="ml-2" @click="onCancelEdit">
-                <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">Cancel</span>
-              </ElButton>
-              <ElButton type="success" @click="onSavePage">
-                <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
-              </ElButton>
-            </div>
+          <div v-if="editing">
+            <ElButton class="ml-2" @click="onCancelEdit">
+              <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">Cancel</span>
+            </ElButton>
+            <ElButton type="success" @click="onSavePage">
+              <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
+            </ElButton>
           </div>
         </div>
-      </template>
-
-      <Folder v-if="folder" :folder="folder" />
-      <div v-else-if="page">
-        <PageView v-if="!editing" :page="page" />
-        <PageEditor v-else v-model="editablePage" />
       </div>
-      <div v-else>
-        <div v-if="!editing" class="text-center">
-          <span class="text-3xl">😟</span>
-          <div class="font-medium m-4">
-            This page doesn't exist!
-          </div>
+    </template>
 
-          <div v-if="allowCreate">
-            <ElButton @click="createThisPage">
-              <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Create page</span>
-            </ElButton>
-            <ElButton @click="createThisFolder">
-              <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Create folder</span>
-            </ElButton>
-          </div>
+    <Folder v-if="folder" :folder="folder" />
+    <div v-else-if="page">
+      <PageView v-if="!editing" :page="page" />
+      <PageEditor v-else v-model="editablePage" />
+    </div>
+    <div v-else>
+      <div v-if="!editing" class="text-center">
+        <span class="text-3xl">😟</span>
+        <div class="font-medium m-4">
+          This page doesn't exist!
+        </div>
 
-          <ElButton v-else @click="navigateTo('/')">
-            <Icon name="ic:outline-home" /> <span class="hidden md:inline ml-1">Back home</span>
+        <div v-if="allowCreate">
+          <ElButton @click="createThisPage">
+            <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Create page</span>
+          </ElButton>
+          <ElButton @click="createThisFolder">
+            <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Create folder</span>
           </ElButton>
         </div>
 
-        <div v-else>
-          <PageEditor v-model="editablePage" />
-        </div>
+        <ElButton v-else @click="navigateTo('/')">
+          <Icon name="ic:outline-home" /> <span class="hidden md:inline ml-1">Back home</span>
+        </ElButton>
       </div>
-    </ElCard>
-  </div>
+
+      <div v-else>
+        <PageEditor v-model="editablePage" />
+      </div>
+    </div>
+  </ElCard>
 </template>

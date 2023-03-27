@@ -7,7 +7,7 @@ const props = defineProps<{
 }>()
 
 const renderer = new marked.Renderer()
-renderer.link = (href: string, title: string, text: string) => `<a markdown-link title="${title ?? ''}" href="${href}">${text}</a>`
+renderer.link = (href: string, title: string, text: string) => `<a class="markdown-link" title="${title ?? ''}" href="${href}">${text}</a>`
 
 const html = computed(
   () => dompurify.sanitize(
@@ -16,7 +16,7 @@ const html = computed(
 )
 
 onMounted(() => {
-  document.querySelectorAll('a[markdown-link]').forEach((item) => {
+  document.querySelectorAll('a.markdown-link').forEach((item) => {
     if (item instanceof HTMLAnchorElement) {
       item.onclick = (e) => {
         if (e.target instanceof HTMLAnchorElement) {

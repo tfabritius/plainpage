@@ -1,4 +1,8 @@
 <script setup lang="ts">
+const _props = defineProps<{
+  showPreview: boolean
+}>()
+
 const emit = defineEmits<{
   (e: 'click', payload: string): void
 }>()
@@ -39,7 +43,7 @@ const emit = defineEmits<{
       <MdToolbarButton icon="lucide:table" @click="emit('click', 'table')" />
     </div>
     <div>
-      <MdToolbarButton icon="lucide:eye" @click="emit('click', 'preview')" />
+      <MdToolbarButton :icon="showPreview ? 'lucide:eye-off' : 'lucide:eye'" @click="emit('click', 'preview')" />
     </div>
   </div>
 </template>

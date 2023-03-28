@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const _props = defineProps<{
   showPreview: boolean
+  showFullscreen: boolean
 }>()
 
 const emit = defineEmits<{
@@ -43,6 +44,7 @@ const emit = defineEmits<{
       <MdToolbarButton icon="lucide:table" @click="emit('click', 'table')" />
     </div>
     <div>
+      <MdToolbarButton :icon="showFullscreen ? 'ic:round-fullscreen-exit' : 'ic:round-fullscreen'" @click="emit('click', 'fullscreen')" />
       <MdToolbarButton :icon="showPreview ? 'lucide:eye-off' : 'lucide:eye'" @click="emit('click', 'preview')" />
     </div>
   </div>

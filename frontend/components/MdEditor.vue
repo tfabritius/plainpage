@@ -5,6 +5,7 @@ import { MdCodeEditor, MdPreview } from '#components'
 
 const props = defineProps<{
   modelValue: string
+  height: string
 }>()
 
 const emit = defineEmits<{
@@ -122,6 +123,7 @@ const createWrapUnwrapGenerator = (enclosingStart: string, enclosingEnd: string)
 }
 
 const showPreview = ref(true)
+const showFullscreen = ref(false)
 
 const onToolbarClick = (action: string) => {
   const editor = codeEditorRef.value
@@ -190,6 +192,9 @@ const onToolbarClick = (action: string) => {
       editor.replaceLine(createWrapUnwrapGenerator('```\n', '\n```'))
       break
 
+    case 'fullscreen':
+      showFullscreen.value = !showFullscreen.value
+      break
     case 'preview':
       showPreview.value = !showPreview.value
       break
@@ -198,17 +203,29 @@ const onToolbarClick = (action: string) => {
       throw new Error(`Unknown toolbar action: ${action}`)
   }
 }
+
+const containerClasses = computed(() => {
+  if (showFullscreen.value) {
+    return 'fixed inset-0 z-50 flex flex-col bg-white h-full'
+  }
+  return 'border border-gray-300 border-solid'
+})
+
+const containerStyle = computed(() => ({
+  height: showFullscreen.value ? '100%' : props.height,
+}))
 </script>
 
 <template>
-  <div class="border border-gray-300 border-solid">
-    <MdEditorToolbar class="border-b border-b-gray-300 border-b-solid " :show-preview="showPreview" @click="onToolbarClick" />
-    <div class="flex">
-      <div class="flex-1 border-r border-r-gray-300 border-r-solid">
+  <div class="flex flex-col" :class="containerClasses" :style="containerStyle">
+    <MdEditorToolbar :show-fullscreen="showFullscreen" class="border-b border-b-gray-300 border-b-solid " :show-preview="showPreview" @click="onToolbarClick" />
+    <div class="grow flex overflow-auto">
+      <div class="h-full" :class="showPreview ? 'w-1/2' : 'w-full'">
         <MdCodeEditor ref="codeEditorRef" v-model="markdown" @scroll="onEditorScroll" />
       </div>
-
-      <MdPreview v-show="showPreview" ref="previewRef" :segments="segments" @scroll="onPreviewScroll" />
+      <div class="w-1/2 h-full overflow-auto border-l border-l-gray-300 border-l-solid" :class="showPreview ? 'w-1/2' : 'hidden'">
+        <MdPreview v-show="showPreview" ref="previewRef" :segments="segments" @scroll="onPreviewScroll" />
+      </div>
     </div>
   </div>
 </template>

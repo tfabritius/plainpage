@@ -151,7 +151,7 @@ const extensions = [
   <Codemirror
     v-model="doc"
     placeholder="Empty"
-    :style="{ height: '400px' }"
+    :style="{ height: '100%' }"
     :autofocus="true"
     :indent-with-tab="true"
     :tab-size="2"

@@ -101,7 +101,7 @@ defineExpose({ scrollToSegmentIdx })
 </script>
 
 <template>
-  <ElScrollbar ref="previewScrollbar" height="400px" :always="true" class="flex-1" @scroll="onScroll">
+  <ElScrollbar ref="previewScrollbar" height="100%" :always="true" @scroll="onScroll">
     <div ref="previewArea" v-html="html" />
   </ElScrollbar>
 </template>

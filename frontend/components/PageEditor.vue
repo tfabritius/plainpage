@@ -20,7 +20,7 @@ const page = computed({
     <span class="mr-2 text-sm">Title:</span> <ElInput v-model="page.meta.title" />
   </div>
 
-  <MdEditor v-model="page.content" />
+  <MdEditor v-model="page.content" height="400px" />
 
   <Tags v-model="page.meta.tags" :editable="true" class="mt-2" />
 </template>

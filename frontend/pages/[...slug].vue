@@ -194,8 +194,8 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
 
 <template>
   <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
-  <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" :breadcrumbs="data?.breadcrumbs ?? []" />
-  <AtticPage v-else-if="revQuery !== undefined" :breadcrumbs="data?.breadcrumbs ?? []" :url-path="urlPath" :revision="revQuery" />
+  <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" />
+  <AtticPage v-else-if="revQuery !== undefined" :url-path="urlPath" :revision="revQuery" />
   <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
   <Layout v-else :breadcrumbs="data?.breadcrumbs ?? []">
     <template #title>

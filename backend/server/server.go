@@ -205,6 +205,8 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	breadcrumbs := getBreadcrumbs(urlPath)
+
 	var revision int64
 	if queryRev == "" {
 		list, err := app.Storage.ListAttic(urlPath)
@@ -212,7 +214,11 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		render.JSON(w, r, list)
+		response := GetAtticListResponse{
+			Entries:     list,
+			Breadcrumbs: breadcrumbs,
+		}
+		render.JSON(w, r, response)
 	} else {
 		var err error
 		revision, err = strconv.ParseInt(queryRev, 10, 64)
@@ -231,7 +237,7 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		response := GetPageResponse{Page: &page}
+		response := GetPageResponse{Page: &page, Breadcrumbs: breadcrumbs}
 		render.JSON(w, r, response)
 	}
 }

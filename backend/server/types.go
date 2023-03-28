@@ -14,6 +14,11 @@ type GetPageResponse struct {
 	Breadcrumbs []Breadcrumb          `json:"breadcrumbs"`
 }
 
+type GetAtticListResponse struct {
+	Entries     []storage.AtticEntry `json:"entries"`
+	Breadcrumbs []Breadcrumb         `json:"breadcrumbs"`
+}
+
 type PutRequest struct {
 	Page *storage.Page `json:"page"`
 }

@@ -5,6 +5,11 @@ export interface GetResponse {
   breadcrumbs: Breadcrumb[]
 }
 
+export interface GetAtticListResponse {
+  entries: AtticEntry[]
+  breadcrumbs: Breadcrumb[]
+}
+
 export interface Breadcrumb {
   name: string
   url: string

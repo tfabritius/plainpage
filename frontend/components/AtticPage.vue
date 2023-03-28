@@ -3,12 +3,11 @@ import { FetchError } from 'ofetch'
 import { format } from 'date-fns'
 import { Icon } from '#components'
 
-import type { Breadcrumb, GetResponse } from '~/types/'
+import type { GetResponse } from '~/types/'
 
 const props = defineProps<{
   urlPath: string
   revision: string
-  breadcrumbs: Breadcrumb[]
 }>()
 
 const urlPath = computed(() => props.urlPath)
@@ -48,7 +47,7 @@ const revDate = computed(() => new Date(Number(revision.value) * 1000))
 
 <template>
   <NetworkError v-if="error || !data" :msg="error?.message || ''" @refresh="refresh" />
-  <Layout v-else :breadcrumbs="breadcrumbs">
+  <Layout v-else :breadcrumbs="data.breadcrumbs">
     <template #title>
       <span v-if="data.page?.meta.title">{{ pageTitle }}</span>
       <span v-else class="italic">{{ pageTitle }}</span>

@@ -2,7 +2,7 @@ export interface GetResponse {
   page: Page | null
   folder: FolderEntry[] | null
   allowCreate: boolean
-  breadcrumbs: Breadcrumb[] | null
+  breadcrumbs: Breadcrumb[]
 }
 
 export interface Breadcrumb {

@@ -69,7 +69,7 @@ func isValidUrl(urlPath string) bool {
 }
 
 func getBreadcrumbs(urlPath string) []Breadcrumb {
-	var breadcrumbs []Breadcrumb
+	breadcrumbs := []Breadcrumb{}
 	paths := strings.Split(urlPath, "/")
 	currentPath := ""
 	for _, path := range paths {

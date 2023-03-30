@@ -8,13 +8,31 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/tfabritius/plainpage/libs/utils"
+	"gopkg.in/yaml.v3"
 )
 
 type fsStorage struct {
 	DataDir string
+}
+
+func touch(filename string) error {
+	_, err := os.Stat(filename)
+
+	if os.IsNotExist(err) {
+		file, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+	}
+
+	return err
 }
 
 func NewFsStorage(dataDir string) Storage {
@@ -42,6 +60,9 @@ func NewFsStorage(dataDir string) Storage {
 			log.Fatalln("Could not create "+folder+" folder:", err)
 		}
 	}
+
+	// Create configuration file
+	touch(filepath.Join(storage.DataDir, "users.yml"))
 
 	return &storage
 }
@@ -154,6 +175,23 @@ func (fss *fsStorage) ReadPage(urlPath string, revision *int64) (Page, error) {
 	fm, content, err := parseFrontMatter(string(bytes))
 	if err != nil {
 		return Page{}, fmt.Errorf("could not parse frontmatter: %w", err)
+	}
+
+	// enhance ACLs with additional user information
+	if fm.ACLs != nil {
+		for i, acl := range *fm.ACLs {
+			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
+				user, err := fss.getUserById(userId)
+				if errors.Is(err, ErrNotFound) {
+					continue
+				}
+				if err != nil {
+					return Page{}, fmt.Errorf("failed to find user: %w", err)
+				}
+
+				(*fm.ACLs)[i].User = &user
+			}
+		}
 	}
 
 	u, err := url.JoinPath("/", urlPath)
@@ -287,4 +325,114 @@ func (fss *fsStorage) savePageToAttic(urlPath string, serializedPage string) err
 	}
 
 	return nil
+}
+
+func (fss *fsStorage) GetAllUsers() ([]User, error) {
+	fsPath := filepath.Join(fss.DataDir, "users.yml")
+
+	// read the file
+	bytes, err := os.ReadFile(fsPath)
+	if err != nil {
+		return nil, fmt.Errorf("could not read file: %w", err)
+	}
+
+	// parse YAML
+	users := []User{}
+	if err := yaml.Unmarshal(bytes, &users); err != nil {
+		return nil, fmt.Errorf("could not parse YAML: %w", err)
+	}
+
+	return users, nil
+}
+
+func (fss *fsStorage) getUserById(id string) (User, error) {
+	users, err := fss.GetAllUsers()
+	if err != nil {
+		return User{}, fmt.Errorf("could not read users: %w", err)
+	}
+
+	for _, user := range users {
+		if user.ID == id {
+			return user, nil
+		}
+	}
+
+	return User{}, ErrNotFound
+}
+
+func (fss *fsStorage) GetUserByUsername(username string) (User, error) {
+	users, err := fss.GetAllUsers()
+	if err != nil {
+		return User{}, fmt.Errorf("could not read users: %w", err)
+	}
+
+	for _, user := range users {
+		if strings.ToLower(user.Username) == strings.ToLower(username) {
+			return user, nil
+		}
+	}
+
+	return User{}, ErrNotFound
+}
+
+func (fss *fsStorage) SaveAllUsers(users []User) error {
+	fsPath := filepath.Join(fss.DataDir, "users.yml")
+
+	bytes, err := yaml.Marshal(&users)
+	if err != nil {
+		return fmt.Errorf("failed to marshal: %w", err)
+	}
+
+	if err := os.WriteFile(fsPath, bytes, 0644); err != nil {
+		return fmt.Errorf("could not write file: %w", err)
+	}
+
+	return nil
+}
+
+func isValidUsername(username string) bool {
+	regex := regexp.MustCompile("^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$")
+	return regex.MatchString(username)
+}
+
+func (fss *fsStorage) AddUser(username, password, realName string) (User, error) {
+	users, err := fss.GetAllUsers()
+	if err != nil {
+		return User{}, err
+	}
+
+	// make sure username only contains allowed characters
+	if !isValidUsername(username) {
+		return User{}, ErrInvalidUsername
+	}
+
+	// make sure (lowercase) username is unique
+	for _, user := range users {
+		if strings.ToLower(user.Username) == strings.ToLower(username) {
+			return User{}, ErrUserExistsAlready
+		}
+	}
+
+	id, err := utils.GenerateRandomString(6)
+	if err != nil {
+		return User{}, err
+	}
+
+	passwordHash := "plain:" + password
+
+	user := User{
+		ID:           id,
+		Username:     username,
+		PasswordHash: passwordHash,
+		RealName:     realName,
+	}
+
+	users = append(users, user)
+
+	err = fss.SaveAllUsers(users)
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
 }

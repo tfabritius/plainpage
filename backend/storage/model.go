@@ -32,12 +32,19 @@ type Storage interface {
 
 	// DeleteEmptyFolder removes folder
 	DeleteEmptyFolder(urlPath string) error
+
+	GetAllUsers() ([]User, error)
+	GetUserByUsername(username string) (User, error)
+	SaveAllUsers(users []User) error
+	AddUser(username, password, realName string) (User, error)
 }
 
 var ErrNotFound = errors.New("not found")
 var ErrParentFolderNotFound = errors.New("parent folder not found")
 var ErrPageOrFolderExistsAlready = errors.New("page or folder exists already")
 var ErrFolderNotEmpty = errors.New("folder is not empty")
+var ErrInvalidUsername = errors.New("invalid username")
+var ErrUserExistsAlready = errors.New("user already exists")
 
 type Page struct {
 	Url     string   `json:"url"`
@@ -46,8 +53,9 @@ type Page struct {
 }
 
 type PageMeta struct {
-	Title string   `json:"title" yaml:"title"`
-	Tags  []string `json:"tags" yaml:"tags"`
+	Title string        `json:"title" yaml:"title"`
+	Tags  []string      `json:"tags" yaml:"tags"`
+	ACLs  *[]AccessRule `json:"acls" yaml:"acls"`
 }
 
 type FolderEntry struct {
@@ -58,4 +66,35 @@ type FolderEntry struct {
 
 type AtticEntry struct {
 	Revision int64 `json:"rev"`
+}
+
+type AccessRule struct {
+	// The subject trying to access an object
+	// e.g.
+	// - user:xyz
+	// - group:xyz
+	// - all (all registered users)
+	// - anonymous (unregistered users)
+	Subject string `json:"subject" yaml:"subject"`
+
+	// List of permitted operations
+	Operations []AccessOp `json:"ops" yaml:"ops"`
+
+	// Additional information about subject, if applicable
+	User *User `json:"user" yaml:"-"`
+}
+
+type AccessOp string
+
+const (
+	AccessOpRead   AccessOp = "read"
+	AccessOpWrite  AccessOp = "write"
+	AccessOpDelete AccessOp = "delete"
+)
+
+type User struct {
+	ID           string `json:"id" yaml:"id"`
+	Username     string `json:"username" yaml:"username"`
+	PasswordHash string `json:"-" yaml:"passwordHash"`
+	RealName     string `json:"realName" yaml:"realName"`
 }

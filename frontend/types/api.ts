@@ -1,3 +1,5 @@
+// Types corresponding to server/types.go
+
 export interface GetResponse {
   page: Page | null
   folder: FolderEntry[] | null
@@ -15,10 +17,18 @@ export interface Breadcrumb {
   url: string
 }
 
+// Types corresponding to storage/model.go
+
 export interface Page {
   url: string
-  meta: { title: string; tags: string[] | null }
   content: string
+  meta: PageMeta
+}
+
+export interface PageMeta {
+  title: string
+  tags: string[] | null
+  acls?: AccessRule[] | null
 }
 
 export interface FolderEntry {
@@ -29,4 +39,24 @@ export interface FolderEntry {
 
 export interface AtticEntry {
   rev: number
+}
+
+export interface AccessRule {
+  subject: string
+  ops: AccessOp[] | null
+  user?: User
+}
+
+export enum AccessOp {
+  read = 'read',
+  write = 'write',
+  delete = 'delete',
+}
+
+// export type AccessOp = 'read' | 'write' | 'delete'
+
+export interface User {
+  id: string
+  username: string
+  realName: string
 }

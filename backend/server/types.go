@@ -1,6 +1,10 @@
 package server
 
-import "github.com/tfabritius/plainpage/storage"
+import (
+	"encoding/json"
+
+	"github.com/tfabritius/plainpage/storage"
+)
 
 type Breadcrumb struct {
 	Name string `json:"name"`
@@ -21,4 +25,17 @@ type GetAtticListResponse struct {
 
 type PutRequest struct {
 	Page *storage.Page `json:"page"`
+}
+
+type PostUserRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	RealName string `json:"realName"`
+}
+
+type PatchOperation struct {
+	Op    string           `json:"op"`
+	Path  string           `json:"path"`
+	Value *json.RawMessage `json:"value,omitempty"`
+	From  *string          `json:"from,omitempty"`
 }

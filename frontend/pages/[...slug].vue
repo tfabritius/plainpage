@@ -19,6 +19,13 @@ const revQuery = computed(() => {
   return data
 })
 
+const aclQuery = computed(() => {
+  if (route.query.acl === undefined) {
+    return false
+  }
+  return true
+})
+
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
@@ -70,6 +77,7 @@ watch(editing, (editing) => {
   }
 }, { immediate: true })
 
+const PermissionsIcon = h(Icon, { name: 'ci:shield' })
 const RevisionsIcon = h(Icon, { name: 'ic:baseline-restore' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
@@ -152,6 +160,8 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
     onDeletePage()
   } else if (command === 'rev') {
     await navigateTo({ query: { rev: null } })
+  } else if (command === 'acl') {
+    await navigateTo({ query: { acl: null } })
   } else {
     throw new Error(`Unhandled command ${command}`)
   }
@@ -197,6 +207,7 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
   <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" />
   <AtticPage v-else-if="revQuery !== undefined" :url-path="urlPath" :revision="revQuery" />
   <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
+  <PagePermissions v-else-if="page && aclQuery" :url-path="urlPath" :page="deepClone(page)" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
   <Layout v-else :breadcrumbs="data?.breadcrumbs ?? []">
     <template #title>
       <span v-if="page?.meta.title">{{ pageTitle }}</span>
@@ -222,6 +233,9 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
               </ElDropdownItem>
               <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
                 Revisions
+              </ElDropdownItem>
+              <ElDropdownItem v-if="page" :icon="PermissionsIcon" command="acl">
+                Permissions
               </ElDropdownItem>
               <ElDropdownItem v-if="page" :icon="DeleteIcon" command="delete">
                 Delete

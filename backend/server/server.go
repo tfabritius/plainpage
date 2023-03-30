@@ -46,10 +46,18 @@ func (app App) GetHandler() http.Handler {
 		r.Get("/*", app.getPageOrFolder)
 		r.Put("/*", app.putPageOrFolder)
 		r.Delete("/*", app.deletePageOrFolder)
+
+		r.Patch("/*", app.patchPageOrFolder)
 	})
 
 	r.Route("/_api/attic", func(r chi.Router) {
 		r.Get("/*", app.getAttic)
+	})
+
+	r.Route("/_api/auth", func(r chi.Router) {
+		r.Get("/users", app.getUsers)
+		r.Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
+		r.Post("/users", app.postUser)
 	})
 
 	serveFallback := spa.ServeFileContents("index.html", app.Frontend)
@@ -132,6 +140,56 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, response)
 }
 
+func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
+	urlPath := chi.URLParam(r, "*")
+
+	if !isValidUrl(urlPath) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// Poor man's implementation of RFC 6902
+	var operations []PatchOperation
+	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	page, err := app.Storage.ReadPage(urlPath, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, operation := range operations {
+		if operation.Op != "replace" {
+			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
+			return
+		}
+		if operation.Path != "/page/meta/acls" {
+			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
+			return
+		}
+		if operation.Value == nil {
+			page.Meta.ACLs = nil
+		} else {
+			var acls []storage.AccessRule
+			err = json.Unmarshal([]byte(*operation.Value), &acls)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			}
+
+			page.Meta.ACLs = &acls
+		}
+	}
+
+	err = app.Storage.SavePage(urlPath, page.Content, page.Meta)
+	if err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
@@ -148,6 +206,15 @@ func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 	if body.Page != nil {
+		if app.Storage.IsPage(urlPath) {
+			// if page exists already, take over ACLs
+			oldPage, err := app.Storage.ReadPage(urlPath, nil)
+			if err != nil {
+				panic(err)
+			}
+			body.Page.Meta.ACLs = oldPage.Meta.ACLs
+		}
+
 		err = app.Storage.SavePage(urlPath, body.Page.Content, body.Page.Meta)
 	} else {
 		err = app.Storage.CreateFolder(urlPath)
@@ -240,4 +307,51 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 		response := GetPageResponse{Page: &page, Breadcrumbs: breadcrumbs}
 		render.JSON(w, r, response)
 	}
+}
+
+func (app App) getUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := app.Storage.GetAllUsers()
+	if err != nil {
+		panic(err)
+	}
+
+	render.JSON(w, r, users)
+}
+
+func (app App) getUser(w http.ResponseWriter, r *http.Request) {
+	username := chi.URLParam(r, "username")
+
+	user, err := app.Storage.GetUserByUsername(username)
+	if errors.Is(err, storage.ErrNotFound) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	render.JSON(w, r, user)
+}
+
+func (app App) postUser(w http.ResponseWriter, r *http.Request) {
+	var body PostUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user, err := app.Storage.AddUser(body.Username, body.Password, body.RealName)
+	if err != nil {
+		if errors.Is(err, storage.ErrInvalidUsername) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if errors.Is(err, storage.ErrUserExistsAlready) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		panic(err)
+	}
+
+	render.JSON(w, r, user)
 }

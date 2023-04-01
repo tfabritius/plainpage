@@ -176,6 +176,7 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			err = json.Unmarshal([]byte(*operation.Value), &acls)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
 			}
 
 			page.Meta.ACLs = &acls

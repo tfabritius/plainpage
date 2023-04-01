@@ -117,7 +117,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				panic(err)
 			}
-			response.Folder = folder
+			response.Folder = &folder
 		} else {
 			// Not found
 			w.WriteHeader(http.StatusNotFound)

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Breadcrumb, FolderEntry } from '~/types'
+import type { Breadcrumb, Folder } from '~/types'
 import { Icon } from '#components'
 
 const props = defineProps<{
   urlPath: string
-  folder: FolderEntry[]
+  folder: Folder
   breadcrumbs: Breadcrumb[]
 }>()
 
@@ -151,10 +151,10 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
     </template>
 
     <div>
-      <h2 v-if="folder.some(e => e.isFolder)" class="font-light text-xl">
+      <h2 v-if="folder.content.some(e => e.isFolder)" class="font-light text-xl">
         Folders
       </h2>
-      <div v-for="entry of folder.filter(e => e.isFolder)" :key="entry.name">
+      <div v-for="entry of folder.content.filter(e => e.isFolder)" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
           <ElLink :href="href" @click="navigate">
             <Icon name="ci:folder" class="mr-1" /> {{ entry.name }}
@@ -163,11 +163,11 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
       </div>
 
       <h2
-        v-if="folder.some(e => !e.isFolder)" class="font-light text-xl"
+        v-if="folder.content.some(e => !e.isFolder)" class="font-light text-xl"
       >
         Pages
       </h2>
-      <div v-for="entry of folder.filter(e => !e.isFolder)" :key="entry.name">
+      <div v-for="entry of folder.content.filter(e => !e.isFolder)" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
           <ElLink :href="href" @click="navigate">
             {{ entry.name }}

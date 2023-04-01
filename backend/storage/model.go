@@ -15,8 +15,8 @@ type Storage interface {
 	// ReadPage returns page at given path
 	ReadPage(urlPath string, revision *int64) (Page, error)
 
-	// ReadPage returns folder entries at given path
-	ReadFolder(urlPath string) ([]FolderEntry, error)
+	// ReadPage returns folder at given path
+	ReadFolder(urlPath string) (Folder, error)
 
 	// ListAttic returns relevent entries in attic
 	ListAttic(urlPath string) ([]AtticEntry, error)
@@ -58,6 +58,11 @@ type PageMeta struct {
 	Title string        `json:"title" yaml:"title"`
 	Tags  []string      `json:"tags" yaml:"tags"`
 	ACLs  *[]AccessRule `json:"acls" yaml:"acls"`
+}
+
+type Folder struct {
+	Content []FolderEntry `json:"content"`
+	Meta    PageMeta      `json:"meta"`
 }
 
 type FolderEntry struct {

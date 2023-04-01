@@ -1,8 +1,8 @@
 // Types corresponding to server/types.go
 
-export interface GetResponse {
+export interface GetPageResponse {
   page: Page | null
-  folder: FolderEntry[] | null
+  folder: Folder | null
   allowCreate: boolean
   breadcrumbs: Breadcrumb[]
 }
@@ -29,6 +29,11 @@ export interface PatchOperation {
 export interface Page {
   url: string
   content: string
+  meta: PageMeta
+}
+
+export interface Folder {
+  content: FolderEntry[]
   meta: PageMeta
 }
 

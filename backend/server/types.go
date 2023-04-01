@@ -12,10 +12,10 @@ type Breadcrumb struct {
 }
 
 type GetPageResponse struct {
-	Page        *storage.Page         `json:"page"`
-	Folder      []storage.FolderEntry `json:"folder"`
-	AllowCreate bool                  `json:"allowCreate"`
-	Breadcrumbs []Breadcrumb          `json:"breadcrumbs"`
+	Page        *storage.Page   `json:"page"`
+	Folder      *storage.Folder `json:"folder"`
+	AllowCreate bool            `json:"allowCreate"`
+	Breadcrumbs []Breadcrumb    `json:"breadcrumbs"`
 }
 
 type GetAtticListResponse struct {

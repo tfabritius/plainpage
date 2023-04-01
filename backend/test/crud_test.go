@@ -63,7 +63,7 @@ func TestCRUD(t *testing.T) {
 		fmt.Println(body)
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
-		r.Len(body.Folder, 0)
+		r.Len(body.Folder.Content, 0)
 	}
 
 	// List root folder
@@ -71,10 +71,10 @@ func TestCRUD(t *testing.T) {
 		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages", nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
-		r.Len(body.Folder, 1)
-		r.Equal("foo", body.Folder[0].Name)
-		r.Equal("/foo", body.Folder[0].Url)
-		r.True(body.Folder[0].IsFolder)
+		r.Len(body.Folder.Content, 1)
+		r.Equal("foo", body.Folder.Content[0].Name)
+		r.Equal("/foo", body.Folder.Content[0].Url)
+		r.True(body.Folder.Content[0].IsFolder)
 	}
 
 	// Create page in folder
@@ -94,10 +94,10 @@ func TestCRUD(t *testing.T) {
 		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
-		r.Len(body.Folder, 1)
-		r.Equal("bar", body.Folder[0].Name)
-		r.Equal("/foo/bar", body.Folder[0].Url)
-		r.False(body.Folder[0].IsFolder)
+		r.Len(body.Folder.Content, 1)
+		r.Equal("bar", body.Folder.Content[0].Name)
+		r.Equal("/foo/bar", body.Folder.Content[0].Url)
+		r.False(body.Folder.Content[0].IsFolder)
 	}
 
 	// Delete non-empty folder

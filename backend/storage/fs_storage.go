@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/url"
 	"os"
@@ -65,6 +66,9 @@ func NewFsStorage(dataDir string) Storage {
 	// Create configuration file
 	touch(filepath.Join(storage.DataDir, "users.yml"))
 
+	// Create _index.md
+	touch(filepath.Join(storage.DataDir, "pages", "_index.md"))
+
 	return &storage
 }
 
@@ -81,6 +85,10 @@ func (fss *fsStorage) getFsPathOfFolder(urlPath string) string {
 	return filepath.Join(fss.DataDir, "pages", urlPath)
 }
 
+func (fss *fsStorage) getFsPathOfFolderIndex(urlPath string) string {
+	return filepath.Join(fss.DataDir, "pages", urlPath, "_index.md")
+}
+
 func (fss *fsStorage) IsPage(urlPath string) bool {
 	fsPath := fss.getFsPathOfPage(urlPath)
 	_, err := os.Stat(fsPath)
@@ -94,7 +102,7 @@ func (fss *fsStorage) IsAtticPage(urlPath string, revision int64) bool {
 }
 
 func (fss *fsStorage) IsFolder(urlPath string) bool {
-	fsPath := fss.getFsPathOfFolder(urlPath)
+	fsPath := fss.getFsPathOfFolderIndex(urlPath)
 	_, err := os.Stat(fsPath)
 	return !errors.Is(err, os.ErrNotExist)
 }
@@ -108,8 +116,14 @@ func (fss *fsStorage) CreateFolder(urlPath string) error {
 	}
 
 	fsPath := fss.getFsPathOfFolder(urlPath)
-	return os.Mkdir(fsPath, 0755)
+	if err := os.Mkdir(fsPath, 0755); err != nil {
+		return err
+	}
+	if err := touch(fss.getFsPathOfFolderIndex(urlPath)); err != nil {
+		return err
+	}
 
+	return nil
 }
 
 func (fss *fsStorage) SavePage(urlPath, content string, meta PageMeta) error {
@@ -149,14 +163,64 @@ func (fss *fsStorage) DeletePage(urlPath string) error {
 	return nil
 }
 
+func (fss *fsStorage) folderIsEmpty(urlPath string) bool {
+	dirPath := fss.getFsPathOfFolder(urlPath)
+
+	entries, err := ioutil.ReadDir(dirPath)
+	if err != nil {
+		return false
+	}
+
+	return len(entries) == 1 &&
+		entries[0].Name() == "_index.md" &&
+		!entries[0].IsDir()
+}
+
 func (fss *fsStorage) DeleteEmptyFolder(urlPath string) error {
 	fsPath := fss.getFsPathOfFolder(urlPath)
 
-	err := os.Remove(fsPath)
-	if err != nil && strings.HasSuffix(err.Error(), "The directory is not empty.") {
+	if !fss.folderIsEmpty(urlPath) {
 		return ErrFolderNotEmpty
 	}
-	return err
+
+	if err := os.Remove(fss.getFsPathOfFolderIndex(urlPath)); err != nil {
+		return err
+	}
+
+	if err := os.Remove(fsPath); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (fss *fsStorage) readMarkdownFileWithFrontmatter(fsPath string) (PageMeta, string, error) {
+	// read the file's content
+	bytes, err := os.ReadFile(fsPath)
+	if err != nil {
+		return PageMeta{}, "", fmt.Errorf("could not read file: %w", err)
+	}
+
+	fm, content, err := parseFrontMatter(string(bytes))
+	if err != nil {
+		return PageMeta{}, "", fmt.Errorf("could not parse frontmatter: %w", err)
+	}
+
+	// enhance ACLs with additional user information
+	if fm.ACLs != nil {
+		users, err := fss.GetAllUsers()
+		if err != nil {
+			return PageMeta{}, "", fmt.Errorf("could not read users: %w", err)
+		}
+
+		for i, acl := range *fm.ACLs {
+			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
+				user := fss.getUserById(users, userId)
+				(*fm.ACLs)[i].User = user
+			}
+		}
+	}
+	return fm, content, nil
 }
 
 func (fss *fsStorage) ReadPage(urlPath string, revision *int64) (Page, error) {
@@ -167,30 +231,9 @@ func (fss *fsStorage) ReadPage(urlPath string, revision *int64) (Page, error) {
 		fsPath = fss.getFsPathOfAtticPage(urlPath, *revision)
 	}
 
-	// read the file's content
-	bytes, err := os.ReadFile(fsPath)
+	fm, content, err := fss.readMarkdownFileWithFrontmatter(fsPath)
 	if err != nil {
-		return Page{}, fmt.Errorf("could not read file: %w", err)
-	}
-
-	fm, content, err := parseFrontMatter(string(bytes))
-	if err != nil {
-		return Page{}, fmt.Errorf("could not parse frontmatter: %w", err)
-	}
-
-	// enhance ACLs with additional user information
-	if fm.ACLs != nil {
-		users, err := fss.GetAllUsers()
-		if err != nil {
-			return Page{}, fmt.Errorf("could not read users: %w", err)
-		}
-
-		for i, acl := range *fm.ACLs {
-			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
-				user := fss.getUserById(users, userId)
-				(*fm.ACLs)[i].User = user
-			}
-		}
+		return Page{}, err
 	}
 
 	u, err := url.JoinPath("/", urlPath)
@@ -207,20 +250,20 @@ func (fss *fsStorage) ReadPage(urlPath string, revision *int64) (Page, error) {
 	return page, nil
 }
 
-func (fss *fsStorage) ReadFolder(urlPath string) ([]FolderEntry, error) {
+func (fss *fsStorage) ReadFolder(urlPath string) (Folder, error) {
 	dirPath := fss.getFsPathOfFolder(urlPath)
 
 	// Open the directory
 	dir, err := os.Open(dirPath)
 	if err != nil {
-		return nil, fmt.Errorf("could not open directory: %w", err)
+		return Folder{}, fmt.Errorf("could not open directory: %w", err)
 	}
 	defer dir.Close()
 
 	// Get a list of all files in the directory
 	fileInfos, err := dir.Readdir(0)
 	if err != nil {
-		return nil, fmt.Errorf("could not read directory: %w", err)
+		return Folder{}, fmt.Errorf("could not read directory: %w", err)
 	}
 
 	folderEntries := make([]FolderEntry, 0, len(fileInfos))
@@ -228,7 +271,7 @@ func (fss *fsStorage) ReadFolder(urlPath string) ([]FolderEntry, error) {
 
 		u, err := url.JoinPath("/", urlPath, fi.Name())
 		if err != nil {
-			return nil, fmt.Errorf("could not join url: %w", err)
+			return Folder{}, fmt.Errorf("could not join url: %w", err)
 		}
 
 		e := FolderEntry{
@@ -237,7 +280,7 @@ func (fss *fsStorage) ReadFolder(urlPath string) ([]FolderEntry, error) {
 			IsFolder: fi.IsDir(),
 		}
 		if !e.IsFolder {
-			if strings.HasSuffix(e.Name, ".md") {
+			if !strings.HasPrefix(e.Name, "_") && strings.HasSuffix(e.Name, ".md") {
 				e.Name = strings.TrimSuffix(e.Name, ".md")
 				e.Url = strings.TrimSuffix(e.Url, ".md")
 			} else {
@@ -248,7 +291,19 @@ func (fss *fsStorage) ReadFolder(urlPath string) ([]FolderEntry, error) {
 		folderEntries = append(folderEntries, e)
 	}
 
-	return folderEntries, nil
+	// Read _index.md
+	indexPath := fss.getFsPathOfFolderIndex(urlPath)
+	fm, _, err := fss.readMarkdownFileWithFrontmatter(indexPath)
+	if err != nil {
+		return Folder{}, err
+	}
+
+	folder := Folder{
+		Content: folderEntries,
+		Meta:    fm,
+	}
+
+	return folder, nil
 }
 
 func (fss *fsStorage) ListAttic(urlPath string) ([]AtticEntry, error) {

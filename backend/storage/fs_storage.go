@@ -30,6 +30,7 @@ func touch(filename string) error {
 			return err
 		}
 		defer file.Close()
+		return nil
 	}
 
 	return err

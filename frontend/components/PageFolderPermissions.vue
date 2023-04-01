@@ -1,22 +1,24 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core'
 import { AccessOp } from '~/types/'
-import type { AccessRule, Breadcrumb, Page, User } from '~/types/'
+import type { AccessRule, Breadcrumb, PageMeta, User } from '~/types/'
 
 const props = defineProps<{
   urlPath: string
-  page: Page
+  meta: PageMeta
+  title: string | undefined
   breadcrumbs: Breadcrumb[]
+  isFolder: boolean
 }>()
 
 const emit = defineEmits<{ (e: 'refresh'): void }>()
 
 const urlPath = computed(() => props.urlPath)
-const page = computed(() => props.page)
+const meta = computed(() => props.meta)
+const title = computed(() => props.title)
+const isFolder = computed(() => props.isFolder)
 
-const pageTitle = computed(() => page.value.meta.title || 'Untitled')
-
-const customPermissions = ref(!!page.value.meta.acls)
+const customPermissions = ref(!!meta.value.acls)
 
 function mapAPI2Table(acls: AccessRule[]) {
   const ret = acls.map(acl => ({
@@ -80,7 +82,7 @@ function mapTable2API(acls: ReturnType<typeof mapAPI2Table>): AccessRule[] {
     .filter(acl => acl.subject !== 'admin')
 }
 
-const editableACLs = ref(mapAPI2Table(page.value.meta.acls ?? []))
+const editableACLs = ref(mapAPI2Table(meta.value.acls ?? []))
 
 const newUserName = ref('')
 const newUser = ref<User | null>()
@@ -137,7 +139,7 @@ const onGoBack = async () => {
 const onSave = async () => {
   const apiData = customPermissions.value ? mapTable2API(editableACLs.value) : null
 
-  await $fetch(`/_api/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: '/page/meta/acls', value: apiData }] })
+  await $fetch(`/_api/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acls' : '/page/meta/acls', value: apiData }] })
 
   emit('refresh')
   onGoBack()
@@ -147,8 +149,9 @@ const onSave = async () => {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <span v-if="page.meta.title">{{ pageTitle }}</span>
-      <span v-else class="italic">{{ pageTitle }}</span>
+      <Icon v-if="isFolder" name="ci:folder" class="mr-1" />
+      <span v-if="title">{{ title }}</span>
+      <span v-else class="italic">Untitled</span>
     </template>
 
     <template #actions>

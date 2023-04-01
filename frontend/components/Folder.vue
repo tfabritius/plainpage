@@ -23,6 +23,7 @@ const pageTitle = computed(() => {
 
 useHead(() => ({ title: pageTitle.value }))
 
+const PermissionsIcon = h(Icon, { name: 'ci:shield' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
@@ -107,6 +108,8 @@ const onDeleteFolder = async () => {
 const handleDropdownMenuCommand = async (command: string | number | object) => {
   if (command === 'reload') {
     emit('refresh')
+  } else if (command === 'acl') {
+    await navigateTo({ query: { acl: null } })
   } else if (command === 'delete') {
     onDeleteFolder()
   } else {
@@ -140,6 +143,9 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
             <ElDropdownMenu>
               <ElDropdownItem :icon="ReloadIcon" command="reload">
                 Reload
+              </ElDropdownItem>
+              <ElDropdownItem :icon="PermissionsIcon" command="acl">
+                Permissions
               </ElDropdownItem>
               <ElDropdownItem v-if="urlPath !== ''" :icon="DeleteIcon" command="delete">
                 Delete

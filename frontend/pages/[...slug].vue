@@ -206,8 +206,17 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
   <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
   <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" />
   <AtticPage v-else-if="revQuery !== undefined" :url-path="urlPath" :revision="revQuery" />
+  <PageFolderPermissions
+    v-else-if="folder && aclQuery"
+    :is-folder="true"
+    :url-path="urlPath"
+    :meta="deepClone(folder.meta)"
+    :title="urlPath === '' ? 'Home' : data?.breadcrumbs.slice(-1)[0]?.name"
+    :breadcrumbs="data?.breadcrumbs ?? []"
+    @refresh="refresh"
+  />
   <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
-  <PagePermissions v-else-if="page && aclQuery" :url-path="urlPath" :page="deepClone(page)" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
+  <PageFolderPermissions v-else-if="page && aclQuery" :is-folder="false" :url-path="urlPath" :meta="deepClone(page.meta)" :title="page.meta.title" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
   <Layout v-else :breadcrumbs="data?.breadcrumbs ?? []">
     <template #title>
       <span v-if="page?.meta.title">{{ pageTitle }}</span>

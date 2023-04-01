@@ -126,6 +126,21 @@ func (fss *fsStorage) CreateFolder(urlPath string) error {
 	return nil
 }
 
+func (fss *fsStorage) SaveFolder(urlPath string, meta PageMeta) error {
+	fsPath := fss.getFsPathOfFolderIndex(urlPath)
+
+	serialized, err := serializeFrontMatter(meta, "")
+	if err != nil {
+		return fmt.Errorf("could not serialize frontmatter: %w", err)
+	}
+
+	if err := os.WriteFile(fsPath, []byte(serialized), 0644); err != nil {
+		return fmt.Errorf("could not write index file: %w", err)
+	}
+
+	return nil
+}
+
 func (fss *fsStorage) SavePage(urlPath, content string, meta PageMeta) error {
 	if !fss.IsFolder(path.Dir(urlPath)) {
 		return ErrParentFolderNotFound

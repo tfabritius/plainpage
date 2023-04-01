@@ -157,9 +157,24 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page, err := app.Storage.ReadPage(urlPath, nil)
-	if err != nil {
-		panic(err)
+	var page storage.Page
+	var folder storage.Folder
+	isFolder := false
+	var err error
+	if app.Storage.IsPage(urlPath) {
+		page, err = app.Storage.ReadPage(urlPath, nil)
+		if err != nil {
+			panic(err)
+		}
+	} else if app.Storage.IsFolder(urlPath) {
+		folder, err = app.Storage.ReadFolder(urlPath)
+		if err != nil {
+			panic(err)
+		}
+		isFolder = true
+	} else {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
 	}
 
 	for _, operation := range operations {
@@ -167,25 +182,40 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
 			return
 		}
-		if operation.Path != "/page/meta/acls" {
-			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
-			return
-		}
-		if operation.Value == nil {
-			page.Meta.ACLs = nil
-		} else {
-			var acls []storage.AccessRule
+
+		var acls []storage.AccessRule
+		if operation.Value != nil {
 			err = json.Unmarshal([]byte(*operation.Value), &acls)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+		}
 
-			page.Meta.ACLs = &acls
+		if isFolder && operation.Path == "/folder/meta/acls" {
+			if operation.Value == nil {
+				folder.Meta.ACLs = nil
+			} else {
+				folder.Meta.ACLs = &acls
+			}
+		} else if !isFolder && operation.Path == "/page/meta/acls" {
+			if operation.Value == nil {
+				page.Meta.ACLs = nil
+			} else {
+				page.Meta.ACLs = &acls
+			}
+		} else {
+			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
+			return
 		}
 	}
 
-	err = app.Storage.SavePage(urlPath, page.Content, page.Meta)
+	if isFolder {
+		err = app.Storage.SaveFolder(urlPath, folder.Meta)
+	} else {
+		err = app.Storage.SavePage(urlPath, page.Content, page.Meta)
+	}
+
 	if err != nil {
 		panic(err)
 	}

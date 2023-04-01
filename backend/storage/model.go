@@ -24,6 +24,9 @@ type Storage interface {
 	// CreateFolder creates new folder at given path
 	CreateFolder(urlPath string) error
 
+	// SaveFolder updates folder
+	SaveFolder(urlPath string, meta PageMeta) error
+
 	// SavePage creates or updates page
 	SavePage(urlPath, content string, meta PageMeta) error
 

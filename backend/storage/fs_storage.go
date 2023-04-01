@@ -179,17 +179,15 @@ func (fss *fsStorage) ReadPage(urlPath string, revision *int64) (Page, error) {
 
 	// enhance ACLs with additional user information
 	if fm.ACLs != nil {
+		users, err := fss.GetAllUsers()
+		if err != nil {
+			return Page{}, fmt.Errorf("could not read users: %w", err)
+		}
+
 		for i, acl := range *fm.ACLs {
 			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
-				user, err := fss.getUserById(userId)
-				if errors.Is(err, ErrNotFound) {
-					continue
-				}
-				if err != nil {
-					return Page{}, fmt.Errorf("failed to find user: %w", err)
-				}
-
-				(*fm.ACLs)[i].User = &user
+				user := fss.getUserById(users, userId)
+				(*fm.ACLs)[i].User = user
 			}
 		}
 	}
@@ -345,19 +343,14 @@ func (fss *fsStorage) GetAllUsers() ([]User, error) {
 	return users, nil
 }
 
-func (fss *fsStorage) getUserById(id string) (User, error) {
-	users, err := fss.GetAllUsers()
-	if err != nil {
-		return User{}, fmt.Errorf("could not read users: %w", err)
-	}
-
-	for _, user := range users {
-		if user.ID == id {
-			return user, nil
+func (fss *fsStorage) getUserById(users []User, id string) *User {
+	for i := range users {
+		if users[i].ID == id {
+			return &users[i]
 		}
 	}
 
-	return User{}, ErrNotFound
+	return nil
 }
 
 func (fss *fsStorage) GetUserByUsername(username string) (User, error) {
@@ -385,6 +378,28 @@ func (fss *fsStorage) SaveAllUsers(users []User) error {
 
 	if err := os.WriteFile(fsPath, bytes, 0644); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
+	}
+
+	return nil
+}
+
+func (fss *fsStorage) SaveUser(user User) error {
+	users, err := fss.GetAllUsers()
+	if err != nil {
+		return fmt.Errorf("could not read users: %w", err)
+	}
+
+	existingUser := fss.getUserById(users, user.ID)
+	if existingUser == nil {
+		return ErrNotFound
+	}
+
+	existingUser.Username = user.Username
+	existingUser.RealName = user.RealName
+	existingUser.PasswordHash = user.PasswordHash
+
+	if err := fss.SaveAllUsers(users); err != nil {
+		return fmt.Errorf("could not save users: %w", err)
 	}
 
 	return nil
@@ -435,4 +450,31 @@ func (fss *fsStorage) AddUser(username, password, realName string) (User, error)
 	}
 
 	return user, nil
+}
+
+func (fss *fsStorage) DeleteUserByUsername(username string) error {
+	users, err := fss.GetAllUsers()
+	if err != nil {
+		return fmt.Errorf("could not read users: %w", err)
+	}
+
+	found := false
+
+	for i := 0; i < len(users); {
+		if strings.ToLower(users[i].Username) == strings.ToLower(username) {
+			found = true
+			users = append(users[:i], users[i+1:]...)
+		} else {
+			i++
+		}
+	}
+	if !found {
+		return ErrNotFound
+	}
+
+	if err := fss.SaveAllUsers(users); err != nil {
+		return fmt.Errorf("could not save users: %w", err)
+	}
+
+	return nil
 }

@@ -58,6 +58,8 @@ func (app App) GetHandler() http.Handler {
 		r.Get("/users", app.getUsers)
 		r.Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
 		r.Post("/users", app.postUser)
+		r.Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
+		r.Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 	})
 
 	serveFallback := spa.ServeFileContents("index.html", app.Frontend)
@@ -355,4 +357,74 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, user)
+}
+
+func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
+	username := chi.URLParam(r, "username")
+
+	// Poor man's implementation of RFC 6902
+	var operations []PatchOperation
+	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user, err := app.Storage.GetUserByUsername(username)
+	if errors.Is(err, storage.ErrNotFound) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	for _, operation := range operations {
+		if operation.Op != "replace" {
+			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
+			return
+		}
+
+		var value string
+		if operation.Value == nil {
+			http.Error(w, "value missing", http.StatusBadRequest)
+			return
+		} else {
+			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+
+		if operation.Path == "/username" {
+			user.Username = value
+		} else if operation.Path == "/realName" {
+			user.RealName = value
+		} else if operation.Path == "/password" {
+			user.PasswordHash = "plain:" + value
+		} else {
+			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if err := app.Storage.SaveUser(user); err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
+	username := chi.URLParam(r, "username")
+
+	err := app.Storage.DeleteUserByUsername(username)
+	if errors.Is(err, storage.ErrNotFound) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

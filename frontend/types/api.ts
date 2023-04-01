@@ -17,6 +17,13 @@ export interface Breadcrumb {
   url: string
 }
 
+export interface PatchOperation {
+  op: 'replace'
+  path: string
+  value?: any
+  from?: string
+}
+
 // Types corresponding to storage/model.go
 
 export interface Page {

@@ -37,6 +37,8 @@ type Storage interface {
 	GetUserByUsername(username string) (User, error)
 	SaveAllUsers(users []User) error
 	AddUser(username, password, realName string) (User, error)
+	SaveUser(user User) error
+	DeleteUserByUsername(username string) error
 }
 
 var ErrNotFound = errors.New("not found")

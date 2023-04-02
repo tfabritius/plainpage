@@ -102,7 +102,7 @@ const checkNewUser = useDebounceFn(async () => {
   }
 
   try {
-    const user = await apiFetch<User>(`/_api/auth/users/${newUserName.value}`)
+    const user = await apiFetch<User>(`/auth/users/${newUserName.value}`)
 
     // Check if user is in list already
     if (editableACL.value.some(acl => acl.subject === `user:${user.id}`)) {

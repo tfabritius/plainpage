@@ -2,7 +2,7 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import type { PatchOperation, User } from '~/types'
 
-const { data, error, refresh } = await useFetch<User[]>('/_api/auth/users')
+const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
 const userFormVisible = ref(false)
 const userFormRef = ref<FormInstance>()
@@ -63,13 +63,13 @@ const onSubmit = async () => {
           if (userFormData.value.password) {
             ops.push({ op: 'replace', path: '/password', value: userFormData.value.password })
           }
-          await $fetch(`/_api/auth/users/${userFormData.value.currentUsername}`, {
+          await apiFetch(`/auth/users/${userFormData.value.currentUsername}`, {
             method: 'PATCH',
             body: ops,
           })
           ElMessage({ message: 'User updated', type: 'success' })
         } else {
-          await $fetch('/_api/auth/users', { method: 'POST', body: userFormData.value })
+          await apiFetch('/auth/users', { method: 'POST', body: userFormData.value })
           ElMessage({ message: 'User created', type: 'success' })
         }
         userFormVisible.value = false
@@ -96,7 +96,7 @@ const onDelete = async (user: User) => {
   }
 
   try {
-    await $fetch(`/_api/auth/users/${user.username}`, { method: 'DELETE' })
+    await apiFetch(`/auth/users/${user.username}`, { method: 'DELETE' })
     ElMessage({ message: 'User deleted', type: 'success' })
     refresh()
   } catch (err) {

@@ -59,7 +59,7 @@ const createFolder = async () => {
   }
 
   try {
-    await $fetch(`/_api/pages${urlPath.value}/${name}`, { method: 'PUT', body: { page: null } })
+    await apiFetch(`/pages${urlPath.value}/${name}`, { method: 'PUT', body: { page: null } })
 
     ElMessage({
       message: 'Folder created',
@@ -89,7 +89,7 @@ const onDeleteFolder = async () => {
   }
 
   try {
-    await $fetch(`/_api/pages${urlPath.value}`, { method: 'DELETE' })
+    await apiFetch(`/pages${urlPath.value}`, { method: 'DELETE' })
 
     ElMessage({
       message: 'Folder deleted',

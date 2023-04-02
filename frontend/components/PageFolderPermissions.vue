@@ -28,7 +28,7 @@ const onGoBack = async () => {
 const onSave = async () => {
   const apiData = (customPermissions.value || urlPath.value === '') ? aclTableRef.value?.getAcl() : null
 
-  await $fetch(`/_api/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })
+  await apiFetch(`/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })
 
   emit('refresh')
   onGoBack()

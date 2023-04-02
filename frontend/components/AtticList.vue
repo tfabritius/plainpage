@@ -10,8 +10,8 @@ const props = defineProps<{
 
 const urlPath = computed(() => props.urlPath)
 
-const { data } = await useAsyncData(`/api/_attic${urlPath.value}`, async () => {
-  const data = await $fetch<GetAtticListResponse>(`/_api/attic${urlPath.value}`)
+const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
+  const data = await apiFetch<GetAtticListResponse>(`/attic${urlPath.value}`)
 
   const entries = data.entries.map(e => ({ ...e, date: new Date(e.rev * 1000) }))
     .sort((a, b) => b.rev - a.rev)

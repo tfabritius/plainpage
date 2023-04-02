@@ -13,9 +13,9 @@ const props = defineProps<{
 const urlPath = computed(() => props.urlPath)
 const revision = computed(() => props.revision)
 
-const { data, error, refresh } = await useAsyncData(`/_api/attic${urlPath.value}?rev=${revision.value}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/attic${urlPath.value}?rev=${revision.value}`, async () => {
   try {
-    const data = await $fetch<GetPageResponse>(`/_api/attic${urlPath.value}?rev=${revision.value}`)
+    const data = await apiFetch<GetPageResponse>(`/attic${urlPath.value}?rev=${revision.value}`)
     return {
       notFound: false,
       page: data.page,

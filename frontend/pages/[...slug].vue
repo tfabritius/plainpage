@@ -29,10 +29,10 @@ const aclQuery = computed(() => {
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
-const { data, error, refresh } = await useAsyncData(route.path, async () => {
+const { data, error, refresh } = await useAsyncData(`/pages${route.path}`, async () => {
   try {
     const relUrl = route.path === '/' ? '' : route.path
-    const data = await $fetch<GetPageResponse>(`/_api/pages${relUrl}`)
+    const data = await apiFetch<GetPageResponse>(`/pages${relUrl}`)
     return {
       notFound: false,
       ...data,
@@ -90,7 +90,7 @@ const createThisPage = () => {
 
 const createThisFolder = async () => {
   const urlPath = route.path
-  await $fetch(`/_api/pages/${urlPath}`, { method: 'PUT', body: { page: null } })
+  await apiFetch(`/pages/${urlPath}`, { method: 'PUT', body: { page: null } })
 
   ElMessage({
     message: 'Folder created',
@@ -105,7 +105,7 @@ const onEditPage = () => {
 
 const onSavePage = async () => {
   try {
-    await $fetch(`/_api/pages${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
+    await apiFetch(`/pages${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
 
     ElMessage({
@@ -137,7 +137,7 @@ const onDeletePage = async () => {
   }
 
   try {
-    await $fetch(`/_api/pages${route.path}`, { method: 'DELETE' })
+    await apiFetch(`/pages${route.path}`, { method: 'DELETE' })
 
     ElMessage({
       message: 'Page deleted',

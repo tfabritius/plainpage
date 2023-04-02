@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -35,6 +36,22 @@ func (*UserService) SetPasswordHash(user *storage.User, password string) error {
 	}
 	user.PasswordHash = "argon2:" + hash
 	return nil
+}
+
+func (*UserService) verifyPassword(user storage.User, password string) bool {
+	if plain, found := strings.CutPrefix(user.PasswordHash, "plain:"); found {
+		return password == plain
+	}
+
+	if argon2Hash, found := strings.CutPrefix(user.PasswordHash, "argon2:"); found {
+		match, err := argon2.VerifyPassword(password, argon2Hash)
+		if err != nil {
+			return false
+		}
+		return match
+	}
+
+	return false
 }
 
 func (s *UserService) Create(username, password, realName string) (storage.User, error) {
@@ -91,7 +108,37 @@ func (s *UserService) GetByUsername(username string) (storage.User, error) {
 	return storage.User{}, storage.ErrNotFound
 }
 
-func (*UserService) getById(users []storage.User, id string) *storage.User {
+func (s *UserService) GetById(id string) (storage.User, error) {
+	users, err := s.storage.GetAllUsers()
+	if err != nil {
+		return storage.User{}, fmt.Errorf("could not read users: %w", err)
+	}
+
+	user := s.filterById(users, id)
+	if user != nil {
+		return *user, nil
+	}
+
+	return storage.User{}, storage.ErrNotFound
+}
+
+func (s *UserService) VerifyCredentials(username, password string) (*storage.User, error) {
+	user, err := s.GetByUsername(username)
+	if err != nil {
+		if errors.Is(err, storage.ErrNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	if !s.verifyPassword(user, password) {
+		return nil, nil
+	}
+
+	return &user, nil
+}
+
+func (*UserService) filterById(users []storage.User, id string) *storage.User {
 	for i := range users {
 		if users[i].ID == id {
 			return &users[i]
@@ -107,7 +154,7 @@ func (s *UserService) Save(user storage.User) error {
 		return fmt.Errorf("could not read users: %w", err)
 	}
 
-	existingUser := s.getById(users, user.ID)
+	existingUser := s.filterById(users, user.ID)
 	if existingUser == nil {
 		return storage.ErrNotFound
 	}
@@ -165,7 +212,7 @@ func (s *UserService) EnhanceACLsWithUserInfo(meta *storage.PageMeta) error {
 
 		for i, acl := range *meta.ACLs {
 			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
-				user := s.getById(users, userId)
+				user := s.filterById(users, userId)
 				(*meta.ACLs)[i].User = user
 			}
 		}

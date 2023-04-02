@@ -15,6 +15,7 @@ import (
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/libs/spa"
 	"github.com/tfabritius/plainpage/service"
+	"github.com/tfabritius/plainpage/service/ctxutil"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -22,14 +23,18 @@ type App struct {
 	Frontend http.FileSystem
 	Storage  storage.Storage
 	Users    service.UserService
+	Token    service.TokenService
 }
 
 func NewApp(staticFrontendFiles http.FileSystem, storage storage.Storage) App {
 	userService := service.NewUserService(storage)
+	tokenService := service.NewTokenService()
+
 	return App{
 		Frontend: staticFrontendFiles,
 		Storage:  storage,
 		Users:    userService,
+		Token:    tokenService,
 	}
 }
 
@@ -46,25 +51,34 @@ func (app App) GetHandler() http.Handler {
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
 
-	r.Route("/_api/pages", func(r chi.Router) {
-		r.Get("/*", app.getPageOrFolder)
-		r.Put("/*", app.putPageOrFolder)
-		r.Delete("/*", app.deletePageOrFolder)
+	r.
+		With(app.Token.Token2ContextMiddleware).
+		Route("/_api", func(r chi.Router) {
+			r.Route("/pages", func(r chi.Router) {
+				r.Get("/*", app.getPageOrFolder)
+				r.Put("/*", app.putPageOrFolder)
+				r.Delete("/*", app.deletePageOrFolder)
 
-		r.Patch("/*", app.patchPageOrFolder)
-	})
+				r.Patch("/*", app.patchPageOrFolder)
+			})
 
-	r.Route("/_api/attic", func(r chi.Router) {
-		r.Get("/*", app.getAttic)
-	})
+			r.Route("/attic", func(r chi.Router) {
+				r.Get("/*", app.getAttic)
+			})
 
-	r.Route("/_api/auth", func(r chi.Router) {
-		r.Get("/users", app.getUsers)
-		r.Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
-		r.Post("/users", app.postUser)
-		r.Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
-		r.Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
-	})
+			r.Route("/auth", func(r chi.Router) {
+				r.Get("/users", app.getUsers)
+				r.Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
+				r.Post("/users", app.postUser)
+				r.Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
+				r.Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
+
+				r.Post("/login", app.login)
+				r.Post("/refresh", app.refreshToken)
+
+			})
+
+		})
 
 	serveFallback := spa.ServeFileContents("index.html", app.Frontend)
 	r.With(spa.Catch404Middleware(serveFallback)).
@@ -472,4 +486,62 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (app App) login(w http.ResponseWriter, r *http.Request) {
+	var body LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user, err := app.Users.VerifyCredentials(body.Username, body.Password)
+	if err != nil {
+		panic(err)
+	}
+
+	if user == nil {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+	}
+
+	token, err := app.Token.GenerateToken(*user)
+	if err != nil {
+		panic(err)
+	}
+
+	response := TokenUserResponse{
+		Token: token,
+		User:  *user,
+	}
+
+	render.JSON(w, r, response)
+}
+
+func (app App) refreshToken(w http.ResponseWriter, r *http.Request) {
+	id := ctxutil.UserID(r.Context())
+	if id == "" {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
+	user, err := app.Users.GetById(id)
+	if err != nil {
+		if errors.Is(err, storage.ErrNotFound) {
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			return
+		}
+		panic(err)
+	}
+
+	token, err := app.Token.GenerateToken(user)
+	if err != nil {
+		panic(err)
+	}
+
+	response := TokenUserResponse{
+		Token: token,
+		User:  user,
+	}
+
+	render.JSON(w, r, response)
 }

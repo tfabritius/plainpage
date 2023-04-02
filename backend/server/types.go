@@ -39,3 +39,13 @@ type PatchOperation struct {
 	Value *json.RawMessage `json:"value,omitempty"`
 	From  *string          `json:"from,omitempty"`
 }
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type TokenUserResponse struct {
+	Token string       `json:"token"`
+	User  storage.User `json:"user"`
+}

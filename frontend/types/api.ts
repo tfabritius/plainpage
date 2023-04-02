@@ -24,6 +24,11 @@ export interface PatchOperation {
   from?: string
 }
 
+export interface TokenUserResponse {
+  token: string
+  user: User
+}
+
 // Types corresponding to storage/model.go
 
 export interface Page {

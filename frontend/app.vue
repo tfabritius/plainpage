@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useAuthStore } from '~/store/auth'
+import { Icon } from '#components'
+
 useHead({
   bodyAttrs: {
     class: 'font-sans m-0',
@@ -12,6 +15,25 @@ useHead({
 const appName = 'PlainPage'
 
 useHead(() => ({ titleTemplate: `%s | ${appName}` }))
+
+const auth = useAuthStore()
+const route = useRoute()
+
+const UsersIcon = h(Icon, { name: 'ci:users' })
+const SettingsIcon = h(Icon, { name: 'ci:settings' })
+const LogoutIcon = h(Icon, { name: 'ic:round-log-out' })
+
+async function handleDropdownMenuCommand(command: string | number | object) {
+  if (command === 'users') {
+    navigateTo('/_admin/users')
+  } else if (command === 'settings') {
+    ElMessage('Not implemented yet')
+  } else if (command === 'logout') {
+    auth.logout()
+  } else {
+    throw new Error(`Unhandled command ${command}`)
+  }
+}
 </script>
 
 <template>
@@ -26,9 +48,33 @@ useHead(() => ({ titleTemplate: `%s | ${appName}` }))
         </ElLink>
       </NuxtLink>
 
-      <ElLink :underline="false" @click="ElMessage('Not implemented yet')">
-        <Icon name="ic:baseline-login" class="mr-1" /> <span class="font-normal">Sign in</span>
-      </ElLink>
+      <span v-if="auth.loggedIn">
+        <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
+          <ElLink :underline="false" href="#">
+            <Icon name="ci:user" class="mr-1" />
+            <span class="font-normal">{{ auth.user?.realName }}</span>
+          </ElLink>
+          <template #dropdown>
+            <ElDropdownMenu>
+              <ElDropdownItem :icon="UsersIcon" command="users">
+                Users
+              </ElDropdownItem>
+              <ElDropdownItem :icon="SettingsIcon" command="settings">
+                Settings
+              </ElDropdownItem>
+              <ElDropdownItem :icon="LogoutIcon" command="logout">
+                Sign out
+              </ElDropdownItem>
+            </ElDropdownMenu>
+          </template>
+        </ElDropdown>
+      </span>
+
+      <NuxtLink v-else v-slot="{ navigate, href }" custom :to="`/_login?returnTo=${encodeURIComponent(route.fullPath)}`">
+        <ElLink :underline="false" :href="href" @click="navigate">
+          <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">Sign in</span>
+        </ElLink>
+      </NuxtLink>
     </div>
     <NuxtPage />
     <NuxtLoadingIndicator />

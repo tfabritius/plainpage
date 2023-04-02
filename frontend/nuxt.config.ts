@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@vueuse/nuxt',
     'nuxt-icon',
+    '@pinia/nuxt',
   ],
 
   elementPlus: {

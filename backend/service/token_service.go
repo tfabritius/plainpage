@@ -11,9 +11,9 @@ import (
 	"github.com/tfabritius/plainpage/storage"
 )
 
-func NewTokenService() TokenService {
+func NewTokenService(jwtSecret string) TokenService {
 	return TokenService{
-		jwtSecret: "secret",
+		jwtSecret: jwtSecret,
 	}
 }
 

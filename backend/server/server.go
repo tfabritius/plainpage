@@ -3,6 +3,8 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -14,6 +16,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/libs/spa"
+	"github.com/tfabritius/plainpage/libs/utils"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 	"github.com/tfabritius/plainpage/storage"
@@ -26,13 +29,32 @@ type App struct {
 	Token    service.TokenService
 }
 
-func NewApp(staticFrontendFiles http.FileSystem, storage storage.Storage) App {
-	userService := service.NewUserService(storage)
-	tokenService := service.NewTokenService()
+func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
+	cfg, err := store.ReadConfig()
+	if err != nil {
+		if errors.Is(err, storage.ErrNotFound) {
+			log.Println("Initializing config...")
+			cfg = storage.Config{}
+
+			cfg.JwtSecret, err = utils.GenerateRandomString(16)
+			if err != nil {
+				panic(err)
+			}
+
+			if err := store.WriteConfig(cfg); err != nil {
+				panic(err)
+			}
+		} else {
+			panic(fmt.Errorf("could not load config: %w", err))
+		}
+	}
+
+	userService := service.NewUserService(store)
+	tokenService := service.NewTokenService(cfg.JwtSecret)
 
 	return App{
 		Frontend: staticFrontendFiles,
-		Storage:  storage,
+		Storage:  store,
 		Users:    userService,
 		Token:    tokenService,
 	}

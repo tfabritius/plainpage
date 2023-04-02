@@ -41,6 +41,12 @@ type Storage interface {
 
 	// SaveAllUsers stores all users
 	SaveAllUsers(users []User) error
+
+	// ReadConfig returns configuration
+	ReadConfig() (Config, error)
+
+	// WriteConfig saves configuration
+	WriteConfig(config Config) error
 }
 
 var ErrNotFound = errors.New("not found")
@@ -106,4 +112,8 @@ type User struct {
 	Username     string `json:"username" yaml:"username"`
 	PasswordHash string `json:"-" yaml:"passwordHash"`
 	RealName     string `json:"realName" yaml:"realName"`
+}
+
+type Config struct {
+	JwtSecret string `json:"-" yaml:"jwtSecret"`
 }

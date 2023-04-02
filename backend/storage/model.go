@@ -36,12 +36,11 @@ type Storage interface {
 	// DeleteEmptyFolder removes folder
 	DeleteEmptyFolder(urlPath string) error
 
+	// GetAllUsers returns all users
 	GetAllUsers() ([]User, error)
-	GetUserByUsername(username string) (User, error)
+
+	// SaveAllUsers stores all users
 	SaveAllUsers(users []User) error
-	AddUser(username, password, realName string) (User, error)
-	SaveUser(user User) error
-	DeleteUserByUsername(username string) error
 }
 
 var ErrNotFound = errors.New("not found")

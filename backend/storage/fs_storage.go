@@ -9,12 +9,10 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/tfabritius/plainpage/libs/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -221,20 +219,6 @@ func (fss *fsStorage) readMarkdownFileWithFrontmatter(fsPath string) (PageMeta, 
 		return PageMeta{}, "", fmt.Errorf("could not parse frontmatter: %w", err)
 	}
 
-	// enhance ACLs with additional user information
-	if fm.ACLs != nil {
-		users, err := fss.GetAllUsers()
-		if err != nil {
-			return PageMeta{}, "", fmt.Errorf("could not read users: %w", err)
-		}
-
-		for i, acl := range *fm.ACLs {
-			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
-				user := fss.getUserById(users, userId)
-				(*fm.ACLs)[i].User = user
-			}
-		}
-	}
 	return fm, content, nil
 }
 
@@ -414,31 +398,6 @@ func (fss *fsStorage) GetAllUsers() ([]User, error) {
 	return users, nil
 }
 
-func (fss *fsStorage) getUserById(users []User, id string) *User {
-	for i := range users {
-		if users[i].ID == id {
-			return &users[i]
-		}
-	}
-
-	return nil
-}
-
-func (fss *fsStorage) GetUserByUsername(username string) (User, error) {
-	users, err := fss.GetAllUsers()
-	if err != nil {
-		return User{}, fmt.Errorf("could not read users: %w", err)
-	}
-
-	for _, user := range users {
-		if strings.ToLower(user.Username) == strings.ToLower(username) {
-			return user, nil
-		}
-	}
-
-	return User{}, ErrNotFound
-}
-
 func (fss *fsStorage) SaveAllUsers(users []User) error {
 	fsPath := filepath.Join(fss.DataDir, "users.yml")
 
@@ -449,102 +408,6 @@ func (fss *fsStorage) SaveAllUsers(users []User) error {
 
 	if err := os.WriteFile(fsPath, bytes, 0644); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
-	}
-
-	return nil
-}
-
-func (fss *fsStorage) SaveUser(user User) error {
-	users, err := fss.GetAllUsers()
-	if err != nil {
-		return fmt.Errorf("could not read users: %w", err)
-	}
-
-	existingUser := fss.getUserById(users, user.ID)
-	if existingUser == nil {
-		return ErrNotFound
-	}
-
-	existingUser.Username = user.Username
-	existingUser.RealName = user.RealName
-	existingUser.PasswordHash = user.PasswordHash
-
-	if err := fss.SaveAllUsers(users); err != nil {
-		return fmt.Errorf("could not save users: %w", err)
-	}
-
-	return nil
-}
-
-func isValidUsername(username string) bool {
-	regex := regexp.MustCompile("^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$")
-	return regex.MatchString(username)
-}
-
-func (fss *fsStorage) AddUser(username, password, realName string) (User, error) {
-	users, err := fss.GetAllUsers()
-	if err != nil {
-		return User{}, err
-	}
-
-	// make sure username only contains allowed characters
-	if !isValidUsername(username) {
-		return User{}, ErrInvalidUsername
-	}
-
-	// make sure (lowercase) username is unique
-	for _, user := range users {
-		if strings.ToLower(user.Username) == strings.ToLower(username) {
-			return User{}, ErrUserExistsAlready
-		}
-	}
-
-	id, err := utils.GenerateRandomString(6)
-	if err != nil {
-		return User{}, err
-	}
-
-	passwordHash := "plain:" + password
-
-	user := User{
-		ID:           id,
-		Username:     username,
-		PasswordHash: passwordHash,
-		RealName:     realName,
-	}
-
-	users = append(users, user)
-
-	err = fss.SaveAllUsers(users)
-	if err != nil {
-		return User{}, err
-	}
-
-	return user, nil
-}
-
-func (fss *fsStorage) DeleteUserByUsername(username string) error {
-	users, err := fss.GetAllUsers()
-	if err != nil {
-		return fmt.Errorf("could not read users: %w", err)
-	}
-
-	found := false
-
-	for i := 0; i < len(users); {
-		if strings.ToLower(users[i].Username) == strings.ToLower(username) {
-			found = true
-			users = append(users[:i], users[i+1:]...)
-		} else {
-			i++
-		}
-	}
-	if !found {
-		return ErrNotFound
-	}
-
-	if err := fss.SaveAllUsers(users); err != nil {
-		return fmt.Errorf("could not save users: %w", err)
 	}
 
 	return nil

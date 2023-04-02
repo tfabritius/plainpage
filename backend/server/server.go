@@ -14,18 +14,22 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/libs/spa"
+	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/storage"
 )
 
 type App struct {
 	Frontend http.FileSystem
 	Storage  storage.Storage
+	Users    service.UserService
 }
 
 func NewApp(staticFrontendFiles http.FileSystem, storage storage.Storage) App {
+	userService := service.NewUserService(storage)
 	return App{
 		Frontend: staticFrontendFiles,
 		Storage:  storage,
+		Users:    userService,
 	}
 }
 
@@ -111,12 +115,18 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				panic(err)
 			}
+
+			app.Users.EnhanceACLsWithUserInfo(&page.Meta)
+
 			response.Page = &page
 		} else if app.Storage.IsFolder(urlPath) {
 			folder, err := app.Storage.ReadFolder(urlPath)
 			if err != nil {
 				panic(err)
 			}
+
+			app.Users.EnhanceACLsWithUserInfo(&folder.Meta)
+
 			response.Folder = &folder
 		} else {
 			// Not found
@@ -354,7 +364,7 @@ func (app App) getUsers(w http.ResponseWriter, r *http.Request) {
 func (app App) getUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	user, err := app.Storage.GetUserByUsername(username)
+	user, err := app.Users.GetByUsername(username)
 	if errors.Is(err, storage.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -373,7 +383,7 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.Storage.AddUser(body.Username, body.Password, body.RealName)
+	user, err := app.Users.Create(body.Username, body.Password, body.RealName)
 	if err != nil {
 		if errors.Is(err, storage.ErrInvalidUsername) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -399,7 +409,7 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.Storage.GetUserByUsername(username)
+	user, err := app.Users.GetByUsername(username)
 	if errors.Is(err, storage.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -426,18 +436,23 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if operation.Path == "/username" {
-			user.Username = value
+			if err := app.Users.SetUsername(&user, value); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 		} else if operation.Path == "/realName" {
 			user.RealName = value
 		} else if operation.Path == "/password" {
-			user.PasswordHash = "plain:" + value
+			if err := app.Users.SetPasswordHash(&user, value); err != nil {
+				panic(err)
+			}
 		} else {
 			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
 			return
 		}
 	}
 
-	if err := app.Storage.SaveUser(user); err != nil {
+	if err := app.Users.Save(user); err != nil {
 		panic(err)
 	}
 
@@ -447,7 +462,7 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
-	err := app.Storage.DeleteUserByUsername(username)
+	err := app.Users.DeleteByUsername(username)
 	if errors.Is(err, storage.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return

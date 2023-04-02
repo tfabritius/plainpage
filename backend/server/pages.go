@@ -11,6 +11,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/tfabritius/plainpage/service"
+	"github.com/tfabritius/plainpage/service/ctxutil"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -42,12 +44,28 @@ func getBreadcrumbs(urlPath string) []Breadcrumb {
 
 func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
+	userID := ctxutil.UserID(r.Context())
 
 	response := GetPageResponse{}
 
 	if !isValidUrl(urlPath) {
 		w.WriteHeader(http.StatusNotFound)
 	} else {
+
+		// Get ACL
+		acl, err := app.Storage.GetEffectivePermissions(urlPath)
+		if err != nil {
+			panic(err)
+		}
+		// Check ACL
+		if err := app.Users.CheckPermissions(acl, userID, storage.AccessOpRead); err != nil {
+			if e, ok := err.(*service.AccessDeniedError); ok {
+				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
+				return
+			}
+
+			panic(err)
+		}
 
 		response.Breadcrumbs = getBreadcrumbs(urlPath)
 

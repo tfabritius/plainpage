@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -219,6 +220,72 @@ func (s *UserService) EnhanceACLWithUserInfo(acl *[]storage.AccessRule) error {
 	}
 
 	return nil
+}
+
+type AccessDeniedError struct {
+	StatusCode int
+}
+
+func (e *AccessDeniedError) Error() string {
+	return fmt.Sprintf("access denied (%v)", e.StatusCode)
+}
+
+func (s *UserService) CheckPermissions(
+	acl *[]storage.AccessRule,
+	userID string,
+	op storage.AccessOp,
+) error {
+
+	// Allow access if anonymous is allowed
+	if s.compareACL(*acl, "anonymous", op) {
+		return nil
+	}
+
+	// Deny anonymous access
+	if userID == "" {
+		return &AccessDeniedError{
+			StatusCode: http.StatusUnauthorized,
+		}
+	}
+
+	// Allow if all users are allowed
+	if s.compareACL(*acl, "all", op) {
+		return nil
+	}
+
+	// Allow if user is allowed
+	if s.compareACL(*acl, "user:"+userID, op) {
+		return nil
+	}
+
+	// Read global ACL
+	cfg, err := s.storage.ReadConfig()
+	if err != nil {
+		return err
+	}
+	// Allow if user has admin privileges
+	if s.compareACL(cfg.ACL, "user:"+userID, storage.AccessOpAdmin) {
+		return nil
+	}
+
+	// Deny access
+	return &AccessDeniedError{
+		StatusCode: http.StatusForbidden,
+	}
+}
+
+func (*UserService) compareACL(acl []storage.AccessRule, subject string, op storage.AccessOp) bool {
+	for _, rule := range acl {
+		if rule.Subject == subject {
+			for _, o := range rule.Operations {
+				if o == op {
+					return true
+				}
+			}
+			return false
+		}
+	}
+	return false
 }
 
 func (*UserService) isUsernameUnique(users []storage.User, username string) bool {

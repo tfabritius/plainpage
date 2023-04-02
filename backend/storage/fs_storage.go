@@ -310,6 +310,42 @@ func (fss *fsStorage) ReadFolder(urlPath string) (Folder, error) {
 	return folder, nil
 }
 
+func (fss *fsStorage) GetEffectivePermissions(urlPath string) (*[]AccessRule, error) {
+	if fss.IsPage(urlPath) {
+		page, err := fss.ReadPage(urlPath, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		if page.Meta.ACL != nil {
+			return page.Meta.ACL, nil
+		}
+
+	} else if fss.IsFolder(urlPath) {
+		folder, err := fss.ReadFolder(urlPath)
+		if err != nil {
+			return nil, err
+		}
+
+		if folder.Meta.ACL != nil {
+			return folder.Meta.ACL, nil
+		}
+	} else {
+		return nil, ErrNotFound
+	}
+
+	if urlPath == "" {
+		return nil, nil
+	}
+
+	parentUrl, err := url.JoinPath(urlPath, "..")
+	if err != nil {
+		return nil, err
+	}
+
+	return fss.GetEffectivePermissions(parentUrl)
+}
+
 func (fss *fsStorage) ListAttic(urlPath string) ([]AtticEntry, error) {
 	pageName := path.Base(urlPath)
 	parentDir := filepath.Dir(fss.getFsPathOfAtticPage(urlPath, 0))

@@ -18,6 +18,9 @@ type Storage interface {
 	// ReadPage returns folder at given path
 	ReadFolder(urlPath string) (Folder, error)
 
+	// GetEffectivePersmissions return access rules to be applied
+	GetEffectivePermissions(urlPath string) (*[]AccessRule, error)
+
 	// ListAttic returns relevent entries in attic
 	ListAttic(urlPath string) ([]AtticEntry, error)
 

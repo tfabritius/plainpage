@@ -115,5 +115,6 @@ type User struct {
 }
 
 type Config struct {
+	AppName   string `json:"appName" yaml:"appName"`
 	JwtSecret string `json:"-" yaml:"jwtSecret"`
 }

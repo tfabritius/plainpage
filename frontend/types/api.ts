@@ -77,3 +77,7 @@ export interface User {
   username: string
   realName: string
 }
+
+export interface Config {
+  appName: string
+}

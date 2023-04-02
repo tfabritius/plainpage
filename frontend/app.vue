@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
 import { Icon } from '#components'
+import type { Config } from '~/types'
 
 useHead({
   bodyAttrs: {
@@ -12,9 +13,11 @@ useHead({
   }],
 })
 
-const appName = 'PlainPage'
+const { data } = await useAsyncData('/app', () => apiFetch<Config>('/app'))
 
-useHead(() => ({ titleTemplate: `%s | ${appName}` }))
+const appName = computed(() => data.value?.appName ?? 'PlainPage')
+
+useHead(() => ({ titleTemplate: `%s | ${appName.value}` }))
 
 const auth = useAuthStore()
 const route = useRoute()

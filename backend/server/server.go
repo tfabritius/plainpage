@@ -34,12 +34,7 @@ func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
 			log.Println("Initializing config...")
-			cfg = storage.Config{}
-
-			cfg.JwtSecret, err = utils.GenerateRandomString(16)
-			if err != nil {
-				panic(err)
-			}
+			cfg = initializeConfig()
 
 			if err := store.WriteConfig(cfg); err != nil {
 				panic(err)
@@ -60,6 +55,21 @@ func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
 	}
 }
 
+// initializeConfig creates default configuration on first start
+func initializeConfig() storage.Config {
+	cfg := storage.Config{}
+	var err error
+
+	cfg.AppName = "PlainPage"
+
+	cfg.JwtSecret, err = utils.GenerateRandomString(16)
+	if err != nil {
+		panic(err)
+	}
+
+	return cfg
+}
+
 func (app App) GetHandler() http.Handler {
 	r := chi.NewRouter()
 
@@ -76,6 +86,8 @@ func (app App) GetHandler() http.Handler {
 	r.
 		With(app.Token.Token2ContextMiddleware).
 		Route("/_api", func(r chi.Router) {
+			r.Get("/app", app.exposeConfig)
+
 			r.Route("/pages", func(r chi.Router) {
 				r.Get("/*", app.getPageOrFolder)
 				r.Put("/*", app.putPageOrFolder)
@@ -133,6 +145,15 @@ func getBreadcrumbs(urlPath string) []Breadcrumb {
 		}
 	}
 	return breadcrumbs
+}
+
+func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
+	cfg, err := app.Storage.ReadConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	render.JSON(w, r, cfg)
 }
 
 func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {

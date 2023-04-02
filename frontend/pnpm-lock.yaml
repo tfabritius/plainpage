@@ -6,6 +6,7 @@ specifiers:
   '@codemirror/state': ^6.2.0
   '@element-plus/nuxt': ^1.0.4
   '@iconify/json': ^2.2.38
+  '@pinia-plugin-persistedstate/nuxt': ^1.1.1
   '@pinia/nuxt': ^0.4.7
   '@types/dompurify': ^3.0.0
   '@types/marked': ^4.0.8
@@ -33,6 +34,7 @@ devDependencies:
   '@codemirror/state': 6.2.0
   '@element-plus/nuxt': 1.0.4_element-plus@2.3.1
   '@iconify/json': 2.2.38
+  '@pinia-plugin-persistedstate/nuxt': 1.1.1_2fa6k6uov4i2t7fhwaa7f3r2li
   '@pinia/nuxt': 0.4.7_typescript@5.0.2
   '@types/dompurify': 3.0.0
   '@types/marked': 4.0.8
@@ -1800,6 +1802,21 @@ packages:
     engines: {node: '>=8.0.0'}
     dev: true
     optional: true
+
+  /@pinia-plugin-persistedstate/nuxt/1.1.1_2fa6k6uov4i2t7fhwaa7f3r2li:
+    resolution: {integrity: sha512-b6ZNP3Re8COmfZEpj4KQmbp2TuDKrLggDFLZa8FiJF68xE/oCsPXIuXUvAt8E4ht/5sq4Z/grlA+iGXaI2aeKQ==}
+    peerDependencies:
+      '@pinia/nuxt': ^0.4.4
+    dependencies:
+      '@nuxt/kit': 3.3.1
+      '@pinia/nuxt': 0.4.7_typescript@5.0.2
+      defu: 6.1.2
+      pinia-plugin-persistedstate: 3.1.0_pinia@2.0.33
+    transitivePeerDependencies:
+      - pinia
+      - rollup
+      - supports-color
+    dev: true
 
   /@pinia/nuxt/0.4.7_typescript@5.0.2:
     resolution: {integrity: sha512-ifgA9PO/jmPlK1e/HtkrZa7OMSL8EUOpo8Z1O5vNLRr/OZ42kKGEaY1NbIoCz6dIf/pbkATTNHJmcrlPCo3zSA==}
@@ -6495,6 +6512,14 @@ packages:
   /pify/2.3.0:
     resolution: {integrity: sha512-udgsAY+fTnvv7kI7aaxbqwWNb0AHiB0qBO89PZKPkoTmGOgdbrHDKD+0B2X4uTfJ/FT1R09r9gTsjUjNJotuog==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /pinia-plugin-persistedstate/3.1.0_pinia@2.0.33:
+    resolution: {integrity: sha512-8UN+vYMEPBdgNLwceY08mi5olI0wkYaEb8b6hD6xW7SnBRuPydWHlEhZvUWgNb/ibuf4PvufpvtS+dmhYjJQOw==}
+    peerDependencies:
+      pinia: ^2.0.0
+    dependencies:
+      pinia: 2.0.33_typescript@5.0.2
     dev: true
 
   /pinia/2.0.33_typescript@5.0.2:

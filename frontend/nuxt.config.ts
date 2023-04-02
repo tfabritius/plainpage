@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'nuxt-icon',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
   ],
 
   elementPlus: {
@@ -23,6 +24,10 @@ export default defineNuxtConfig({
     // core options
     shortcuts: [],
     rules: [],
+  },
+
+  piniaPersistedstate: {
+    storage: 'localStorage',
   },
 
   typescript: {

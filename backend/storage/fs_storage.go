@@ -40,7 +40,7 @@ func NewFsStorage(dataDir string) Storage {
 
 	fi, err := os.Stat(dataDir)
 	if errors.Is(err, os.ErrNotExist) {
-		if err := os.Mkdir(dataDir, 0755); err != nil {
+		if err := os.Mkdir(dataDir, 0700); err != nil {
 			log.Fatalln("Could not create data directory:", err)
 		}
 		log.Println("Data directory created")
@@ -55,7 +55,7 @@ func NewFsStorage(dataDir string) Storage {
 	// Create pages and attic directories
 	for _, folder := range []string{"pages", "attic"} {
 		// Create directory, continue if it exists already
-		err := os.MkdirAll(filepath.Join(storage.DataDir, folder), 0755)
+		err := os.MkdirAll(filepath.Join(storage.DataDir, folder), 0700)
 		if err != nil {
 			log.Fatalln("Could not create "+folder+" folder:", err)
 		}
@@ -119,7 +119,7 @@ func (fss *fsStorage) CreateFolder(urlPath string) error {
 	}
 
 	fsPath := fss.getFsPathOfFolder(urlPath)
-	if err := os.Mkdir(fsPath, 0755); err != nil {
+	if err := os.Mkdir(fsPath, 0700); err != nil {
 		return err
 	}
 	if err := touch(fss.getFsPathOfFolderIndex(urlPath)); err != nil {
@@ -137,7 +137,7 @@ func (fss *fsStorage) SaveFolder(urlPath string, meta PageMeta) error {
 		return fmt.Errorf("could not serialize frontmatter: %w", err)
 	}
 
-	if err := os.WriteFile(fsPath, []byte(serialized), 0644); err != nil {
+	if err := os.WriteFile(fsPath, []byte(serialized), 0600); err != nil {
 		return fmt.Errorf("could not write index file: %w", err)
 	}
 
@@ -159,7 +159,7 @@ func (fss *fsStorage) SavePage(urlPath, content string, meta PageMeta) error {
 		return fmt.Errorf("could not serialize frontmatter: %w", err)
 	}
 
-	if err := os.WriteFile(fsPath, []byte(serializedPage), 0644); err != nil {
+	if err := os.WriteFile(fsPath, []byte(serializedPage), 0600); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
 	}
 
@@ -359,7 +359,7 @@ func (fss *fsStorage) ListAttic(urlPath string) ([]AtticEntry, error) {
 func (fss *fsStorage) createDir(file string) error {
 	dir := filepath.Dir(file)
 
-	err := os.MkdirAll(dir, 0755)
+	err := os.MkdirAll(dir, 0700)
 	if err != nil {
 		return fmt.Errorf("could not create directories: %w", err)
 	}
@@ -378,7 +378,7 @@ func (fss *fsStorage) savePageToAttic(urlPath string, serializedPage string) err
 	}
 
 	// write the file's content
-	if err := os.WriteFile(atticFile, []byte(serializedPage), 0644); err != nil {
+	if err := os.WriteFile(atticFile, []byte(serializedPage), 0600); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
 	}
 
@@ -411,7 +411,7 @@ func (fss *fsStorage) SaveAllUsers(users []User) error {
 		return fmt.Errorf("failed to marshal: %w", err)
 	}
 
-	if err := os.WriteFile(fsPath, bytes, 0644); err != nil {
+	if err := os.WriteFile(fsPath, bytes, 0600); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
 	}
 
@@ -449,7 +449,7 @@ func (fss *fsStorage) WriteConfig(config Config) error {
 		return fmt.Errorf("failed to marshal: %w", err)
 	}
 
-	if err := os.WriteFile(fsPath, bytes, 0644); err != nil {
+	if err := os.WriteFile(fsPath, bytes, 0600); err != nil {
 		return fmt.Errorf("could not write file: %w", err)
 	}
 

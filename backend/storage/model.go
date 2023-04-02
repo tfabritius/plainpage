@@ -102,9 +102,14 @@ type AccessRule struct {
 type AccessOp string
 
 const (
+	// Operations on pages/folders
 	AccessOpRead   AccessOp = "read"
 	AccessOpWrite  AccessOp = "write"
 	AccessOpDelete AccessOp = "delete"
+
+	// Global operations/permissions
+	AccessOpAdmin    AccessOp = "admin"
+	AccessOpRegister AccessOp = "register"
 )
 
 type User struct {
@@ -115,6 +120,7 @@ type User struct {
 }
 
 type Config struct {
-	AppName   string `json:"appName" yaml:"appName"`
-	JwtSecret string `json:"-" yaml:"jwtSecret"`
+	AppName   string       `json:"appName" yaml:"appName"`
+	JwtSecret string       `json:"-" yaml:"jwtSecret"`
+	ACL       []AccessRule `json:"acl" yaml:"acl"`
 }

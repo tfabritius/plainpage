@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/store/auth'
 import { Icon } from '#components'
-import type { Config } from '~/types'
+import type { GetAppResponse } from '~/types'
 
 useHead({
   bodyAttrs: {
@@ -13,7 +13,7 @@ useHead({
   }],
 })
 
-const { data } = await useAsyncData('/app', () => apiFetch<Config>('/app'))
+const { data } = await useAsyncData('/app', () => apiFetch<GetAppResponse>('/app'))
 
 const appName = computed(() => data.value?.appName ?? 'PlainPage')
 
@@ -28,9 +28,9 @@ const LogoutIcon = h(Icon, { name: 'ic:round-log-out' })
 
 async function handleDropdownMenuCommand(command: string | number | object) {
   if (command === 'users') {
-    navigateTo('/_admin/users')
+    await navigateTo('/_admin/users')
   } else if (command === 'settings') {
-    ElMessage('Not implemented yet')
+    await navigateTo('/_admin/settings')
   } else if (command === 'logout') {
     auth.logout()
   } else {

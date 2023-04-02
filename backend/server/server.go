@@ -88,6 +88,9 @@ func (app App) GetHandler() http.Handler {
 		Route("/_api", func(r chi.Router) {
 			r.Get("/app", app.exposeConfig)
 
+			r.Get("/config", app.getConfig)
+			r.Patch("/config", app.patchConfig)
+
 			r.Route("/pages", func(r chi.Router) {
 				r.Get("/*", app.getPageOrFolder)
 				r.Put("/*", app.putPageOrFolder)
@@ -147,15 +150,6 @@ func getBreadcrumbs(urlPath string) []Breadcrumb {
 	return breadcrumbs
 }
 
-func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
-	cfg, err := app.Storage.ReadConfig()
-	if err != nil {
-		panic(err)
-	}
-
-	render.JSON(w, r, cfg)
-}
-
 func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
@@ -173,7 +167,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 
-			app.Users.EnhanceACLsWithUserInfo(&page.Meta)
+			app.Users.EnhanceACLsWithUserInfo(page.Meta.ACLs)
 
 			response.Page = &page
 		} else if app.Storage.IsFolder(urlPath) {
@@ -182,7 +176,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 
-			app.Users.EnhanceACLsWithUserInfo(&folder.Meta)
+			app.Users.EnhanceACLsWithUserInfo(folder.Meta.ACLs)
 
 			response.Folder = &folder
 		} else {

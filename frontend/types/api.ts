@@ -1,5 +1,14 @@
 // Types corresponding to server/types.go
 
+export interface Breadcrumb {
+  name: string
+  url: string
+}
+
+export interface GetAppResponse {
+  appName: string
+}
+
 export interface GetPageResponse {
   page: Page | null
   folder: Folder | null
@@ -10,11 +19,6 @@ export interface GetPageResponse {
 export interface GetAtticListResponse {
   entries: AtticEntry[]
   breadcrumbs: Breadcrumb[]
-}
-
-export interface Breadcrumb {
-  name: string
-  url: string
 }
 
 export interface PatchOperation {
@@ -68,9 +72,9 @@ export enum AccessOp {
   read = 'read',
   write = 'write',
   delete = 'delete',
+  admin = 'admin',
+  register = 'register',
 }
-
-// export type AccessOp = 'read' | 'write' | 'delete'
 
 export interface User {
   id: string
@@ -80,4 +84,5 @@ export interface User {
 
 export interface Config {
   appName: string
+  acl: AccessRule[] | null
 }

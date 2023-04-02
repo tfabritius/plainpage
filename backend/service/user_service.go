@@ -203,17 +203,17 @@ func (s *UserService) DeleteByUsername(username string) error {
 	return nil
 }
 
-func (s *UserService) EnhanceACLsWithUserInfo(meta *storage.PageMeta) error {
-	if meta.ACLs != nil {
+func (s *UserService) EnhanceACLsWithUserInfo(acl *[]storage.AccessRule) error {
+	if acl != nil {
 		users, err := s.storage.GetAllUsers()
 		if err != nil {
 			return fmt.Errorf("could not read users: %w", err)
 		}
 
-		for i, acl := range *meta.ACLs {
-			if userId, found := strings.CutPrefix(acl.Subject, "user:"); found {
+		for i, rule := range *acl {
+			if userId, found := strings.CutPrefix(rule.Subject, "user:"); found {
 				user := s.filterById(users, userId)
-				(*meta.ACLs)[i].User = user
+				(*acl)[i].User = user
 			}
 		}
 	}

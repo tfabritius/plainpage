@@ -11,6 +11,10 @@ type Breadcrumb struct {
 	Url  string `json:"url"`
 }
 
+type GetAppResponse struct {
+	AppName string `json:"appName"`
+}
+
 type GetPageResponse struct {
 	Page        *storage.Page   `json:"page"`
 	Folder      *storage.Folder `json:"folder"`

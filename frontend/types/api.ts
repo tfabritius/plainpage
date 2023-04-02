@@ -49,7 +49,7 @@ export interface Folder {
 export interface PageMeta {
   title: string
   tags: string[] | null
-  acls?: AccessRule[] | null
+  acl?: AccessRule[] | null
 }
 
 export interface FolderEntry {

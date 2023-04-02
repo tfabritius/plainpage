@@ -203,7 +203,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 	return nil
 }
 
-func (s *UserService) EnhanceACLsWithUserInfo(acl *[]storage.AccessRule) error {
+func (s *UserService) EnhanceACLWithUserInfo(acl *[]storage.AccessRule) error {
 	if acl != nil {
 		users, err := s.storage.GetAllUsers()
 		if err != nil {

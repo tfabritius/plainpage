@@ -17,7 +17,7 @@ const meta = computed(() => props.meta)
 const title = computed(() => props.title)
 const isFolder = computed(() => props.isFolder)
 
-const customPermissions = ref(!!meta.value.acls)
+const customPermissions = ref(!!meta.value.acl)
 
 const aclTableRef = ref<InstanceType<typeof AclTable>>()
 
@@ -28,7 +28,7 @@ const onGoBack = async () => {
 const onSave = async () => {
   const apiData = (customPermissions.value || urlPath.value === '') ? aclTableRef.value?.getAcl() : null
 
-  await $fetch(`/_api/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acls' : '/page/meta/acls', value: apiData }] })
+  await $fetch(`/_api/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })
 
   emit('refresh')
   onGoBack()
@@ -60,7 +60,7 @@ const onSave = async () => {
       inactive-text="Inherit permissions from parent folder"
     />
     <div v-if="customPermissions">
-      <AclTable ref="aclTableRef" :acl="meta.acls ?? []" :show-admin-rule="true" :show-columns="['read', 'write', 'delete']" />
+      <AclTable ref="aclTableRef" :acl="meta.acl ?? []" :show-admin-rule="true" :show-columns="['read', 'write', 'delete']" />
     </div>
   </Layout>
 </template>

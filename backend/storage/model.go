@@ -65,7 +65,7 @@ type Page struct {
 type PageMeta struct {
 	Title string        `json:"title" yaml:"title"`
 	Tags  []string      `json:"tags" yaml:"tags"`
-	ACLs  *[]AccessRule `json:"acls" yaml:"acls"`
+	ACL   *[]AccessRule `json:"acl" yaml:"acl"`
 }
 
 type Folder struct {

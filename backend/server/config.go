@@ -27,7 +27,7 @@ func (app App) getConfig(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := app.Users.EnhanceACLsWithUserInfo(&cfg.ACL); err != nil {
+	if err := app.Users.EnhanceACLWithUserInfo(&cfg.ACL); err != nil {
 		panic(err)
 	}
 

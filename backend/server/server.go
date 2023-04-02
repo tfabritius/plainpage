@@ -167,7 +167,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 
-			app.Users.EnhanceACLsWithUserInfo(page.Meta.ACLs)
+			app.Users.EnhanceACLWithUserInfo(page.Meta.ACL)
 
 			response.Page = &page
 		} else if app.Storage.IsFolder(urlPath) {
@@ -176,7 +176,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 
-			app.Users.EnhanceACLsWithUserInfo(folder.Meta.ACLs)
+			app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL)
 
 			response.Folder = &folder
 		} else {
@@ -244,26 +244,26 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var acls []storage.AccessRule
+		var acl []storage.AccessRule
 		if operation.Value != nil {
-			err = json.Unmarshal([]byte(*operation.Value), &acls)
+			err = json.Unmarshal([]byte(*operation.Value), &acl)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 		}
 
-		if isFolder && operation.Path == "/folder/meta/acls" {
+		if isFolder && operation.Path == "/folder/meta/acl" {
 			if operation.Value == nil {
-				folder.Meta.ACLs = nil
+				folder.Meta.ACL = nil
 			} else {
-				folder.Meta.ACLs = &acls
+				folder.Meta.ACL = &acl
 			}
-		} else if !isFolder && operation.Path == "/page/meta/acls" {
+		} else if !isFolder && operation.Path == "/page/meta/acl" {
 			if operation.Value == nil {
-				page.Meta.ACLs = nil
+				page.Meta.ACL = nil
 			} else {
-				page.Meta.ACLs = &acls
+				page.Meta.ACL = &acl
 			}
 		} else {
 			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
@@ -301,12 +301,12 @@ func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if body.Page != nil {
 		if app.Storage.IsPage(urlPath) {
-			// if page exists already, take over ACLs
+			// if page exists already, take over ACL
 			oldPage, err := app.Storage.ReadPage(urlPath, nil)
 			if err != nil {
 				panic(err)
 			}
-			body.Page.Meta.ACLs = oldPage.Meta.ACLs
+			body.Page.Meta.ACL = oldPage.Meta.ACL
 		}
 
 		err = app.Storage.SavePage(urlPath, body.Page.Content, body.Page.Meta)

@@ -20,11 +20,6 @@ type UserService struct {
 	storage storage.Storage
 }
 
-func (*UserService) isValidUsername(username string) bool {
-	regex := regexp.MustCompile("^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$")
-	return regex.MatchString(username)
-}
-
 func (s *UserService) SetUsername(user *storage.User, username string) error {
 	if !s.isValidUsername(username) {
 		return storage.ErrInvalidUsername
@@ -49,11 +44,8 @@ func (s *UserService) Create(username, password, realName string) (storage.User,
 		return storage.User{}, err
 	}
 
-	// make sure (lowercase) username is unique
-	for _, user := range users {
-		if strings.ToLower(user.Username) == strings.ToLower(username) {
-			return storage.User{}, storage.ErrUserExistsAlready
-		}
+	if !s.isUsernameUnique(users, username) {
+		return storage.User{}, storage.ErrUserExistsAlready
 	}
 
 	id, err := utils.GenerateRandomString(6)
@@ -120,6 +112,12 @@ func (s *UserService) Save(user storage.User) error {
 		return storage.ErrNotFound
 	}
 
+	if user.Username != existingUser.Username {
+		if !s.isUsernameUnique(users, user.Username) {
+			return storage.ErrUserExistsAlready
+		}
+	}
+
 	existingUser.Username = user.Username
 	existingUser.RealName = user.RealName
 	existingUser.PasswordHash = user.PasswordHash
@@ -174,4 +172,18 @@ func (s *UserService) EnhanceACLsWithUserInfo(meta *storage.PageMeta) error {
 	}
 
 	return nil
+}
+
+func (*UserService) isUsernameUnique(users []storage.User, username string) bool {
+	for _, user := range users {
+		if strings.ToLower(user.Username) == strings.ToLower(username) {
+			return false
+		}
+	}
+	return true
+}
+
+func (*UserService) isValidUsername(username string) bool {
+	regex := regexp.MustCompile("^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$")
+	return regex.MatchString(username)
 }

@@ -64,8 +64,13 @@ func NewFsStorage(dataDir string) Storage {
 	// Create configuration file
 	touch(filepath.Join(storage.DataDir, "users.yml"))
 
-	// Create _index.md
-	touch(filepath.Join(storage.DataDir, "pages", "_index.md"))
+	// Create _index.md with default ACLs if it doesn't exist
+	if !storage.IsFolder("/") {
+		defaultACLs := []AccessRule{
+			{Subject: "all", Operations: []AccessOp{AccessOpRead, AccessOpWrite, AccessOpDelete}},
+		}
+		storage.SaveFolder("/", PageMeta{ACLs: &defaultACLs})
+	}
 
 	return &storage
 }

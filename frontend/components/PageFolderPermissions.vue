@@ -137,7 +137,7 @@ const onGoBack = async () => {
 }
 
 const onSave = async () => {
-  const apiData = customPermissions.value ? mapTable2API(editableACLs.value) : null
+  const apiData = (customPermissions.value || urlPath.value === '') ? mapTable2API(editableACLs.value) : null
 
   await $fetch(`/_api/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acls' : '/page/meta/acls', value: apiData }] })
 
@@ -165,6 +165,7 @@ const onSave = async () => {
     </template>
 
     <ElSwitch
+      v-if="urlPath !== ''"
       v-model="customPermissions"
       active-text="Define custom permissions"
       inactive-text="Inherit permissions from parent folder"

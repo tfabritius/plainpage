@@ -1,6 +1,9 @@
 package spa
 
-import "net/http"
+import (
+	"net/http"
+	"os"
+)
 
 // ServeFileContents returns a HandlerFunc that will
 // read file from file system and write its content to ResponseWriter
@@ -9,6 +12,10 @@ func ServeFileContents(fileName string, fileSystem http.FileSystem) http.Handler
 		// Open the file
 		file, err := fileSystem.Open(fileName)
 		if err != nil {
+			if os.IsNotExist(err) {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				return
+			}
 			panic(err)
 		}
 

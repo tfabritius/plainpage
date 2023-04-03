@@ -230,14 +230,30 @@ func (e *AccessDeniedError) Error() string {
 	return fmt.Sprintf("access denied (%v)", e.StatusCode)
 }
 
-func (s *UserService) CheckPermissions(
+func (s *UserService) CheckAppPermissions(
+	userID string,
+	op storage.AccessOp,
+) error {
+	cfg, err := s.storage.ReadConfig()
+	if err != nil {
+		return err
+	}
+
+	return s.checkPermissions(cfg.ACL, userID, op, true)
+}
+
+func (s *UserService) CheckContentPermissions(
 	acl *[]storage.AccessRule,
 	userID string,
 	op storage.AccessOp,
 ) error {
+	return s.checkPermissions(*acl, userID, op, false)
+}
+
+func (s *UserService) checkPermissions(acl []storage.AccessRule, userID string, op storage.AccessOp, aclIsApp bool) error {
 
 	// Allow access if anonymous is allowed
-	if s.compareACL(*acl, "anonymous", op) {
+	if s.compareACL(acl, "anonymous", op) {
 		return nil
 	}
 
@@ -249,22 +265,26 @@ func (s *UserService) CheckPermissions(
 	}
 
 	// Allow if all users are allowed
-	if s.compareACL(*acl, "all", op) {
+	if s.compareACL(acl, "all", op) {
 		return nil
 	}
 
 	// Allow if user is allowed
-	if s.compareACL(*acl, "user:"+userID, op) {
+	if s.compareACL(acl, "user:"+userID, op) {
 		return nil
 	}
 
 	// Read global ACL
-	cfg, err := s.storage.ReadConfig()
-	if err != nil {
-		return err
+	if !aclIsApp {
+		cfg, err := s.storage.ReadConfig()
+		if err != nil {
+			return err
+		}
+		acl = cfg.ACL
 	}
+
 	// Allow if user has admin privileges
-	if s.compareACL(cfg.ACL, "user:"+userID, storage.AccessOpAdmin) {
+	if s.compareACL(acl, "user:"+userID, storage.AccessOpAdmin) {
 		return nil
 	}
 

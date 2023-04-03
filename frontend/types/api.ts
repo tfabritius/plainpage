@@ -7,6 +7,7 @@ export interface Breadcrumb {
 
 export interface GetAppResponse {
   appName: string
+  setupMode: boolean
 }
 
 export interface GetPageResponse {

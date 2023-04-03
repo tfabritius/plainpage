@@ -15,7 +15,8 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := GetAppResponse{
-		AppName: cfg.AppName,
+		AppName:   cfg.AppName,
+		SetupMode: cfg.SetupMode,
 	}
 
 	render.JSON(w, r, response)

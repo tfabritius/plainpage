@@ -61,6 +61,8 @@ func initializeConfig() storage.Config {
 		panic(err)
 	}
 
+	cfg.SetupMode = true
+
 	return cfg
 }
 
@@ -100,7 +102,7 @@ func (app App) GetHandler() http.Handler {
 			r.Route("/auth", func(r chi.Router) {
 				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Get("/users", app.getUsers)
 				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
-				r.With(app.RequireAppPermission(storage.AccessOpRegister)).Post("/users", app.postUser)
+				r.Post("/users", app.postUser)
 				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
 				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 

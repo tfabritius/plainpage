@@ -12,7 +12,8 @@ type Breadcrumb struct {
 }
 
 type GetAppResponse struct {
-	AppName string `json:"appName"`
+	AppName   string `json:"appName"`
+	SetupMode bool   `json:"setupMode"`
 }
 
 type GetPageResponse struct {

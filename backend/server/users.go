@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 	"github.com/tfabritius/plainpage/storage"
 )
@@ -42,6 +43,27 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Read config
+	cfg, err := app.Storage.ReadConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	// Check authorization
+	if !cfg.SetupMode {
+		userID := ctxutil.UserID(r.Context())
+
+		if err := app.Users.CheckAppPermissions(userID, storage.AccessOpRegister); err != nil {
+			if e, ok := err.(*service.AccessDeniedError); ok {
+				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
+				return
+			}
+
+			panic(err)
+		}
+	}
+
+	// Create user
 	user, err := app.Users.Create(body.Username, body.Password, body.RealName)
 	if err != nil {
 		if errors.Is(err, storage.ErrInvalidUsername) {
@@ -53,6 +75,19 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		panic(err)
+	}
+
+	if cfg.SetupMode {
+		// Terminate setup mode
+		cfg.SetupMode = false
+
+		// Grant admin rights
+		cfg.ACL = append(cfg.ACL, storage.AccessRule{Subject: "user:" + user.ID, Operations: []storage.AccessOp{storage.AccessOpAdmin}})
+
+		// Save config
+		if err := app.Storage.WriteConfig(cfg); err != nil {
+			panic(err)
+		}
 	}
 
 	render.JSON(w, r, user)

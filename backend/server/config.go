@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/render"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -14,7 +15,7 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	response := GetAppResponse{
+	response := model.GetAppResponse{
 		AppName:   cfg.AppName,
 		SetupMode: cfg.SetupMode,
 	}
@@ -36,7 +37,7 @@ func (app App) getConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
-	var operations []PatchOperation
+	var operations []model.PatchOperation
 	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

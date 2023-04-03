@@ -3,7 +3,7 @@ import { FetchError } from 'ofetch'
 import { format } from 'date-fns'
 import { Icon } from '#components'
 
-import type { GetPageResponse } from '~/types/'
+import type { GetContentResponse } from '~/types/'
 
 const props = defineProps<{
   urlPath: string
@@ -15,7 +15,7 @@ const revision = computed(() => props.revision)
 
 const { data, error, refresh } = await useAsyncData(`/attic${urlPath.value}?rev=${revision.value}`, async () => {
   try {
-    const data = await apiFetch<GetPageResponse>(`/attic${urlPath.value}?rev=${revision.value}`)
+    const data = await apiFetch<GetContentResponse>(`/attic${urlPath.value}?rev=${revision.value}`)
     return {
       notFound: false,
       page: data.page,

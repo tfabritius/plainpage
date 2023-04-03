@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tfabritius/plainpage/server"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -26,7 +26,7 @@ func (s *CrudTestSuite) SetupSuite() {
 	{
 		res := s.api("GET", "/_api/pages", nil, s.adminToken)
 		r.Equal(200, res.Code)
-		body, _ := jsonbody[server.GetPageResponse](res)
+		body, _ := jsonbody[model.GetContentResponse](res)
 		r.NotNil(body.Folder)
 		r.NotNil(body.Folder.Meta.ACL)
 
@@ -37,7 +37,7 @@ func (s *CrudTestSuite) SetupSuite() {
 		r.Nil(err)
 		aclJson := json.RawMessage(aclBytes)
 
-		res = s.api("PATCH", "/_api/pages", []server.PatchOperation{{Op: "replace", Path: "/folder/meta/acl", Value: &aclJson}}, s.adminToken)
+		res = s.api("PATCH", "/_api/pages", []model.PatchOperation{{Op: "replace", Path: "/folder/meta/acl", Value: &aclJson}}, s.adminToken)
 		r.Equal(200, res.Code)
 	}
 }
@@ -53,11 +53,11 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// Create page
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Folder)
 		r.Equal("Foo", body.Page.Meta.Title)
@@ -65,11 +65,11 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// Update page
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Updated foo"}}}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Updated foo"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Equal("Updated foo", body.Page.Meta.Title)
 	}
@@ -86,11 +86,11 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// Create folder
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: nil}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder.Content, 0)
@@ -98,7 +98,7 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// List root folder
 	{
-		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages", nil, nil))
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder.Content, 1)
@@ -109,18 +109,18 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// Create page in folder
 	{
-		res := s.api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}}, nil)
+		res := s.api("PUT", "/_api/pages/foo/bar", model.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo/bar", nil, nil))
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages/foo/bar", nil, nil))
 		r.Equal(200, res.Code)
 		r.Equal("Bar", body.Page.Meta.Title)
 	}
 
 	// List folder
 	{
-		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder.Content, 1)
@@ -169,27 +169,27 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// Create folder in nonexistent folder
 	{
-		res := s.api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: nil}, nil)
+		res := s.api("PUT", "/_api/pages/foo/bar", model.PutRequest{Page: nil}, nil)
 		r.Equal(400, res.Code)
 	}
 
 	// Create page in nonexistent folder
 	{
-		res := s.api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}}, nil)
+		res := s.api("PUT", "/_api/pages/foo/bar", model.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}}, nil)
 		r.Equal(400, res.Code)
 	}
 
 	// Create page/folder where folder exists already
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: nil}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
 		r.Equal(400, res.Code)
 	}
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: nil}, nil)
 		r.Equal(400, res.Code)
 	}
 	{
@@ -199,11 +199,11 @@ func (s *CrudTestSuite) TestCRUD() {
 
 	// Create folder where page exists already
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
+		res := s.api("PUT", "/_api/pages/foo", model.PutRequest{Page: nil}, nil)
 		r.Equal(400, res.Code)
 	}
 	{

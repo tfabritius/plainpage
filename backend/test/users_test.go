@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tfabritius/plainpage/server"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -41,7 +41,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// Anonymous cannot register user
 	{
-		res := s.api("POST", "/_api/auth/users", server.PostUserRequest{
+		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
 			Username: "test",
 			RealName: "test",
 			Password: "secret",
@@ -51,7 +51,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// User cannot register user
 	{
-		res := s.api("POST", "/_api/auth/users", server.PostUserRequest{
+		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
 			Username: "test",
 			RealName: "test",
 			Password: "secret",
@@ -69,7 +69,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// Anonymous cannot register user
 	{
-		res := s.api("POST", "/_api/auth/users", server.PostUserRequest{
+		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
 			Username: "test",
 			RealName: "test",
 			Password: "secret",

@@ -1,4 +1,4 @@
-package server
+package model
 
 import (
 	"encoding/json"
@@ -11,12 +11,7 @@ type Breadcrumb struct {
 	Url  string `json:"url"`
 }
 
-type GetAppResponse struct {
-	AppName   string `json:"appName"`
-	SetupMode bool   `json:"setupMode"`
-}
-
-type GetPageResponse struct {
+type GetContentResponse struct {
 	Page        *storage.Page   `json:"page"`
 	Folder      *storage.Folder `json:"folder"`
 	AllowCreate bool            `json:"allowCreate"`
@@ -26,6 +21,11 @@ type GetPageResponse struct {
 type GetAtticListResponse struct {
 	Entries     []storage.AtticEntry `json:"entries"`
 	Breadcrumbs []Breadcrumb         `json:"breadcrumbs"`
+}
+
+type GetAppResponse struct {
+	AppName   string `json:"appName"`
+	SetupMode bool   `json:"setupMode"`
 }
 
 type PutRequest struct {

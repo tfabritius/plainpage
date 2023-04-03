@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/stretchr/testify/suite"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/server"
 	"github.com/tfabritius/plainpage/storage"
 )
@@ -35,7 +36,7 @@ func (s *AppTestSuite) createUser(token *string, username, realName, password st
 	r := s.Require()
 
 	res := s.api("POST", "/_api/auth/users",
-		server.PostUserRequest{Username: username, RealName: realName, Password: password},
+		model.PostUserRequest{Username: username, RealName: realName, Password: password},
 		token)
 	r.Equal(200, res.Code)
 
@@ -50,11 +51,11 @@ func (s *AppTestSuite) loginUser(username string, password string) string {
 	r := s.Require()
 
 	res := s.api("POST", "/_api/auth/login",
-		server.LoginRequest{Username: username, Password: password},
+		model.LoginRequest{Username: username, Password: password},
 		nil)
 	r.Equal(200, res.Code)
 
-	body, _ := jsonbody[server.TokenUserResponse](res)
+	body, _ := jsonbody[model.TokenUserResponse](res)
 	r.Equal(username, body.User.Username)
 	r.NotEmpty(body.User.ID)
 	r.Empty(body.User.PasswordHash)
@@ -70,7 +71,7 @@ func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []storage.AccessRul
 	r.Nil(err)
 	aclJson := json.RawMessage(aclBytes)
 
-	res := s.api("PATCH", "/_api/config", []server.PatchOperation{{Op: "replace", Path: "/acl", Value: &aclJson}}, adminToken)
+	res := s.api("PATCH", "/_api/config", []model.PatchOperation{{Op: "replace", Path: "/acl", Value: &aclJson}}, adminToken)
 	r.Equal(200, res.Code)
 }
 
@@ -83,7 +84,7 @@ func (s *AppTestSuite) setupInitialApp() {
 
 	// Setup mode is enabled initially
 	{
-		body, res := jsonbody[server.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
+		body, res := jsonbody[model.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
 		r.Equal(200, res.Code)
 		r.True(body.SetupMode)
 	}
@@ -93,7 +94,7 @@ func (s *AppTestSuite) setupInitialApp() {
 
 	// Setup mode is disabled
 	{
-		body, res := jsonbody[server.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
+		body, res := jsonbody[model.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
 		r.Equal(200, res.Code)
 		r.False(body.SetupMode)
 	}

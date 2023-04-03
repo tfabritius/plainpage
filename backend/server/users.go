@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 	"github.com/tfabritius/plainpage/storage"
@@ -37,7 +38,7 @@ func (app App) getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) postUser(w http.ResponseWriter, r *http.Request) {
-	var body PostUserRequest
+	var body model.PostUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -97,7 +98,7 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
 	// Poor man's implementation of RFC 6902
-	var operations []PatchOperation
+	var operations []model.PatchOperation
 	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -169,7 +170,7 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) login(w http.ResponseWriter, r *http.Request) {
-	var body LoginRequest
+	var body model.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -189,7 +190,7 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	response := TokenUserResponse{
+	response := model.TokenUserResponse{
 		Token: token,
 		User:  *user,
 	}
@@ -218,7 +219,7 @@ func (app App) refreshToken(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	response := TokenUserResponse{
+	response := model.TokenUserResponse{
 		Token: token,
 		User:  user,
 	}

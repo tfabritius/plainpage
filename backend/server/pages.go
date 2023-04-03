@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -23,14 +24,14 @@ func isValidUrl(urlPath string) bool {
 	return urlPath == "" || urlRegex.MatchString(urlPath)
 }
 
-func getBreadcrumbs(urlPath string) []Breadcrumb {
-	breadcrumbs := []Breadcrumb{}
+func getBreadcrumbs(urlPath string) []model.Breadcrumb {
+	breadcrumbs := []model.Breadcrumb{}
 	paths := strings.Split(urlPath, "/")
 	currentPath := ""
 	for _, path := range paths {
 		if path != "" {
 			currentPath += "/" + path
-			breadcrumb := Breadcrumb{
+			breadcrumb := model.Breadcrumb{
 				Name: path,
 				Url:  currentPath,
 			}
@@ -43,7 +44,7 @@ func getBreadcrumbs(urlPath string) []Breadcrumb {
 func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
-	response := GetPageResponse{}
+	response := model.GetContentResponse{}
 
 	if !isValidUrl(urlPath) {
 		w.WriteHeader(http.StatusNotFound)
@@ -101,7 +102,7 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Poor man's implementation of RFC 6902
-	var operations []PatchOperation
+	var operations []model.PatchOperation
 	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -181,7 +182,7 @@ func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var body PutRequest
+	var body model.PutRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -264,7 +265,7 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		response := GetAtticListResponse{
+		response := model.GetAtticListResponse{
 			Entries:     list,
 			Breadcrumbs: breadcrumbs,
 		}
@@ -287,7 +288,7 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		response := GetPageResponse{Page: &page, Breadcrumbs: breadcrumbs}
+		response := model.GetContentResponse{Page: &page, Breadcrumbs: breadcrumbs}
 		render.JSON(w, r, response)
 	}
 }

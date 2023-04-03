@@ -1,4 +1,4 @@
-// Types corresponding to server/types.go
+// Types corresponding to models/api.go
 
 export interface Breadcrumb {
   name: string
@@ -10,7 +10,7 @@ export interface GetAppResponse {
   setupMode: boolean
 }
 
-export interface GetPageResponse {
+export interface GetContentResponse {
   page: Page | null
   folder: Folder | null
   allowCreate: boolean

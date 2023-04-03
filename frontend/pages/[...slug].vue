@@ -3,7 +3,7 @@ import { FetchError } from 'ofetch'
 import { useRouteQuery } from '@vueuse/router'
 import { Icon } from '#components'
 
-import type { GetPageResponse, Page } from '~/types/'
+import type { GetContentResponse, Page } from '~/types/'
 
 const route = useRoute()
 const urlPath = computed(() => route.path === '/' ? '' : route.path)
@@ -32,7 +32,7 @@ const editablePage = ref(deepClone(emptyPage))
 const { data, error, refresh } = await useAsyncData(`/pages${route.path}`, async () => {
   try {
     const relUrl = route.path === '/' ? '' : route.path
-    const data = await apiFetch<GetPageResponse>(`/pages${relUrl}`)
+    const data = await apiFetch<GetContentResponse>(`/pages${relUrl}`)
     return {
       notFound: false,
       ...data,
@@ -41,7 +41,7 @@ const { data, error, refresh } = await useAsyncData(`/pages${route.path}`, async
     if (err instanceof FetchError && err.statusCode === 404) {
       editablePage.value.url = route.path
 
-      const data = JSON.parse(err.response?._data) as GetPageResponse
+      const data = JSON.parse(err.response?._data) as GetContentResponse
       return { notFound: true, ...data }
     }
     throw err

@@ -330,8 +330,6 @@ func (fss *fsStorage) GetEffectivePermissions(urlPath string) (*[]AccessRule, er
 		if folder.Meta.ACL != nil {
 			return folder.Meta.ACL, nil
 		}
-	} else {
-		return nil, ErrNotFound
 	}
 
 	if urlPath == "" {

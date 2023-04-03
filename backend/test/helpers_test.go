@@ -9,14 +9,11 @@ import (
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"testing"
 
+	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/server"
 	"github.com/tfabritius/plainpage/storage"
 )
-
-var app http.Handler
 
 type emptyFs struct {
 }
@@ -25,18 +22,93 @@ func (fs emptyFs) Open(name string) (fs.File, error) {
 	return nil, errors.New("empty fs doesn't contain any files")
 }
 
-func TestMain(m *testing.M) {
-	store := storage.NewFsStorage("./data")
-
-	app = server.NewApp(http.FS(emptyFs{}), store).GetHandler()
-
-	// Run tests
-	exitVal := m.Run()
-
-	os.Exit(exitVal)
+type AppTestSuite struct {
+	suite.Suite
+	app        server.App
+	handler    http.Handler
+	adminToken *string
+	userToken  *string
 }
 
-func api(method, target string, body any) *httptest.ResponseRecorder {
+func (s *AppTestSuite) createUser(token *string, username, realName, password string) {
+	s.T().Helper()
+	r := s.Require()
+
+	res := s.api("POST", "/_api/auth/users",
+		server.PostUserRequest{Username: username, RealName: realName, Password: password},
+		token)
+	r.Equal(200, res.Code)
+
+	body, _ := jsonbody[storage.User](res)
+	r.Equal(username, body.Username)
+	r.Equal(realName, body.RealName)
+	r.NotEmpty(body.ID)
+	r.Empty(body.PasswordHash)
+}
+
+func (s *AppTestSuite) loginUser(username string, password string) string {
+	r := s.Require()
+
+	res := s.api("POST", "/_api/auth/login",
+		server.LoginRequest{Username: username, Password: password},
+		nil)
+	r.Equal(200, res.Code)
+
+	body, _ := jsonbody[server.TokenUserResponse](res)
+	r.Equal(username, body.User.Username)
+	r.NotEmpty(body.User.ID)
+	r.Empty(body.User.PasswordHash)
+	r.NotEmpty(body.Token)
+
+	return body.Token
+}
+
+func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []storage.AccessRule) {
+	r := s.Require()
+
+	aclBytes, err := json.Marshal(acl)
+	r.Nil(err)
+	aclJson := json.RawMessage(aclBytes)
+
+	res := s.api("PATCH", "/_api/config", []server.PatchOperation{{Op: "replace", Path: "/acl", Value: &aclJson}}, adminToken)
+	r.Equal(200, res.Code)
+}
+
+func (s *AppTestSuite) setupInitialApp() {
+	store := storage.NewFsStorage(s.T().TempDir())
+	s.app = server.NewApp(http.FS(emptyFs{}), store)
+	s.handler = s.app.GetHandler()
+
+	r := s.Require()
+
+	// Setup mode is enabled initially
+	{
+		body, res := jsonbody[server.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
+		r.Equal(200, res.Code)
+		r.True(body.SetupMode)
+	}
+
+	// Register admin user
+	s.createUser(nil, "admin", "Administrator", "secret")
+
+	// Setup mode is disabled
+	{
+		body, res := jsonbody[server.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
+		r.Equal(200, res.Code)
+		r.False(body.SetupMode)
+	}
+
+	adminToken := s.loginUser("admin", "secret")
+
+	// Register another user
+	s.createUser(&adminToken, "user", "User", "secret")
+	userToken := s.loginUser("user", "secret")
+
+	s.adminToken = &adminToken
+	s.userToken = &userToken
+}
+
+func (s *AppTestSuite) api(method, target string, body any, token *string) *httptest.ResponseRecorder {
 	var bodyReader io.Reader
 	if body != nil {
 		bodyBytes, err := json.Marshal(body)
@@ -50,9 +122,12 @@ func api(method, target string, body any) *httptest.ResponseRecorder {
 	}
 
 	req := httptest.NewRequest(method, target, bodyReader)
+	if token != nil {
+		req.Header.Add("Authorization", "Bearer "+*token)
+	}
 
 	res := httptest.NewRecorder()
-	app.ServeHTTP(res, req)
+	s.handler.ServeHTTP(res, req)
 	return res
 }
 

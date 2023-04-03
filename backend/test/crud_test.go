@@ -1,31 +1,63 @@
 package test
 
 import (
-	"fmt"
+	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/server"
 	"github.com/tfabritius/plainpage/storage"
 )
 
-func TestCRUD(t *testing.T) {
-	r := require.New(t)
+type CrudTestSuite struct {
+	AppTestSuite
+}
+
+func TestCrudTestSuite(t *testing.T) {
+	suite.Run(t, &CrudTestSuite{})
+}
+
+func (s *CrudTestSuite) SetupSuite() {
+	s.setupInitialApp()
+
+	r := s.Require()
+
+	// Allow access for anonymous
+	{
+		res := s.api("GET", "/_api/pages", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[server.GetPageResponse](res)
+		r.NotNil(body.Folder)
+		r.NotNil(body.Folder.Meta.ACL)
+
+		acl := *body.Folder.Meta.ACL
+		acl = append(acl, storage.AccessRule{Subject: "anonymous", Operations: []storage.AccessOp{storage.AccessOpRead, storage.AccessOpWrite, storage.AccessOpDelete}})
+
+		aclBytes, err := json.Marshal(acl)
+		r.Nil(err)
+		aclJson := json.RawMessage(aclBytes)
+
+		res = s.api("PATCH", "/_api/pages", []server.PatchOperation{{Op: "replace", Path: "/folder/meta/acl", Value: &aclJson}}, s.adminToken)
+		r.Equal(200, res.Code)
+	}
+}
+
+func (s *CrudTestSuite) TestCRUD() {
+	r := s.Require()
 
 	// Cleanup
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.NotEqual(500, res.Code)
 	}
 
 	// Create page
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}})
-		fmt.Println(string(res.Body.Bytes()))
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
+		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Folder)
 		r.Equal("Foo", body.Page.Meta.Title)
@@ -33,34 +65,32 @@ func TestCRUD(t *testing.T) {
 
 	// Update page
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Updated foo"}}})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Updated foo"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
-		fmt.Println(body)
+		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Equal("Updated foo", body.Page.Meta.Title)
 	}
 
 	// Delete page
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		res := api("GET", "/_api/pages/foo", nil)
+		res := s.api("GET", "/_api/pages/foo", nil, nil)
 		r.Equal(404, res.Code)
 	}
 
 	// Create folder
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
-		fmt.Println(body)
+		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder.Content, 0)
@@ -68,7 +98,7 @@ func TestCRUD(t *testing.T) {
 
 	// List root folder
 	{
-		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages", nil))
+		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder.Content, 1)
@@ -79,19 +109,18 @@ func TestCRUD(t *testing.T) {
 
 	// Create page in folder
 	{
-		res := api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}})
+		res := s.api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo/bar", nil))
-		fmt.Println(body)
+		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo/bar", nil, nil))
 		r.Equal(200, res.Code)
 		r.Equal("Bar", body.Page.Meta.Title)
 	}
 
 	// List folder
 	{
-		body, res := jsonbody[server.GetPageResponse](api("GET", "/_api/pages/foo", nil))
+		body, res := jsonbody[server.GetPageResponse](s.api("GET", "/_api/pages/foo", nil, nil))
 		r.Equal(200, res.Code)
 		r.Nil(body.Page)
 		r.Len(body.Folder.Content, 1)
@@ -102,23 +131,23 @@ func TestCRUD(t *testing.T) {
 
 	// Delete non-empty folder
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.Equal(400, res.Code)
 	}
 
 	// Delete page in folder
 	{
-		res := api("DELETE", "/_api/pages/foo/bar", nil)
+		res := s.api("DELETE", "/_api/pages/foo/bar", nil, nil)
 		r.Equal(200, res.Code)
 	}
 
 	// Delete empty folder
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		res := api("GET", "/_api/pages/foo", nil)
+		res := s.api("GET", "/_api/pages/foo", nil, nil)
 		r.Equal(404, res.Code)
 	}
 
@@ -128,57 +157,57 @@ func TestCRUD(t *testing.T) {
 
 	// Get nonexistent page
 	{
-		res := api("GET", "/_api/pages/foo", nil)
+		res := s.api("GET", "/_api/pages/foo", nil, nil)
 		r.Equal(404, res.Code)
 	}
 
 	// Delete nonexistent page
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.Equal(404, res.Code)
 	}
 
 	// Create folder in nonexistent folder
 	{
-		res := api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: nil})
+		res := s.api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: nil}, nil)
 		r.Equal(400, res.Code)
 	}
 
 	// Create page in nonexistent folder
 	{
-		res := api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}})
+		res := s.api("PUT", "/_api/pages/foo/bar", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Bar"}}}, nil)
 		r.Equal(400, res.Code)
 	}
 
 	// Create page/folder where folder exists already
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
 		r.Equal(400, res.Code)
 	}
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
 		r.Equal(400, res.Code)
 	}
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.Equal(200, res.Code)
 	}
 
 	// Create folder where page exists already
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: &storage.Page{Meta: storage.PageMeta{Title: "Foo"}}}, nil)
 		r.Equal(200, res.Code)
 	}
 	{
-		res := api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil})
+		res := s.api("PUT", "/_api/pages/foo", server.PutRequest{Page: nil}, nil)
 		r.Equal(400, res.Code)
 	}
 	{
-		res := api("DELETE", "/_api/pages/foo", nil)
+		res := s.api("DELETE", "/_api/pages/foo", nil, nil)
 		r.Equal(200, res.Code)
 	}
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -45,10 +46,14 @@ func (s *TokenService) validateToken(tokenString string) (string, error) {
 		return []byte(s.jwtSecret), nil
 	})
 
+	if err != nil {
+		return "", fmt.Errorf("failed to parse token: %v", err)
+	}
+
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims["id"].(string), nil
 	} else {
-		return "", fmt.Errorf("failed to parse token: %v", err)
+		return "", errors.New("invalid token")
 	}
 }
 

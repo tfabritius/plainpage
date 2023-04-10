@@ -1,14 +1,29 @@
 import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack'
+import { FetchError } from 'ofetch'
 import { useAuthStore } from '~/store/auth'
 
-export function apiFetch<T>(request: string, opts?: NitroFetchOptions<NitroFetchRequest>) {
-  const { loggedIn, token } = useAuthStore()
+export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<NitroFetchRequest>) {
+  const { loggedIn, token, logout } = useAuthStore()
+  const route = useRoute()
 
   const headers = { ...opts?.headers, authorization: loggedIn ? `Bearer ${token}` : '' }
 
-  return $fetch<T>(request, {
-    ...opts,
-    headers,
-    baseURL: opts?.baseURL || '/_api',
-  })
+  try {
+    return await $fetch<T>(request, {
+      ...opts,
+      headers,
+      baseURL: opts?.baseURL || '/_api',
+    })
+  } catch (err) {
+    if (err instanceof FetchError && err.statusCode === 401) {
+      if (loggedIn) {
+        logout()
+      }
+
+      await navigateTo(`/_login?returnTo=${encodeURIComponent(route.fullPath)}`)
+      throw new Error('redirected to /_login')
+    }
+
+    throw err
+  }
 }

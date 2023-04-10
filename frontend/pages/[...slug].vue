@@ -4,6 +4,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { Icon } from '#components'
 
 import type { GetContentResponse, Page } from '~/types/'
+import { useAuthStore } from '~/store/auth'
 
 const route = useRoute()
 const urlPath = computed(() => route.path === '/' ? '' : route.path)
@@ -26,10 +27,11 @@ const aclQuery = computed(() => {
   return true
 })
 
+const auth = useAuthStore()
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
-const { data, error, refresh } = await useAsyncData(`/pages${route.path}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/pages${route.path}:${auth.token}`, async () => {
   try {
     const relUrl = route.path === '/' ? '' : route.path
     const data = await apiFetch<GetContentResponse>(`/pages${relUrl}`)

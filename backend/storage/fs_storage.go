@@ -135,34 +135,6 @@ func (fss *fsStorage) createDir(file string) error {
 	return nil
 }
 
-func (fss *fsStorage) ReadUsers() ([]model.User, error) {
-	bytes, err := fss.ReadFile("users.yml")
-	if err != nil {
-		return nil, fmt.Errorf("could not read users.yml: %w", err)
-	}
-
-	// parse YAML
-	users := []model.User{}
-	if err := yaml.Unmarshal(bytes, &users); err != nil {
-		return nil, fmt.Errorf("could not parse YAML: %w", err)
-	}
-
-	return users, nil
-}
-
-func (fss *fsStorage) WriteUsers(users []model.User) error {
-	bytes, err := yaml.Marshal(&users)
-	if err != nil {
-		return fmt.Errorf("failed to marshal: %w", err)
-	}
-
-	if err := fss.WriteFile("users.yml", bytes); err != nil {
-		return fmt.Errorf("could not write users.yml: %w", err)
-	}
-
-	return nil
-}
-
 func (fss *fsStorage) ReadConfig() (model.Config, error) {
 	bytes, err := fss.ReadFile("config.yml")
 	if err != nil {

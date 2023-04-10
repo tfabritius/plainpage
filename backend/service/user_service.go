@@ -11,6 +11,7 @@ import (
 	"github.com/tfabritius/plainpage/libs/utils"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/storage"
+	"gopkg.in/yaml.v3"
 )
 
 func NewUserService(s storage.Storage) UserService {
@@ -21,6 +22,34 @@ func NewUserService(s storage.Storage) UserService {
 
 type UserService struct {
 	storage storage.Storage
+}
+
+func (s *UserService) ReadAll() ([]model.User, error) {
+	bytes, err := s.storage.ReadFile("users.yml")
+	if err != nil {
+		return nil, fmt.Errorf("could not read users.yml: %w", err)
+	}
+
+	// parse YAML
+	users := []model.User{}
+	if err := yaml.Unmarshal(bytes, &users); err != nil {
+		return nil, fmt.Errorf("could not parse YAML: %w", err)
+	}
+
+	return users, nil
+}
+
+func (s *UserService) saveAll(users []model.User) error {
+	bytes, err := yaml.Marshal(&users)
+	if err != nil {
+		return fmt.Errorf("failed to marshal: %w", err)
+	}
+
+	if err := s.storage.WriteFile("users.yml", bytes); err != nil {
+		return fmt.Errorf("could not write users.yml: %w", err)
+	}
+
+	return nil
 }
 
 func (s *UserService) SetUsername(user *model.User, username string) error {
@@ -58,7 +87,7 @@ func (*UserService) verifyPassword(user model.User, password string) bool {
 
 func (s *UserService) Create(username, password, realName string) (model.User, error) {
 
-	users, err := s.storage.ReadUsers()
+	users, err := s.ReadAll()
 	if err != nil {
 		return model.User{}, err
 	}
@@ -87,7 +116,7 @@ func (s *UserService) Create(username, password, realName string) (model.User, e
 
 	users = append(users, user)
 
-	err = s.storage.WriteUsers(users)
+	err = s.saveAll(users)
 	if err != nil {
 		return model.User{}, err
 	}
@@ -96,7 +125,7 @@ func (s *UserService) Create(username, password, realName string) (model.User, e
 }
 
 func (s *UserService) GetByUsername(username string) (model.User, error) {
-	users, err := s.storage.ReadUsers()
+	users, err := s.ReadAll()
 	if err != nil {
 		return model.User{}, fmt.Errorf("could not read users: %w", err)
 	}
@@ -111,7 +140,7 @@ func (s *UserService) GetByUsername(username string) (model.User, error) {
 }
 
 func (s *UserService) GetById(id string) (model.User, error) {
-	users, err := s.storage.ReadUsers()
+	users, err := s.ReadAll()
 	if err != nil {
 		return model.User{}, fmt.Errorf("could not read users: %w", err)
 	}
@@ -151,7 +180,7 @@ func (*UserService) filterById(users []model.User, id string) *model.User {
 }
 
 func (s *UserService) Save(user model.User) error {
-	users, err := s.storage.ReadUsers()
+	users, err := s.ReadAll()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
 	}
@@ -171,7 +200,7 @@ func (s *UserService) Save(user model.User) error {
 	existingUser.RealName = user.RealName
 	existingUser.PasswordHash = user.PasswordHash
 
-	if err := s.storage.WriteUsers(users); err != nil {
+	if err := s.saveAll(users); err != nil {
 		return fmt.Errorf("could not save users: %w", err)
 	}
 
@@ -179,7 +208,7 @@ func (s *UserService) Save(user model.User) error {
 }
 
 func (s *UserService) DeleteByUsername(username string) error {
-	users, err := s.storage.ReadUsers()
+	users, err := s.ReadAll()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
 	}
@@ -198,7 +227,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 		return model.ErrNotFound
 	}
 
-	if err := s.storage.WriteUsers(users); err != nil {
+	if err := s.saveAll(users); err != nil {
 		return fmt.Errorf("could not save users: %w", err)
 	}
 
@@ -207,7 +236,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 
 func (s *UserService) EnhanceACLWithUserInfo(acl *[]model.AccessRule) error {
 	if acl != nil {
-		users, err := s.storage.ReadUsers()
+		users, err := s.ReadAll()
 		if err != nil {
 			return fmt.Errorf("could not read users: %w", err)
 		}

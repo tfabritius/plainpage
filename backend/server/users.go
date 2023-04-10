@@ -13,7 +13,7 @@ import (
 )
 
 func (app App) getUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := app.Storage.ReadUsers()
+	users, err := app.Users.ReadAll()
 	if err != nil {
 		panic(err)
 	}

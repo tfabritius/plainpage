@@ -40,7 +40,7 @@ func (s *AppTestSuite) createUser(token *string, username, realName, password st
 		token)
 	r.Equal(200, res.Code)
 
-	body, _ := jsonbody[storage.User](res)
+	body, _ := jsonbody[model.User](res)
 	r.Equal(username, body.Username)
 	r.Equal(realName, body.RealName)
 	r.NotEmpty(body.ID)
@@ -64,7 +64,7 @@ func (s *AppTestSuite) loginUser(username string, password string) string {
 	return body.Token
 }
 
-func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []storage.AccessRule) {
+func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []model.AccessRule) {
 	r := s.Require()
 
 	aclBytes, err := json.Marshal(acl)

@@ -1,55 +1,34 @@
 package storage
 
-import "errors"
+import (
+	"errors"
+	"io/fs"
+
+	"github.com/tfabritius/plainpage/model"
+)
 
 type Storage interface {
-	// IsPage checks if page exists at given path
-	IsPage(urlPath string) bool
+	Exists(fsPath string) bool
 
-	// IsAtticPage checks if page and revision exist
-	IsAtticPage(urlPath string, revision int64) bool
+	ReadFile(fsPath string) ([]byte, error)
+	WriteFile(fsPath string, content []byte) error
+	DeleteFile(fsPath string) error
 
-	// IsFolder checks if folder exists at given path
-	IsFolder(urlPath string) bool
-
-	// ReadPage returns page at given path
-	ReadPage(urlPath string, revision *int64) (Page, error)
-
-	// ReadPage returns folder at given path
-	ReadFolder(urlPath string) (Folder, error)
-
-	// GetEffectivePersmissions return access rules to be applied
-	GetEffectivePermissions(urlPath string) (*[]AccessRule, error)
-
-	// ListAttic returns relevent entries in attic
-	ListAttic(urlPath string) ([]AtticEntry, error)
-
-	// CreateFolder creates new folder at given path
-	CreateFolder(urlPath string) error
-
-	// SaveFolder updates folder
-	SaveFolder(urlPath string, meta PageMeta) error
-
-	// SavePage creates or updates page
-	SavePage(urlPath, content string, meta PageMeta) error
-
-	// DeletePage removes page
-	DeletePage(urlPath string) error
-
-	// DeleteEmptyFolder removes folder
-	DeleteEmptyFolder(urlPath string) error
+	CreateDirectory(fsPath string) error
+	ReadDirectory(fsPath string) ([]fs.FileInfo, error)
+	DeleteEmptyDirectory(fsPath string) error
 
 	// GetAllUsers returns all users
-	GetAllUsers() ([]User, error)
+	GetAllUsers() ([]model.User, error)
 
 	// SaveAllUsers stores all users
-	SaveAllUsers(users []User) error
+	SaveAllUsers(users []model.User) error
 
 	// ReadConfig returns configuration
-	ReadConfig() (Config, error)
+	ReadConfig() (model.Config, error)
 
 	// WriteConfig saves configuration
-	WriteConfig(config Config) error
+	WriteConfig(config model.Config) error
 }
 
 var ErrNotFound = errors.New("not found")
@@ -58,73 +37,3 @@ var ErrPageOrFolderExistsAlready = errors.New("page or folder exists already")
 var ErrFolderNotEmpty = errors.New("folder is not empty")
 var ErrInvalidUsername = errors.New("invalid username")
 var ErrUserExistsAlready = errors.New("user already exists")
-
-type Page struct {
-	Url     string   `json:"url"`
-	Content string   `json:"content"`
-	Meta    PageMeta `json:"meta"`
-}
-
-type PageMeta struct {
-	Title string        `json:"title" yaml:"title"`
-	Tags  []string      `json:"tags" yaml:"tags"`
-	ACL   *[]AccessRule `json:"acl" yaml:"acl"`
-}
-
-type Folder struct {
-	Content []FolderEntry `json:"content"`
-	Meta    PageMeta      `json:"meta"`
-}
-
-type FolderEntry struct {
-	Url      string `json:"url"`
-	Name     string `json:"name"`
-	IsFolder bool   `json:"isFolder"`
-}
-
-type AtticEntry struct {
-	Revision int64 `json:"rev"`
-}
-
-type AccessRule struct {
-	// The subject trying to access an object
-	// e.g.
-	// - user:xyz
-	// - group:xyz
-	// - all (all registered users)
-	// - anonymous (unregistered users)
-	Subject string `json:"subject" yaml:"subject"`
-
-	// List of permitted operations
-	Operations []AccessOp `json:"ops" yaml:"ops"`
-
-	// Additional information about subject, if applicable
-	User *User `json:"user" yaml:"-"`
-}
-
-type AccessOp string
-
-const (
-	// Operations on pages/folders
-	AccessOpRead   AccessOp = "read"
-	AccessOpWrite  AccessOp = "write"
-	AccessOpDelete AccessOp = "delete"
-
-	// Global operations/permissions
-	AccessOpAdmin    AccessOp = "admin"
-	AccessOpRegister AccessOp = "register"
-)
-
-type User struct {
-	ID           string `json:"id" yaml:"id"`
-	Username     string `json:"username" yaml:"username"`
-	PasswordHash string `json:"-" yaml:"passwordHash"`
-	RealName     string `json:"realName" yaml:"realName"`
-}
-
-type Config struct {
-	ACL       []AccessRule `json:"acl" yaml:"acl"`
-	AppName   string       `json:"appName" yaml:"appName"`
-	JwtSecret string       `json:"-" yaml:"jwtSecret"`
-	SetupMode bool         `json:"setupMode" yaml:"setupMode"`
-}

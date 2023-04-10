@@ -9,6 +9,7 @@ import (
 
 	"github.com/tfabritius/plainpage/libs/argon2"
 	"github.com/tfabritius/plainpage/libs/utils"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/storage"
 )
 
@@ -22,7 +23,7 @@ type UserService struct {
 	storage storage.Storage
 }
 
-func (s *UserService) SetUsername(user *storage.User, username string) error {
+func (s *UserService) SetUsername(user *model.User, username string) error {
 	if !s.isValidUsername(username) {
 		return storage.ErrInvalidUsername
 	}
@@ -30,7 +31,7 @@ func (s *UserService) SetUsername(user *storage.User, username string) error {
 	return nil
 }
 
-func (*UserService) SetPasswordHash(user *storage.User, password string) error {
+func (*UserService) SetPasswordHash(user *model.User, password string) error {
 	hash, err := argon2.HashPasswordDefault(password)
 	if err != nil {
 		return err
@@ -39,7 +40,7 @@ func (*UserService) SetPasswordHash(user *storage.User, password string) error {
 	return nil
 }
 
-func (*UserService) verifyPassword(user storage.User, password string) bool {
+func (*UserService) verifyPassword(user model.User, password string) bool {
 	if plain, found := strings.CutPrefix(user.PasswordHash, "plain:"); found {
 		return password == plain
 	}
@@ -55,49 +56,49 @@ func (*UserService) verifyPassword(user storage.User, password string) bool {
 	return false
 }
 
-func (s *UserService) Create(username, password, realName string) (storage.User, error) {
+func (s *UserService) Create(username, password, realName string) (model.User, error) {
 
 	users, err := s.storage.GetAllUsers()
 	if err != nil {
-		return storage.User{}, err
+		return model.User{}, err
 	}
 
 	if !s.isUsernameUnique(users, username) {
-		return storage.User{}, storage.ErrUserExistsAlready
+		return model.User{}, storage.ErrUserExistsAlready
 	}
 
 	id, err := utils.GenerateRandomString(6)
 	if err != nil {
-		return storage.User{}, err
+		return model.User{}, err
 	}
 
-	user := storage.User{
+	user := model.User{
 		ID:       id,
 		RealName: realName,
 	}
 
 	if err := s.SetUsername(&user, username); err != nil {
-		return storage.User{}, err
+		return model.User{}, err
 	}
 
 	if err := s.SetPasswordHash(&user, password); err != nil {
-		return storage.User{}, err
+		return model.User{}, err
 	}
 
 	users = append(users, user)
 
 	err = s.storage.SaveAllUsers(users)
 	if err != nil {
-		return storage.User{}, err
+		return model.User{}, err
 	}
 
 	return user, nil
 }
 
-func (s *UserService) GetByUsername(username string) (storage.User, error) {
+func (s *UserService) GetByUsername(username string) (model.User, error) {
 	users, err := s.storage.GetAllUsers()
 	if err != nil {
-		return storage.User{}, fmt.Errorf("could not read users: %w", err)
+		return model.User{}, fmt.Errorf("could not read users: %w", err)
 	}
 
 	for _, user := range users {
@@ -106,13 +107,13 @@ func (s *UserService) GetByUsername(username string) (storage.User, error) {
 		}
 	}
 
-	return storage.User{}, storage.ErrNotFound
+	return model.User{}, storage.ErrNotFound
 }
 
-func (s *UserService) GetById(id string) (storage.User, error) {
+func (s *UserService) GetById(id string) (model.User, error) {
 	users, err := s.storage.GetAllUsers()
 	if err != nil {
-		return storage.User{}, fmt.Errorf("could not read users: %w", err)
+		return model.User{}, fmt.Errorf("could not read users: %w", err)
 	}
 
 	user := s.filterById(users, id)
@@ -120,10 +121,10 @@ func (s *UserService) GetById(id string) (storage.User, error) {
 		return *user, nil
 	}
 
-	return storage.User{}, storage.ErrNotFound
+	return model.User{}, storage.ErrNotFound
 }
 
-func (s *UserService) VerifyCredentials(username, password string) (*storage.User, error) {
+func (s *UserService) VerifyCredentials(username, password string) (*model.User, error) {
 	user, err := s.GetByUsername(username)
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
@@ -139,7 +140,7 @@ func (s *UserService) VerifyCredentials(username, password string) (*storage.Use
 	return &user, nil
 }
 
-func (*UserService) filterById(users []storage.User, id string) *storage.User {
+func (*UserService) filterById(users []model.User, id string) *model.User {
 	for i := range users {
 		if users[i].ID == id {
 			return &users[i]
@@ -149,7 +150,7 @@ func (*UserService) filterById(users []storage.User, id string) *storage.User {
 	return nil
 }
 
-func (s *UserService) Save(user storage.User) error {
+func (s *UserService) Save(user model.User) error {
 	users, err := s.storage.GetAllUsers()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
@@ -204,7 +205,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 	return nil
 }
 
-func (s *UserService) EnhanceACLWithUserInfo(acl *[]storage.AccessRule) error {
+func (s *UserService) EnhanceACLWithUserInfo(acl *[]model.AccessRule) error {
 	if acl != nil {
 		users, err := s.storage.GetAllUsers()
 		if err != nil {
@@ -232,7 +233,7 @@ func (e *AccessDeniedError) Error() string {
 
 func (s *UserService) CheckAppPermissions(
 	userID string,
-	op storage.AccessOp,
+	op model.AccessOp,
 ) error {
 	cfg, err := s.storage.ReadConfig()
 	if err != nil {
@@ -243,14 +244,14 @@ func (s *UserService) CheckAppPermissions(
 }
 
 func (s *UserService) CheckContentPermissions(
-	acl *[]storage.AccessRule,
+	acl *[]model.AccessRule,
 	userID string,
-	op storage.AccessOp,
+	op model.AccessOp,
 ) error {
 	return s.checkPermissions(*acl, userID, op, false)
 }
 
-func (s *UserService) checkPermissions(acl []storage.AccessRule, userID string, op storage.AccessOp, aclIsApp bool) error {
+func (s *UserService) checkPermissions(acl []model.AccessRule, userID string, op model.AccessOp, aclIsApp bool) error {
 
 	// Allow access if anonymous is allowed
 	if s.compareACL(acl, "anonymous", op) {
@@ -284,7 +285,7 @@ func (s *UserService) checkPermissions(acl []storage.AccessRule, userID string, 
 	}
 
 	// Allow if user has admin privileges
-	if s.compareACL(acl, "user:"+userID, storage.AccessOpAdmin) {
+	if s.compareACL(acl, "user:"+userID, model.AccessOpAdmin) {
 		return nil
 	}
 
@@ -294,7 +295,7 @@ func (s *UserService) checkPermissions(acl []storage.AccessRule, userID string, 
 	}
 }
 
-func (*UserService) compareACL(acl []storage.AccessRule, subject string, op storage.AccessOp) bool {
+func (*UserService) compareACL(acl []model.AccessRule, subject string, op model.AccessOp) bool {
 	for _, rule := range acl {
 		if rule.Subject == subject {
 			for _, o := range rule.Operations {
@@ -308,7 +309,7 @@ func (*UserService) compareACL(acl []storage.AccessRule, subject string, op stor
 	return false
 }
 
-func (*UserService) isUsernameUnique(users []storage.User, username string) bool {
+func (*UserService) isUsernameUnique(users []model.User, username string) bool {
 	for _, user := range users {
 		if strings.ToLower(user.Username) == strings.ToLower(username) {
 			return false

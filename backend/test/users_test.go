@@ -5,12 +5,11 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/model"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 type UsersTestSuite struct {
 	AppTestSuite
-	defaultAcl []storage.AccessRule
+	defaultAcl []model.AccessRule
 }
 
 func TestUsersTestSuite(t *testing.T) {
@@ -26,7 +25,7 @@ func (s *UsersTestSuite) SetupSuite() {
 	{
 		res := s.api("GET", "/_api/config", nil, s.adminToken)
 		r.Equal(200, res.Code)
-		body, _ := jsonbody[storage.Config](res)
+		body, _ := jsonbody[model.Config](res)
 		r.NotNil(body.ACL)
 
 		s.defaultAcl = body.ACL
@@ -62,7 +61,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 	// Enable user registration by registered users
 	{
 		acl := s.defaultAcl
-		acl = append(acl, storage.AccessRule{Subject: "all", Operations: []storage.AccessOp{storage.AccessOpRegister}})
+		acl = append(acl, model.AccessRule{Subject: "all", Operations: []model.AccessOp{model.AccessOpRegister}})
 
 		s.saveGlobalAcl(s.adminToken, acl)
 	}
@@ -83,7 +82,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 	// Enable anonymous user registration
 	{
 		acl := s.defaultAcl
-		acl = append(acl, storage.AccessRule{Subject: "anonymous", Operations: []storage.AccessOp{storage.AccessOpRegister}})
+		acl = append(acl, model.AccessRule{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRegister}})
 
 		s.saveGlobalAcl(s.adminToken, acl)
 	}

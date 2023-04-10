@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +68,7 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 			cfg.AppName = value
 
 		} else if operation.Path == "/acl" {
-			var value []storage.AccessRule
+			var value []model.AccessRule
 
 			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)

@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/tfabritius/plainpage/libs/spa"
 	"github.com/tfabritius/plainpage/libs/utils"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 	"github.com/tfabritius/plainpage/storage"
@@ -19,6 +20,7 @@ import (
 type App struct {
 	Frontend http.FileSystem
 	Storage  storage.Storage
+	Content  service.ContentService
 	Users    service.UserService
 	Token    service.TokenService
 }
@@ -38,20 +40,22 @@ func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
 		}
 	}
 
+	contentService := service.NewContentService(store)
 	userService := service.NewUserService(store)
 	tokenService := service.NewTokenService(cfg.JwtSecret)
 
 	return App{
 		Frontend: staticFrontendFiles,
 		Storage:  store,
+		Content:  contentService,
 		Users:    userService,
 		Token:    tokenService,
 	}
 }
 
 // initializeConfig creates default configuration on first start
-func initializeConfig() storage.Config {
-	cfg := storage.Config{}
+func initializeConfig() model.Config {
+	cfg := model.Config{}
 	var err error
 
 	cfg.AppName = "PlainPage"
@@ -84,27 +88,27 @@ func (app App) GetHandler() http.Handler {
 	r.
 		With(app.Token.Token2ContextMiddleware).
 		Route("/_api", func(r chi.Router) {
-			r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Get("/config", app.getConfig)
-			r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Patch("/config", app.patchConfig)
+			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/config", app.getConfig)
+			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Patch("/config", app.patchConfig)
 
 			r.Route("/pages", func(r chi.Router) {
-				r.Get("/*", app.RequireContentPermission(storage.AccessOpRead, http.HandlerFunc(app.getPageOrFolder)).ServeHTTP)
-				r.Put("/*", app.RequireContentPermission(storage.AccessOpWrite, http.HandlerFunc(app.putPageOrFolder)).ServeHTTP)
-				r.Delete("/*", app.RequireContentPermission(storage.AccessOpDelete, http.HandlerFunc(app.deletePageOrFolder)).ServeHTTP)
+				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getPageOrFolder)).ServeHTTP)
+				r.Put("/*", app.RequireContentPermission(model.AccessOpWrite, http.HandlerFunc(app.putPageOrFolder)).ServeHTTP)
+				r.Delete("/*", app.RequireContentPermission(model.AccessOpDelete, http.HandlerFunc(app.deletePageOrFolder)).ServeHTTP)
 
-				r.Patch("/*", app.RequireContentPermission(storage.AccessOpAdmin, http.HandlerFunc(app.patchPageOrFolder)).ServeHTTP)
+				r.Patch("/*", app.RequireContentPermission(model.AccessOpAdmin, http.HandlerFunc(app.patchPageOrFolder)).ServeHTTP)
 			})
 
 			r.Route("/attic", func(r chi.Router) {
-				r.Get("/*", app.RequireContentPermission(storage.AccessOpRead, http.HandlerFunc(app.getAttic)).ServeHTTP)
+				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getAttic)).ServeHTTP)
 			})
 
 			r.Route("/auth", func(r chi.Router) {
-				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Get("/users", app.getUsers)
-				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
+				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/users", app.getUsers)
+				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
 				r.Post("/users", app.postUser)
-				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
-				r.With(app.RequireAppPermission(storage.AccessOpAdmin)).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
+				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
+				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
 				r.Post("/login", app.login)
 				r.Post("/refresh", app.refreshToken)
@@ -120,7 +124,7 @@ func (app App) GetHandler() http.Handler {
 	return r
 }
 
-func (app App) RequireAppPermission(op storage.AccessOp) func(next http.Handler) http.Handler {
+func (app App) RequireAppPermission(op model.AccessOp) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -140,13 +144,13 @@ func (app App) RequireAppPermission(op storage.AccessOp) func(next http.Handler)
 	}
 }
 
-func (app App) RequireContentPermission(op storage.AccessOp, next http.Handler) http.Handler {
+func (app App) RequireContentPermission(op model.AccessOp, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := ctxutil.UserID(r.Context())
 
 		urlPath := chi.URLParam(r, "*")
 
-		acl, err := app.Storage.GetEffectivePermissions(urlPath)
+		acl, err := app.Content.GetEffectivePermissions(urlPath)
 		if err != nil {
 			panic(err)
 		}

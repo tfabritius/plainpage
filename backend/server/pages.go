@@ -51,8 +51,8 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	} else {
 		response.Breadcrumbs = getBreadcrumbs(urlPath)
 
-		if app.Storage.IsPage(urlPath) {
-			page, err := app.Storage.ReadPage(urlPath, nil)
+		if app.Content.IsPage(urlPath) {
+			page, err := app.Content.ReadPage(urlPath, nil)
 			if err != nil {
 				panic(err)
 			}
@@ -60,8 +60,8 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			app.Users.EnhanceACLWithUserInfo(page.Meta.ACL)
 
 			response.Page = &page
-		} else if app.Storage.IsFolder(urlPath) {
-			folder, err := app.Storage.ReadFolder(urlPath)
+		} else if app.Content.IsFolder(urlPath) {
+			folder, err := app.Content.ReadFolder(urlPath)
 			if err != nil {
 				panic(err)
 			}
@@ -81,7 +81,7 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 					panic(err)
 				}
 
-				response.AllowCreate = app.Storage.IsFolder(parentUrl)
+				response.AllowCreate = app.Content.IsFolder(parentUrl)
 			}
 
 			if !response.AllowCreate {
@@ -108,17 +108,17 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var page storage.Page
-	var folder storage.Folder
+	var page model.Page
+	var folder model.Folder
 	isFolder := false
 	var err error
-	if app.Storage.IsPage(urlPath) {
-		page, err = app.Storage.ReadPage(urlPath, nil)
+	if app.Content.IsPage(urlPath) {
+		page, err = app.Content.ReadPage(urlPath, nil)
 		if err != nil {
 			panic(err)
 		}
-	} else if app.Storage.IsFolder(urlPath) {
-		folder, err = app.Storage.ReadFolder(urlPath)
+	} else if app.Content.IsFolder(urlPath) {
+		folder, err = app.Content.ReadFolder(urlPath)
 		if err != nil {
 			panic(err)
 		}
@@ -134,7 +134,7 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		var acl []storage.AccessRule
+		var acl []model.AccessRule
 		if operation.Value != nil {
 			err = json.Unmarshal([]byte(*operation.Value), &acl)
 			if err != nil {
@@ -162,9 +162,9 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if isFolder {
-		err = app.Storage.SaveFolder(urlPath, folder.Meta)
+		err = app.Content.SaveFolder(urlPath, folder.Meta)
 	} else {
-		err = app.Storage.SavePage(urlPath, page.Content, page.Meta)
+		err = app.Content.SavePage(urlPath, page.Content, page.Meta)
 	}
 
 	if err != nil {
@@ -190,18 +190,18 @@ func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 	if body.Page != nil {
-		if app.Storage.IsPage(urlPath) {
+		if app.Content.IsPage(urlPath) {
 			// if page exists already, take over ACL
-			oldPage, err := app.Storage.ReadPage(urlPath, nil)
+			oldPage, err := app.Content.ReadPage(urlPath, nil)
 			if err != nil {
 				panic(err)
 			}
 			body.Page.Meta.ACL = oldPage.Meta.ACL
 		}
 
-		err = app.Storage.SavePage(urlPath, body.Page.Content, body.Page.Meta)
+		err = app.Content.SavePage(urlPath, body.Page.Content, body.Page.Meta)
 	} else {
-		err = app.Storage.CreateFolder(urlPath)
+		err = app.Content.CreateFolder(urlPath)
 	}
 	if err != nil {
 		if errors.Is(err, storage.ErrParentFolderNotFound) {
@@ -226,11 +226,11 @@ func (app App) deletePageOrFolder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var err error
-	if app.Storage.IsPage(urlPath) {
-		err = app.Storage.DeletePage(urlPath)
+	if app.Content.IsPage(urlPath) {
+		err = app.Content.DeletePage(urlPath)
 
-	} else if app.Storage.IsFolder(urlPath) {
-		err = app.Storage.DeleteEmptyFolder(urlPath)
+	} else if app.Content.IsFolder(urlPath) {
+		err = app.Content.DeleteEmptyFolder(urlPath)
 
 	} else {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
@@ -251,7 +251,7 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 	queryRev := r.URL.Query().Get("rev")
 
-	if !isValidUrl(urlPath) || !app.Storage.IsPage(urlPath) {
+	if !isValidUrl(urlPath) || !app.Content.IsPage(urlPath) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -260,7 +260,7 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 
 	var revision int64
 	if queryRev == "" {
-		list, err := app.Storage.ListAttic(urlPath)
+		list, err := app.Content.ListAttic(urlPath)
 		if err != nil {
 			panic(err)
 		}
@@ -278,12 +278,12 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if !app.Storage.IsAtticPage(urlPath, revision) {
+		if !app.Content.IsAtticPage(urlPath, revision) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
 
-		page, err := app.Storage.ReadPage(urlPath, &revision)
+		page, err := app.Content.ReadPage(urlPath, &revision)
 		if err != nil {
 			panic(err)
 		}

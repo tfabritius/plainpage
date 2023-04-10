@@ -1,4 +1,4 @@
-// Types corresponding to models/api.go
+// Types corresponding to model/api.go
 
 export interface Breadcrumb {
   name: string
@@ -34,7 +34,7 @@ export interface TokenUserResponse {
   user: User
 }
 
-// Types corresponding to storage/model.go
+// Types corresponding to model/service.go
 
 export interface Page {
   url: string

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service/ctxutil"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 func NewTokenService(jwtSecret string) TokenService {
@@ -22,7 +22,7 @@ type TokenService struct {
 	jwtSecret string
 }
 
-func (s *TokenService) GenerateToken(user storage.User) (string, error) {
+func (s *TokenService) GenerateToken(user model.User) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["id"] = user.ID
 	claims["exp"] = time.Now().Add(15 * time.Minute).Unix()

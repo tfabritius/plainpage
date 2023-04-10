@@ -10,8 +10,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service/ctxutil"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 const jwtSecret = "testSecret"
@@ -20,7 +20,7 @@ func TestGenerateToken(t *testing.T) {
 	r := require.New(t)
 
 	tokenService := NewTokenService(jwtSecret)
-	user := storage.User{ID: "test-user"}
+	user := model.User{ID: "test-user"}
 
 	tokenString, err := tokenService.GenerateToken(user)
 	r.NoError(err)
@@ -49,7 +49,7 @@ func TestToken2ContextMiddleware(t *testing.T) {
 	r := require.New(t)
 
 	tokenService := NewTokenService(jwtSecret)
-	user := storage.User{ID: "test-user"}
+	user := model.User{ID: "test-user"}
 
 	tokenString, err := tokenService.GenerateToken(user)
 	r.NoError(err)

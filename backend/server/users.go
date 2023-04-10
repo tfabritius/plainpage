@@ -54,7 +54,7 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 	if !cfg.SetupMode {
 		userID := ctxutil.UserID(r.Context())
 
-		if err := app.Users.CheckAppPermissions(userID, storage.AccessOpRegister); err != nil {
+		if err := app.Users.CheckAppPermissions(userID, model.AccessOpRegister); err != nil {
 			if e, ok := err.(*service.AccessDeniedError); ok {
 				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
 				return
@@ -83,7 +83,7 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 		cfg.SetupMode = false
 
 		// Grant admin rights
-		cfg.ACL = append(cfg.ACL, storage.AccessRule{Subject: "user:" + user.ID, Operations: []storage.AccessOp{storage.AccessOpAdmin}})
+		cfg.ACL = append(cfg.ACL, model.AccessRule{Subject: "user:" + user.ID, Operations: []model.AccessOp{model.AccessOpAdmin}})
 
 		// Save config
 		if err := app.Storage.WriteConfig(cfg); err != nil {

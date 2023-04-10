@@ -2,8 +2,6 @@ package model
 
 import (
 	"encoding/json"
-
-	"github.com/tfabritius/plainpage/storage"
 )
 
 type Breadcrumb struct {
@@ -12,15 +10,15 @@ type Breadcrumb struct {
 }
 
 type GetContentResponse struct {
-	Page        *storage.Page   `json:"page"`
-	Folder      *storage.Folder `json:"folder"`
-	AllowCreate bool            `json:"allowCreate"`
-	Breadcrumbs []Breadcrumb    `json:"breadcrumbs"`
+	Page        *Page        `json:"page"`
+	Folder      *Folder      `json:"folder"`
+	AllowCreate bool         `json:"allowCreate"`
+	Breadcrumbs []Breadcrumb `json:"breadcrumbs"`
 }
 
 type GetAtticListResponse struct {
-	Entries     []storage.AtticEntry `json:"entries"`
-	Breadcrumbs []Breadcrumb         `json:"breadcrumbs"`
+	Entries     []AtticEntry `json:"entries"`
+	Breadcrumbs []Breadcrumb `json:"breadcrumbs"`
 }
 
 type GetAppResponse struct {
@@ -29,7 +27,7 @@ type GetAppResponse struct {
 }
 
 type PutRequest struct {
-	Page *storage.Page `json:"page"`
+	Page *Page `json:"page"`
 }
 
 type PostUserRequest struct {
@@ -51,6 +49,6 @@ type LoginRequest struct {
 }
 
 type TokenUserResponse struct {
-	Token string       `json:"token"`
-	User  storage.User `json:"user"`
+	Token string `json:"token"`
+	User  User   `json:"user"`
 }

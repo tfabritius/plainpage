@@ -94,10 +94,10 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 
 func (s *ContentService) SavePage(urlPath, content string, meta model.PageMeta) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
-		return storage.ErrParentFolderNotFound
+		return model.ErrParentFolderNotFound
 	}
 	if s.IsFolder(urlPath) {
-		return storage.ErrPageOrFolderExistsAlready
+		return model.ErrPageOrFolderExistsAlready
 	}
 
 	fsPath := filepath.Join("pages", urlPath+".md")
@@ -129,10 +129,10 @@ func (s *ContentService) DeletePage(urlPath string) error {
 
 func (s *ContentService) CreateFolder(urlPath string) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
-		return storage.ErrParentFolderNotFound
+		return model.ErrParentFolderNotFound
 	}
 	if s.IsPage(urlPath) || s.IsFolder(urlPath) {
-		return storage.ErrPageOrFolderExistsAlready
+		return model.ErrPageOrFolderExistsAlready
 	}
 
 	dirPath := filepath.Join("pages", urlPath)
@@ -221,7 +221,7 @@ func (s *ContentService) DeleteEmptyFolder(urlPath string) error {
 	indexPath := filepath.Join("pages", urlPath, "_index.md")
 
 	if !s.folderIsEmpty(urlPath) {
-		return storage.ErrFolderNotEmpty
+		return model.ErrFolderNotEmpty
 	}
 
 	if err := s.storage.DeleteFile(indexPath); err != nil {

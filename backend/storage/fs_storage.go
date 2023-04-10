@@ -173,7 +173,7 @@ func (fss *fsStorage) ReadConfig() (model.Config, error) {
 
 	// check if file exists
 	if _, err := os.Stat(fsPath); os.IsNotExist(err) {
-		return model.Config{}, ErrNotFound
+		return model.Config{}, model.ErrNotFound
 	}
 
 	// read the file

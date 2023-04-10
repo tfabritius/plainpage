@@ -12,7 +12,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 /**
@@ -204,10 +203,10 @@ func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 		err = app.Content.CreateFolder(urlPath)
 	}
 	if err != nil {
-		if errors.Is(err, storage.ErrParentFolderNotFound) {
+		if errors.Is(err, model.ErrParentFolderNotFound) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
-		} else if errors.Is(err, storage.ErrPageOrFolderExistsAlready) {
+		} else if errors.Is(err, model.ErrPageOrFolderExistsAlready) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -237,7 +236,7 @@ func (app App) deletePageOrFolder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err != nil {
-		if errors.Is(err, storage.ErrFolderNotEmpty) {
+		if errors.Is(err, model.ErrFolderNotEmpty) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

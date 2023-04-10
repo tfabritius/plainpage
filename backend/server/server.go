@@ -28,7 +28,7 @@ type App struct {
 func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
 	cfg, err := store.ReadConfig()
 	if err != nil {
-		if errors.Is(err, storage.ErrNotFound) {
+		if errors.Is(err, model.ErrNotFound) {
 			log.Println("Initializing config...")
 			cfg = initializeConfig()
 

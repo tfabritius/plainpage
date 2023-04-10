@@ -10,7 +10,6 @@ import (
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 func (app App) getUsers(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +25,7 @@ func (app App) getUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
 	user, err := app.Users.GetByUsername(username)
-	if errors.Is(err, storage.ErrNotFound) {
+	if errors.Is(err, model.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -67,11 +66,11 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 	// Create user
 	user, err := app.Users.Create(body.Username, body.Password, body.RealName)
 	if err != nil {
-		if errors.Is(err, storage.ErrInvalidUsername) {
+		if errors.Is(err, model.ErrInvalidUsername) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if errors.Is(err, storage.ErrUserExistsAlready) {
+		if errors.Is(err, model.ErrUserExistsAlready) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -105,7 +104,7 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := app.Users.GetByUsername(username)
-	if errors.Is(err, storage.ErrNotFound) {
+	if errors.Is(err, model.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -158,7 +157,7 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 
 	err := app.Users.DeleteByUsername(username)
-	if errors.Is(err, storage.ErrNotFound) {
+	if errors.Is(err, model.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -207,7 +206,7 @@ func (app App) refreshToken(w http.ResponseWriter, r *http.Request) {
 
 	user, err := app.Users.GetById(id)
 	if err != nil {
-		if errors.Is(err, storage.ErrNotFound) {
+		if errors.Is(err, model.ErrNotFound) {
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}

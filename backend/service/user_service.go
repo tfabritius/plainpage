@@ -25,7 +25,7 @@ type UserService struct {
 
 func (s *UserService) SetUsername(user *model.User, username string) error {
 	if !s.isValidUsername(username) {
-		return storage.ErrInvalidUsername
+		return model.ErrInvalidUsername
 	}
 	user.Username = username
 	return nil
@@ -64,7 +64,7 @@ func (s *UserService) Create(username, password, realName string) (model.User, e
 	}
 
 	if !s.isUsernameUnique(users, username) {
-		return model.User{}, storage.ErrUserExistsAlready
+		return model.User{}, model.ErrUserExistsAlready
 	}
 
 	id, err := utils.GenerateRandomString(6)
@@ -107,7 +107,7 @@ func (s *UserService) GetByUsername(username string) (model.User, error) {
 		}
 	}
 
-	return model.User{}, storage.ErrNotFound
+	return model.User{}, model.ErrNotFound
 }
 
 func (s *UserService) GetById(id string) (model.User, error) {
@@ -121,13 +121,13 @@ func (s *UserService) GetById(id string) (model.User, error) {
 		return *user, nil
 	}
 
-	return model.User{}, storage.ErrNotFound
+	return model.User{}, model.ErrNotFound
 }
 
 func (s *UserService) VerifyCredentials(username, password string) (*model.User, error) {
 	user, err := s.GetByUsername(username)
 	if err != nil {
-		if errors.Is(err, storage.ErrNotFound) {
+		if errors.Is(err, model.ErrNotFound) {
 			return nil, nil
 		}
 		return nil, err
@@ -158,12 +158,12 @@ func (s *UserService) Save(user model.User) error {
 
 	existingUser := s.filterById(users, user.ID)
 	if existingUser == nil {
-		return storage.ErrNotFound
+		return model.ErrNotFound
 	}
 
 	if user.Username != existingUser.Username {
 		if !s.isUsernameUnique(users, user.Username) {
-			return storage.ErrUserExistsAlready
+			return model.ErrUserExistsAlready
 		}
 	}
 
@@ -195,7 +195,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 		}
 	}
 	if !found {
-		return storage.ErrNotFound
+		return model.ErrNotFound
 	}
 
 	if err := s.storage.SaveAllUsers(users); err != nil {

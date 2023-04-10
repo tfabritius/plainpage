@@ -135,13 +135,10 @@ func (fss *fsStorage) createDir(file string) error {
 	return nil
 }
 
-func (fss *fsStorage) GetAllUsers() ([]model.User, error) {
-	fsPath := filepath.Join(fss.DataDir, "users.yml")
-
-	// read the file
-	bytes, err := os.ReadFile(fsPath)
+func (fss *fsStorage) ReadUsers() ([]model.User, error) {
+	bytes, err := fss.ReadFile("users.yml")
 	if err != nil {
-		return nil, fmt.Errorf("could not read file: %w", err)
+		return nil, fmt.Errorf("could not read users.yml: %w", err)
 	}
 
 	// parse YAML
@@ -153,33 +150,23 @@ func (fss *fsStorage) GetAllUsers() ([]model.User, error) {
 	return users, nil
 }
 
-func (fss *fsStorage) SaveAllUsers(users []model.User) error {
-	fsPath := filepath.Join(fss.DataDir, "users.yml")
-
+func (fss *fsStorage) WriteUsers(users []model.User) error {
 	bytes, err := yaml.Marshal(&users)
 	if err != nil {
 		return fmt.Errorf("failed to marshal: %w", err)
 	}
 
-	if err := os.WriteFile(fsPath, bytes, 0600); err != nil {
-		return fmt.Errorf("could not write file: %w", err)
+	if err := fss.WriteFile("users.yml", bytes); err != nil {
+		return fmt.Errorf("could not write users.yml: %w", err)
 	}
 
 	return nil
 }
 
 func (fss *fsStorage) ReadConfig() (model.Config, error) {
-	fsPath := filepath.Join(fss.DataDir, "config.yml")
-
-	// check if file exists
-	if _, err := os.Stat(fsPath); os.IsNotExist(err) {
-		return model.Config{}, model.ErrNotFound
-	}
-
-	// read the file
-	bytes, err := os.ReadFile(fsPath)
+	bytes, err := fss.ReadFile("config.yml")
 	if err != nil {
-		return model.Config{}, fmt.Errorf("could not read file: %w", err)
+		return model.Config{}, fmt.Errorf("could not read config.yml: %w", err)
 	}
 
 	// parse YAML
@@ -192,15 +179,13 @@ func (fss *fsStorage) ReadConfig() (model.Config, error) {
 }
 
 func (fss *fsStorage) WriteConfig(config model.Config) error {
-	fsPath := filepath.Join(fss.DataDir, "config.yml")
-
 	bytes, err := yaml.Marshal(&config)
 	if err != nil {
 		return fmt.Errorf("failed to marshal: %w", err)
 	}
 
-	if err := os.WriteFile(fsPath, bytes, 0600); err != nil {
-		return fmt.Errorf("could not write file: %w", err)
+	if err := fss.WriteFile("config.yml", bytes); err != nil {
+		return fmt.Errorf("could not write config.yml: %w", err)
 	}
 
 	return nil

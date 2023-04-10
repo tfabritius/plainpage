@@ -58,7 +58,7 @@ func (*UserService) verifyPassword(user model.User, password string) bool {
 
 func (s *UserService) Create(username, password, realName string) (model.User, error) {
 
-	users, err := s.storage.GetAllUsers()
+	users, err := s.storage.ReadUsers()
 	if err != nil {
 		return model.User{}, err
 	}
@@ -87,7 +87,7 @@ func (s *UserService) Create(username, password, realName string) (model.User, e
 
 	users = append(users, user)
 
-	err = s.storage.SaveAllUsers(users)
+	err = s.storage.WriteUsers(users)
 	if err != nil {
 		return model.User{}, err
 	}
@@ -96,7 +96,7 @@ func (s *UserService) Create(username, password, realName string) (model.User, e
 }
 
 func (s *UserService) GetByUsername(username string) (model.User, error) {
-	users, err := s.storage.GetAllUsers()
+	users, err := s.storage.ReadUsers()
 	if err != nil {
 		return model.User{}, fmt.Errorf("could not read users: %w", err)
 	}
@@ -111,7 +111,7 @@ func (s *UserService) GetByUsername(username string) (model.User, error) {
 }
 
 func (s *UserService) GetById(id string) (model.User, error) {
-	users, err := s.storage.GetAllUsers()
+	users, err := s.storage.ReadUsers()
 	if err != nil {
 		return model.User{}, fmt.Errorf("could not read users: %w", err)
 	}
@@ -151,7 +151,7 @@ func (*UserService) filterById(users []model.User, id string) *model.User {
 }
 
 func (s *UserService) Save(user model.User) error {
-	users, err := s.storage.GetAllUsers()
+	users, err := s.storage.ReadUsers()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
 	}
@@ -171,7 +171,7 @@ func (s *UserService) Save(user model.User) error {
 	existingUser.RealName = user.RealName
 	existingUser.PasswordHash = user.PasswordHash
 
-	if err := s.storage.SaveAllUsers(users); err != nil {
+	if err := s.storage.WriteUsers(users); err != nil {
 		return fmt.Errorf("could not save users: %w", err)
 	}
 
@@ -179,7 +179,7 @@ func (s *UserService) Save(user model.User) error {
 }
 
 func (s *UserService) DeleteByUsername(username string) error {
-	users, err := s.storage.GetAllUsers()
+	users, err := s.storage.ReadUsers()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
 	}
@@ -198,7 +198,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 		return model.ErrNotFound
 	}
 
-	if err := s.storage.SaveAllUsers(users); err != nil {
+	if err := s.storage.WriteUsers(users); err != nil {
 		return fmt.Errorf("could not save users: %w", err)
 	}
 
@@ -207,7 +207,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 
 func (s *UserService) EnhanceACLWithUserInfo(acl *[]model.AccessRule) error {
 	if acl != nil {
-		users, err := s.storage.GetAllUsers()
+		users, err := s.storage.ReadUsers()
 		if err != nil {
 			return fmt.Errorf("could not read users: %w", err)
 		}

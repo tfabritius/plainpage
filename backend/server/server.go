@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,18 +25,18 @@ type App struct {
 }
 
 func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
+	if !store.Exists("config.yml") {
+		log.Println("Initializing config...")
+		cfg := initializeConfig()
+
+		if err := store.WriteConfig(cfg); err != nil {
+			panic(err)
+		}
+	}
+
 	cfg, err := store.ReadConfig()
 	if err != nil {
-		if errors.Is(err, model.ErrNotFound) {
-			log.Println("Initializing config...")
-			cfg = initializeConfig()
-
-			if err := store.WriteConfig(cfg); err != nil {
-				panic(err)
-			}
-		} else {
-			panic(fmt.Errorf("could not load config: %w", err))
-		}
+		panic(fmt.Errorf("could not load config: %w", err))
 	}
 
 	contentService := service.NewContentService(store)

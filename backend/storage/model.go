@@ -17,15 +17,9 @@ type Storage interface {
 	ReadDirectory(fsPath string) ([]fs.FileInfo, error)
 	DeleteEmptyDirectory(fsPath string) error
 
-	// GetAllUsers returns all users
-	GetAllUsers() ([]model.User, error)
+	ReadUsers() ([]model.User, error)
+	WriteUsers(users []model.User) error
 
-	// SaveAllUsers stores all users
-	SaveAllUsers(users []model.User) error
-
-	// ReadConfig returns configuration
 	ReadConfig() (model.Config, error)
-
-	// WriteConfig saves configuration
 	WriteConfig(config model.Config) error
 }

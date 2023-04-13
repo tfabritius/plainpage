@@ -85,7 +85,7 @@ func (*UserService) verifyPassword(user model.User, password string) bool {
 	return false
 }
 
-func (s *UserService) Create(username, password, realName string) (model.User, error) {
+func (s *UserService) Create(username, password, displayName string) (model.User, error) {
 
 	users, err := s.ReadAll()
 	if err != nil {
@@ -102,8 +102,8 @@ func (s *UserService) Create(username, password, realName string) (model.User, e
 	}
 
 	user := model.User{
-		ID:       id,
-		RealName: realName,
+		ID:          id,
+		DisplayName: displayName,
 	}
 
 	if err := s.SetUsername(&user, username); err != nil {
@@ -197,7 +197,7 @@ func (s *UserService) Save(user model.User) error {
 	}
 
 	existingUser.Username = user.Username
-	existingUser.RealName = user.RealName
+	existingUser.DisplayName = user.DisplayName
 	existingUser.PasswordHash = user.PasswordHash
 
 	if err := s.saveAll(users); err != nil {

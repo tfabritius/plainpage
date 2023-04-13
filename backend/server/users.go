@@ -64,7 +64,7 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Create user
-	user, err := app.Users.Create(body.Username, body.Password, body.RealName)
+	user, err := app.Users.Create(body.Username, body.Password, body.DisplayName)
 	if err != nil {
 		if errors.Is(err, model.ErrInvalidUsername) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -134,8 +134,8 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-		} else if operation.Path == "/realName" {
-			user.RealName = value
+		} else if operation.Path == "/displayName" {
+			user.DisplayName = value
 		} else if operation.Path == "/password" {
 			if err := app.Users.SetPasswordHash(&user, value); err != nil {
 				panic(err)

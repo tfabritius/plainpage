@@ -41,9 +41,9 @@ func (s *UsersTestSuite) TestCreateUser() {
 	// Anonymous cannot register user
 	{
 		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
-			Username: "test",
-			RealName: "test",
-			Password: "secret",
+			Username:    "test",
+			DisplayName: "test",
+			Password:    "secret",
 		}, nil)
 		r.Equal(401, res.Code)
 	}
@@ -51,9 +51,9 @@ func (s *UsersTestSuite) TestCreateUser() {
 	// User cannot register user
 	{
 		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
-			Username: "test",
-			RealName: "test",
-			Password: "secret",
+			Username:    "test",
+			DisplayName: "test",
+			Password:    "secret",
 		}, nil)
 		r.Equal(401, res.Code)
 	}
@@ -69,9 +69,9 @@ func (s *UsersTestSuite) TestCreateUser() {
 	// Anonymous cannot register user
 	{
 		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
-			Username: "test",
-			RealName: "test",
-			Password: "secret",
+			Username:    "test",
+			DisplayName: "test",
+			Password:    "secret",
 		}, nil)
 		r.Equal(401, res.Code)
 	}

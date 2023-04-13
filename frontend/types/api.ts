@@ -80,7 +80,7 @@ export enum AccessOp {
 export interface User {
   id: string
   username: string
-  realName: string
+  displayName: string
 }
 
 export interface Config {

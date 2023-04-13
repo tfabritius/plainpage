@@ -154,7 +154,7 @@ defineExpose({ getAcl })
         <span v-if="row.subject === 'all'" class="italic">All registered users</span>
         <span v-else-if="row.subject === 'anonymous'" class="italic">Anonymous users</span>
         <span v-else-if="row.subject === 'admin'" class="italic">Administrators</span>
-        <span v-else>{{ row.user ? row.user.realName : row.subject }}</span>
+        <span v-else>{{ row.user ? row.user.displayName : row.subject }}</span>
       </template>
     </ElTableColumn>
     <ElTableColumn v-if="props.showColumns.includes('read')" label="Read">

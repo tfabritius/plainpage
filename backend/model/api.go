@@ -31,9 +31,9 @@ type PutRequest struct {
 }
 
 type PostUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	RealName string `json:"realName"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	DisplayName string `json:"displayName"`
 }
 
 type PatchOperation struct {

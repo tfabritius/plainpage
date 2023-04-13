@@ -31,18 +31,18 @@ type AppTestSuite struct {
 	userToken  *string
 }
 
-func (s *AppTestSuite) createUser(token *string, username, realName, password string) {
+func (s *AppTestSuite) createUser(token *string, username, displayName, password string) {
 	s.T().Helper()
 	r := s.Require()
 
 	res := s.api("POST", "/_api/auth/users",
-		model.PostUserRequest{Username: username, RealName: realName, Password: password},
+		model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
 		token)
 	r.Equal(200, res.Code)
 
 	body, _ := jsonbody[model.User](res)
 	r.Equal(username, body.Username)
-	r.Equal(realName, body.RealName)
+	r.Equal(displayName, body.DisplayName)
 	r.NotEmpty(body.ID)
 	r.Empty(body.PasswordHash)
 }

@@ -9,7 +9,7 @@ const userFormRef = ref<FormInstance>()
 const emptyUser = {
   currentUsername: '',
   username: '',
-  realName: '',
+  displayName: '',
   password: '',
   passwordConfirm: '',
 }
@@ -19,7 +19,7 @@ const userFormRules = computed(() => ({
     { required: true, message: 'Please enter username', trigger: 'blur' },
     { min: 3, max: 20, message: 'Length should be 3 to 20', trigger: 'blur' },
   ],
-  realName: [{ required: true, message: 'Please enter real name', trigger: 'blur' }],
+  displayName: [{ required: true, message: 'Please enter display name', trigger: 'blur' }],
   password: [{ required: !userFormData.value.currentUsername, message: 'Please enter password', trigger: 'blur' }],
   passwordConfirm: [
     { required: !userFormData.value.currentUsername, message: 'Please confirm password', trigger: 'blur' },
@@ -58,7 +58,7 @@ const onSubmit = async () => {
         if (userFormData.value.currentUsername) {
           const ops: PatchOperation[] = [
             { op: 'replace', path: '/username', value: userFormData.value.username },
-            { op: 'replace', path: '/realName', value: userFormData.value.realName },
+            { op: 'replace', path: '/displayName', value: userFormData.value.displayName },
           ]
           if (userFormData.value.password) {
             ops.push({ op: 'replace', path: '/password', value: userFormData.value.password })
@@ -127,8 +127,8 @@ const onDelete = async (user: User) => {
         <ElFormItem label="Username" prop="username">
           <ElInput v-model="userFormData.username" autocomplete="off" />
         </ElFormItem>
-        <ElFormItem label="Real name" prop="realName">
-          <ElInput v-model="userFormData.realName" autocomplete="off" />
+        <ElFormItem label="Display name" prop="displayName">
+          <ElInput v-model="userFormData.displayName" autocomplete="off" />
         </ElFormItem>
         <ElFormItem label="Password" prop="password">
           <ElInput v-model="userFormData.password" show-password autocomplete="off" />
@@ -149,7 +149,7 @@ const onDelete = async (user: User) => {
 
     <ElTable :data="data">
       <ElTableColumn label="Username" prop="username" />
-      <ElTableColumn label="Real Name" prop="realName" />
+      <ElTableColumn label="Display Name" prop="displayName" />
       <ElTableColumn>
         <template #default="{ row }">
           <ElButton text>

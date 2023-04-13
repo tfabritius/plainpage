@@ -60,7 +60,7 @@ type User struct {
 	ID           string `json:"id" yaml:"id"`
 	Username     string `json:"username" yaml:"username"`
 	PasswordHash string `json:"-" yaml:"passwordHash"`
-	RealName     string `json:"realName" yaml:"realName"`
+	DisplayName  string `json:"displayName" yaml:"displayName"`
 }
 
 type Config struct {

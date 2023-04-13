@@ -55,7 +55,7 @@ async function handleDropdownMenuCommand(command: string | number | object) {
         <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
           <ElLink :underline="false" href="#">
             <Icon name="ci:user" class="mr-1" />
-            <span class="font-normal">{{ auth.user?.realName }}</span>
+            <span class="font-normal">{{ auth.user?.displayName }}</span>
           </ElLink>
           <template #dropdown>
             <ElDropdownMenu>

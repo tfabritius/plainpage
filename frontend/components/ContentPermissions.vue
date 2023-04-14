@@ -45,7 +45,7 @@ const onSave = async () => {
 
     <template #actions>
       <ElButton class="m-1" @click="onGoBack">
-        <Icon name="ci:skip-back" /> <span class="hidden md:inline ml-1">Back to page</span>
+        <Icon name="ci:skip-back" /> <span class="hidden md:inline ml-1">Back to content</span>
       </ElButton>
       <span />
       <ElButton class="m-1" type="success" @click="onSave">

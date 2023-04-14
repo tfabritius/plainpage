@@ -22,12 +22,15 @@ useHead(() => ({ titleTemplate: `%s | ${appName.value}` }))
 const auth = useAuthStore()
 const route = useRoute()
 
+const ProfileIcon = h(Icon, { name: 'ci:user-circle' })
 const UsersIcon = h(Icon, { name: 'ci:users' })
 const SettingsIcon = h(Icon, { name: 'ci:settings' })
 const LogoutIcon = h(Icon, { name: 'ic:round-log-out' })
 
 async function handleDropdownMenuCommand(command: string | number | object) {
-  if (command === 'users') {
+  if (command === 'profile') {
+    await navigateTo('/_profile')
+  } else if (command === 'users') {
     await navigateTo('/_admin/users')
   } else if (command === 'settings') {
     await navigateTo('/_admin/settings')
@@ -59,6 +62,9 @@ async function handleDropdownMenuCommand(command: string | number | object) {
           </ElLink>
           <template #dropdown>
             <ElDropdownMenu>
+              <ElDropdownItem :icon="ProfileIcon" command="profile">
+                Profile
+              </ElDropdownItem>
               <ElDropdownItem :icon="UsersIcon" command="users">
                 Users
               </ElDropdownItem>

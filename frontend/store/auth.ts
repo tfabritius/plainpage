@@ -1,6 +1,6 @@
 import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
-import type { TokenUserResponse, User } from '~/types'
+import type { PatchOperation, TokenUserResponse, User } from '~/types'
 
 export const useAuthStore = defineStore(
   'auth',
@@ -33,7 +33,32 @@ export const useAuthStore = defineStore(
       user.value = undefined
     }
 
-    return { login, logout, loggedIn, user, token }
+    async function updateMe(newMe: { displayName: string; password: string }) {
+      if (!user.value) {
+        throw new Error('not logged in')
+      }
+      const ops: PatchOperation[] = [
+        { op: 'replace', path: '/displayName', value: newMe.displayName },
+      ]
+      if (newMe.password) {
+        ops.push({ op: 'replace', path: '/password', value: newMe.password })
+      }
+      await apiFetch(`/auth/users/${user.value.username}`, {
+        method: 'PATCH',
+        body: ops,
+      })
+      user.value.displayName = newMe.displayName
+    }
+
+    async function deleteMe() {
+      if (!user.value) {
+        throw new Error('not logged in')
+      }
+      await apiFetch(`/auth/users/${user.value.username}`, { method: 'DELETE' })
+      logout()
+    }
+
+    return { login, logout, loggedIn, user, token, updateMe, deleteMe }
   },
   {
     persist: true,

@@ -111,6 +111,12 @@ async function submit() {
           </ElButton>
         </ElFormItem>
       </ElForm>
+
+      <NuxtLink v-slot="{ navigate, href }" custom :to="`_login?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
+        <ElLink :underline="false" :href="href" @click="navigate">
+          <Icon name="ic:round-log-in" class="mr-1" /> Sign in
+        </ElLink>
+      </NuxtLink>
     </div>
   </div>
 </template>

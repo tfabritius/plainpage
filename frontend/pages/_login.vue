@@ -44,6 +44,12 @@ async function submit() {
           </ElButton>
         </ElFormItem>
       </ElForm>
+
+      <NuxtLink v-slot="{ navigate, href }" custom :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
+        <ElLink :underline="false" :href="href" @click="navigate">
+          New Here? Register now!
+        </ElLink>
+      </NuxtLink>
     </div>
   </div>
 </template>

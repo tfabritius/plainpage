@@ -20,8 +20,10 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
         logout()
       }
 
-      await navigateTo(`/_login?returnTo=${encodeURIComponent(route.fullPath)}`)
-      throw new Error('redirected to /_login')
+      if (route.path !== '/_login') {
+        await navigateTo(`/_login?returnTo=${encodeURIComponent(route.fullPath)}`)
+        throw new Error('redirected to /_login')
+      }
     }
 
     throw err

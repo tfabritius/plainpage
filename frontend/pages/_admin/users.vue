@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 import type { PatchOperation, User } from '~/types'
+import { validUsernameRegex } from '~/types'
 
 const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
@@ -17,7 +18,8 @@ const userFormData = ref({ ...emptyUser })
 const userFormRules = computed(() => ({
   username: [
     { required: true, message: 'Please enter username', trigger: 'blur' },
-    { min: 3, max: 20, message: 'Length should be 3 to 20', trigger: 'blur' },
+    { min: 4, max: 20, message: 'Length should be 4 to 20', trigger: 'blur' },
+    { pattern: validUsernameRegex, message: 'Invalid username', trigger: 'blur' },
   ],
   displayName: [{ required: true, message: 'Please enter display name', trigger: 'blur' }],
   password: [{ required: !userFormData.value.currentUsername, message: 'Please enter password', trigger: 'blur' }],
@@ -52,33 +54,35 @@ const onSubmit = async () => {
   if (!userFormRef.value) {
     return
   }
-  await userFormRef.value.validate(async (valid, _fields) => {
-    if (valid) {
-      try {
-        if (userFormData.value.currentUsername) {
-          const ops: PatchOperation[] = [
-            { op: 'replace', path: '/username', value: userFormData.value.username },
-            { op: 'replace', path: '/displayName', value: userFormData.value.displayName },
-          ]
-          if (userFormData.value.password) {
-            ops.push({ op: 'replace', path: '/password', value: userFormData.value.password })
-          }
-          await apiFetch(`/auth/users/${userFormData.value.currentUsername}`, {
-            method: 'PATCH',
-            body: ops,
-          })
-          ElMessage({ message: 'User updated', type: 'success' })
-        } else {
-          await apiFetch('/auth/users', { method: 'POST', body: userFormData.value })
-          ElMessage({ message: 'User created', type: 'success' })
-        }
-        userFormVisible.value = false
-        refresh()
-      } catch (err) {
-        ElMessage({ message: String(err), type: 'error' })
+
+  const formValid = await new Promise<boolean>(resolve => userFormRef.value?.validate(valid => resolve(valid)))
+  if (!formValid) {
+    return
+  }
+
+  try {
+    if (userFormData.value.currentUsername) {
+      const ops: PatchOperation[] = [
+        { op: 'replace', path: '/username', value: userFormData.value.username },
+        { op: 'replace', path: '/displayName', value: userFormData.value.displayName },
+      ]
+      if (userFormData.value.password) {
+        ops.push({ op: 'replace', path: '/password', value: userFormData.value.password })
       }
+      await apiFetch(`/auth/users/${userFormData.value.currentUsername}`, {
+        method: 'PATCH',
+        body: ops,
+      })
+      ElMessage({ message: 'User updated', type: 'success' })
+    } else {
+      await apiFetch('/auth/users', { method: 'POST', body: userFormData.value })
+      ElMessage({ message: 'User created', type: 'success' })
     }
-  })
+    userFormVisible.value = false
+    refresh()
+  } catch (err) {
+    ElMessage({ message: String(err), type: 'error' })
+  }
 }
 
 const onDelete = async (user: User) => {

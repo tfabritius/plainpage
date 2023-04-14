@@ -10,7 +10,7 @@ const profileFormData = ref({
   password: '',
   passwordConfirm: '',
 })
-const profileFormRules = computed(() => ({
+const profileFormRules = {
   displayName: [{ required: true, message: 'Please enter display name', trigger: 'blur' }],
   passwordConfirm: [
     {
@@ -24,7 +24,7 @@ const profileFormRules = computed(() => ({
       trigger: 'blur',
     },
   ],
-} satisfies FormRules))
+} satisfies FormRules
 
 const onSave = async () => {
   if (!profileFormRef.value) {
@@ -78,7 +78,7 @@ const onDelete = async () => {
         <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
       </ElButton>
     </template>
-    <ElForm ref="profileFormRef" :model="profileFormData" label-position="top" :rules="profileFormRules" :validate-on-rule-change="false">
+    <ElForm ref="profileFormRef" :model="profileFormData" label-position="top" :rules="profileFormRules">
       <ElFormItem label="Username">
         <ElInput :value="auth.user?.username" :disabled="true" />
       </ElFormItem>

@@ -87,3 +87,7 @@ export interface Config {
   appName: string
   acl: AccessRule[] | null
 }
+
+// corresponding to service/user_service.go
+
+export const validUsernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$/

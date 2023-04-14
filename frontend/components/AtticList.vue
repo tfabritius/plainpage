@@ -35,10 +35,11 @@ const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
       </ElButton>
     </template>
 
-    <div v-for="el in data?.entries" :key="el.rev">
+    <div v-for="(el, idx) in data?.entries" :key="el.rev">
       <NuxtLink v-slot="{ navigate, href }" :to="`?rev=${el.rev}`" custom>
         <ElLink :href="href" @click="navigate">
           {{ format(el.date, 'yyyy-MM-dd HH:mm') }} ({{ el.rev }})
+          <span v-if="idx === 0"> <Icon class="ml-2" name="ci:show" /> (current version)</span>
         </ElLink>
       </NuxtLink>
     </div>

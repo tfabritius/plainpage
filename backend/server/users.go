@@ -182,6 +182,7 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 
 	if user == nil {
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
 	}
 
 	token, err := app.Token.GenerateToken(*user)

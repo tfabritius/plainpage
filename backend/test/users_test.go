@@ -92,4 +92,33 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// User can register user
 	s.createUser(s.userToken, "test3", "test3", "secret")
+
+}
+func (s *UsersTestSuite) TestLoginUser() {
+	r := s.Require()
+
+	s.createUser(s.adminToken, "test-user", "Test User", "myPassword")
+
+	// Valid login returns user details and token
+	{
+		res := s.api("POST", "/_api/auth/login",
+			model.LoginRequest{Username: "test-user", Password: "myPassword"},
+			nil)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.TokenUserResponse](res)
+		r.Equal("test-user", body.User.Username)
+		r.Equal("Test User", body.User.DisplayName)
+		r.NotEmpty(body.User.ID)
+		r.NotEmpty(body.Token)
+	}
+
+	// Wrong password fails
+	{
+		res := s.api("POST", "/_api/auth/login",
+			model.LoginRequest{Username: "test-user", Password: "wrongPassword"},
+			nil)
+		r.Equal(401, res.Code)
+		r.Equal("Unauthorized", res.Body.String())
+	}
 }

@@ -2,7 +2,10 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/model"
@@ -126,6 +129,37 @@ func (s *CrudTestSuite) TestCRUD() {
 		r.Equal("bar", body.Folder.Content[0].Name)
 		r.Equal("/foo/bar", body.Folder.Content[0].Url)
 		r.False(body.Folder.Content[0].IsFolder)
+	}
+
+	// Update page in folder
+	{
+		time.Sleep(1050 * time.Millisecond) // Only one revision per second possible
+		res := s.api("PUT", "/_api/pages/foo/bar", model.PutRequest{Page: &model.Page{Meta: model.PageMeta{Title: "New Bar"}}}, nil)
+		r.Equal(200, res.Code)
+	}
+	{
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/pages/foo/bar", nil, nil))
+		r.Equal(200, res.Code)
+		r.Equal("New Bar", body.Page.Meta.Title)
+	}
+
+	// List revisions in attic
+	var firstRev int64
+	{
+		body, res := jsonbody[model.GetAtticListResponse](s.api("GET", "/_api/attic/foo/bar", nil, nil))
+		r.Equal(200, res.Code)
+		fmt.Println(body)
+		r.Len(body.Entries, 2)
+		firstRev = body.Entries[0].Revision
+	}
+
+	// Retrieve old revision from attic
+	{
+		body, res := jsonbody[model.GetContentResponse](s.api("GET", "/_api/attic/foo/bar?rev="+strconv.Itoa(int(firstRev)), nil, nil))
+		r.Equal(200, res.Code)
+		r.Nil(body.Folder)
+		r.NotNil(body.Page)
+		r.Equal("Bar", body.Page.Meta.Title)
 	}
 
 	// Delete non-empty folder

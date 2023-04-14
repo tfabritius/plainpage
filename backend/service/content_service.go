@@ -66,7 +66,7 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 		fsPath = filepath.Join("pages", urlPath+".md")
 	} else {
 		revStr := strconv.FormatInt(*revision, 10)
-		fsPath = filepath.Join("attuc", urlPath+"."+revStr+".md")
+		fsPath = filepath.Join("attic", urlPath+"."+revStr+".md")
 	}
 
 	bytes, err := s.storage.ReadFile(fsPath)

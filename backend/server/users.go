@@ -71,7 +71,7 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if errors.Is(err, model.ErrUserExistsAlready) {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 			return
 		}
 		panic(err)

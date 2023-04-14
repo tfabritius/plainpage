@@ -93,6 +93,17 @@ func (s *UsersTestSuite) TestCreateUser() {
 	// User can register user
 	s.createUser(s.userToken, "test3", "test3", "secret")
 
+	// Duplicate username fails
+	{
+		s.createUser(nil, "duplicate-username", "Duplicate User", "secret")
+
+		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
+			Username:    "Duplicate-Username",
+			DisplayName: "test",
+			Password:    "secret",
+		}, nil)
+		r.Equal(409, res.Code)
+	}
 }
 func (s *UsersTestSuite) TestLoginUser() {
 	r := s.Require()

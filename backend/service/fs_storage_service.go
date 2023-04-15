@@ -1,4 +1,4 @@
-package storage
+package service
 
 import (
 	"errors"
@@ -31,7 +31,7 @@ func touch(filename string) error {
 	return err
 }
 
-func NewFsStorage(dataDir string) Storage {
+func NewFsStorage(dataDir string) model.Storage {
 	log.Println("Data directory:", dataDir)
 
 	fi, err := os.Stat(dataDir)

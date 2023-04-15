@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/server"
-	"github.com/tfabritius/plainpage/storage"
+	"github.com/tfabritius/plainpage/service"
 )
 
 type emptyFs struct {
@@ -76,7 +76,7 @@ func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []model.AccessRule)
 }
 
 func (s *AppTestSuite) setupInitialApp() {
-	store := storage.NewFsStorage(s.T().TempDir())
+	store := service.NewFsStorage(s.T().TempDir())
 	s.app = server.NewApp(http.FS(emptyFs{}), store)
 	s.handler = s.app.GetHandler()
 

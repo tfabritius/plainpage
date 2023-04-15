@@ -10,18 +10,17 @@ import (
 	"github.com/tfabritius/plainpage/libs/argon2"
 	"github.com/tfabritius/plainpage/libs/utils"
 	"github.com/tfabritius/plainpage/model"
-	"github.com/tfabritius/plainpage/storage"
 	"gopkg.in/yaml.v3"
 )
 
-func NewUserService(s storage.Storage) UserService {
+func NewUserService(s model.Storage) UserService {
 	return UserService{
 		storage: s,
 	}
 }
 
 type UserService struct {
-	storage storage.Storage
+	storage model.Storage
 }
 
 func (s *UserService) ReadAll() ([]model.User, error) {

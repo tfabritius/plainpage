@@ -12,7 +12,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/tfabritius/plainpage/server"
-	"github.com/tfabritius/plainpage/storage"
+	"github.com/tfabritius/plainpage/service"
 )
 
 func getPathToExecutable() string {
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	dataDir := getDataDir()
-	store := storage.NewFsStorage(dataDir)
+	store := service.NewFsStorage(dataDir)
 
 	frontend := getStaticFrontend()
 

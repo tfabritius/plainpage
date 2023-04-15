@@ -11,10 +11,9 @@ import (
 	"time"
 
 	"github.com/tfabritius/plainpage/model"
-	"github.com/tfabritius/plainpage/storage"
 )
 
-func NewContentService(store storage.Storage) ContentService {
+func NewContentService(store model.Storage) ContentService {
 	s := ContentService{
 		storage: store,
 	}
@@ -41,7 +40,7 @@ func NewContentService(store storage.Storage) ContentService {
 }
 
 type ContentService struct {
-	storage storage.Storage
+	storage model.Storage
 }
 
 func (s *ContentService) IsPage(urlPath string) bool {

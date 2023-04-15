@@ -13,18 +13,17 @@ import (
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
-	"github.com/tfabritius/plainpage/storage"
 )
 
 type App struct {
 	Frontend http.FileSystem
-	Storage  storage.Storage
+	Storage  model.Storage
 	Content  service.ContentService
 	Users    service.UserService
 	Token    service.TokenService
 }
 
-func NewApp(staticFrontendFiles http.FileSystem, store storage.Storage) App {
+func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 	if !store.Exists("config.yml") {
 		log.Println("Initializing config...")
 		cfg := initializeConfig()

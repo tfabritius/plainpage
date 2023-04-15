@@ -1,9 +1,7 @@
-package storage
+package model
 
 import (
 	"io/fs"
-
-	"github.com/tfabritius/plainpage/model"
 )
 
 type Storage interface {
@@ -17,6 +15,6 @@ type Storage interface {
 	ReadDirectory(fsPath string) ([]fs.FileInfo, error)
 	DeleteEmptyDirectory(fsPath string) error
 
-	ReadConfig() (model.Config, error)
-	WriteConfig(config model.Config) error
+	ReadConfig() (Config, error)
+	WriteConfig(config Config) error
 }

@@ -1,6 +1,7 @@
 package test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -130,6 +131,6 @@ func (s *UsersTestSuite) TestLoginUser() {
 			model.LoginRequest{Username: "test-user", Password: "wrongPassword"},
 			nil)
 		r.Equal(401, res.Code)
-		r.Equal("Unauthorized", res.Body.String())
+		r.Equal("Unauthorized", strings.TrimSpace(res.Body.String()))
 	}
 }

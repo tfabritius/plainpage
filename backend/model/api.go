@@ -22,7 +22,7 @@ type GetAtticListResponse struct {
 }
 
 type GetAppResponse struct {
-	AppName       string `json:"appName"`
+	AppTitle      string `json:"appTitle"`
 	SetupMode     bool   `json:"setupMode"`
 	AllowRegister bool   `json:"allowRegister"`
 	AllowAdmin    bool   `json:"allowAdmin"`

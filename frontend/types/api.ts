@@ -6,7 +6,7 @@ export interface Breadcrumb {
 }
 
 export interface GetAppResponse {
-  appName: string
+  appTitle: string
   setupMode: boolean
   allowRegister: boolean
   allowAdmin: boolean
@@ -86,7 +86,7 @@ export interface User {
 }
 
 export interface Config {
-  appName: string
+  appTitle: string
   acl: AccessRule[] | null
 }
 

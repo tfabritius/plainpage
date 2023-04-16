@@ -21,7 +21,7 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := model.GetAppResponse{
-		AppName:       cfg.AppName,
+		AppTitle:      cfg.AppTitle,
 		SetupMode:     cfg.SetupMode,
 		AllowRegister: allowRegister,
 		AllowAdmin:    allowAdmin,
@@ -66,14 +66,14 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if operation.Path == "/appName" {
+		if operation.Path == "/appTitle" {
 			var value string
 			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 
-			cfg.AppName = value
+			cfg.AppTitle = value
 
 		} else if operation.Path == "/acl" {
 			var value []model.AccessRule

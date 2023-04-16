@@ -19,12 +19,12 @@ const auth = useAuthStore()
 
 const app = useAppStore()
 const { refresh } = app
-const { appName, allowAdmin } = storeToRefs(app)
+const { appTitle, allowAdmin } = storeToRefs(app)
 
 refresh()
 watch(() => auth.loggedIn, () => refresh())
 
-useHead(() => ({ titleTemplate: `%s | ${appName.value}` }))
+useHead(() => ({ titleTemplate: `%s | ${appTitle.value}` }))
 
 const route = useRoute()
 
@@ -55,7 +55,7 @@ async function handleDropdownMenuCommand(command: string | number | object) {
         <ElLink :underline="false" :href="href" @click="navigate">
           <span class="text-xl font-light flex items-center">
             <Icon name="ci:file-blank" />
-            <span>{{ appName }}</span>
+            <span>{{ appTitle }}</span>
           </span>
         </ElLink>
       </NuxtLink>

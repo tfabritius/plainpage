@@ -11,11 +11,11 @@ export const useAppStore = defineStore(
       data.value = res
     }
 
-    const appName = computed(() => data.value?.appName ?? 'PlainPage')
+    const appTitle = computed(() => data.value?.appTitle ?? 'PlainPage')
     const allowAdmin = computed(() => data.value?.allowAdmin || false)
     const allowRegister = computed(() => data.value?.allowRegister ?? false)
 
-    return { appName, allowAdmin, allowRegister, refresh }
+    return { appTitle, allowAdmin, allowRegister, refresh }
   },
   {
     persist: true,

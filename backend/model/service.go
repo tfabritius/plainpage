@@ -65,7 +65,7 @@ type User struct {
 
 type Config struct {
 	ACL       []AccessRule `json:"acl" yaml:"acl"`
-	AppName   string       `json:"appName" yaml:"appName"`
+	AppTitle  string       `json:"appTitle" yaml:"appTitle"`
 	JwtSecret string       `json:"-" yaml:"jwtSecret"`
 	SetupMode bool         `json:"setupMode" yaml:"setupMode"`
 }

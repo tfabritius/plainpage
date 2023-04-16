@@ -15,7 +15,7 @@ async function onSave() {
   const response = await apiFetch<Config>('/config', {
     method: 'PATCH',
     body: [
-      { op: 'replace', path: '/appName', value: data.value?.appName },
+      { op: 'replace', path: '/appTitle', value: data.value?.appTitle },
       { op: 'replace', path: '/acl', value: acl },
     ],
   })
@@ -48,7 +48,7 @@ async function onSave() {
       @submit.prevent
     >
       <ElFormItem label="Application title">
-        <ElInput v-model="data.appName" />
+        <ElInput v-model="data.appTitle" />
       </ElFormItem>
       <ElFormItem label="Permissions">
         <AclTable ref="aclTableRef" :acl="data?.acl ?? []" :show-columns="['register', 'admin']" />

@@ -56,7 +56,7 @@ func initializeConfig() model.Config {
 	cfg := model.Config{}
 	var err error
 
-	cfg.AppName = "PlainPage"
+	cfg.AppTitle = "PlainPage"
 
 	cfg.JwtSecret, err = utils.GenerateRandomString(16)
 	if err != nil {

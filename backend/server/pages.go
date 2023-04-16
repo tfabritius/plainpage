@@ -56,7 +56,9 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 
-			app.Users.EnhanceACLWithUserInfo(page.Meta.ACL)
+			if err := app.Users.EnhanceACLWithUserInfo(page.Meta.ACL); err != nil {
+				panic(err)
+			}
 
 			response.Page = &page
 		} else if app.Content.IsFolder(urlPath) {
@@ -65,7 +67,9 @@ func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
 				panic(err)
 			}
 
-			app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL)
+			if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
+				panic(err)
+			}
 
 			response.Folder = &folder
 		} else {

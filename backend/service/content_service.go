@@ -33,7 +33,9 @@ func NewContentService(store model.Storage) ContentService {
 		defaultACL := []model.AccessRule{
 			{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}},
 		}
-		s.SaveFolder("/", model.PageMeta{ACL: &defaultACL})
+		if err := s.SaveFolder("/", model.PageMeta{ACL: &defaultACL}); err != nil {
+			log.Fatalln("Could not create default ACL:", err)
+		}
 	}
 
 	return s

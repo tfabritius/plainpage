@@ -130,7 +130,7 @@ func (s *UserService) GetByUsername(username string) (model.User, error) {
 	}
 
 	for _, user := range users {
-		if strings.ToLower(user.Username) == strings.ToLower(username) {
+		if strings.EqualFold(user.Username, username) {
 			return user, nil
 		}
 	}
@@ -215,7 +215,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 	found := false
 
 	for i := 0; i < len(users); {
-		if strings.ToLower(users[i].Username) == strings.ToLower(username) {
+		if strings.EqualFold(users[i].Username, username) {
 			found = true
 			users = append(users[:i], users[i+1:]...)
 		} else {
@@ -339,7 +339,7 @@ func (*UserService) compareACL(acl []model.AccessRule, subject string, op model.
 
 func (*UserService) isUsernameUnique(users []model.User, username string) bool {
 	for _, user := range users {
-		if strings.ToLower(user.Username) == strings.ToLower(username) {
+		if strings.EqualFold(user.Username, username) {
 			return false
 		}
 	}
@@ -347,6 +347,6 @@ func (*UserService) isUsernameUnique(users []model.User, username string) bool {
 }
 
 func (*UserService) isValidUsername(username string) bool {
-	regex := regexp.MustCompile("^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$")
+	regex := regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_\.-]{3,20}$`)
 	return regex.MatchString(username)
 }

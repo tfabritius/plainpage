@@ -26,8 +26,7 @@ func HashPassword(password string, keyLength, saltLength, iterations, memory uin
 		return "", fmt.Errorf("could not create salt: %w", err)
 	}
 
-	var key []byte
-	key = argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
+	key := argon2.IDKey([]byte(password), salt, iterations, memory, parallelism, keyLength)
 
 	hash := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",
 		argon2.Version,

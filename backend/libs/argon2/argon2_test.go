@@ -84,12 +84,14 @@ func TestVerifyPassword(t *testing.T) {
 
 func BenchmarkHashPasswordDefault(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		HashPasswordDefault("secret")
+		_, err := HashPasswordDefault("secret")
+		assert.NoError(b, err)
 	}
 }
 
 func BenchmarkVerifyPassword(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		VerifyPassword("secret", "$argon2id$v=19$m=4096,t=2,p=1$ckg3QktpRlR2RFUxeVBkOA$QAZA+hzrcOKtz5RggyNdZQ")
+		_, err := VerifyPassword("secret", "$argon2id$v=19$m=4096,t=2,p=1$ckg3QktpRlR2RFUxeVBkOA$QAZA+hzrcOKtz5RggyNdZQ")
+		assert.NoError(b, err)
 	}
 }

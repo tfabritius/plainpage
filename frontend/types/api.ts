@@ -8,6 +8,8 @@ export interface Breadcrumb {
 export interface GetAppResponse {
   appName: string
   setupMode: boolean
+  allowRegister: boolean
+  allowAdmin: boolean
 }
 
 export interface GetContentResponse {

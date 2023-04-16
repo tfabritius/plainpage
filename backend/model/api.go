@@ -22,8 +22,10 @@ type GetAtticListResponse struct {
 }
 
 type GetAppResponse struct {
-	AppName   string `json:"appName"`
-	SetupMode bool   `json:"setupMode"`
+	AppName       string `json:"appName"`
+	SetupMode     bool   `json:"setupMode"`
+	AllowRegister bool   `json:"allowRegister"`
+	AllowAdmin    bool   `json:"allowAdmin"`
 }
 
 type PutRequest struct {

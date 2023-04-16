@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import { useAppStore } from '~/store/app'
 import { useAuthStore } from '~/store/auth'
 
 const loginFormData = ref({ username: '', password: '' })
@@ -7,6 +9,9 @@ useHead({ title: 'Sign in' })
 
 const auth = useAuthStore()
 const route = useRoute()
+
+const app = useAppStore()
+const { allowRegister } = storeToRefs(app)
 
 const loading = ref(false)
 
@@ -45,7 +50,7 @@ async function submit() {
         </ElFormItem>
       </ElForm>
 
-      <NuxtLink v-slot="{ navigate, href }" custom :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
+      <NuxtLink v-if="allowRegister" v-slot="{ navigate, href }" custom :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
         <ElLink :underline="false" :href="href" @click="navigate">
           New Here? Register now!
         </ElLink>

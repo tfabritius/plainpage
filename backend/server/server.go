@@ -81,11 +81,11 @@ func (app App) GetHandler() http.Handler {
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}))
 
-	r.Get("/_api/app", app.exposeConfig)
-
 	r.
 		With(app.Token.Token2ContextMiddleware).
 		Route("/_api", func(r chi.Router) {
+			r.Get("/app", app.exposeConfig)
+
 			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/config", app.getConfig)
 			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Patch("/config", app.patchConfig)
 

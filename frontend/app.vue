@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
 import { useAuthStore } from '~/store/auth'
 import { Icon } from '#components'
-import type { GetAppResponse } from '~/types'
+import { useAppStore } from '~/store/app'
 
 useHead({
   bodyAttrs: {
@@ -13,13 +15,17 @@ useHead({
   }],
 })
 
-const { data } = await useAsyncData('/app', () => apiFetch<GetAppResponse>('/app'))
+const auth = useAuthStore()
 
-const appName = computed(() => data.value?.appName ?? 'PlainPage')
+const app = useAppStore()
+const { refresh } = app
+const { appName, allowAdmin } = storeToRefs(app)
+
+refresh()
+watch(() => auth.loggedIn, () => refresh())
 
 useHead(() => ({ titleTemplate: `%s | ${appName.value}` }))
 
-const auth = useAuthStore()
 const route = useRoute()
 
 const ProfileIcon = h(Icon, { name: 'ci:user-circle' })
@@ -65,10 +71,10 @@ async function handleDropdownMenuCommand(command: string | number | object) {
               <ElDropdownItem :icon="ProfileIcon" command="profile">
                 Profile
               </ElDropdownItem>
-              <ElDropdownItem :icon="UsersIcon" command="users">
+              <ElDropdownItem v-if="allowAdmin" :icon="UsersIcon" command="users">
                 Users
               </ElDropdownItem>
-              <ElDropdownItem :icon="SettingsIcon" command="settings">
+              <ElDropdownItem v-if="allowAdmin" :icon="SettingsIcon" command="settings">
                 Settings
               </ElDropdownItem>
               <ElDropdownItem :icon="LogoutIcon" command="logout">

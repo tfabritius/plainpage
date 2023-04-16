@@ -6,17 +6,25 @@ import (
 
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
+	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
 func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
+	userID := ctxutil.UserID(r.Context())
+
+	allowRegister := app.Users.CheckAppPermissions(userID, model.AccessOpRegister) == nil
+	allowAdmin := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin) == nil
+
 	cfg, err := app.Storage.ReadConfig()
 	if err != nil {
 		panic(err)
 	}
 
 	response := model.GetAppResponse{
-		AppName:   cfg.AppName,
-		SetupMode: cfg.SetupMode,
+		AppName:       cfg.AppName,
+		SetupMode:     cfg.SetupMode,
+		AllowRegister: allowRegister,
+		AllowAdmin:    allowAdmin,
 	}
 
 	render.JSON(w, r, response)

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { Config } from '~/types'
 import { AclTable } from '#components'
+import { useAppStore } from '~/store/app'
+
+const app = useAppStore()
 
 const { data, error, refresh } = await useAsyncData('/config', () => apiFetch<Config>('/config'))
 
@@ -23,6 +26,7 @@ async function onSave() {
   })
 
   data.value = response
+  app.refresh()
 }
 </script>
 

@@ -134,3 +134,43 @@ func (s *UsersTestSuite) TestLoginUser() {
 		r.Equal("Unauthorized", strings.TrimSpace(res.Body.String()))
 	}
 }
+
+func (s *UsersTestSuite) TestPatchUser() {
+	r := s.Require()
+
+	s.createUser(s.adminToken, "patch-user", "Test User", "secret")
+	token := s.loginUser("patch-user", "secret")
+
+	// Updating user fails if not logged in
+	{
+		res := s.api("PATCH", "/_api/auth/users/patch-user",
+			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
+			nil)
+		r.Equal(401, res.Code)
+	}
+
+	// User updates own displayName
+	{
+		res := s.api("PATCH", "/_api/auth/users/patch-user",
+			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
+			&token)
+		r.Equal(200, res.Code)
+	}
+
+	// Updating other user fails
+	{
+		res := s.api("PATCH", "/_api/auth/users/patch-user",
+			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
+			s.userToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Admin updates other user
+	{
+		res := s.api("PATCH", "/_api/auth/users/patch-user",
+			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
+			s.adminToken)
+		r.Equal(200, res.Code)
+	}
+
+}

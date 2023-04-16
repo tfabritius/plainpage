@@ -95,21 +95,37 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 
 func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
+	userID := ctxutil.UserID(r.Context())
+
+	// Check authorization
+	adminPermErr := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin)
+	// Delay handling of adminPermErr
+
+	user, err := app.Users.GetByUsername(username)
+	if err != nil {
+		if adminPermErr == nil && errors.Is(err, model.ErrNotFound) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+
+		panic(err)
+	}
+
+	// Handle adminPermErr only if user does not update itself
+	if adminPermErr != nil && user.ID != userID {
+		if e, ok := adminPermErr.(*service.AccessDeniedError); ok {
+			http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
+			return
+		}
+
+		panic(adminPermErr)
+	}
 
 	// Poor man's implementation of RFC 6902
 	var operations []model.PatchOperation
 	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	user, err := app.Users.GetByUsername(username)
-	if errors.Is(err, model.ErrNotFound) {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-	if err != nil {
-		panic(err)
 	}
 
 	for _, operation := range operations {

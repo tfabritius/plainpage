@@ -17,13 +17,17 @@ const loading = ref(false)
 
 async function submit() {
   loading.value = true
-  const success = await auth.login(loginFormData.value)
+  try {
+    const success = await auth.login(loginFormData.value)
 
-  if (success) {
-    const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
-    await navigateTo(returnTo)
-  } else {
-    ElMessage({ message: 'Invalid credentials', type: 'error' })
+    if (success) {
+      const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
+      await navigateTo(returnTo)
+    } else {
+      ElMessage({ message: 'Invalid credentials', type: 'error' })
+    }
+  } catch (err) {
+    ElMessage({ message: String(err), type: 'error' })
   }
   loading.value = false
 }

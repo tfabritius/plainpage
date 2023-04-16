@@ -33,7 +33,7 @@ const onSave = async () => {
   await profileFormRef.value.validate(async (valid, _fields) => {
     if (valid) {
       try {
-        auth.updateMe(profileFormData.value)
+        await auth.updateMe(profileFormData.value)
         profileFormData.value.password = ''
         profileFormData.value.passwordConfirm = ''
         ElMessage({ message: 'Saved', type: 'success' })
@@ -74,7 +74,7 @@ const onDelete = async () => {
     </template>
 
     <template #actions>
-      <ElButton class="m-1" @click="onSave">
+      <ElButton class="m-1" type="success" @click="onSave">
         <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
       </ElButton>
     </template>

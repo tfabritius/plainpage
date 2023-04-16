@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
+	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
 /**
@@ -40,63 +41,72 @@ func getBreadcrumbs(urlPath string) []model.Breadcrumb {
 	return breadcrumbs
 }
 
-func (app App) getPageOrFolder(w http.ResponseWriter, r *http.Request) {
+func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
+	userID := ctxutil.UserID(r.Context())
 
 	response := model.GetContentResponse{}
 
-	if !isValidUrl(urlPath) {
-		w.WriteHeader(http.StatusNotFound)
+	acl, err := app.Content.GetEffectivePermissions(urlPath)
+	if err != nil {
+		panic(err)
+	}
+
+	response.AllowWrite = app.Users.CheckContentPermissions(acl, userID, model.AccessOpWrite) == nil
+	response.AllowDelete = app.Users.CheckContentPermissions(acl, userID, model.AccessOpDelete) == nil
+
+	validUrl := isValidUrl(urlPath)
+
+	response.Breadcrumbs = getBreadcrumbs(urlPath)
+
+	if validUrl && app.Content.IsPage(urlPath) {
+		page, err := app.Content.ReadPage(urlPath, nil)
+		if err != nil {
+			panic(err)
+		}
+
+		if err := app.Users.EnhanceACLWithUserInfo(page.Meta.ACL); err != nil {
+			panic(err)
+		}
+
+		response.Page = &page
+	} else if validUrl && app.Content.IsFolder(urlPath) {
+		folder, err := app.Content.ReadFolder(urlPath)
+		if err != nil {
+			panic(err)
+		}
+
+		if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
+			panic(err)
+		}
+
+		response.Folder = &folder
 	} else {
-		response.Breadcrumbs = getBreadcrumbs(urlPath)
+		// Not found
+		w.WriteHeader(http.StatusNotFound)
 
-		if app.Content.IsPage(urlPath) {
-			page, err := app.Content.ReadPage(urlPath, nil)
-			if err != nil {
-				panic(err)
-			}
-
-			if err := app.Users.EnhanceACLWithUserInfo(page.Meta.ACL); err != nil {
-				panic(err)
-			}
-
-			response.Page = &page
-		} else if app.Content.IsFolder(urlPath) {
-			folder, err := app.Content.ReadFolder(urlPath)
-			if err != nil {
-				panic(err)
-			}
-
-			if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
-				panic(err)
-			}
-
-			response.Folder = &folder
+		if !isValidUrl(urlPath) {
+			response.AllowWrite = false
 		} else {
-			// Not found
-			w.WriteHeader(http.StatusNotFound)
-
-			if !isValidUrl(urlPath) {
-				response.AllowCreate = false
-			} else {
-				parentUrl, err := url.JoinPath(urlPath, "..")
-				if err != nil {
-					panic(err)
-				}
-
-				response.AllowCreate = app.Content.IsFolder(parentUrl)
+			parentUrl, err := url.JoinPath(urlPath, "..")
+			if err != nil {
+				panic(err)
 			}
 
-			if !response.AllowCreate {
-				response.Breadcrumbs = nil
+			if !app.Content.IsFolder(parentUrl) {
+				response.AllowWrite = false
 			}
+		}
+
+		if !response.AllowWrite {
+			response.Breadcrumbs = nil
 		}
 	}
 
 	render.JSON(w, r, response)
 }
 
-func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
+func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
 	if !isValidUrl(urlPath) {
@@ -177,7 +187,7 @@ func (app App) patchPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
+func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
 	if !isValidUrl(urlPath) {
@@ -220,7 +230,7 @@ func (app App) putPageOrFolder(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (app App) deletePageOrFolder(w http.ResponseWriter, r *http.Request) {
+func (app App) deleteContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
 	if !isValidUrl(urlPath) {

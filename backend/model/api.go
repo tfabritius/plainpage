@@ -12,7 +12,8 @@ type Breadcrumb struct {
 type GetContentResponse struct {
 	Page        *Page        `json:"page"`
 	Folder      *Folder      `json:"folder"`
-	AllowCreate bool         `json:"allowCreate"`
+	AllowWrite  bool         `json:"allowWrite"`
+	AllowDelete bool         `json:"allowDelete"`
 	Breadcrumbs []Breadcrumb `json:"breadcrumbs"`
 }
 

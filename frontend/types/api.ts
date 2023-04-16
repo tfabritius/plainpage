@@ -15,7 +15,8 @@ export interface GetAppResponse {
 export interface GetContentResponse {
   page: Page | null
   folder: Folder | null
-  allowCreate: boolean
+  allowWrite: boolean
+  allowDelete: boolean
   breadcrumbs: Breadcrumb[]
 }
 

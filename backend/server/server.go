@@ -90,11 +90,11 @@ func (app App) GetHandler() http.Handler {
 			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Patch("/config", app.patchConfig)
 
 			r.Route("/pages", func(r chi.Router) {
-				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getPageOrFolder)).ServeHTTP)
-				r.Put("/*", app.RequireContentPermission(model.AccessOpWrite, http.HandlerFunc(app.putPageOrFolder)).ServeHTTP)
-				r.Delete("/*", app.RequireContentPermission(model.AccessOpDelete, http.HandlerFunc(app.deletePageOrFolder)).ServeHTTP)
+				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getContent)).ServeHTTP)
+				r.Put("/*", app.RequireContentPermission(model.AccessOpWrite, http.HandlerFunc(app.putContent)).ServeHTTP)
+				r.Delete("/*", app.RequireContentPermission(model.AccessOpDelete, http.HandlerFunc(app.deleteContent)).ServeHTTP)
 
-				r.Patch("/*", app.RequireContentPermission(model.AccessOpAdmin, http.HandlerFunc(app.patchPageOrFolder)).ServeHTTP)
+				r.Patch("/*", app.RequireContentPermission(model.AccessOpAdmin, http.HandlerFunc(app.patchContent)).ServeHTTP)
 			})
 
 			r.Route("/attic", func(r chi.Router) {

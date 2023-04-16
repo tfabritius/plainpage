@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import type { Breadcrumb, Folder } from '~/types'
 import { Icon } from '#components'
+import { useAppStore } from '~/store/app'
 
 const props = defineProps<{
   urlPath: string
   folder: Folder
   breadcrumbs: Breadcrumb[]
+  allowWrite: boolean
+  allowDelete: boolean
 }>()
 
 const emit = defineEmits<{ (e: 'refresh'): void }>()
+
+const app = useAppStore()
+const { allowAdmin } = storeToRefs(app)
 
 const urlPath = computed(() => props.urlPath)
 const folder = computed(() => props.folder)
@@ -127,11 +134,11 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
 
     <template #actions>
       <div>
-        <ElButton class="m-1" @click="createPage">
+        <ElButton v-if="allowWrite" class="m-1" @click="createPage">
           <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
         </ElButton>
         <span />
-        <ElButton class="m-1" @click="createFolder">
+        <ElButton v-if="allowWrite" class="m-1" @click="createFolder">
           <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
         </ElButton>
 
@@ -144,10 +151,10 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
               <ElDropdownItem :icon="ReloadIcon" command="reload">
                 Reload
               </ElDropdownItem>
-              <ElDropdownItem :icon="PermissionsIcon" command="acl">
+              <ElDropdownItem v-if="allowAdmin" :icon="PermissionsIcon" command="acl">
                 Permissions
               </ElDropdownItem>
-              <ElDropdownItem v-if="urlPath !== ''" :icon="DeleteIcon" command="delete">
+              <ElDropdownItem v-if="urlPath !== '' && allowDelete" :icon="DeleteIcon" command="delete">
                 Delete
               </ElDropdownItem>
             </ElDropdownMenu>

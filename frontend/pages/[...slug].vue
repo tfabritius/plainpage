@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
 import { useRouteQuery } from '@vueuse/router'
+import { storeToRefs } from 'pinia'
 import { Icon } from '#components'
 
 import type { GetContentResponse, Page } from '~/types/'
 import { useAuthStore } from '~/store/auth'
+import { useAppStore } from '~/store/app'
 
 const route = useRoute()
 const urlPath = computed(() => route.path === '/' ? '' : route.path)
@@ -26,6 +28,9 @@ const aclQuery = computed(() => {
   }
   return true
 })
+
+const app = useAppStore()
+const { allowAdmin } = storeToRefs(app)
 
 const auth = useAuthStore()
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
@@ -52,7 +57,7 @@ const { data, error, refresh } = await useAsyncData(`/pages${route.path}:${auth.
 
 const page = computed(() => data.value?.page ?? null)
 const notFound = computed(() => data.value?.notFound === true)
-const allowCreate = computed(() => data.value?.allowCreate === true)
+const allowCreate = computed(() => data.value?.allowWrite === true)
 const folder = computed(() => data.value?.folder ?? null)
 
 const pageTitle = computed(() => {
@@ -217,7 +222,14 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
     :breadcrumbs="data?.breadcrumbs ?? []"
     @refresh="refresh"
   />
-  <Folder v-else-if="folder" :breadcrumbs="data?.breadcrumbs ?? []" :folder="folder" :url-path="urlPath" />
+  <Folder
+    v-else-if="folder"
+    :allow-write="data?.allowWrite ?? false"
+    :allow-delete="data?.allowDelete ?? false"
+    :breadcrumbs="data?.breadcrumbs ?? []"
+    :folder="folder"
+    :url-path="urlPath"
+  />
   <ContentPermissions v-else-if="page && aclQuery" :is-folder="false" :url-path="urlPath" :meta="deepClone(page.meta)" :title="page.meta.title" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
   <Layout v-else :breadcrumbs="data?.breadcrumbs ?? []">
     <template #title>
@@ -245,10 +257,10 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
               <ElDropdownItem v-if="page" :icon="RevisionsIcon" command="rev">
                 Revisions
               </ElDropdownItem>
-              <ElDropdownItem v-if="page" :icon="PermissionsIcon" command="acl">
+              <ElDropdownItem v-if="page && allowAdmin" :icon="PermissionsIcon" command="acl">
                 Permissions
               </ElDropdownItem>
-              <ElDropdownItem v-if="page" :icon="DeleteIcon" command="delete">
+              <ElDropdownItem v-if="page && data?.allowDelete" :icon="DeleteIcon" command="delete">
                 Delete
               </ElDropdownItem>
             </ElDropdownMenu>

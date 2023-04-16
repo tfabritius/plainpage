@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -13,10 +14,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewUserService(s model.Storage) UserService {
-	return UserService{
-		storage: s,
+func NewUserService(store model.Storage) UserService {
+	s := UserService{
+		storage: store,
 	}
+
+	// Initialize users.yml
+	if !s.storage.Exists("users.yml") {
+		err := s.saveAll([]model.User{})
+		if err != nil {
+			log.Fatalln("Could not create users.yml:", err)
+		}
+	}
+
+	return s
 }
 
 type UserService struct {

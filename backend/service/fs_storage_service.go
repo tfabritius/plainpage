@@ -48,11 +48,6 @@ func NewFsStorage(dataDir string) model.Storage {
 
 	storage := fsStorage{DataDir: dataDir}
 
-	// Create configuration file
-	if err := touch(filepath.Join(storage.DataDir, "users.yml")); err != nil {
-		log.Fatalln("Could not touch users.yml:", err)
-	}
-
 	return &storage
 }
 

@@ -29,10 +29,9 @@ const auth = useAuthStore()
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
-const { data, error, refresh } = await useAsyncData(`/pages${route.path}:${auth.token}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${auth.token}`, async () => {
   try {
-    const relUrl = route.path === '/' ? '' : route.path
-    const data = await apiFetch<GetContentResponse>(`/pages${relUrl}`)
+    const data = await apiFetch<GetContentResponse>(`/pages${urlPath.value}`)
     return {
       notFound: false,
       accessDenied: false,

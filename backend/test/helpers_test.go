@@ -35,7 +35,7 @@ func (s *AppTestSuite) createUser(token *string, username, displayName, password
 	s.T().Helper()
 	r := s.Require()
 
-	res := s.api("POST", "/_api/auth/users",
+	res := s.api("POST", "/auth/users",
 		model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
 		token)
 	r.Equal(200, res.Code)
@@ -50,7 +50,7 @@ func (s *AppTestSuite) createUser(token *string, username, displayName, password
 func (s *AppTestSuite) loginUser(username string, password string) string {
 	r := s.Require()
 
-	res := s.api("POST", "/_api/auth/login",
+	res := s.api("POST", "/auth/login",
 		model.LoginRequest{Username: username, Password: password},
 		nil)
 	r.Equal(200, res.Code)
@@ -71,7 +71,7 @@ func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []model.AccessRule)
 	r.Nil(err)
 	aclJson := json.RawMessage(aclBytes)
 
-	res := s.api("PATCH", "/_api/config", []model.PatchOperation{{Op: "replace", Path: "/acl", Value: &aclJson}}, adminToken)
+	res := s.api("PATCH", "/config", []model.PatchOperation{{Op: "replace", Path: "/acl", Value: &aclJson}}, adminToken)
 	r.Equal(200, res.Code)
 }
 
@@ -84,7 +84,7 @@ func (s *AppTestSuite) setupInitialApp() {
 
 	// Setup mode is enabled initially
 	{
-		body, res := jsonbody[model.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
+		body, res := jsonbody[model.GetAppResponse](s.api("GET", "/app", nil, nil))
 		r.Equal(200, res.Code)
 		r.True(body.SetupMode)
 	}
@@ -94,7 +94,7 @@ func (s *AppTestSuite) setupInitialApp() {
 
 	// Setup mode is disabled
 	{
-		body, res := jsonbody[model.GetAppResponse](s.api("GET", "/_api/app", nil, nil))
+		body, res := jsonbody[model.GetAppResponse](s.api("GET", "/app", nil, nil))
 		r.Equal(200, res.Code)
 		r.False(body.SetupMode)
 	}
@@ -122,7 +122,7 @@ func (s *AppTestSuite) api(method, target string, body any, token *string) *http
 		bodyReader = nil
 	}
 
-	req := httptest.NewRequest(method, target, bodyReader)
+	req := httptest.NewRequest(method, "/_api"+target, bodyReader)
 	if token != nil {
 		req.Header.Add("Authorization", "Bearer "+*token)
 	}

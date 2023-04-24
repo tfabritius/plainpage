@@ -25,7 +25,7 @@ func (s *UsersTestSuite) SetupSuite() {
 
 	// Get initial ACL
 	{
-		res := s.api("GET", "/_api/config", nil, s.adminToken)
+		res := s.api("GET", "/config", nil, s.adminToken)
 		r.Equal(200, res.Code)
 		body, _ := jsonbody[model.Config](res)
 		r.NotNil(body.ACL)
@@ -42,7 +42,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// Anonymous cannot register user
 	{
-		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
+		res := s.api("POST", "/auth/users", model.PostUserRequest{
 			Username:    "test",
 			DisplayName: "test",
 			Password:    "secret",
@@ -52,7 +52,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// User cannot register user
 	{
-		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
+		res := s.api("POST", "/auth/users", model.PostUserRequest{
 			Username:    "test",
 			DisplayName: "test",
 			Password:    "secret",
@@ -70,7 +70,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// Anonymous cannot register user
 	{
-		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
+		res := s.api("POST", "/auth/users", model.PostUserRequest{
 			Username:    "test",
 			DisplayName: "test",
 			Password:    "secret",
@@ -99,7 +99,7 @@ func (s *UsersTestSuite) TestCreateUser() {
 	{
 		s.createUser(nil, "duplicate-username", "Duplicate User", "secret")
 
-		res := s.api("POST", "/_api/auth/users", model.PostUserRequest{
+		res := s.api("POST", "/auth/users", model.PostUserRequest{
 			Username:    "Duplicate-Username",
 			DisplayName: "test",
 			Password:    "secret",
@@ -114,7 +114,7 @@ func (s *UsersTestSuite) TestLoginUser() {
 
 	// Valid login returns user details and token
 	{
-		res := s.api("POST", "/_api/auth/login",
+		res := s.api("POST", "/auth/login",
 			model.LoginRequest{Username: "test-user", Password: "myPassword"},
 			nil)
 		r.Equal(200, res.Code)
@@ -128,7 +128,7 @@ func (s *UsersTestSuite) TestLoginUser() {
 
 	// Wrong password fails
 	{
-		res := s.api("POST", "/_api/auth/login",
+		res := s.api("POST", "/auth/login",
 			model.LoginRequest{Username: "test-user", Password: "wrongPassword"},
 			nil)
 		r.Equal(401, res.Code)
@@ -144,7 +144,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// Updating user fails if not logged in
 	{
-		res := s.api("PATCH", "/_api/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/patch-user",
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			nil)
 		r.Equal(401, res.Code)
@@ -152,7 +152,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// User updates own displayName
 	{
-		res := s.api("PATCH", "/_api/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/patch-user",
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			&token)
 		r.Equal(200, res.Code)
@@ -160,7 +160,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// Updating other user fails
 	{
-		res := s.api("PATCH", "/_api/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/patch-user",
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			s.userToken)
 		r.Equal(403, res.Code)
@@ -168,7 +168,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// Admin updates other user
 	{
-		res := s.api("PATCH", "/_api/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/patch-user",
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			s.adminToken)
 		r.Equal(200, res.Code)
@@ -188,7 +188,7 @@ func (s *UsersTestSuite) TestRenewToken() {
 	{
 		time.Sleep(1050 * time.Millisecond) // Tokens should differ
 
-		res := s.api("POST", "/_api/auth/refresh", nil, &token)
+		res := s.api("POST", "/auth/refresh", nil, &token)
 		r.Equal(200, res.Code)
 		body, _ := jsonbody[model.TokenUserResponse](res)
 		r.Equal(username, body.User.Username)
@@ -205,13 +205,13 @@ func (s *UsersTestSuite) TestRenewToken() {
 
 	// Token is still valid as JWT cannot be revoked :-(
 	{
-		res := s.api("GET", "/_api/pages", nil, &token)
+		res := s.api("GET", "/pages", nil, &token)
 		r.Equal(200, res.Code)
 	}
 
 	// Renew fails
 	{
-		res := s.api("POST", "/_api/auth/refresh", nil, &token)
+		res := s.api("POST", "/auth/refresh", nil, &token)
 		r.Equal(401, res.Code)
 	}
 }

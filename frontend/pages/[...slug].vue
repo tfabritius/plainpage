@@ -35,19 +35,24 @@ const { data, error, refresh } = await useAsyncData(`/pages${route.path}:${auth.
     const data = await apiFetch<GetContentResponse>(`/pages${relUrl}`)
     return {
       notFound: false,
+      accessDenied: false,
       ...data,
     }
   } catch (err) {
+    if (err instanceof FetchError && err.statusCode === 403) {
+      return { accessDenied: true, notFound: false, page: null, folder: null, breadcrumbs: [], allowWrite: false, allowDelete: false }
+    }
     if (err instanceof FetchError && err.statusCode === 404) {
       editablePage.value.url = route.path
 
       const data = JSON.parse(err.response?._data) as GetContentResponse
-      return { notFound: true, ...data }
+      return { notFound: true, accessDenied: false, ...data }
     }
     throw err
   }
 })
 
+const accessDenied = computed(() => data.value?.accessDenied ?? false)
 const page = computed(() => data.value?.page ?? null)
 const notFound = computed(() => data.value?.notFound === true)
 const folder = computed(() => data.value?.folder ?? null)
@@ -61,7 +66,8 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-  <NetworkError v-if="!folder && !page && !notFound" :msg="error?.message" @refresh="refresh" />
+  <NetworkError v-if="!folder && !page && !notFound && !accessDenied" :msg="error?.message" @refresh="refresh" />
+  <AccessDenied v-else-if="data?.accessDenied" />
   <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" />
   <AtticPage v-else-if="revQuery !== undefined" :url-path="urlPath" :revision="revQuery" />
   <ContentPermissions

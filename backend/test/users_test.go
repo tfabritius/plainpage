@@ -3,6 +3,7 @@ package test
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/model"
@@ -172,5 +173,45 @@ func (s *UsersTestSuite) TestPatchUser() {
 			s.adminToken)
 		r.Equal(200, res.Code)
 	}
+}
 
+func (s *UsersTestSuite) TestRenewToken() {
+	r := s.Require()
+
+	username := "testRenewToken"
+	password := "myPassword"
+
+	s.createUser(s.adminToken, username, "Test User", password)
+	token := s.loginUser(username, password)
+
+	// Renew token
+	{
+		time.Sleep(1050 * time.Millisecond) // Tokens should differ
+
+		res := s.api("POST", "/_api/auth/refresh", nil, &token)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.TokenUserResponse](res)
+		r.Equal(username, body.User.Username)
+		r.NotEqual(token, body.Token)
+
+		token = body.Token
+	}
+
+	// Delete user with new token
+	{
+		err := s.app.Users.DeleteByUsername(username)
+		r.NoError(err)
+	}
+
+	// Token is still valid as JWT cannot be revoked :-(
+	{
+		res := s.api("GET", "/_api/pages", nil, &token)
+		r.Equal(200, res.Code)
+	}
+
+	// Renew fails
+	{
+		res := s.api("POST", "/_api/auth/refresh", nil, &token)
+		r.Equal(401, res.Code)
+	}
 }

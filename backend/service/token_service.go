@@ -12,6 +12,8 @@ import (
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
+const tokenValidityDuration = 7 * 24 * time.Hour
+
 func NewTokenService(jwtSecret string) TokenService {
 	return TokenService{
 		jwtSecret: jwtSecret,
@@ -25,7 +27,8 @@ type TokenService struct {
 func (s *TokenService) GenerateToken(user model.User) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["id"] = user.ID
-	claims["exp"] = time.Now().Add(15 * time.Minute).Unix()
+
+	claims["exp"] = time.Now().Add(tokenValidityDuration).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 

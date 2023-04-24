@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"path"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -317,6 +318,11 @@ func (s *ContentService) ListAttic(urlPath string) ([]model.AtticEntry, error) {
 
 		atticEntries = append(atticEntries, model.AtticEntry{Revision: rev})
 	}
+
+	// Sort by revision
+	sort.Slice(atticEntries, func(i, j int) bool {
+		return atticEntries[i].Revision < atticEntries[j].Revision
+	})
 
 	return atticEntries, nil
 }

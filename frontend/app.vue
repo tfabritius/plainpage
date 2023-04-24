@@ -93,5 +93,11 @@ async function handleDropdownMenuCommand(command: string | number | object) {
     </div>
     <NuxtPage />
     <NuxtLoadingIndicator />
+
+    <div class="text-center">
+      <ElLink :underline="false" href="https://github.com/tfabritius/plainpage">
+        <span class="font-normal text-gray-300 hover:text-current">PlainPage</span>
+      </ElLink>
+    </div>
   </div>
 </template>

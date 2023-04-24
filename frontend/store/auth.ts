@@ -2,6 +2,8 @@ import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
 import type { PatchOperation, TokenUserResponse, User } from '~/types'
 
+const minRemainingTokenValidity = 6 * 24 * 60 * 60 // in seconds
+
 export const useAuthStore = defineStore(
   'auth',
   () => {
@@ -26,6 +28,17 @@ export const useAuthStore = defineStore(
       }
 
       return true
+    }
+
+    async function renewToken() {
+      if (!loggedIn.value) {
+        throw new Error('not logged in')
+      }
+
+      const response = await apiFetch<TokenUserResponse>('/auth/refresh', { method: 'POST' })
+
+      token.value = response.token
+      user.value = response.user
     }
 
     function logout() {
@@ -57,6 +70,38 @@ export const useAuthStore = defineStore(
       await apiFetch(`/auth/users/${user.value.username}`, { method: 'DELETE' })
       logout()
     }
+
+    /**
+     * Parses token and returns expiration time or 0 if token is not set
+     */
+    const tokenExpiration = computed(() => {
+      if (!token.value) {
+        return 0
+      }
+
+      const jsonStr = window.atob(token.value.split('.')[1])
+
+      const payload = JSON.parse(jsonStr) as unknown
+      if (typeof payload === 'object' && payload !== null && 'exp' in payload && typeof payload.exp === 'number') {
+        return payload.exp
+      }
+      throw new Error('invalid token payload format')
+    })
+
+    const now = useTimestamp({ interval: 1000 })
+
+    const tokenRemainingSeconds = computed(() => {
+      return Math.max(0, tokenExpiration.value - Math.floor(now.value / 1000))
+    })
+
+    /**
+     * Watches token expiration and renews it if needed
+     */
+    watch(tokenRemainingSeconds, async (time) => {
+      if (loggedIn.value && time < minRemainingTokenValidity) {
+        await renewToken()
+      }
+    })
 
     return { login, logout, loggedIn, user, token, updateMe, deleteMe }
   },

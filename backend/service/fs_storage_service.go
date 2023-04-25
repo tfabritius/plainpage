@@ -16,21 +16,6 @@ type fsStorage struct {
 	DataDir string
 }
 
-func touch(filename string) error {
-	_, err := os.Stat(filename)
-
-	if os.IsNotExist(err) {
-		file, err := os.Create(filename)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		return nil
-	}
-
-	return err
-}
-
 func NewFsStorage(dataDir string) model.Storage {
 	log.Println("Data directory:", dataDir)
 

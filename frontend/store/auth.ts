@@ -44,6 +44,10 @@ export const useAuthStore = defineStore(
     function logout() {
       token.value = ''
       user.value = undefined
+
+      // Refresh current page
+      const router = useRouter()
+      router.go(0)
     }
 
     async function updateMe(newMe: { displayName: string; password: string }) {

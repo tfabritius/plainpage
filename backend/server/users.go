@@ -231,10 +231,6 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 
 func (app App) refreshToken(w http.ResponseWriter, r *http.Request) {
 	id := ctxutil.UserID(r.Context())
-	if id == "" {
-		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-		return
-	}
 
 	user, err := app.Users.GetById(id)
 	if err != nil {

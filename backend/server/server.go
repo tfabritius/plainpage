@@ -108,7 +108,7 @@ func (app App) GetHandler() http.Handler {
 				r.With(app.RequireAuth).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
 				r.Post("/login", app.login)
-				r.Post("/refresh", app.refreshToken)
+				r.With(app.RequireAuth).Post("/refresh", app.refreshToken)
 
 			})
 

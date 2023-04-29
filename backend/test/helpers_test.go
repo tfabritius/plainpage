@@ -31,22 +31,6 @@ type AppTestSuite struct {
 	userToken  *string
 }
 
-func (s *AppTestSuite) createUser(token *string, username, displayName, password string) {
-	s.T().Helper()
-	r := s.Require()
-
-	res := s.api("POST", "/auth/users",
-		model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
-		token)
-	r.Equal(200, res.Code)
-
-	body, _ := jsonbody[model.User](res)
-	r.Equal(username, body.Username)
-	r.Equal(displayName, body.DisplayName)
-	r.NotEmpty(body.ID)
-	r.Empty(body.PasswordHash)
-}
-
 func (s *AppTestSuite) loginUser(username string, password string) string {
 	r := s.Require()
 
@@ -89,8 +73,18 @@ func (s *AppTestSuite) setupInitialApp() {
 		r.True(body.SetupMode)
 	}
 
-	// Register admin user
-	s.createUser(nil, "admin", "Administrator", "secret")
+	// Register first user that will become admin automatically
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: "admin", DisplayName: "Administrator", Password: "secret"},
+			nil)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.User](res)
+
+		err := s.app.Users.CheckAppPermissions(body.ID, model.AccessOpAdmin)
+		r.NoError(err)
+	}
 
 	// Setup mode is disabled
 	{
@@ -101,8 +95,19 @@ func (s *AppTestSuite) setupInitialApp() {
 
 	adminToken := s.loginUser("admin", "secret")
 
-	// Register another user
-	s.createUser(&adminToken, "user", "User", "secret")
+	// Register another user that will not become admin automatically
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: "user", DisplayName: "User", Password: "secret"},
+			&adminToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.User](res)
+
+		err := s.app.Users.CheckAppPermissions(body.ID, model.AccessOpAdmin)
+		r.Error(err)
+	}
+
 	userToken := s.loginUser("user", "secret")
 
 	s.adminToken = &adminToken

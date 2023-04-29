@@ -37,26 +37,42 @@ func (s *UsersTestSuite) SetupSuite() {
 func (s *UsersTestSuite) TestCreateUser() {
 	r := s.Require()
 
+	username := "testCreateUser"
+	password := "myPassword"
+	displayName := "Test User"
+
 	// Use default ACL
 	s.saveGlobalAcl(s.adminToken, s.defaultAcl)
 
+	// Endpoint returns user details
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			s.adminToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.User](res)
+		r.Equal(username, body.Username)
+		r.Equal(displayName, body.DisplayName)
+		r.NotEmpty(body.ID)
+		r.Empty(body.PasswordHash)
+
+		r.NoError(s.app.Users.DeleteByUsername(username))
+	}
+
 	// Anonymous cannot register user
 	{
-		res := s.api("POST", "/auth/users", model.PostUserRequest{
-			Username:    "test",
-			DisplayName: "test",
-			Password:    "secret",
-		}, nil)
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			nil)
 		r.Equal(401, res.Code)
 	}
 
 	// User cannot register user
 	{
-		res := s.api("POST", "/auth/users", model.PostUserRequest{
-			Username:    "test",
-			DisplayName: "test",
-			Password:    "secret",
-		}, nil)
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			nil)
 		r.Equal(401, res.Code)
 	}
 
@@ -70,16 +86,21 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 	// Anonymous cannot register user
 	{
-		res := s.api("POST", "/auth/users", model.PostUserRequest{
-			Username:    "test",
-			DisplayName: "test",
-			Password:    "secret",
-		}, nil)
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			nil)
 		r.Equal(401, res.Code)
 	}
 
 	// User can register user
-	s.createUser(s.userToken, "test1", "test1", "secret")
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			s.userToken)
+		r.Equal(200, res.Code)
+
+		r.NoError(s.app.Users.DeleteByUsername(username))
+	}
 
 	// Enable anonymous user registration
 	{
@@ -90,38 +111,58 @@ func (s *UsersTestSuite) TestCreateUser() {
 	}
 
 	// Anonymous can register user
-	s.createUser(nil, "test2", "test2", "secret")
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			nil)
+		r.Equal(200, res.Code)
+
+		r.NoError(s.app.Users.DeleteByUsername(username))
+	}
 
 	// User can register user
-	s.createUser(s.userToken, "test3", "test3", "secret")
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: username, DisplayName: displayName, Password: password},
+			s.userToken)
+		r.Equal(200, res.Code)
+
+		r.NoError(s.app.Users.DeleteByUsername(username))
+	}
 
 	// Duplicate username fails
 	{
-		s.createUser(nil, "duplicate-username", "Duplicate User", "secret")
+		_, err := s.app.Users.Create(strings.ToLower(username), password, displayName)
+		r.NoError(err)
 
-		res := s.api("POST", "/auth/users", model.PostUserRequest{
-			Username:    "Duplicate-Username",
-			DisplayName: "test",
-			Password:    "secret",
-		}, nil)
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: strings.ToUpper(username), DisplayName: displayName, Password: password},
+			nil)
 		r.Equal(409, res.Code)
+
+		r.NoError(s.app.Users.DeleteByUsername(username))
 	}
 }
 func (s *UsersTestSuite) TestLoginUser() {
 	r := s.Require()
 
-	s.createUser(s.adminToken, "test-user", "Test User", "myPassword")
+	username := "testLoginUser"
+	displayName := "Test User"
+	password := "myPassword"
+
+	_, err := s.app.Users.Create(username, password, displayName)
+	r.NoError(err)
 
 	// Valid login returns user details and token
 	{
 		res := s.api("POST", "/auth/login",
-			model.LoginRequest{Username: "test-user", Password: "myPassword"},
+			model.LoginRequest{Username: username, Password: password},
 			nil)
 		r.Equal(200, res.Code)
 
 		body, _ := jsonbody[model.TokenUserResponse](res)
-		r.Equal("test-user", body.User.Username)
-		r.Equal("Test User", body.User.DisplayName)
+		r.Equal(username, body.User.Username)
+		r.Equal(displayName, body.User.DisplayName)
 		r.NotEmpty(body.User.ID)
 		r.NotEmpty(body.Token)
 	}
@@ -129,7 +170,7 @@ func (s *UsersTestSuite) TestLoginUser() {
 	// Wrong password fails
 	{
 		res := s.api("POST", "/auth/login",
-			model.LoginRequest{Username: "test-user", Password: "wrongPassword"},
+			model.LoginRequest{Username: username, Password: "wrongPassword"},
 			nil)
 		r.Equal(401, res.Code)
 		r.Equal("Unauthorized", strings.TrimSpace(res.Body.String()))
@@ -139,12 +180,17 @@ func (s *UsersTestSuite) TestLoginUser() {
 func (s *UsersTestSuite) TestPatchUser() {
 	r := s.Require()
 
-	s.createUser(s.adminToken, "patch-user", "Test User", "secret")
-	token := s.loginUser("patch-user", "secret")
+	username := "testPatchUser"
+	displayName := "Test User"
+	password := "myPassword"
+
+	_, err := s.app.Users.Create(username, password, displayName)
+	r.NoError(err)
+	token := s.loginUser(username, password)
 
 	// Updating user fails if not logged in
 	{
-		res := s.api("PATCH", "/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/"+username,
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			nil)
 		r.Equal(401, res.Code)
@@ -152,7 +198,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// User updates own displayName
 	{
-		res := s.api("PATCH", "/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/"+username,
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			&token)
 		r.Equal(200, res.Code)
@@ -160,7 +206,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// Updating other user fails
 	{
-		res := s.api("PATCH", "/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/"+username,
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			s.userToken)
 		r.Equal(403, res.Code)
@@ -168,7 +214,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	// Admin updates other user
 	{
-		res := s.api("PATCH", "/auth/users/patch-user",
+		res := s.api("PATCH", "/auth/users/"+username,
 			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
 			s.adminToken)
 		r.Equal(200, res.Code)
@@ -181,7 +227,8 @@ func (s *UsersTestSuite) TestRenewToken() {
 	username := "testRenewToken"
 	password := "myPassword"
 
-	s.createUser(s.adminToken, username, "Test User", password)
+	_, err := s.app.Users.Create(username, password, "Test User")
+	r.NoError(err)
 	token := s.loginUser(username, password)
 
 	// Renew token
@@ -224,17 +271,20 @@ func (s *UsersTestSuite) TestDeleteUser() {
 
 	// User deletes itself
 	{
-		s.createUser(s.adminToken, username, "Test User", password)
+		_, err := s.app.Users.Create(username, password, "Test User")
+		r.NoError(err)
+
 		token := s.loginUser(username, password)
 
 		res := s.api("DELETE", "/auth/users/"+username, nil, &token)
 		r.Equal(200, res.Code)
 
-		_, err := s.app.Users.GetByUsername(username)
+		_, err = s.app.Users.GetByUsername(username)
 		r.ErrorIs(err, model.ErrNotFound)
 	}
 
-	s.createUser(s.adminToken, username, "Test User", password)
+	_, err := s.app.Users.Create(username, password, "Test User")
+	r.NoError(err)
 
 	// User cannot delete other user
 	{

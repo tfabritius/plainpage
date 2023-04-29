@@ -101,12 +101,14 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := app.Users.GetByUsername(username)
 	if err != nil {
-		if isAdmin && errors.Is(err, model.ErrNotFound) {
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-			return
+		if errors.Is(err, model.ErrNotFound) {
+			if isAdmin {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				return
+			}
+		} else {
+			panic(err)
 		}
-
-		panic(err)
 	}
 
 	if !isAdmin && user.ID != userID {
@@ -170,12 +172,14 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := app.Users.GetByUsername(username)
 	if err != nil {
-		if isAdmin && errors.Is(err, model.ErrNotFound) {
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-			return
+		if errors.Is(err, model.ErrNotFound) {
+			if isAdmin {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				return
+			}
+		} else {
+			panic(err)
 		}
-
-		panic(err)
 	}
 
 	if !isAdmin && user.ID != userID {

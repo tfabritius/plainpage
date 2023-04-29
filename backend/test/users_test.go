@@ -212,6 +212,22 @@ func (s *UsersTestSuite) TestPatchUser() {
 		r.Equal(403, res.Code)
 	}
 
+	// Updating nonexisting user as user fails
+	{
+		res := s.api("PATCH", "/auth/users/does-not-exist",
+			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
+			s.userToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Updating nonexisting user as admin fails
+	{
+		res := s.api("PATCH", "/auth/users/does-not-exist",
+			[]map[string]string{{"op": "replace", "path": "/displayName", "value": "Changed Test User"}},
+			s.adminToken)
+		r.Equal(404, res.Code)
+	}
+
 	// Admin updates other user
 	{
 		res := s.api("PATCH", "/auth/users/"+username,
@@ -305,5 +321,17 @@ func (s *UsersTestSuite) TestDeleteUser() {
 
 		_, err := s.app.Users.GetByUsername(username)
 		r.ErrorIs(err, model.ErrNotFound)
+	}
+
+	// Deleting nonexistent user as user fails
+	{
+		res := s.api("DELETE", "/auth/users/does-not-exist", nil, s.userToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Deleting nonexistent user as admin fails
+	{
+		res := s.api("DELETE", "/auth/users/does-not-exist", nil, s.adminToken)
+		r.Equal(404, res.Code)
 	}
 }

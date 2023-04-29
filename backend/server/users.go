@@ -171,6 +171,30 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 
 func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
+	userID := ctxutil.UserID(r.Context())
+
+	adminPermErr := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin)
+	// Delay handling of adminPermErr
+
+	user, userErr := app.Users.GetByUsername(username)
+	if userErr != nil {
+		if adminPermErr == nil && errors.Is(userErr, model.ErrNotFound) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+
+		panic(userErr)
+	}
+
+	// Handle adminPermErr only if user does not delete itself
+	if adminPermErr != nil && user.ID != userID {
+		if e, ok := adminPermErr.(*service.AccessDeniedError); ok {
+			http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
+			return
+		}
+
+		panic(adminPermErr)
+	}
 
 	err := app.Users.DeleteByUsername(username)
 	if errors.Is(err, model.ErrNotFound) {

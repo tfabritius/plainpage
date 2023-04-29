@@ -106,7 +106,7 @@ func (app App) GetHandler() http.Handler {
 				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
 				r.Post("/users", app.postUser)
 				r.Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
-				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
+				r.Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
 				r.Post("/login", app.login)
 				r.Post("/refresh", app.refreshToken)

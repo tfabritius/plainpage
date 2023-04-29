@@ -215,3 +215,45 @@ func (s *UsersTestSuite) TestRenewToken() {
 		r.Equal(401, res.Code)
 	}
 }
+
+func (s *UsersTestSuite) TestDeleteUser() {
+	r := s.Require()
+
+	username := "testDeleteUser"
+	password := "myPassword"
+
+	// User deletes itself
+	{
+		s.createUser(s.adminToken, username, "Test User", password)
+		token := s.loginUser(username, password)
+
+		res := s.api("DELETE", "/auth/users/"+username, nil, &token)
+		r.Equal(200, res.Code)
+
+		_, err := s.app.Users.GetByUsername(username)
+		r.ErrorIs(err, model.ErrNotFound)
+	}
+
+	s.createUser(s.adminToken, username, "Test User", password)
+
+	// User cannot delete other user
+	{
+		res := s.api("DELETE", "/auth/users/"+username, nil, s.userToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Anonymous cannot delete user
+	{
+		res := s.api("DELETE", "/auth/users/"+username, nil, nil)
+		r.Equal(401, res.Code)
+	}
+
+	// Admin can delete other user
+	{
+		res := s.api("DELETE", "/auth/users/"+username, nil, s.adminToken)
+		r.Equal(200, res.Code)
+
+		_, err := s.app.Users.GetByUsername(username)
+		r.ErrorIs(err, model.ErrNotFound)
+	}
+}

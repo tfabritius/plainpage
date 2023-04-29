@@ -3,6 +3,10 @@ import type { Config } from '~/types'
 import { AclTable } from '#components'
 import { useAppStore } from '~/store/app'
 
+definePageMeta({
+  middleware: ['require-auth'],
+})
+
 const app = useAppStore()
 
 const { data, error, refresh } = await useAsyncData('/config', () => apiFetch<Config>('/config'))

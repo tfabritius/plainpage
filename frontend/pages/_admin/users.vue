@@ -3,6 +3,10 @@ import type { FormInstance, FormRules } from 'element-plus'
 import type { PatchOperation, User } from '~/types'
 import { validUsernameRegex } from '~/types'
 
+definePageMeta({
+  middleware: ['require-auth'],
+})
+
 const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
 const userFormVisible = ref(false)

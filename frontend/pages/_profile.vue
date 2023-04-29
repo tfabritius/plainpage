@@ -2,6 +2,10 @@
 import type { FormInstance, FormRules } from 'element-plus'
 import { useAuthStore } from '~/store/auth'
 
+definePageMeta({
+  middleware: ['require-auth'],
+})
+
 const auth = useAuthStore()
 
 const profileFormRef = ref<FormInstance>()

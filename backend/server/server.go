@@ -89,26 +89,45 @@ func (app App) GetHandler() http.Handler {
 			r.With(app.RequireAdminPermission).Patch("/config", app.patchConfig)
 
 			r.Route("/pages", func(r chi.Router) {
-				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getContent)).ServeHTTP)
-				r.Put("/*", app.RequireContentPermission(model.AccessOpWrite, http.HandlerFunc(app.putContent)).ServeHTTP)
-				r.Delete("/*", app.RequireContentPermission(model.AccessOpDelete, http.HandlerFunc(app.deleteContent)).ServeHTTP)
-
-				r.Patch("/*", app.RequireContentPermission(model.AccessOpAdmin, http.HandlerFunc(app.patchContent)).ServeHTTP)
+				r.Get("/*",
+					app.RequireContentPermission(model.AccessOpRead,
+						http.HandlerFunc(app.getContent),
+					).ServeHTTP)
+				r.Put("/*",
+					app.RequireContentPermission(model.AccessOpWrite,
+						http.HandlerFunc(app.putContent),
+					).ServeHTTP)
+				r.Patch("/*",
+					app.RequireContentPermission(model.AccessOpAdmin,
+						http.HandlerFunc(app.patchContent),
+					).ServeHTTP)
+				r.Delete("/*",
+					app.RequireContentPermission(model.AccessOpDelete,
+						http.HandlerFunc(app.deleteContent),
+					).ServeHTTP)
 			})
 
 			r.Route("/attic", func(r chi.Router) {
-				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getAttic)).ServeHTTP)
+				r.Get("/*",
+					app.RequireContentPermission(model.AccessOpRead,
+						http.HandlerFunc(app.getAttic),
+					).ServeHTTP)
 			})
 
 			r.Route("/auth", func(r chi.Router) {
-				r.With(app.RequireAdminPermission).Get("/users", app.getUsers)
-				r.With(app.RequireAdminPermission).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
+				r.With(app.RequireAdminPermission).
+					Get("/users", app.getUsers)
+				r.With(app.RequireAdminPermission).
+					Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
 				r.Post("/users", app.postUser)
-				r.With(app.RequireAuth).Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
-				r.With(app.RequireAuth).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
+				r.With(app.RequireAuth).
+					Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
+				r.With(app.RequireAuth).
+					Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
 				r.Post("/login", app.login)
-				r.With(app.RequireAuth).Post("/refresh", app.refreshToken)
+				r.With(app.RequireAuth).
+					Post("/refresh", app.refreshToken)
 
 			})
 

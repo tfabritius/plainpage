@@ -97,13 +97,11 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 	userID := ctxutil.UserID(r.Context())
 
-	// Check authorization
-	adminPermErr := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin)
-	// Delay handling of adminPermErr
+	isAdmin := app.isAdmin(userID)
 
 	user, err := app.Users.GetByUsername(username)
 	if err != nil {
-		if adminPermErr == nil && errors.Is(err, model.ErrNotFound) {
+		if isAdmin && errors.Is(err, model.ErrNotFound) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
@@ -111,14 +109,9 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// Handle adminPermErr only if user does not update itself
-	if adminPermErr != nil && user.ID != userID {
-		if e, ok := adminPermErr.(*service.AccessDeniedError); ok {
-			http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
-			return
-		}
-
-		panic(adminPermErr)
+	if !isAdmin && user.ID != userID {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
 	}
 
 	// Poor man's implementation of RFC 6902
@@ -173,30 +166,24 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	username := chi.URLParam(r, "username")
 	userID := ctxutil.UserID(r.Context())
 
-	adminPermErr := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin)
-	// Delay handling of adminPermErr
+	isAdmin := app.isAdmin(userID)
 
-	user, userErr := app.Users.GetByUsername(username)
-	if userErr != nil {
-		if adminPermErr == nil && errors.Is(userErr, model.ErrNotFound) {
+	user, err := app.Users.GetByUsername(username)
+	if err != nil {
+		if isAdmin && errors.Is(err, model.ErrNotFound) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
 
-		panic(userErr)
+		panic(err)
 	}
 
-	// Handle adminPermErr only if user does not delete itself
-	if adminPermErr != nil && user.ID != userID {
-		if e, ok := adminPermErr.(*service.AccessDeniedError); ok {
-			http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
-			return
-		}
-
-		panic(adminPermErr)
+	if !isAdmin && user.ID != userID {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
 	}
 
-	err := app.Users.DeleteByUsername(username)
+	err = app.Users.DeleteByUsername(username)
 	if errors.Is(err, model.ErrNotFound) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return

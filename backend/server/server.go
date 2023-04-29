@@ -12,7 +12,6 @@ import (
 	"github.com/tfabritius/plainpage/libs/utils"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
-	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
 type App struct {
@@ -86,8 +85,8 @@ func (app App) GetHandler() http.Handler {
 		Route("/_api", func(r chi.Router) {
 			r.Get("/app", app.exposeConfig)
 
-			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/config", app.getConfig)
-			r.With(app.RequireAppPermission(model.AccessOpAdmin)).Patch("/config", app.patchConfig)
+			r.With(app.RequireAdminPermission).Get("/config", app.getConfig)
+			r.With(app.RequireAdminPermission).Patch("/config", app.patchConfig)
 
 			r.Route("/pages", func(r chi.Router) {
 				r.Get("/*", app.RequireContentPermission(model.AccessOpRead, http.HandlerFunc(app.getContent)).ServeHTTP)
@@ -102,11 +101,11 @@ func (app App) GetHandler() http.Handler {
 			})
 
 			r.Route("/auth", func(r chi.Router) {
-				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/users", app.getUsers)
-				r.With(app.RequireAppPermission(model.AccessOpAdmin)).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
+				r.With(app.RequireAdminPermission).Get("/users", app.getUsers)
+				r.With(app.RequireAdminPermission).Get("/users/{username:[a-zA-Z0-9_-]+}", app.getUser)
 				r.Post("/users", app.postUser)
-				r.Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
-				r.Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
+				r.With(app.RequireAuth).Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
+				r.With(app.RequireAuth).Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
 				r.Post("/login", app.login)
 				r.Post("/refresh", app.refreshToken)
@@ -120,48 +119,4 @@ func (app App) GetHandler() http.Handler {
 		Handle("/*", http.FileServer(app.Frontend))
 
 	return r
-}
-
-func (app App) RequireAppPermission(op model.AccessOp) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-			userID := ctxutil.UserID(r.Context())
-
-			if err := app.Users.CheckAppPermissions(userID, op); err != nil {
-				if e, ok := err.(*service.AccessDeniedError); ok {
-					http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
-					return
-				}
-
-				panic(err)
-			}
-
-			next.ServeHTTP(w, r)
-		})
-	}
-}
-
-func (app App) RequireContentPermission(op model.AccessOp, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := ctxutil.UserID(r.Context())
-
-		urlPath := chi.URLParam(r, "*")
-
-		acl, err := app.Content.GetEffectivePermissions(urlPath)
-		if err != nil {
-			panic(err)
-		}
-
-		if err := app.Users.CheckContentPermissions(acl, userID, op); err != nil {
-			if e, ok := err.(*service.AccessDeniedError); ok {
-				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
-				return
-			}
-
-			panic(err)
-		}
-
-		next.ServeHTTP(w, r)
-	})
 }

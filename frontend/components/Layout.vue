@@ -49,4 +49,10 @@ const route = useRoute()
 
     <slot />
   </ElCard>
+
+  <div class="text-center">
+    <ElLink :underline="false" href="https://github.com/tfabritius/plainpage">
+      <span class="font-normal text-gray-300 hover:text-current">PlainPage</span>
+    </ElLink>
+  </div>
 </template>

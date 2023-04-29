@@ -12,7 +12,7 @@
     "lintfix": "eslint . --fix"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.38.2",
+    "@antfu/eslint-config": "^0.38.5",
     "@codemirror/lang-markdown": "^6.1.0",
     "@codemirror/state": "^6.2.0",
     "@element-plus/nuxt": "^1.0.4",

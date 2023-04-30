@@ -89,7 +89,7 @@ const pageTitle = computed(() => {
   <ContentPermissions v-else-if="page && aclQuery" :is-folder="false" :url-path="urlPath" :meta="deepClone(page.meta)" :title="page.meta.title" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
   <PPage
     v-else-if="page"
-    :url-path="urlPath" :page="page"
+    :page="page"
     :breadcrumbs="data?.breadcrumbs ?? []"
     :allow-write="data?.allowWrite ?? false"
     :allow-delete="data?.allowDelete ?? false"

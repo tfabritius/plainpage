@@ -39,4 +39,7 @@ jobs:
         with:
           version: "1.20"
       - run: go build -v ./...
-      - run: go test -v ./...
+      - run: go test -v ./... -cover -covermode=atomic -coverpkg=./... -coverprofile=coverage.txt
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}

@@ -106,6 +106,11 @@ func (fss *fsStorage) DeleteEmptyDirectory(fsPath string) error {
 	return os.Remove(fsPath)
 }
 
+func (fss *fsStorage) DeleteDirectory(fsPath string) error {
+	fsPath = filepath.Join(fss.DataDir, fsPath)
+	return os.RemoveAll(fsPath)
+}
+
 func (fss *fsStorage) createDir(file string) error {
 	dir := filepath.Dir(file)
 

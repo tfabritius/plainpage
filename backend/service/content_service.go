@@ -19,12 +19,24 @@ func NewContentService(store model.Storage) ContentService {
 		storage: store,
 	}
 
+	if err := s.initializeStorage(); err != nil {
+		log.Fatalln("Could not initialize storage:", err)
+	}
+
+	return s
+}
+
+type ContentService struct {
+	storage model.Storage
+}
+
+func (s *ContentService) initializeStorage() error {
 	// Create pages and attic directories
 	for _, dir := range []string{"pages", "attic"} {
 		// Create directory, if it doesn't exist
 		if !s.storage.Exists(dir) {
 			if err := s.storage.CreateDirectory(dir); err != nil {
-				log.Fatalln("Could not create "+dir+" folder:", err)
+				return fmt.Errorf("could not create %s directory: %w", dir, err)
 			}
 		}
 	}
@@ -35,15 +47,11 @@ func NewContentService(store model.Storage) ContentService {
 			{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}},
 		}
 		if err := s.SaveFolder("/", model.PageMeta{ACL: &defaultACL}); err != nil {
-			log.Fatalln("Could not create default ACL:", err)
+			return fmt.Errorf("could not create default ACL: %w", err)
 		}
 	}
 
-	return s
-}
-
-type ContentService struct {
-	storage model.Storage
+	return nil
 }
 
 func (s *ContentService) IsPage(urlPath string) bool {
@@ -248,6 +256,16 @@ func (s *ContentService) folderIsEmpty(urlPath string) bool {
 	return len(entries) == 1 &&
 		entries[0].Name() == "_index.md" &&
 		!entries[0].IsDir()
+}
+
+func (s *ContentService) DeleteAll() error {
+	for _, dir := range []string{"pages", "attic"} {
+		if err := s.storage.DeleteDirectory(dir); err != nil {
+			return err
+		}
+	}
+
+	return s.initializeStorage()
 }
 
 func (s *ContentService) GetEffectivePermissions(urlPath string) (*[]model.AccessRule, error) {

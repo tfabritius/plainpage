@@ -10,9 +10,8 @@ const props = defineProps<{
   breadcrumbs: Breadcrumb[]
   allowWrite: boolean
   allowDelete: boolean
+  onReload: Function
 }>()
-
-const emit = defineEmits<{ (e: 'refresh'): void }>()
 
 const app = useAppStore()
 const { allowAdmin } = storeToRefs(app)
@@ -114,7 +113,8 @@ const onDeleteFolder = async () => {
 
 const handleDropdownMenuCommand = async (command: string | number | object) => {
   if (command === 'reload') {
-    emit('refresh')
+    await props.onReload()
+    ElMessage({ message: 'Folder reloaded', type: 'success' })
   } else if (command === 'acl') {
     await navigateTo({ query: { acl: null } })
   } else if (command === 'delete') {

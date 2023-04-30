@@ -1,10 +1,7 @@
 <script setup lang="ts">
 const _props = defineProps<{
   msg?: string
-}>()
-
-const emit = defineEmits<{
-  (e: 'refresh'): void
+  onReload: Function
 }>()
 </script>
 
@@ -17,7 +14,7 @@ const emit = defineEmits<{
         {{ msg || 'There was an error.' }}
       </div>
 
-      <ElButton @click="emit('refresh')">
+      <ElButton @click="onReload()">
         <Icon name="ci:arrows-reload-01" class="mr-1" />
         Try again
       </ElButton>

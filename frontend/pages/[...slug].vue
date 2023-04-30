@@ -65,7 +65,11 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-  <NetworkError v-if="!folder && !page && !notFound && !accessDenied" :msg="error?.message" @refresh="refresh" />
+  <NetworkError
+    v-if="!folder && !page && !notFound && !accessDenied"
+    :msg="error?.message"
+    :on-reload="refresh"
+  />
   <AccessDenied v-else-if="data?.accessDenied" />
   <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" />
   <AtticPage v-else-if="revQuery !== undefined" :url-path="urlPath" :revision="revQuery" />
@@ -85,6 +89,7 @@ const pageTitle = computed(() => {
     :breadcrumbs="data?.breadcrumbs ?? []"
     :folder="folder"
     :url-path="urlPath"
+    :on-reload="refresh"
   />
   <ContentPermissions v-else-if="page && aclQuery" :is-folder="false" :url-path="urlPath" :meta="deepClone(page.meta)" :title="page.meta.title" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
   <PPage
@@ -93,7 +98,7 @@ const pageTitle = computed(() => {
     :breadcrumbs="data?.breadcrumbs ?? []"
     :allow-write="data?.allowWrite ?? false"
     :allow-delete="data?.allowDelete ?? false"
-    @refresh="refresh"
+    :on-reload="refresh"
   />
   <NotFound
     v-else

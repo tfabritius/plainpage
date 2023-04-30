@@ -10,9 +10,8 @@ const props = defineProps<{
   breadcrumbs: Breadcrumb[]
   allowWrite: boolean
   allowDelete: boolean
+  onReload: Function
 }>()
-
-const emit = defineEmits<{ (e: 'refresh'): void }>()
 
 const route = useRoute()
 
@@ -67,7 +66,7 @@ const onSavePage = async () => {
       type: 'success',
     })
 
-    emit('refresh')
+    await props.onReload()
   } catch (err) {
     ElMessage({
       message: String(err),
@@ -109,7 +108,8 @@ const onDeletePage = async () => {
 
 const handleDropdownMenuCommand = async (command: string | number | object) => {
   if (command === 'reload') {
-    emit('refresh')
+    await props.onReload()
+    ElMessage({ message: 'Page reloaded', type: 'success' })
   } else if (command === 'delete') {
     onDeletePage()
   } else if (command === 'rev') {

@@ -25,6 +25,8 @@ const editing = computed({
   },
 })
 
+useHead({ title: 'Not found' })
+
 const createThisPage = () => {
   editablePage.value = deepClone(emptyPage)
   editing.value = true

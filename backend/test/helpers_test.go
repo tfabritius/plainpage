@@ -34,11 +34,7 @@ type AppTestSuite struct {
 func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []model.AccessRule) {
 	r := s.Require()
 
-	aclBytes, err := json.Marshal(acl)
-	r.Nil(err)
-	aclJson := json.RawMessage(aclBytes)
-
-	res := s.api("PATCH", "/config", []model.PatchOperation{{Op: "replace", Path: "/acl", Value: &aclJson}}, adminToken)
+	res := s.api("PATCH", "/config", []model.PatchOperation{{Op: "replace", Path: "/acl", Value: acl2json(acl)}}, adminToken)
 	r.Equal(200, res.Code)
 }
 
@@ -130,4 +126,13 @@ func jsonbody[T any](res *httptest.ResponseRecorder) (T, *httptest.ResponseRecor
 		panic(fmt.Errorf("Could not parse body: %w, body: %s", err, res.Body.String()))
 	}
 	return body, res
+}
+
+func acl2json(acl []model.AccessRule) *json.RawMessage {
+	bytes, err := json.Marshal(acl)
+	if err != nil {
+		panic(err)
+	}
+	jsonRawMsg := json.RawMessage(bytes)
+	return &jsonRawMsg
 }

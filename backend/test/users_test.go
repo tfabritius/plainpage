@@ -142,7 +142,18 @@ func (s *UsersTestSuite) TestCreateUser() {
 
 		r.NoError(s.app.Users.DeleteByUsername(username))
 	}
+
+	// Invalid username fails
+	{
+		invalidUsername := "email@example.com"
+
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: invalidUsername, DisplayName: displayName, Password: password},
+			nil)
+		r.Equal(400, res.Code)
+	}
 }
+
 func (s *UsersTestSuite) TestLoginUser() {
 	r := s.Require()
 

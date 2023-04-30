@@ -191,7 +191,7 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
 	if !isValidUrl(urlPath) {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

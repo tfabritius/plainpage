@@ -65,8 +65,12 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		if err := app.Users.EnhanceACLWithUserInfo(page.Meta.ACL); err != nil {
-			panic(err)
+		if app.isAdmin(userID) {
+			if err := app.Users.EnhanceACLWithUserInfo(page.Meta.ACL); err != nil {
+				panic(err)
+			}
+		} else {
+			page.Meta.ACL = nil // Hide ACL
 		}
 
 		response.Page = &page
@@ -76,8 +80,12 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
-		if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
-			panic(err)
+		if app.isAdmin(userID) {
+			if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
+				panic(err)
+			}
+		} else {
+			folder.Meta.ACL = nil // Hide ACL
 		}
 
 		response.Folder = &folder

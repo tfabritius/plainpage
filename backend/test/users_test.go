@@ -175,6 +175,7 @@ func (s *UsersTestSuite) TestLoginUser() {
 		r.Equal(username, body.User.Username)
 		r.Equal(displayName, body.User.DisplayName)
 		r.NotEmpty(body.User.ID)
+		r.Empty(body.User.PasswordHash)
 		r.NotEmpty(body.Token)
 	}
 
@@ -195,9 +196,10 @@ func (s *UsersTestSuite) TestPatchUser() {
 	displayName := "Test User"
 	password := "myPassword"
 
-	_, err := s.app.Users.Create(username, password, displayName)
+	user, err := s.app.Users.Create(username, password, displayName)
 	r.NoError(err)
-	token := s.loginUser(username, password)
+	token, err := s.app.Token.GenerateToken(user)
+	r.NoError(err)
 
 	// Updating user fails if not logged in
 	{
@@ -254,9 +256,10 @@ func (s *UsersTestSuite) TestRenewToken() {
 	username := "testRenewToken"
 	password := "myPassword"
 
-	_, err := s.app.Users.Create(username, password, "Test User")
+	user, err := s.app.Users.Create(username, password, "Test User")
 	r.NoError(err)
-	token := s.loginUser(username, password)
+	token, err := s.app.Token.GenerateToken(user)
+	r.NoError(err)
 
 	// Renew token
 	{
@@ -298,10 +301,10 @@ func (s *UsersTestSuite) TestDeleteUser() {
 
 	// User deletes itself
 	{
-		_, err := s.app.Users.Create(username, password, "Test User")
+		user, err := s.app.Users.Create(username, password, "Test User")
 		r.NoError(err)
-
-		token := s.loginUser(username, password)
+		token, err := s.app.Token.GenerateToken(user)
+		r.NoError(err)
 
 		res := s.api("DELETE", "/auth/users/"+username, nil, &token)
 		r.Equal(200, res.Code)

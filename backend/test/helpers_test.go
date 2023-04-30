@@ -31,23 +31,6 @@ type AppTestSuite struct {
 	userToken  *string
 }
 
-func (s *AppTestSuite) loginUser(username string, password string) string {
-	r := s.Require()
-
-	res := s.api("POST", "/auth/login",
-		model.LoginRequest{Username: username, Password: password},
-		nil)
-	r.Equal(200, res.Code)
-
-	body, _ := jsonbody[model.TokenUserResponse](res)
-	r.Equal(username, body.User.Username)
-	r.NotEmpty(body.User.ID)
-	r.Empty(body.User.PasswordHash)
-	r.NotEmpty(body.Token)
-
-	return body.Token
-}
-
 func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []model.AccessRule) {
 	r := s.Require()
 
@@ -80,10 +63,15 @@ func (s *AppTestSuite) setupInitialApp() {
 			nil)
 		r.Equal(200, res.Code)
 
-		body, _ := jsonbody[model.User](res)
+		user, _ := jsonbody[model.User](res)
 
-		err := s.app.Users.CheckAppPermissions(body.ID, model.AccessOpAdmin)
+		err := s.app.Users.CheckAppPermissions(user.ID, model.AccessOpAdmin)
 		r.NoError(err)
+
+		token, err := s.app.Token.GenerateToken(user)
+		r.NoError(err)
+
+		s.adminToken = &token
 	}
 
 	// Setup mode is disabled
@@ -93,25 +81,23 @@ func (s *AppTestSuite) setupInitialApp() {
 		r.False(body.SetupMode)
 	}
 
-	adminToken := s.loginUser("admin", "secret")
-
 	// Register another user that will not become admin automatically
 	{
 		res := s.api("POST", "/auth/users",
 			model.PostUserRequest{Username: "user", DisplayName: "User", Password: "secret"},
-			&adminToken)
+			s.adminToken)
 		r.Equal(200, res.Code)
 
-		body, _ := jsonbody[model.User](res)
+		user, _ := jsonbody[model.User](res)
 
-		err := s.app.Users.CheckAppPermissions(body.ID, model.AccessOpAdmin)
+		err := s.app.Users.CheckAppPermissions(user.ID, model.AccessOpAdmin)
 		r.Error(err)
+
+		token, err := s.app.Token.GenerateToken(user)
+		r.NoError(err)
+
+		s.userToken = &token
 	}
-
-	userToken := s.loginUser("user", "secret")
-
-	s.adminToken = &adminToken
-	s.userToken = &userToken
 }
 
 func (s *AppTestSuite) api(method, target string, body any, token *string) *httptest.ResponseRecorder {

@@ -11,7 +11,14 @@ renderer.link = (href: string, title: string, text: string) => `<a class="markdo
 
 const html = computed(
   () => dompurify.sanitize(
-    marked.parse(props.markdown, { gfm: true, renderer }),
+    marked.parse(props.markdown, {
+      gfm: true,
+      renderer,
+      // Suppress warnings about deprecated options:
+      langPrefix: undefined,
+      mangle: false,
+      headerIds: false,
+    }),
   ),
 )
 

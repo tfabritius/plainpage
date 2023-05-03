@@ -22,7 +22,7 @@
     "@types/dompurify": "^3.0.0",
     "@types/marked": "^4.0.8",
     "@types/node": "^18.15.5",
-    "@unocss/nuxt": "^0.51.4",
+    "@unocss/nuxt": "^0.51.8",
     "@vueuse/core": "^10.0.2",
     "@vueuse/nuxt": "^10.0.2",
     "@vueuse/router": "^10.0.2",

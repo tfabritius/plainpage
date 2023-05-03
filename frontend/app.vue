@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 
+import { useDark, useToggle } from '@vueuse/core'
 import { useAuthStore } from '~/store/auth'
 import { Icon } from '#components'
 import { useAppStore } from '~/store/app'
+
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 useHead({
   bodyAttrs: {
@@ -46,6 +49,9 @@ async function handleDropdownMenuCommand(command: string | number | object) {
     throw new Error(`Unhandled command ${command}`)
   }
 }
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 </script>
 
 <template>
@@ -60,8 +66,12 @@ async function handleDropdownMenuCommand(command: string | number | object) {
         </ElLink>
       </NuxtLink>
 
-      <span v-if="auth.loggedIn">
-        <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
+      <span>
+        <ElLink :underline="false" class="mr-2" @click="toggleDark()">
+          <Icon :name="isDark ? 'ci:moon' : 'ci:sun'" />
+        </ElLink>
+
+        <ElDropdown v-if="auth.loggedIn" trigger="click" class="m-1" @command="handleDropdownMenuCommand">
           <ElLink :underline="false" href="#">
             <Icon name="ci:user" class="mr-1" />
             <span class="font-normal">{{ auth.user?.displayName }}</span>
@@ -83,13 +93,13 @@ async function handleDropdownMenuCommand(command: string | number | object) {
             </ElDropdownMenu>
           </template>
         </ElDropdown>
-      </span>
 
-      <NuxtLink v-else v-slot="{ navigate, href }" custom :to="`/_login?returnTo=${encodeURIComponent(route.fullPath)}`">
-        <ElLink :underline="false" :href="href" @click="navigate">
-          <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">Sign in</span>
-        </ElLink>
-      </NuxtLink>
+        <NuxtLink v-else v-slot="{ navigate, href }" custom :to="`/_login?returnTo=${encodeURIComponent(route.fullPath)}`">
+          <ElLink :underline="false" :href="href" @click="navigate">
+            <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">Sign in</span>
+          </ElLink>
+        </NuxtLink>
+      </span>
     </div>
     <NuxtPage />
     <NuxtLoadingIndicator />

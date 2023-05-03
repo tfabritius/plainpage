@@ -84,7 +84,7 @@ async function submit() {
 </script>
 
 <template>
-  <div class="absolute inset-0 bg-white flex">
+  <div class="absolute inset-0 bg-white dark:bg-black flex">
     <div class="m-auto text-center text-gray-500">
       <h2>Register account</h2>
 

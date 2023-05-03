@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { minimalSetup } from 'codemirror'
 import { EditorView, highlightActiveLine } from '@codemirror/view'
-import { EditorSelection } from '@codemirror/state'
+import { Compartment, EditorSelection } from '@codemirror/state'
 import { markdown } from '@codemirror/lang-markdown'
+import { oneDark } from '@codemirror/theme-one-dark'
+
 import type { MdEditorGenerator } from '~/types'
 
 const props = defineProps<{
@@ -133,6 +135,9 @@ const replaceSelection = (generator: MdEditorGenerator) => {
 
 defineExpose({ scrollToLineNo, replaceSelection, replaceLine })
 
+// Compartment to switch editor theme
+const editorTheme = new Compartment()
+
 const extensions = [
   minimalSetup,
 
@@ -144,7 +149,25 @@ const extensions = [
 
   // Handle scroll event
   EditorView.domEventHandlers({ scroll: onScroll }),
+
+  // Dark mode theme
+  editorTheme.of(oneDark),
 ]
+
+const isDark = useDark()
+
+function updateTheme() {
+  const view = editorView.value
+  if (!view) {
+    return
+  }
+
+  const theme = isDark.value ? oneDark : []
+
+  view.dispatch({ effects: editorTheme.reconfigure(theme) })
+}
+onMounted(() => updateTheme())
+watch(isDark, updateTheme)
 </script>
 
 <template>

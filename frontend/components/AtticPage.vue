@@ -46,7 +46,11 @@ const revDate = computed(() => new Date(Number(revision.value) * 1000))
 </script>
 
 <template>
-  <NetworkError v-if="error || !data" :msg="error?.message || ''" @refresh="refresh" />
+  <NetworkError
+    v-if="error || !data"
+    :msg="error?.message || ''"
+    :on-reload="refresh"
+  />
   <Layout v-else :breadcrumbs="data.breadcrumbs">
     <template #title>
       <span v-if="data.page?.meta.title">{{ pageTitle }}</span>

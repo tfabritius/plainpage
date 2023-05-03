@@ -114,7 +114,11 @@ const onDelete = async (user: User) => {
 </script>
 
 <template>
-  <NetworkError v-if="!data" :msg="error?.message" @refresh="refresh" />
+  <NetworkError
+    v-if="!data"
+    :msg="error?.message"
+    :on-reload="refresh"
+  />
   <Layout v-else>
     <template #title>
       Users

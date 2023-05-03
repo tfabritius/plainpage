@@ -14,8 +14,15 @@ export const useAppStore = defineStore(
     const appTitle = computed(() => data.value?.appTitle ?? 'PlainPage')
     const allowAdmin = computed(() => data.value?.allowAdmin || false)
     const allowRegister = computed(() => data.value?.allowRegister ?? false)
+    const gitSha = computed(() => data.value?.gitSha ?? '')
 
-    return { appTitle, allowAdmin, allowRegister, refresh }
+    return {
+      appTitle,
+      allowAdmin,
+      allowRegister,
+      gitSha,
+      refresh,
+    }
   },
   {
     persist: true,

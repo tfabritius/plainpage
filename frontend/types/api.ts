@@ -10,6 +10,7 @@ export interface GetAppResponse {
   setupMode: boolean
   allowRegister: boolean
   allowAdmin: boolean
+  gitSha: string
 }
 
 export interface GetContentResponse {

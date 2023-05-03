@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
 import type { Config } from '~/types'
 import { AclTable } from '#components'
 import { useAppStore } from '~/store/app'
@@ -10,6 +12,7 @@ definePageMeta({
 useHead({ title: 'Configuration' })
 
 const app = useAppStore()
+const { gitSha } = storeToRefs(app)
 
 const { data, error, refresh } = await useAsyncData('/config', () => apiFetch<Config>('/config'))
 
@@ -63,6 +66,11 @@ async function onSave() {
       <ElFormItem label="Permissions">
         <AclTable ref="aclTableRef" :acl="data?.acl ?? []" :show-columns="['register', 'admin']" />
       </ElFormItem>
+      <ElFormItem label="Version">
+        <ElInput
+          :value="gitSha" disabled
+        />
+      </elformitem>
     </ElForm>
   </Layout>
 </template>

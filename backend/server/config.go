@@ -3,11 +3,24 @@ package server
 import (
 	"encoding/json"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
+
+func getRevision() string {
+	info, _ := debug.ReadBuildInfo()
+
+	for _, kv := range info.Settings {
+		if kv.Key == "vcs.revision" {
+			return kv.Value
+		}
+	}
+
+	return ""
+}
 
 func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 	userID := ctxutil.UserID(r.Context())
@@ -20,11 +33,14 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	gitSha := getRevision()
+
 	response := model.GetAppResponse{
 		AppTitle:      cfg.AppTitle,
 		SetupMode:     cfg.SetupMode,
 		AllowRegister: allowRegister,
 		AllowAdmin:    allowAdmin,
+		GitSha:        gitSha,
 	}
 
 	render.JSON(w, r, response)

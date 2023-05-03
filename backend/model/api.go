@@ -27,6 +27,7 @@ type GetAppResponse struct {
 	SetupMode     bool   `json:"setupMode"`
 	AllowRegister bool   `json:"allowRegister"`
 	AllowAdmin    bool   `json:"allowAdmin"`
+	GitSha        string `json:"gitSha"`
 }
 
 type PutRequest struct {

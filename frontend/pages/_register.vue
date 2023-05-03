@@ -84,7 +84,7 @@ async function submit() {
 </script>
 
 <template>
-  <div class="absolute inset-0 bg-white dark:bg-black flex">
+  <div class="flex">
     <div class="m-auto text-center text-gray-500">
       <h2>Register account</h2>
 
@@ -111,12 +111,6 @@ async function submit() {
           </ElButton>
         </ElFormItem>
       </ElForm>
-
-      <NuxtLink v-slot="{ navigate, href }" custom :to="`_login?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
-        <ElLink :underline="false" :href="href" @click="navigate">
-          <Icon name="ic:round-log-in" class="mr-1" /> Sign in
-        </ElLink>
-      </NuxtLink>
     </div>
   </div>
 </template>

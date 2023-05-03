@@ -8,7 +8,7 @@ useHead({ title: 'Error' })
 </script>
 
 <template>
-  <div class="absolute inset-0 bg-white flex">
+  <div class="flex">
     <div class="m-auto text-center text-gray-500">
       <Icon name="ci:cloud-off" size="5em" />
 

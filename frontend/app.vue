@@ -55,7 +55,7 @@ const toggleDark = useToggle(isDark)
 </script>
 
 <template>
-  <div class="p-2">
+  <div class="min-h-screen box-border p-2 flex flex-col">
     <div class="flex justify-between">
       <NuxtLink v-slot="{ navigate, href }" custom to="/">
         <ElLink :underline="false" :href="href" @click="navigate">
@@ -94,14 +94,19 @@ const toggleDark = useToggle(isDark)
           </template>
         </ElDropdown>
 
-        <NuxtLink v-else v-slot="{ navigate, href }" custom :to="`/_login?returnTo=${encodeURIComponent(route.fullPath)}`">
+        <NuxtLink
+          v-else-if="route.path !== '/_login'"
+          v-slot="{ navigate, href }"
+          custom
+          :to="`/_login?returnTo=${route.query.returnTo || encodeURIComponent(route.fullPath)}`"
+        >
           <ElLink :underline="false" :href="href" @click="navigate">
             <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">Sign in</span>
           </ElLink>
         </NuxtLink>
       </span>
     </div>
-    <NuxtPage />
+    <NuxtPage class="flex-grow" />
     <NuxtLoadingIndicator />
   </div>
 </template>

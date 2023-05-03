@@ -34,7 +34,7 @@ async function submit() {
 </script>
 
 <template>
-  <div class="absolute inset-0 bg-white dark:bg-black flex">
+  <div class="flex">
     <div class="m-auto text-center text-gray-500">
       <Icon name="ci:user-circle" size="5em" class="mb-3" />
 

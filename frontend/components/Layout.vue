@@ -52,7 +52,7 @@ const route = useRoute()
 
   <div class="text-center">
     <ElLink :underline="false" href="https://github.com/tfabritius/plainpage">
-      <span class="font-normal text-gray-300 hover:text-current">PlainPage</span>
+      <span class="font-normal text-gray-300 dark:text-gray-500 hover:text-current">PlainPage</span>
     </ElLink>
   </div>
 </template>

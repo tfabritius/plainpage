@@ -6,6 +6,8 @@ definePageMeta({
   middleware: ['require-auth'],
 })
 
+useHead({ title: 'Profile' })
+
 const auth = useAuthStore()
 
 const profileFormRef = ref<FormInstance>()

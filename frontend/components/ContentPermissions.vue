@@ -12,6 +12,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{ (e: 'refresh'): void }>()
 
+useHead(() => ({ title: `Permissions: ${props.title}` }))
+
 const urlPath = computed(() => props.urlPath)
 const meta = computed(() => props.meta)
 const title = computed(() => props.title)

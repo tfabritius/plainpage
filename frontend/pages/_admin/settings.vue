@@ -7,6 +7,8 @@ definePageMeta({
   middleware: ['require-auth'],
 })
 
+useHead({ title: 'Configuration' })
+
 const app = useAppStore()
 
 const { data, error, refresh } = await useAsyncData('/config', () => apiFetch<Config>('/config'))

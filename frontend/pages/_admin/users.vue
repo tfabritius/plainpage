@@ -7,6 +7,8 @@ definePageMeta({
   middleware: ['require-auth'],
 })
 
+useHead({ title: 'Users' })
+
 const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
 const userFormVisible = ref(false)

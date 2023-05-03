@@ -10,6 +10,8 @@ const props = defineProps<{
 
 const urlPath = computed(() => props.urlPath)
 
+useHead(() => ({ title: `Revisions: ${props.title}` }))
+
 const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
   const data = await apiFetch<GetAtticListResponse>(`/attic${urlPath.value}`)
 

@@ -10,6 +10,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', payload: typeof props.modelValue): void
+  (e: 'escape'): void
 }>()
 
 const markdown = computed({
@@ -214,6 +215,14 @@ const containerClasses = computed(() => {
 const containerStyle = computed(() => ({
   height: showFullscreen.value ? '100%' : props.height,
 }))
+
+onKeyStroke('Escape', async (_e) => {
+  if (showFullscreen.value) {
+    showFullscreen.value = false
+  } else {
+    emit('escape')
+  }
+})
 </script>
 
 <template>

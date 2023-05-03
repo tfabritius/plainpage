@@ -172,12 +172,6 @@ onKeyStroke('Delete', (e) => {
   }
 })
 
-onKeyStroke('Escape', async (_event: KeyboardEvent) => {
-  if (editing.value) {
-    onCancelEdit()
-  }
-}, { eventName: 'keyup' })
-
 onKeyStroke('s', (e) => {
   if (editing.value && e.ctrlKey) {
     e.preventDefault()
@@ -234,7 +228,14 @@ onKeyStroke('s', (e) => {
       </div>
     </template>
 
-    <PageView v-if="!editing" :page="page" />
-    <PageEditor v-else v-model="editablePage" />
+    <PageView
+      v-if="!editing"
+      :page="page"
+    />
+    <PageEditor
+      v-else
+      v-model="editablePage"
+      @escape="onCancelEdit"
+    />
   </Layout>
 </template>

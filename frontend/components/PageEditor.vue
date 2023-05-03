@@ -7,6 +7,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', payload: typeof props.modelValue): void
+  (e: 'escape'): void
 }>()
 
 const page = computed({
@@ -20,7 +21,11 @@ const page = computed({
     <span class="mr-2 text-sm">Title:</span> <ElInput v-model="page.meta.title" />
   </div>
 
-  <MdEditor v-model="page.content" height="400px" />
+  <MdEditor
+    v-model="page.content"
+    height="400px"
+    @escape="emit('escape')"
+  />
 
   <Tags v-model="page.meta.tags" :editable="true" class="mt-2" />
 </template>

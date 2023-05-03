@@ -47,9 +47,6 @@
         "vue",
         "vue-router"
       ]
-    },
-    "overrides": {
-      "rollup": "3.20.3-0"
     }
   }
 }

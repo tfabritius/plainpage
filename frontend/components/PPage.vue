@@ -177,6 +177,13 @@ onKeyStroke('Escape', async (_event: KeyboardEvent) => {
     onCancelEdit()
   }
 }, { eventName: 'keyup' })
+
+onKeyStroke('s', (e) => {
+  if (editing.value && e.ctrlKey) {
+    e.preventDefault()
+    onSavePage()
+  }
+})
 </script>
 
 <template>

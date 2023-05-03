@@ -80,7 +80,14 @@ const createFolder = async () => {
   }
 }
 
+const deleteConfirmOpen = ref(false)
 const onDeleteFolder = async () => {
+  if (deleteConfirmOpen.value) {
+    // Prevent multiple dialogs at the same time
+    return
+  }
+
+  deleteConfirmOpen.value = true
   try {
     await ElMessageBox.confirm(
       'Are you sure to delete this folder?',
@@ -91,8 +98,10 @@ const onDeleteFolder = async () => {
       })
   } catch {
     // do nothing
+    deleteConfirmOpen.value = false
     return
   }
+  deleteConfirmOpen.value = false
 
   try {
     await apiFetch(`/pages${urlPath.value}`, { method: 'DELETE' })
@@ -123,6 +132,13 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
     throw new Error(`Unhandled command ${command}`)
   }
 }
+
+onKeyStroke('Delete', (e) => {
+  if (urlPath.value !== '' && props.allowDelete) {
+    e.preventDefault()
+    onDeleteFolder()
+  }
+})
 </script>
 
 <template>

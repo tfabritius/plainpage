@@ -75,7 +75,14 @@ const onSavePage = async () => {
   }
 }
 
+const deleteConfirmOpen = ref(false)
 const onDeletePage = async () => {
+  if (deleteConfirmOpen.value) {
+    // Prevent multiple dialogs at the same time
+    return
+  }
+
+  deleteConfirmOpen.value = true
   try {
     await ElMessageBox.confirm(
       'Are you sure to delete this page?',
@@ -86,8 +93,10 @@ const onDeletePage = async () => {
       })
   } catch {
     // do nothing
+    deleteConfirmOpen.value = false
     return
   }
+  deleteConfirmOpen.value = false
 
   try {
     await apiFetch(`/pages${route.path}`, { method: 'DELETE' })
@@ -148,6 +157,20 @@ const onCancelEdit = async () => {
 
   editing.value = false
 }
+
+onKeyStroke('e', (e) => {
+  if (!editing.value && allowWrite.value) {
+    e.preventDefault()
+    onEditPage()
+  }
+})
+
+onKeyStroke('Delete', (e) => {
+  if (!editing.value && allowDelete.value) {
+    e.preventDefault()
+    onDeletePage()
+  }
+})
 
 onKeyStroke('Escape', async (_event: KeyboardEvent) => {
   if (editing.value) {

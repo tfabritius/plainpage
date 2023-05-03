@@ -1,4 +1,5 @@
 <script setup lang="ts">
+useHead({ title: 'Access denied' })
 </script>
 
 <template>

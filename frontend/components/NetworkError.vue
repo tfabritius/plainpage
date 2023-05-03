@@ -3,6 +3,8 @@ const _props = defineProps<{
   msg?: string
   onReload: Function
 }>()
+
+useHead({ title: 'Error' })
 </script>
 
 <template>

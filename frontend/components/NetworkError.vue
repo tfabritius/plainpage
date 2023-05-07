@@ -4,7 +4,9 @@ const _props = defineProps<{
   onReload: Function
 }>()
 
-useHead({ title: 'Error' })
+const { t } = useI18n()
+
+useHead(() => ({ title: t('error') }))
 </script>
 
 <template>
@@ -13,12 +15,12 @@ useHead({ title: 'Error' })
       <Icon name="ci:cloud-off" size="5em" />
 
       <div class="m-2">
-        {{ msg || 'There was an error.' }}
+        {{ msg || $t('there-was-an-error') }}
       </div>
 
       <ElButton @click="onReload()">
         <Icon name="ci:arrows-reload-01" class="mr-1" />
-        Try again
+        {{ $t('try-again') }}
       </ElButton>
     </div>
   </div>

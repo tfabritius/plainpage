@@ -4,6 +4,8 @@ import { FetchError } from 'ofetch'
 import type { GetContentResponse, Page } from '~/types/'
 import { useAuthStore } from '~/store/auth'
 
+const { t } = useI18n()
+
 const route = useRoute()
 const urlPath = computed(() => route.path === '/' ? '' : route.path)
 
@@ -58,9 +60,9 @@ const folder = computed(() => data.value?.folder ?? null)
 
 const pageTitle = computed(() => {
   if (page.value) {
-    return page.value.meta.title || 'Untitled'
+    return page.value.meta.title || t('untitled')
   }
-  return 'Not found'
+  return t('not-found')
 })
 </script>
 
@@ -78,7 +80,7 @@ const pageTitle = computed(() => {
     :is-folder="true"
     :url-path="urlPath"
     :meta="deepClone(folder.meta)"
-    :title="urlPath === '' ? 'Home' : data?.breadcrumbs.slice(-1)[0]?.name"
+    :title="urlPath === '' ? $t('home') : data?.breadcrumbs.slice(-1)[0]?.name"
     :breadcrumbs="data?.breadcrumbs ?? []"
     @refresh="refresh"
   />

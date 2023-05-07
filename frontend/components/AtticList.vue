@@ -8,9 +8,11 @@ const props = defineProps<{
   title: string
 }>()
 
+const { t } = useI18n()
+
 const urlPath = computed(() => props.urlPath)
 
-useHead(() => ({ title: `Revisions: ${props.title}` }))
+useHead(() => ({ title: `${t('revisions')}: ${props.title}` }))
 
 const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
   const data = await apiFetch<GetAtticListResponse>(`/attic${urlPath.value}`)
@@ -28,12 +30,12 @@ const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
 <template>
   <Layout :breadcrumbs="data?.breadcrumbs">
     <template #title>
-      Old revisions of: {{ title }}
+      {{ $t('old-revisions-of') }}: {{ title }}
     </template>
 
     <template #actions>
       <ElButton class="m-1" @click="navigateTo({ query: { rev: undefined } })">
-        <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">Current version</span>
+        <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">{{ $t('current-version') }}</span>
       </ElButton>
     </template>
 
@@ -41,7 +43,7 @@ const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
       <NuxtLink v-slot="{ navigate, href }" :to="`?rev=${el.rev}`" custom>
         <ElLink :href="href" @click="navigate">
           {{ format(el.date, 'yyyy-MM-dd HH:mm') }} ({{ el.rev }})
-          <span v-if="idx === 0"> <Icon class="ml-2" name="ci:show" /> (current version)</span>
+          <span v-if="idx === 0"> <Icon class="ml-2" name="ci:show" /> ({{ $t('current-version') }})</span>
         </ElLink>
       </NuxtLink>
     </div>

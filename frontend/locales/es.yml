@@ -1,0 +1,86 @@
+_login:
+  link-to-register: ¿Nuevo aquí? ¡Regístrate ahora!
+access-denied: Acceso denegado
+account-deleted: Cuenta borrada
+acl:
+  admin: Administración
+  subject: Sujeto
+add: Añadir
+add-tag: Añadir etiqueta
+administrators: Administradores
+all-registered-users: Todos los usuarios registrados
+anonymous-users: Usuarios anónimos
+application-title: Titulo de la aplicación
+are-you-sure-to-delete-this-account: ¿Estás seguro de eliminar esta cuenta?
+are-you-sure-to-delete-this-folder: ¿Estás seguro de eliminar esta carpeta?
+are-you-sure-to-delete-this-page: ¿Estás seguro de eliminar esta página?
+are-you-sure-to-delete-user: ¿Está seguro de eliminar el usuario "{0}"?
+back-home: Volver al inicio
+back-to-content: Volver al contenido
+cancel: Cancelar
+configuration: Configuración
+create: Crear
+create-folder: Crear carpeta
+create-page: Crear página
+create-user: Crear usuario
+current-version: Versión actual
+define-custom-permissions: Definir permisos propios
+delete: Borrar
+delete-my-account: Borrar mi cuenta
+discard-changes-to-this-page: ¿Quieres descartar los cambios de esta página?
+display-name: Nombre para mostrar
+displayname-required: Ingrese el nombre para mostrar
+edit: Editar
+edit-user: Editar usuario
+enter-folder-name: Por favor ingrese el nombre de la carpeta
+enter-page-name: Por favor ingrese el nombre de la página
+error: Error
+folder-created: Carpeta creada
+folder-deleted: Carpeta eliminada
+folder-reloaded: Carpeta recargada
+folders: Carpetas
+home: Inicio
+inherit-permissions: Heredar permisos de la carpeta principal
+invalid-credentials: Credenciales no válidas
+invalid-folder-name: 'Nombre no válido (permitido: [a-z0-9_-])'
+invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
+more: Más
+new-password: Nueva contraseña
+not-found: Extraviado
+ok: Acceptar
+old-revisions-of: Revisiones antiguas de
+page-deleted: Página eliminada
+page-reloaded: Página recargada
+pages: Paginas
+password: Contraseña
+password-repeat: Repita la contraseña
+password-repeat-not-equal: Las contraseñas no coinciden
+password-repeat-required: Por favor confirme la contraseña
+password-required: Por favor, ingrese contraseña
+permissions: Permisos
+profile: Perfil
+read: Leer
+register: Registro
+register-account: Registrar cuenta
+reload: Recargar
+revision-doesnt-exist: ¡Esta revisión no existe!
+revisions: Revisiones
+save: Guardar
+saved: Guardado
+sign-in: Iniciar sesión
+there-was-an-error: Hubo un error.
+this-page-doesnt-exist: ¡Esta página no existe!
+title: Título
+try-again: Intentar otra vez
+untitled: Intitulado
+user-created: Usuario creado
+user-deleted: Usuario eliminado
+user-updated: Usuario actualizado
+username: Nombre de usuario
+username-invalid: Nombre de usuario no válido
+username-length: La longitud debe ser de 4 a 20
+username-not-unique: El nombre de usuario ya está tomado
+username-required: Por favor ingrese nombre de usuario
+users: Usuarios
+version: Versión
+write: Escribir

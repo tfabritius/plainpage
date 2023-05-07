@@ -67,9 +67,11 @@ const toggleDark = useToggle(isDark)
       </NuxtLink>
 
       <span>
-        <ElLink :underline="false" class="mr-2" @click="toggleDark()">
+        <ElLink :underline="false" class="m-1" @click="toggleDark()">
           <Icon :name="isDark ? 'ci:moon' : 'ci:sun'" />
         </ElLink>
+
+        <LocaleSwitcher class="m-1" />
 
         <ElDropdown v-if="auth.loggedIn" trigger="click" class="m-1" @command="handleDropdownMenuCommand">
           <ElLink :underline="false" href="#">

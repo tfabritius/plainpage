@@ -1,0 +1,86 @@
+_login:
+  link-to-register: New Here? Register now!
+access-denied: Access denied
+account-deleted: Account deleted
+acl:
+  admin: Administration
+  subject: Subject
+add: Add
+add-tag: Add Tag
+administrators: Administrators
+all-registered-users: All registered users
+anonymous-users: Anonymous users
+application-title: Application title
+are-you-sure-to-delete-this-account: Are you sure to delete this account?
+are-you-sure-to-delete-this-folder: Are you sure to delete this folder?
+are-you-sure-to-delete-this-page: Are you sure to delete this page?
+are-you-sure-to-delete-user: Are you sure to delete user "{0}"?
+back-home: Back home
+back-to-content: Back to content
+cancel: Cancel
+configuration: Configuration
+create: Create
+create-folder: Create folder
+create-page: Create page
+create-user: Create user
+current-version: Current version
+define-custom-permissions: Define custom permissions
+delete: Delete
+delete-my-account: Delete my account
+discard-changes-to-this-page: Discard changes to this page?
+display-name: Display name
+displayname-required: Please enter display name
+edit: Edit
+edit-user: Edit user
+enter-folder-name: Please enter folder name
+enter-page-name: Please enter page name
+error: Error
+folder-created: Folder created
+folder-deleted: Folder deleted
+folder-reloaded: Folder reloaded
+folders: Folders
+home: Home
+inherit-permissions: Inherit permissions from parent folder
+invalid-credentials: Invalid credentials
+invalid-folder-name: 'Invalid name (allowed: [a-z0-9_-])'
+invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
+more: More
+new-password: New password
+not-found: Not found
+ok: OK
+old-revisions-of: Old revisions of
+page-deleted: Page deleted
+page-reloaded: Page reloaded
+pages: Pages
+password: Password
+password-repeat: Repeat password
+password-repeat-not-equal: Passwords don't match
+password-repeat-required: Please confirm password
+password-required: Please enter password
+permissions: Permissions
+profile: Profile
+read: Read
+register: Register
+register-account: Register account
+reload: Reload
+revision-doesnt-exist: This revision doesn't exist!
+revisions: Revisions
+save: Save
+saved: Saved
+sign-in: Sign in
+there-was-an-error: There was an error.
+this-page-doesnt-exist: This page doesn't exist!
+title: Title
+try-again: Try again
+untitled: Untitled
+user-created: User created
+user-deleted: User deleted
+user-updated: User updated
+username: Username
+username-invalid: Invalid username
+username-length: Length should be 4 to 20
+username-not-unique: Username is taken already
+username-required: Please enter username
+users: Users
+version: Version
+write: Write

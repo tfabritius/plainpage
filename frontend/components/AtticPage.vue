@@ -10,6 +10,8 @@ const props = defineProps<{
   revision: string
 }>()
 
+const { t } = useI18n()
+
 const urlPath = computed(() => props.urlPath)
 const revision = computed(() => props.revision)
 
@@ -35,9 +37,9 @@ const { data, error, refresh } = await useAsyncData(`/attic${urlPath.value}?rev=
 
 const pageTitle = computed(() => {
   if (data.value?.page) {
-    return data.value.page.meta.title || 'Untitled'
+    return data.value.page.meta.title || t('untitled')
   }
-  return 'Not found'
+  return t('not-found')
 })
 
 useHead(() => ({ title: pageTitle.value }))
@@ -64,7 +66,7 @@ const revDate = computed(() => new Date(Number(revision.value) * 1000))
 
     <template #actions>
       <ElButton v-if="!data.notFound" class="m-1" @click="navigateTo({ query: { rev: undefined } })">
-        <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">Current version</span>
+        <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">{{ $t('current-version') }}</span>
       </ElButton>
     </template>
 
@@ -75,11 +77,11 @@ const revDate = computed(() => new Date(Number(revision.value) * 1000))
       <div class="text-center">
         <span class="text-3xl">😟</span>
         <div class="font-medium m-4">
-          This revision doesn't exist!
+          {{ $t('revision-doesnt-exist') }}
         </div>
 
         <ElButton @click="navigateTo({ query: { rev: undefined } })">
-          <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">Current version</span>
+          <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">{{ $t('current-version') }}</span>
         </ElButton>
       </div>
     </div>

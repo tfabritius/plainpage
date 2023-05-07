@@ -42,24 +42,24 @@ const onSave = async () => {
     <template #title>
       <Icon v-if="isFolder" name="ci:folder" class="mr-1" />
       <span v-if="title">{{ title }}</span>
-      <span v-else class="italic">Untitled</span>
+      <span v-else class="italic">{{ $t('untitled') }}</span>
     </template>
 
     <template #actions>
       <ElButton class="m-1" @click="onGoBack">
-        <Icon name="ci:skip-back" /> <span class="hidden md:inline ml-1">Back to content</span>
+        <Icon name="ci:skip-back" /> <span class="hidden md:inline ml-1">{{ $t('back-to-content') }}</span>
       </ElButton>
       <span />
       <ElButton class="m-1" type="success" @click="onSave">
-        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
+        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
       </ElButton>
     </template>
 
     <ElSwitch
       v-if="urlPath !== ''"
       v-model="customPermissions"
-      active-text="Define custom permissions"
-      inactive-text="Inherit permissions from parent folder"
+      :active-text="$t('define-custom-permissions')"
+      :inactive-text="$t('inherit-permissions')"
     />
     <div v-if="customPermissions">
       <AclTable ref="aclTableRef" :acl="meta.acl ?? []" :show-admin-rule="true" :show-columns="['read', 'write', 'delete']" />

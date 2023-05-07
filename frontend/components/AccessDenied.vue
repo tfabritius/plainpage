@@ -1,5 +1,7 @@
 <script setup lang="ts">
-useHead({ title: 'Access denied' })
+const { t } = useI18n()
+
+useHead(() => ({ title: t('access-denied') }))
 </script>
 
 <template>
@@ -7,7 +9,7 @@ useHead({ title: 'Access denied' })
     <div class="m-auto text-center text-gray-500">
       <Icon name="ci:stop-sign" size="5em" />
       <div class="m-2">
-        Access denied
+        {{ $t('access-denied') }}
       </div>
     </div>
   </div>

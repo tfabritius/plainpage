@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     'nuxt-icon',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
+    '@nuxtjs/i18n',
   ],
 
   elementPlus: {
@@ -28,6 +29,17 @@ export default defineNuxtConfig({
 
   piniaPersistedstate: {
     storage: 'localStorage',
+  },
+
+  i18n: {
+    defaultLocale: 'en',
+    langDir: 'locales',
+    strategy: 'no_prefix',
+    locales: [
+      { code: 'de', file: 'de.yml' },
+      { code: 'en', file: 'en.yml' },
+      { code: 'es', file: 'es.yml' },
+    ],
   },
 
   typescript: {

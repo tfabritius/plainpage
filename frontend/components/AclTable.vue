@@ -149,35 +149,35 @@ defineExpose({ getAcl })
 
 <template>
   <ElTable :data="editableACL">
-    <ElTableColumn label="Subject">
+    <ElTableColumn :label="$t('acl.subject')">
       <template #default="{ row }">
-        <span v-if="row.subject === 'all'" class="italic">All registered users</span>
-        <span v-else-if="row.subject === 'anonymous'" class="italic">Anonymous users</span>
-        <span v-else-if="row.subject === 'admin'" class="italic">Administrators</span>
+        <span v-if="row.subject === 'all'" class="italic">{{ $t('all-registered-users') }}</span>
+        <span v-else-if="row.subject === 'anonymous'" class="italic">{{ $t('anonymous-users') }}</span>
+        <span v-else-if="row.subject === 'admin'" class="italic">{{ $t('administrators') }}</span>
         <span v-else>{{ row.user ? row.user.displayName : row.subject }}</span>
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('read')" label="Read">
+    <ElTableColumn v-if="props.showColumns.includes('read')" :label="$t('read')">
       <template #default="{ row }">
         <ElCheckbox v-model="row.read" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('write')" label="Write">
+    <ElTableColumn v-if="props.showColumns.includes('write')" :label="$t('write')">
       <template #default="{ row }">
         <ElCheckbox v-model="row.write" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('delete')" label="Delete">
+    <ElTableColumn v-if="props.showColumns.includes('delete')" :label="$t('delete')">
       <template #default="{ row }">
         <ElCheckbox v-model="row.delete" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('register')" label="Register">
+    <ElTableColumn v-if="props.showColumns.includes('register')" :label="$t('register')">
       <template #default="{ row }">
         <ElCheckbox v-model="row.register" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('admin')" label="Admin">
+    <ElTableColumn v-if="props.showColumns.includes('admin')" :label="$t('acl.admin')">
       <template #default="{ row }">
         <ElCheckbox v-model="row.admin" :disabled="['anonymous', 'all', 'admin'].includes(row.subject)" />
       </template>
@@ -192,14 +192,14 @@ defineExpose({ getAcl })
   </ElTable>
 
   <div class="flex mt-2">
-    <ElInput v-model="newUserName" class="max-w-50" placeholder="Enter username">
+    <ElInput v-model="newUserName" class="max-w-50" :placeholder="$t('username')">
       <template #suffix>
         <Icon v-if="newUser" class="text-green" name="ci:circle-check" />
         <Icon v-else-if="newUser === null" class="text-red" name="ci:close-circle" />
       </template>
     </ElInput>
     <ElButton :disabled="!newUser" class="ml-2" @click="onAddRule">
-      Add
+      {{ $t('add') }}
     </ElButton>
   </div>
 </template>

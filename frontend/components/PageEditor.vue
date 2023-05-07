@@ -18,7 +18,7 @@ const page = computed({
 
 <template>
   <div class="flex items-baseline mb-2">
-    <span class="mr-2 text-sm">Title:</span> <ElInput v-model="page.meta.title" />
+    <span class="mr-2 text-sm">{{ $t('title') }}:</span> <ElInput v-model="page.meta.title" />
   </div>
 
   <MdEditor

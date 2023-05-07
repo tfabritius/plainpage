@@ -13,6 +13,8 @@ const props = defineProps<{
   onReload: Function
 }>()
 
+const { t } = useI18n()
+
 const route = useRoute()
 
 const app = useAppStore()
@@ -24,9 +26,7 @@ const breadcrumbs = computed(() => props.breadcrumbs)
 const allowWrite = computed(() => props.allowWrite)
 const allowDelete = computed(() => props.allowDelete)
 
-const pageTitle = computed(() => {
-  return page.value.meta.title || 'Untitled'
-})
+const pageTitle = computed(() => page.value.meta.title || t('untitled'))
 
 useHead(() => ({ title: pageTitle.value }))
 
@@ -62,7 +62,7 @@ const onSavePage = async () => {
     editing.value = false
 
     ElMessage({
-      message: 'Saved',
+      message: t('saved'),
       type: 'success',
     })
 
@@ -85,10 +85,10 @@ const onDeletePage = async () => {
   deleteConfirmOpen.value = true
   try {
     await ElMessageBox.confirm(
-      'Are you sure to delete this page?',
+      t('are-you-sure-to-delete-this-page'),
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('delete'),
+        cancelButtonText: t('cancel'),
         type: 'warning',
       })
   } catch {
@@ -102,7 +102,7 @@ const onDeletePage = async () => {
     await apiFetch(`/pages${route.path}`, { method: 'DELETE' })
 
     ElMessage({
-      message: 'Page deleted',
+      message: t('page-deleted'),
       type: 'success',
     })
 
@@ -118,7 +118,7 @@ const onDeletePage = async () => {
 const handleDropdownMenuCommand = async (command: string | number | object) => {
   if (command === 'reload') {
     await props.onReload()
-    ElMessage({ message: 'Page reloaded', type: 'success' })
+    ElMessage({ message: t('page-reloaded'), type: 'success' })
   } else if (command === 'delete') {
     onDeletePage()
   } else if (command === 'rev') {
@@ -142,9 +142,9 @@ const onCancelEdit = async () => {
   if (!deepEqual(page.value, editablePage.value)) {
     try {
       cancelEditConfirmOpen.value = true
-      await ElMessageBox.confirm('Discard changes to this page?', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
+      await ElMessageBox.confirm(t('discard-changes-to-this-page'), {
+        confirmButtonText: t('ok'),
+        cancelButtonText: t('cancel'),
         type: 'warning',
         closeOnPressEscape: false,
       })
@@ -192,26 +192,26 @@ onKeyStroke('s', (e) => {
     <template #actions>
       <div v-if="!editing">
         <ElButton v-if="allowWrite" class="m-1" @click="onEditPage">
-          <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">Edit</span>
+          <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">{{ $t('edit') }}</span>
         </ElButton>
 
         <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
           <ElButton>
-            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">More</span>
+            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">{{ $t('more') }}</span>
           </ElButton>
           <template #dropdown>
             <ElDropdownMenu>
               <ElDropdownItem :icon="ReloadIcon" command="reload">
-                Reload
+                {{ $t('reload') }}
               </ElDropdownItem>
               <ElDropdownItem :icon="RevisionsIcon" command="rev">
-                Revisions
+                {{ $t('revisions') }}
               </ElDropdownItem>
               <ElDropdownItem v-if="allowAdmin" :icon="PermissionsIcon" command="acl">
-                Permissions
+                {{ $t('permissions') }}
               </ElDropdownItem>
               <ElDropdownItem v-if="allowDelete" :icon="DeleteIcon" command="delete">
-                Delete
+                {{ $t('delete') }}
               </ElDropdownItem>
             </ElDropdownMenu>
           </template>
@@ -220,10 +220,10 @@ onKeyStroke('s', (e) => {
 
       <div v-if="editing">
         <ElButton class="ml-2" @click="onCancelEdit">
-          <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">Cancel</span>
+          <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">{{ $t('cancel') }}</span>
         </ElButton>
         <ElButton type="success" @click="onSavePage">
-          <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
+          <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
         </ElButton>
       </div>
     </template>

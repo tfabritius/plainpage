@@ -1,0 +1,86 @@
+_login:
+  link-to-register: Neu hier? Jetzt Konto anlegen!
+access-denied: Zugriff verweigert
+account-deleted: Konto gelöscht
+acl:
+  admin: Administration
+  subject: Person
+add: Hinzufügen
+add-tag: Tag hinzufügen
+administrators: Administratoren
+all-registered-users: Alle registrierten Benutzer
+anonymous-users: Anonyme Benutzer
+application-title: Titel der App
+are-you-sure-to-delete-this-account: Bist du sicher, dass du dieses Konto löschen willst?
+are-you-sure-to-delete-this-folder: Bist du sicher, dass du diesen Ordner löschen willst?
+are-you-sure-to-delete-this-page: Bist du sicher, dass du diese Seite löschen willst?
+are-you-sure-to-delete-user: Bist du sicher, dass du Benutzer "{0}" löschen willst?
+back-home: Zurück zum Start
+back-to-content: Zurück zum Inhalt
+cancel: Abbrechen
+configuration: Konfiguration
+create: Anlegen
+create-folder: Ordner anlegen
+create-page: Seite anlegen
+create-user: Benutzer anlegen
+current-version: Aktuelle Version
+define-custom-permissions: Eigene Berechtigungen festlegen
+delete: Löschen
+delete-my-account: Lösche mein Konto
+discard-changes-to-this-page: Änderungen an dieser Seite verwerfen?
+display-name: Anzeigename
+displayname-required: Bitte Anzeigename eingeben
+edit: Bearbeiten
+edit-user: Benutzer bearbeiten
+enter-folder-name: Bitte Name des Ordners eingeben
+enter-page-name: Bitte Name der Seite eingeben
+error: Fehler
+folder-created: Ordner angelegt
+folder-deleted: Ordner gelöscht
+folder-reloaded: Ordner neu geladen
+folders: Ordner
+home: Start
+inherit-permissions: Berechtigungen vom übergeordneten Ordner erben
+invalid-credentials: Ungültige Zugangsdaten
+invalid-folder-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
+invalid-page-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
+more: Mehr
+new-password: Neues Passwort
+not-found: Nicht gefunden
+ok: OK
+old-revisions-of: Alte Überarbeitungen von
+page-deleted: Seite gelöscht
+page-reloaded: Seite neu geladen
+pages: Seiten
+password: Passwort
+password-repeat: Passwort (Wiederholung)
+password-repeat-not-equal: Passwörter stimmen nicht überein
+password-repeat-required: Bitte Passwort nochmal eingeben
+password-required: Bitte Passwort eingeben
+permissions: Berechtigungen
+profile: Profil
+read: Lesen
+register: Konto anlegen
+register-account: Konto anlegen
+reload: Neu laden
+revision-doesnt-exist: Diese Überarbeitung existiert nicht!
+revisions: Überarbeitungen
+save: Speichern
+saved: Gespeichert
+sign-in: Anmelden
+there-was-an-error: Es gab einen Fehler.
+this-page-doesnt-exist: Diese Seite existiert nicht!
+title: Titel
+try-again: Nochmal versuchen
+untitled: Ohne Titel
+user-created: Benutzer angelegt
+user-deleted: Benutzer gelöscht
+user-updated: Benutzer aktualisiert
+username: Benutzername
+username-invalid: Benutzername ungültig
+username-length: Länge sollte 4 und 20 sein
+username-not-unique: Benutzername ist bereits vergeben
+username-required: Bitte Benutzernamen eingeben
+users: Benutzer
+version: Version
+write: Schreiben

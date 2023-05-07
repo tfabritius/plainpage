@@ -5,19 +5,21 @@ import { useAuthStore } from '~/store/auth'
 import type { User } from '~/types'
 import { validUsernameRegex } from '~/types'
 
+const { t } = useI18n()
+
 const existingUsername = ref<string>()
 
 const registerFormRef = ref<FormInstance>()
 const registerFormData = ref({ displayName: '', username: '', password: '', passwordConfirm: '' })
 const registerFormRules = {
   username: [
-    { required: true, message: 'Please enter username', trigger: 'blur' },
-    { min: 4, max: 20, message: 'Length should be 4 to 20', trigger: 'blur' },
-    { pattern: validUsernameRegex, message: 'Invalid username', trigger: 'blur' },
+    { required: true, message: t('username-required'), trigger: 'blur' },
+    { min: 4, max: 20, message: t('username-length'), trigger: 'blur' },
+    { pattern: validUsernameRegex, message: t('username-invalid'), trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (existingUsername.value === value) {
-          callback(new Error('Username is taken already.'))
+          callback(new Error(t('username-not-unique')))
         } else {
           callback()
         }
@@ -25,14 +27,14 @@ const registerFormRules = {
       trigger: 'change',
     },
   ],
-  displayName: [{ required: true, message: 'Please enter display name', trigger: 'blur' }],
-  password: [{ required: true, message: 'Please enter password', trigger: 'blur' }],
+  displayName: [{ required: true, message: t('displayname-required'), trigger: 'blur' }],
+  password: [{ required: true, message: t('password-required'), trigger: 'blur' }],
   passwordConfirm: [
-    { required: true, message: 'Please confirm password', trigger: 'blur' },
+    { required: true, message: t('password-repeat-required'), trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (value !== registerFormData.value.password) {
-          callback(new Error('Passwords don\'t match'))
+          callback(new Error(t('password-repeat-not-equal')))
         } else {
           callback()
         }
@@ -42,7 +44,7 @@ const registerFormRules = {
   ],
 } satisfies FormRules
 
-useHead({ title: 'Register' })
+useHead(() => ({ title: t('register') }))
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -76,7 +78,7 @@ async function submit() {
     const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
     await navigateTo(returnTo)
   } else {
-    ElMessage({ message: 'Could not sign in', type: 'error' })
+    ElMessage({ message: t('invalid-credentials'), type: 'error' })
   }
 
   loading.value = false
@@ -86,28 +88,28 @@ async function submit() {
 <template>
   <div class="flex">
     <div class="m-auto text-center text-gray-500">
-      <h2>Register account</h2>
+      <h2>{{ $t('register-account') }}</h2>
 
       <ElForm ref="registerFormRef" :model="registerFormData" :rules="registerFormRules" label-position="top" class="w-50" @submit.prevent @keypress.enter="submit">
         <ElFormItem prop="displayName">
-          <ElInput v-model="registerFormData.displayName" placeholder="Display name" autofocus />
+          <ElInput v-model="registerFormData.displayName" :placeholder="$t('display-name')" autofocus />
         </ElFormItem>
         <ElFormItem prop="username">
-          <ElInput v-model="registerFormData.username" type="username" placeholder="Username" autofocus />
+          <ElInput v-model="registerFormData.username" type="username" :placeholder="$t('username')" autofocus />
         </ElFormItem>
         <ElFormItem prop="password">
           <ElInput
-            v-model="registerFormData.password" type="password" show-password placeholder="Password"
+            v-model="registerFormData.password" type="password" show-password :placeholder="$t('password')"
           />
         </ElFormItem>
         <ElFormItem prop="passwordConfirm">
           <ElInput
-            v-model="registerFormData.passwordConfirm" type="password" show-password placeholder="Repeat password"
+            v-model="registerFormData.passwordConfirm" type="password" show-password :placeholder="$t('password-repeat')"
           />
         </ElFormItem>
         <ElFormItem>
           <ElButton type="primary" class="w-full" :loading="loading" @click="submit">
-            Register
+            {{ $t('register') }}
           </ElButton>
         </ElFormItem>
       </ElForm>

@@ -7,7 +7,9 @@ definePageMeta({
   middleware: ['require-auth'],
 })
 
-useHead({ title: 'Users' })
+const { t } = useI18n()
+
+useHead({ title: t('users') })
 
 const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
@@ -23,18 +25,18 @@ const emptyUser = {
 const userFormData = ref({ ...emptyUser })
 const userFormRules = computed(() => ({
   username: [
-    { required: true, message: 'Please enter username', trigger: 'blur' },
-    { min: 4, max: 20, message: 'Length should be 4 to 20', trigger: 'blur' },
-    { pattern: validUsernameRegex, message: 'Invalid username', trigger: 'blur' },
+    { required: true, message: t('username-required'), trigger: 'blur' },
+    { min: 4, max: 20, message: t('username-length'), trigger: 'blur' },
+    { pattern: validUsernameRegex, message: t('username-invalid'), trigger: 'blur' },
   ],
-  displayName: [{ required: true, message: 'Please enter display name', trigger: 'blur' }],
-  password: [{ required: !userFormData.value.currentUsername, message: 'Please enter password', trigger: 'blur' }],
+  displayName: [{ required: true, message: t('displayname-required'), trigger: 'blur' }],
+  password: [{ required: !userFormData.value.currentUsername, message: t('password-required'), trigger: 'blur' }],
   passwordConfirm: [
-    { required: !userFormData.value.currentUsername, message: 'Please confirm password', trigger: 'blur' },
+    { required: !userFormData.value.currentUsername, message: t('password-repeat-required'), trigger: 'blur' },
     {
       validator: (rule, value, callback) => {
         if (value !== userFormData.value.password) {
-          callback(new Error('Passwords don\'t match'))
+          callback(new Error(t('password-repeat-not-equal')))
         } else {
           callback()
         }
@@ -79,10 +81,10 @@ const onSubmit = async () => {
         method: 'PATCH',
         body: ops,
       })
-      ElMessage({ message: 'User updated', type: 'success' })
+      ElMessage({ message: t('user-updated'), type: 'success' })
     } else {
       await apiFetch('/auth/users', { method: 'POST', body: userFormData.value })
-      ElMessage({ message: 'User created', type: 'success' })
+      ElMessage({ message: t('user-created'), type: 'success' })
     }
     userFormVisible.value = false
     refresh()
@@ -94,10 +96,10 @@ const onSubmit = async () => {
 const onDelete = async (user: User) => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure to delete user "${user.username}"?`,
+      t('are-you-sure-to-delete-user', [user.username]),
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('delete'),
+        cancelButtonText: t('cancel'),
         type: 'warning',
       },
     )
@@ -107,7 +109,7 @@ const onDelete = async (user: User) => {
 
   try {
     await apiFetch(`/auth/users/${user.username}`, { method: 'DELETE' })
-    ElMessage({ message: 'User deleted', type: 'success' })
+    ElMessage({ message: t('user-deleted'), type: 'success' })
     refresh()
   } catch (err) {
     ElMessage({ message: String(err), type: 'error' })
@@ -123,47 +125,47 @@ const onDelete = async (user: User) => {
   />
   <Layout v-else>
     <template #title>
-      Users
+      {{ $t('users') }}
     </template>
 
     <template #actions>
       <ElButton class="m-1" @click="onCreate">
-        <Icon name="ci:user-add" /> <span class="hidden md:inline ml-1">Create user</span>
+        <Icon name="ci:user-add" /> <span class="hidden md:inline ml-1">{{ $t('create-user') }}</span>
       </ElButton>
     </template>
 
     <ElDialog
       v-model="userFormVisible"
-      :title="`${userFormData.currentUsername ? 'Edit' : 'Create'} user`"
+      :title="userFormData.currentUsername ? $t('edit-user') : $t('create-user')"
       width="50%"
     >
       <ElForm ref="userFormRef" :model="userFormData" label-position="top" :rules="userFormRules" :validate-on-rule-change="false">
-        <ElFormItem label="Username" prop="username">
+        <ElFormItem :label="$t('username')" prop="username">
           <ElInput v-model="userFormData.username" autocomplete="off" />
         </ElFormItem>
-        <ElFormItem label="Display name" prop="displayName">
+        <ElFormItem :label="$t('display-name')" prop="displayName">
           <ElInput v-model="userFormData.displayName" autocomplete="off" />
         </ElFormItem>
-        <ElFormItem label="Password" prop="password">
+        <ElFormItem :label="$t('password')" prop="password">
           <ElInput v-model="userFormData.password" show-password autocomplete="off" />
         </ElFormItem>
-        <ElFormItem label="Repeat password" prop="passwordConfirm">
+        <ElFormItem :label="$t('password-repeat')" prop="passwordConfirm">
           <ElInput v-model="userFormData.passwordConfirm" show-password autocomplete="off" />
         </ElFormItem>
       </ElForm>
       <template #footer>
         <span class="dialog-footer">
-          <ElButton @click="userFormVisible = false">Cancel</ElButton>
+          <ElButton @click="userFormVisible = false">{{ $t('cancel') }}</ElButton>
           <ElButton type="primary" @click="onSubmit">
-            {{ userFormData.currentUsername ? 'Save' : 'Create' }}
+            {{ userFormData.currentUsername ? $t('save') : $t('create') }}
           </ElButton>
         </span>
       </template>
     </ElDialog>
 
     <ElTable :data="data">
-      <ElTableColumn label="Username" prop="username" />
-      <ElTableColumn label="Display Name" prop="displayName" />
+      <ElTableColumn :label="$t('username')" prop="username" />
+      <ElTableColumn :label="$t('display-name')" prop="displayName" />
       <ElTableColumn>
         <template #default="{ row }">
           <ElButton text>

@@ -77,7 +77,7 @@ const onCancelInput = () => {
     />
 
     <ElButton v-if="editable && !inputVisible" class="w-20" size="small" @click="showInput">
-      + Add Tag
+      + {{ $t('add-tag') }}
     </ElButton>
   </div>
 </template>

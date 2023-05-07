@@ -9,7 +9,9 @@ definePageMeta({
   middleware: ['require-auth'],
 })
 
-useHead({ title: 'Configuration' })
+const { t } = useI18n()
+
+useHead({ title: t('configuration') })
 
 const app = useAppStore()
 const { gitSha } = storeToRefs(app)
@@ -30,7 +32,7 @@ async function onSave() {
   })
 
   ElMessage({
-    message: 'Saved',
+    message: t('saved'),
     type: 'success',
   })
 
@@ -47,12 +49,12 @@ async function onSave() {
   />
   <Layout v-else>
     <template #title>
-      Configuration
+      {{ $t('configuration') }}
     </template>
 
     <template #actions>
       <ElButton class="m-1" type="success" @click="onSave">
-        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">Save</span>
+        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
       </ElButton>
     </template>
 
@@ -60,17 +62,17 @@ async function onSave() {
       label-position="top"
       @submit.prevent
     >
-      <ElFormItem label="Application title">
+      <ElFormItem :label="$t('application-title')">
         <ElInput v-model="data.appTitle" />
       </ElFormItem>
-      <ElFormItem label="Permissions">
+      <ElFormItem :label="$t('permissions')">
         <AclTable ref="aclTableRef" :acl="data?.acl ?? []" :show-columns="['register', 'admin']" />
       </ElFormItem>
-      <ElFormItem label="Version">
+      <ElFormItem :label="$t('version')">
         <ElInput
           :value="gitSha" disabled
         />
-      </elformitem>
+      </ElFormItem>
     </ElForm>
   </Layout>
 </template>

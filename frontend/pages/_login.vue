@@ -3,9 +3,11 @@ import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
 import { useAuthStore } from '~/store/auth'
 
+const { t } = useI18n()
+
 const loginFormData = ref({ username: '', password: '' })
 
-useHead({ title: 'Sign in' })
+useHead(() => ({ title: t('sign-in') }))
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -24,7 +26,7 @@ async function submit() {
       const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
       await navigateTo(returnTo)
     } else {
-      ElMessage({ message: 'Invalid credentials', type: 'error' })
+      ElMessage({ message: t('invalid-credentials'), type: 'error' })
     }
   } catch (err) {
     ElMessage({ message: String(err), type: 'error' })
@@ -40,23 +42,23 @@ async function submit() {
 
       <ElForm label-position="top" class="w-50" @submit.prevent @keypress.enter="submit">
         <ElFormItem>
-          <ElInput v-model="loginFormData.username" type="username" placeholder="Username" autofocus />
+          <ElInput v-model="loginFormData.username" type="username" :placeholder="$t('username')" autofocus />
         </ElFormItem>
         <ElFormItem>
           <ElInput
-            v-model="loginFormData.password" type="password" show-password placeholder="Password"
+            v-model="loginFormData.password" type="password" show-password :placeholder="$t('password')"
           />
         </ElFormItem>
         <ElFormItem>
           <ElButton type="primary" class="w-full" :loading="loading" @click="submit">
-            Sign in
+            {{ $t('sign-in') }}
           </ElButton>
         </ElFormItem>
       </ElForm>
 
       <NuxtLink v-if="allowRegister" v-slot="{ navigate, href }" custom :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
         <ElLink :underline="false" :href="href" @click="navigate">
-          New Here? Register now!
+          {{ $t('_login.link-to-register') }}
         </ElLink>
       </NuxtLink>
     </div>

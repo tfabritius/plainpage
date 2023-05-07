@@ -13,6 +13,8 @@ const props = defineProps<{
   onReload: Function
 }>()
 
+const { t } = useI18n()
+
 const app = useAppStore()
 const { allowAdmin } = storeToRefs(app)
 
@@ -22,7 +24,7 @@ const breadcrumbs = computed(() => props.breadcrumbs)
 
 const pageTitle = computed(() => {
   if (urlPath.value === '') {
-    return 'Home'
+    return t('home')
   }
   return breadcrumbs.value.slice(-1)[0]?.name
 })
@@ -36,11 +38,11 @@ const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 const createPage = async () => {
   let name
   try {
-    const msgBox = await ElMessageBox.prompt('Please enter page name', 'New page', {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+    const msgBox = await ElMessageBox.prompt(t('enter-page-name'), t('create-page'), {
+      confirmButtonText: t('ok'),
+      cancelButtonText: t('cancel'),
       inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      inputErrorMessage: 'Invalid name (allowed: [a-z0-9_-])',
+      inputErrorMessage: t('invalid-page-name'),
     })
     name = msgBox.value
   } catch (e) {
@@ -53,11 +55,11 @@ const createPage = async () => {
 const createFolder = async () => {
   let name
   try {
-    const msgBox = await ElMessageBox.prompt('Please enter folder name', 'New folder', {
-      confirmButtonText: 'OK',
-      cancelButtonText: 'Cancel',
+    const msgBox = await ElMessageBox.prompt(t('enter-folder-name'), t('create-folder'), {
+      confirmButtonText: t('ok'),
+      cancelButtonText: t('cancel'),
       inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      inputErrorMessage: 'Invalid name (allowed: [a-z0-9_-])',
+      inputErrorMessage: t('invalid-folder-name'),
     })
     name = msgBox.value
   } catch (e) {
@@ -68,7 +70,7 @@ const createFolder = async () => {
     await apiFetch(`/pages${urlPath.value}/${name}`, { method: 'PUT', body: { page: null } })
 
     ElMessage({
-      message: 'Folder created',
+      message: t('folder-created'),
       type: 'success',
     })
     await navigateTo(`${urlPath.value}/${name}`)
@@ -90,10 +92,10 @@ const onDeleteFolder = async () => {
   deleteConfirmOpen.value = true
   try {
     await ElMessageBox.confirm(
-      'Are you sure to delete this folder?',
+      t('are-you-sure-to-delete-this-folder'),
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('delete'),
+        cancelButtonText: t('cancel'),
         type: 'warning',
       })
   } catch {
@@ -107,7 +109,7 @@ const onDeleteFolder = async () => {
     await apiFetch(`/pages${urlPath.value}`, { method: 'DELETE' })
 
     ElMessage({
-      message: 'Folder deleted',
+      message: t('folder-deleted'),
       type: 'success',
     })
 
@@ -123,7 +125,7 @@ const onDeleteFolder = async () => {
 const handleDropdownMenuCommand = async (command: string | number | object) => {
   if (command === 'reload') {
     await props.onReload()
-    ElMessage({ message: 'Folder reloaded', type: 'success' })
+    ElMessage({ message: t('folder-reloaded'), type: 'success' })
   } else if (command === 'acl') {
     await navigateTo({ query: { acl: null } })
   } else if (command === 'delete') {
@@ -151,27 +153,27 @@ onKeyStroke('Delete', (e) => {
     <template #actions>
       <div>
         <ElButton v-if="allowWrite" class="m-1" @click="createPage">
-          <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">Add page</span>
+          <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">{{ $t('create-page') }}</span>
         </ElButton>
         <span />
         <ElButton v-if="allowWrite" class="m-1" @click="createFolder">
-          <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">Add folder</span>
+          <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">{{ $t('create-folder') }}</span>
         </ElButton>
 
         <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
           <ElButton>
-            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">More</span>
+            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">{{ $t('more') }}</span>
           </ElButton>
           <template #dropdown>
             <ElDropdownMenu>
               <ElDropdownItem :icon="ReloadIcon" command="reload">
-                Reload
+                {{ $t('reload') }}
               </ElDropdownItem>
               <ElDropdownItem v-if="allowAdmin" :icon="PermissionsIcon" command="acl">
-                Permissions
+                {{ $t('permissions') }}
               </ElDropdownItem>
               <ElDropdownItem v-if="urlPath !== '' && allowDelete" :icon="DeleteIcon" command="delete">
-                Delete
+                {{ $t('delete') }}
               </ElDropdownItem>
             </ElDropdownMenu>
           </template>
@@ -180,8 +182,11 @@ onKeyStroke('Delete', (e) => {
     </template>
 
     <div>
-      <h2 v-if="folder.content.some(e => e.isFolder)" class="font-light text-xl">
-        Folders
+      <h2
+        v-if="folder.content.some(e => e.isFolder)"
+        class="font-light text-xl"
+      >
+        {{ $t('folders') }}
       </h2>
       <div v-for="entry of folder.content.filter(e => e.isFolder)" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
@@ -192,9 +197,10 @@ onKeyStroke('Delete', (e) => {
       </div>
 
       <h2
-        v-if="folder.content.some(e => !e.isFolder)" class="font-light text-xl"
+        v-if="folder.content.some(e => !e.isFolder)"
+        class="font-light text-xl"
       >
-        Pages
+        {{ $t('pages') }}
       </h2>
       <div v-for="entry of folder.content.filter(e => !e.isFolder)" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>

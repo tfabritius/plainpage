@@ -9,6 +9,15 @@ module.exports = {
       'PascalCase',
       { registeredComponentsOnly: false },
     ],
+    // Require typescript in vue components
+    'vue/block-lang': [
+      'error',
+      {
+        script: {
+          lang: 'ts',
+        },
+      },
+    ],
     'curly': ['warn', 'all'],
     '@typescript-eslint/brace-style': ['warn', '1tbs', { allowSingleLine: true }],
     'antfu/top-level-function': 'off',

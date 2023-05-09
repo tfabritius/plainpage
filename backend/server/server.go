@@ -114,6 +114,8 @@ func (app App) GetHandler() http.Handler {
 					).ServeHTTP)
 			})
 
+			r.Post("/search", app.searchContent)
+
 			r.Route("/auth", func(r chi.Router) {
 				r.With(app.RequireAdminPermission).
 					Get("/users", app.getUsers)

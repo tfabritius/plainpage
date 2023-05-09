@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve/v2/mapping"
 	"github.com/tfabritius/plainpage/model"
 )
 
@@ -23,11 +25,16 @@ func NewContentService(store model.Storage) ContentService {
 		log.Fatalln("Could not initialize storage:", err)
 	}
 
+	if err := s.RecreateIndex(); err != nil {
+		log.Fatalln("Could not initialize search index:", err)
+	}
+
 	return s
 }
 
 type ContentService struct {
 	storage model.Storage
+	index   bleve.Index
 }
 
 func (s *ContentService) initializeStorage() error {
@@ -52,6 +59,101 @@ func (s *ContentService) initializeStorage() error {
 	}
 
 	return nil
+}
+
+func (s *ContentService) RecreateIndex() error {
+	// Create new in-memory index
+	idx, err := bleve.NewMemOnly(s.createIndexMapping())
+	if err != nil {
+		return err
+	}
+
+	// (Re-)Index all documents
+	log.Println("Creating search index...")
+	if err := s.indexFolder("", &idx); err != nil {
+		return err
+	}
+	cnt, err := idx.DocCount()
+	if err != nil {
+		return err
+	}
+	log.Printf("done (%v entries).", cnt)
+
+	s.index = idx
+	return nil
+}
+
+func (*ContentService) createIndexMapping() *mapping.IndexMappingImpl {
+	metaMapping := bleve.NewDocumentMapping()
+	metaMapping.AddSubDocumentMapping("acl", bleve.NewDocumentDisabledMapping())
+
+	pageMapping := bleve.NewDocumentMapping()
+	pageMapping.AddSubDocumentMapping("meta", metaMapping)
+
+	indexMapping := bleve.NewIndexMapping()
+	indexMapping.AddDocumentMapping("page", pageMapping)
+	return indexMapping
+}
+
+func (s *ContentService) indexFolder(urlPath string, idx *bleve.Index) error {
+	folder, err := s.ReadFolder(urlPath)
+	if err != nil {
+		return err
+	}
+
+	for _, c := range folder.Content {
+		if c.IsFolder {
+			if err := s.indexFolder(c.Url, idx); err != nil {
+				return err
+			}
+		} else {
+			page, err := s.ReadPage(c.Url, nil)
+			if err != nil {
+				return err
+			}
+			if err := (*idx).Index(c.Url, page); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
+	query := bleve.NewMatchQuery(q)
+
+	search := bleve.NewSearchRequest(query)
+	search.Highlight = bleve.NewHighlight()
+
+	// Return 100 results to have at least 10 the user can access
+	search.Size = 100
+
+	results, err := s.index.Search(search)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := []model.SearchHit{}
+	for _, r := range results.Hits {
+		page, err := s.ReadPage(r.ID, nil)
+		if err != nil {
+			return nil, err
+		}
+		acl, err := s.GetEffectivePermissions(r.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		ret = append(ret, model.SearchHit{
+			Url:          r.ID,
+			Meta:         page.Meta,
+			Fragments:    r.Fragments,
+			EffectiveACL: acl,
+		})
+	}
+
+	return ret, nil
 }
 
 func (s *ContentService) IsPage(urlPath string) bool {
@@ -129,12 +231,32 @@ func (s *ContentService) SavePage(urlPath, content string, meta model.PageMeta) 
 		return fmt.Errorf("could not save page to attic: %w", err)
 	}
 
+	// Update search index
+	page := model.Page{
+		Url:     "/" + urlPath,
+		Content: content,
+		Meta:    meta,
+	}
+	if err := s.index.Index(urlPath, page); err != nil {
+		log.Println("[INDEX] Could not update page "+urlPath+":", err)
+	}
+
 	return nil
 }
 
 func (s *ContentService) DeletePage(urlPath string) error {
 	fsPath := filepath.Join("pages", urlPath+".md")
-	return s.storage.DeleteFile(fsPath)
+
+	if err := s.storage.DeleteFile(fsPath); err != nil {
+		return err
+	}
+
+	// Update search index
+	if err := s.index.Delete(urlPath); err != nil {
+		log.Println("[INDEX] Could not delete page "+urlPath+":", err)
+	}
+
+	return nil
 }
 
 func (s *ContentService) CreateFolder(urlPath string) error {
@@ -265,7 +387,16 @@ func (s *ContentService) DeleteAll() error {
 		}
 	}
 
-	return s.initializeStorage()
+	if err := s.initializeStorage(); err != nil {
+		return err
+	}
+
+	// Update search index
+	if err := s.RecreateIndex(); err != nil {
+		log.Println("[INDEX] Could not recreate index:", err)
+	}
+
+	return nil
 }
 
 func (s *ContentService) GetEffectivePermissions(urlPath string) (*[]model.AccessRule, error) {

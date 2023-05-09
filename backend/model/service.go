@@ -69,3 +69,10 @@ type Config struct {
 	JwtSecret string       `json:"-" yaml:"jwtSecret"`
 	SetupMode bool         `json:"setupMode" yaml:"setupMode"`
 }
+
+type SearchHit struct {
+	Url          string              `json:"url"`
+	Meta         PageMeta            `json:"meta"`
+	Fragments    map[string][]string `json:"fragments"`
+	EffectiveACL *[]AccessRule       `json:"-"`
+}

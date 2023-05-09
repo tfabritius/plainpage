@@ -92,6 +92,12 @@ export interface Config {
   acl: AccessRule[] | null
 }
 
+export interface SearchHit {
+  url: string
+  meta: PageMeta
+  fragments: Record<string, string[]>
+}
+
 // corresponding to service/user_service.go
 
 export const validUsernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9_\\.-]{3,20}$/

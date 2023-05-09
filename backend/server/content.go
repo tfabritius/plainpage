@@ -12,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
+	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
@@ -312,4 +313,36 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 		response := model.GetContentResponse{Page: &page, Breadcrumbs: breadcrumbs}
 		render.JSON(w, r, response)
 	}
+}
+
+func (app App) searchContent(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query().Get("q")
+	userID := ctxutil.UserID(r.Context())
+
+	results, err := app.Content.Search(q)
+	if err != nil {
+		panic(err)
+	}
+
+	// Filter results to only those accessible to the user
+	accessibleResults := []model.SearchHit{}
+	for _, r := range results {
+
+		if err := app.Users.CheckContentPermissions(r.EffectiveACL, userID, model.AccessOpRead); err != nil {
+			if _, ok := err.(*service.AccessDeniedError); ok {
+				// Skip this result
+				continue
+			}
+
+			panic(err)
+		}
+
+		r.Meta.ACL = nil // Hide ACL
+		accessibleResults = append(accessibleResults, r)
+	}
+
+	// Limit to 10 results
+	limitedResults := accessibleResults[:10]
+
+	render.JSON(w, r, limitedResults)
 }

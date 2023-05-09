@@ -342,7 +342,9 @@ func (app App) searchContent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Limit to 10 results
-	limitedResults := accessibleResults[:10]
+	if len(accessibleResults) > 10 {
+		accessibleResults = accessibleResults[:10]
+	}
 
-	render.JSON(w, r, limitedResults)
+	render.JSON(w, r, accessibleResults)
 }

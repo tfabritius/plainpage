@@ -17,7 +17,7 @@ import (
 type App struct {
 	Frontend http.FileSystem
 	Storage  model.Storage
-	Content  service.ContentService
+	Content  *service.ContentService
 	Users    service.UserService
 	Token    service.TokenService
 }

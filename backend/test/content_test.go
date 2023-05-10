@@ -952,4 +952,100 @@ func (s *ContentTestSuite) TestAtticRevisions() {
 	}
 }
 
-// Test: Read page|folder should not contain ACL (unless admin)
+func (s *ContentTestSuite) TestSearch() {
+	r := s.Require()
+
+	// Prepare
+	urls := []string{
+		"page", "admin-only/page", "read-only/page", "published/page", "public/page",
+	}
+	for _, url := range urls {
+		err := s.app.Content.SavePage(
+			url,
+			"Content",
+			model.PageMeta{Title: "Title", Tags: []string{"tag"}},
+		)
+		r.NoError(err)
+	}
+
+	// Search with different tokens
+	tests := []struct {
+		name     string
+		token    *string
+		q        string
+		nResults int
+	}{
+		{"admin", s.adminToken, "page", 5},
+		{"user", s.userToken, "page", 4},
+		{"anonymous", nil, "page", 2},
+	}
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("POST", "/search?q="+tc.q,
+				nil,
+				tc.token)
+			r.Equal(200, res.Code)
+
+			body, _ := jsonbody[[]model.SearchHit](res)
+			r.Len(body, tc.nResults)
+
+			for _, hit := range body {
+				r.Nil(hit.EffectiveACL)
+				r.Nil(hit.Meta.ACL)
+				r.NotEmpty(hit.Url)
+				r.Equal("Title", hit.Meta.Title)
+				r.Len(hit.Meta.Tags, 1)
+				r.Equal("tag", hit.Meta.Tags[0])
+				r.NotEmpty(hit.Fragments["url"])
+			}
+		})
+	}
+
+	// Search for different aspects of pages
+	moreTests := []struct {
+		name     string
+		q        string
+		nResults int
+	}{
+		{"url", "page", 5},
+		{"content", "content", 5},
+		{"meta.title", "title", 5},
+		{"meta.tags", "tag", 5},
+	}
+	for _, tc := range moreTests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("POST", "/search?q="+tc.q,
+				nil,
+				s.adminToken)
+			r.Equal(200, res.Code)
+
+			body, _ := jsonbody[[]model.SearchHit](res)
+			r.Len(body, tc.nResults)
+
+			for _, hit := range body {
+				r.Nil(hit.EffectiveACL)
+				r.Nil(hit.Meta.ACL)
+				r.NotEmpty(hit.Url)
+				r.Equal("Title", hit.Meta.Title)
+				r.Len(hit.Meta.Tags, 1)
+				r.Equal("tag", hit.Meta.Tags[0])
+
+				r.NotEmpty(hit.Fragments[tc.name])
+				r.Len(hit.Fragments[tc.name], 1)
+				if tc.name == "content" {
+					r.Equal("<mark>Content</mark>", hit.Fragments[tc.name][0])
+				} else if tc.name == "meta.title" {
+					r.Equal("<mark>Title</mark>", hit.Fragments[tc.name][0])
+				} else if tc.name == "meta.tags" {
+					r.Equal("<mark>tag</mark>", hit.Fragments[tc.name][0])
+				}
+			}
+		})
+	}
+}

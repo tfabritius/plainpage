@@ -16,7 +16,7 @@ import (
 	"github.com/tfabritius/plainpage/model"
 )
 
-func NewContentService(store model.Storage) ContentService {
+func NewContentService(store model.Storage) *ContentService {
 	s := ContentService{
 		storage: store,
 	}
@@ -29,7 +29,7 @@ func NewContentService(store model.Storage) ContentService {
 		log.Fatalln("Could not initialize search index:", err)
 	}
 
-	return s
+	return &s
 }
 
 type ContentService struct {

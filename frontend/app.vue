@@ -56,6 +56,12 @@ async function onSearch() {
   searchQuery.value = ''
 }
 
+async function onKeyPressInSearch(e: Event) {
+  // Prevent keyboard shortcuts being fired if focus is in input field
+  e.stopPropagation()
+  e.stopImmediatePropagation()
+}
+
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 </script>
@@ -79,6 +85,7 @@ const toggleDark = useToggle(isDark)
           class="max-w-40 mx-1"
           size="small"
           @keypress.enter="onSearch"
+          @keydown="onKeyPressInSearch"
         >
           <template #suffix>
             <Icon name="ci:search" />

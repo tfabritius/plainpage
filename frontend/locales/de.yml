@@ -1,5 +1,8 @@
 _login:
   link-to-register: Neu hier? Jetzt Konto anlegen!
+_search:
+  no-results: Keine Ergebnisse
+  results: Ergebnisse
 access-denied: Zugriff verweigert
 account-deleted: Konto gelöscht
 acl:
@@ -67,6 +70,7 @@ revision-doesnt-exist: Diese Überarbeitung existiert nicht!
 revisions: Überarbeitungen
 save: Speichern
 saved: Gespeichert
+search: Suche
 sign-in: Anmelden
 there-was-an-error: Es gab einen Fehler.
 this-page-doesnt-exist: Diese Seite existiert nicht!

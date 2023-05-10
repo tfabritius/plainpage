@@ -1,5 +1,8 @@
 _login:
   link-to-register: ¿Nuevo aquí? ¡Regístrate ahora!
+_search:
+  no-results: No hay resultados
+  results: Resultados
 access-denied: Acceso denegado
 account-deleted: Cuenta borrada
 acl:
@@ -67,6 +70,7 @@ revision-doesnt-exist: ¡Esta revisión no existe!
 revisions: Revisiones
 save: Guardar
 saved: Guardado
+search: Buscar
 sign-in: Iniciar sesión
 there-was-an-error: Hubo un error.
 this-page-doesnt-exist: ¡Esta página no existe!

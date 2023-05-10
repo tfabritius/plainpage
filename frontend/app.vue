@@ -50,6 +50,12 @@ async function handleDropdownMenuCommand(command: string | number | object) {
   }
 }
 
+const searchQuery = ref('')
+async function onSearch() {
+  await navigateTo({ path: '_search', query: { q: searchQuery.value } })
+  searchQuery.value = ''
+}
+
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
 </script>
@@ -67,6 +73,18 @@ const toggleDark = useToggle(isDark)
       </NuxtLink>
 
       <span>
+        <ElInput
+          v-model="searchQuery"
+          :placeholder="$t('search')"
+          class="max-w-40 mx-1"
+          size="small"
+          @keypress.enter="onSearch"
+        >
+          <template #suffix>
+            <Icon name="ci:search" />
+          </template>
+        </ElInput>
+
         <ElLink :underline="false" class="m-1" @click="toggleDark()">
           <Icon :name="isDark ? 'ci:moon' : 'ci:sun'" />
         </ElLink>

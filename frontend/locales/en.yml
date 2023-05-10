@@ -1,5 +1,8 @@
 _login:
   link-to-register: New Here? Register now!
+_search:
+  no-results: No results
+  results: Results
 access-denied: Access denied
 account-deleted: Account deleted
 acl:
@@ -67,6 +70,7 @@ revision-doesnt-exist: This revision doesn't exist!
 revisions: Revisions
 save: Save
 saved: Saved
+search: Search
 sign-in: Sign in
 there-was-an-error: There was an error.
 this-page-doesnt-exist: This page doesn't exist!

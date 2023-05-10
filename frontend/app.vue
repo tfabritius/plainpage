@@ -52,7 +52,7 @@ async function handleDropdownMenuCommand(command: string | number | object) {
 
 const searchQuery = ref('')
 async function onSearch() {
-  await navigateTo({ path: '_search', query: { q: searchQuery.value } })
+  await navigateTo({ path: '/_search', query: { q: searchQuery.value } })
   searchQuery.value = ''
 }
 

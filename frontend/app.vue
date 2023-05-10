@@ -99,16 +99,16 @@ const toggleDark = useToggle(isDark)
           <template #dropdown>
             <ElDropdownMenu>
               <ElDropdownItem :icon="ProfileIcon" command="profile">
-                Profile
+                {{ $t('profile') }}
               </ElDropdownItem>
               <ElDropdownItem v-if="allowAdmin" :icon="UsersIcon" command="users">
-                Users
+                {{ $t('users') }}
               </ElDropdownItem>
               <ElDropdownItem v-if="allowAdmin" :icon="SettingsIcon" command="settings">
-                Settings
+                {{ $t('configuration') }}
               </ElDropdownItem>
               <ElDropdownItem :icon="LogoutIcon" command="logout">
-                Sign out
+                {{ $t('sign-out') }}
               </ElDropdownItem>
             </ElDropdownMenu>
           </template>
@@ -121,7 +121,7 @@ const toggleDark = useToggle(isDark)
           :to="`/_login?returnTo=${route.query.returnTo || encodeURIComponent(route.fullPath)}`"
         >
           <ElLink :underline="false" :href="href" @click="navigate">
-            <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">Sign in</span>
+            <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">{{ $t('sign-in') }}</span>
           </ElLink>
         </NuxtLink>
       </span>

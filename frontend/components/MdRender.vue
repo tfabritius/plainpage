@@ -15,7 +15,6 @@ const html = computed(
       gfm: true,
       renderer,
       // Suppress warnings about deprecated options:
-      langPrefix: undefined,
       mangle: false,
       headerIds: false,
     }),

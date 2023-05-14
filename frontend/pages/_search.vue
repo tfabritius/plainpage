@@ -85,13 +85,12 @@ watch(q, () => {
           </div>
 
           <ElTag
-            v-for="tag in result.meta.tags"
+            v-for="tag in result.fragments['meta.tags']"
             :key="tag"
             class="mr-1"
             :disable-transitions="true"
-          >
-            {{ tag }}
-          </ElTag>
+            v-html="tag"
+          />
         </div>
       </div>
       <div v-else>

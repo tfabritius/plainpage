@@ -25,10 +25,11 @@ const html = computed(
 onMounted(() => {
   document.querySelectorAll('a.markdown-link').forEach((item) => {
     if (item instanceof HTMLAnchorElement) {
+      const url = item.getAttribute('href')
       item.onclick = (e) => {
         if (e.target instanceof HTMLAnchorElement) {
           e.preventDefault()
-          navigateTo(e.target.getAttribute('href'), { external: true })
+          navigateTo(url, { external: url?.startsWith('http:') || url?.startsWith('https:') })
         }
       }
     }

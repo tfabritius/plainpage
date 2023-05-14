@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FetchError } from 'ofetch'
+import { storeToRefs } from 'pinia'
 
 import type { GetContentResponse, Page } from '~/types/'
 import { useAuthStore } from '~/store/auth'
@@ -28,10 +29,11 @@ const aclQuery = computed(() => {
 })
 
 const auth = useAuthStore()
+const { loggedIn } = storeToRefs(auth)
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
-const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${auth.token}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${loggedIn}`, async () => {
   try {
     const data = await apiFetch<GetContentResponse>(`/pages${urlPath.value}`)
     return {
@@ -51,7 +53,8 @@ const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${au
     }
     throw err
   }
-})
+},
+{ watch: [loggedIn] })
 
 const accessDenied = computed(() => data.value?.accessDenied ?? false)
 const page = computed(() => data.value?.page ?? null)

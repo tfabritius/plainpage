@@ -41,13 +41,13 @@ export const useAuthStore = defineStore(
       user.value = response.user
     }
 
-    function logout() {
+    async function logout() {
       token.value = ''
       user.value = undefined
 
-      // Refresh current page
+      // Run middlewares of current page again
       const router = useRouter()
-      router.go(0)
+      await router.replace({ path: router.currentRoute.value.fullPath, force: true })
     }
 
     async function updateMe(newMe: { displayName: string; password: string }) {
@@ -72,7 +72,7 @@ export const useAuthStore = defineStore(
         throw new Error('not logged in')
       }
       await apiFetch(`/auth/users/${user.value.username}`, { method: 'DELETE' })
-      logout()
+      await logout()
     }
 
     /**

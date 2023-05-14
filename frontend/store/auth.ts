@@ -92,7 +92,9 @@ export const useAuthStore = defineStore(
       throw new Error('invalid token payload format')
     })
 
-    const now = useTimestamp({ interval: 1000 })
+    // Interval limits the changes to 1/min,
+    // limiting the frequency of refreshing the token
+    const now = useTimestamp({ interval: 60 * 1000 })
 
     const tokenRemainingSeconds = computed(() => {
       return Math.max(0, tokenExpiration.value - Math.floor(now.value / 1000))

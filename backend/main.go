@@ -39,8 +39,8 @@ func getDataDir() string {
 }
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatalln("Error loading .env file")
+	if err := godotenv.Load(); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		log.Fatalln("Error loading .env file:", err)
 	}
 
 	dataDir := getDataDir()

@@ -1,0 +1,214 @@
+@use 'vars.scss' as *;
+
+@use 'sass:color';
+
+.markdown {
+  line-height: 1.5;
+  word-wrap: break-word;
+
+  p,
+  blockquote,
+  ul,
+  ol,
+  table,
+  pre {
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  h1,
+  h2 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid color.adjust($text-color-primary-light, $alpha: -0.7);
+
+    .dark & {
+      border-bottom: 1px solid color.adjust($text-color-primary-dark, $alpha: -0.7);
+    }
+  }
+
+  h3 {
+    font-size: 1.25em;
+  }
+
+  h5 {
+    font-size: .875em;
+  }
+
+  h6 {
+    font-size: .85em;
+
+    color: color.adjust($text-color-primary-light, $alpha: -0.2);
+
+    html.dark & {
+      color: color.adjust($text-color-primary-dark, $alpha: -0.2);
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+
+    th {
+      font-weight: 600;
+    }
+
+    th,
+    td {
+      padding: 6px 13px;
+      border: 1px solid #dddddd;
+
+      html.dark & {
+        border: 1px solid #555555;
+      }
+    }
+  }
+
+  blockquote {
+    margin-left: 0;
+    padding: 0 1em;
+
+    border-left: .5em solid #dddddd;
+    color: color.adjust($text-color-primary-light, $alpha: -0.3);
+
+    html.dark & {
+      border-left: .5em solid #555555;
+      color: color.adjust($text-color-primary-dark, $alpha: -0.3);
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: 2em;
+
+    ol {
+      list-style-type: lower-roman;
+    }
+
+    ul,
+    ol {
+      ol {
+        list-style-type: lower-alpha;
+      }
+    }
+  }
+
+  hr {
+    height: .25em;
+    padding: 0;
+    margin: 24px 0;
+    border: 0;
+
+    background-color: #dddddd;
+
+    html.dark & {
+      background-color: #555555;
+    }
+  }
+
+  input[type="checkbox"] {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+
+    color: $primary-color-light;
+
+    html.dark & {
+      color: $primary-color-dark;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:not([href]) {
+      color: inherit;
+      text-decoration: none;
+    }
+  }
+
+  b,
+  strong {
+    font-weight: 600;
+  }
+
+  kbd {
+    display: inline-block;
+    padding: 3px 5px;
+    font-size: 11px;
+    line-height: 10px;
+    vertical-align: middle;
+    border-radius: 6px;
+
+    background-color: #f0f0f0;
+    border: solid 1px #aaaaaa;
+    box-shadow: inset 0 -1px 0 #aaaaaa;
+
+    html.dark & {
+      background-color: #303030;
+      border: solid 1px #666666;
+      box-shadow: inset 0 -1px 0 #666666;
+    }
+  }
+
+  pre {
+    padding: 16px;
+    font-size: 85%;
+    line-height: 1.45;
+    border-radius: 6px;
+
+    background-color: #f0f0f0;
+
+    html.dark & {
+      background-color: #303030;
+    }
+
+    code {
+      font-size: 100%;
+      padding: 0;
+      word-break: normal;
+      white-space: pre;
+      background: transparent;
+
+      html.dark & {
+        background: transparent;
+      }
+    }
+  }
+
+  code {
+    padding: .2em .4em;
+    font-size: 85%;
+    white-space: break-spaces;
+    border-radius: 6px;
+
+    background-color: #f0f0f0;
+
+    html.dark & {
+      background-color: #303030;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    code {
+      font-size: inherit;
+    }
+  }
+}

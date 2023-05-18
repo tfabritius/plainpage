@@ -37,5 +37,5 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-html="html" />
+  <div class="markdown" v-html="html" />
 </template>

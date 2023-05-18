@@ -1,0 +1,16 @@
+@use 'vars.scss' as *;
+
+$--colors: (
+  'primary': (
+    'base': $primary-color-light,
+  ),
+);
+
+$--text-color: (
+  'primary': $text-color-primary-light,
+);
+
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $colors: $--colors,
+  $text-color: $--text-color,
+);

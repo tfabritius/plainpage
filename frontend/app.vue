@@ -6,7 +6,7 @@ import { useAuthStore } from '~/store/auth'
 import { Icon } from '#components'
 import { useAppStore } from '~/store/app'
 
-import 'element-plus/theme-chalk/dark/css-vars.css'
+import 'element-plus/theme-chalk/src/dark/css-vars.scss'
 
 useHead({
   bodyAttrs: {

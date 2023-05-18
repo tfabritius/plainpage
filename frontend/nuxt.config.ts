@@ -14,6 +14,7 @@ export default defineNuxtConfig({
 
   elementPlus: {
     icon: false,
+    importStyle: 'scss',
   },
 
   unocss: {
@@ -26,6 +27,10 @@ export default defineNuxtConfig({
     shortcuts: [],
     rules: [],
   },
+
+  css: [
+    '@/assets/styles/markdown.scss',
+  ],
 
   piniaPersistedstate: {
     storage: 'localStorage',
@@ -45,6 +50,16 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true,
     strict: true,
+  },
+
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          additionalData: '@use "@/assets/styles/elementplus.scss" as element;',
+        },
+      },
+    },
   },
 
   nitro: {

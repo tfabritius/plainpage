@@ -105,12 +105,14 @@ const createWrapUnwrapGenerator = (enclosingStart: string, enclosingEnd: string)
   const generator: MdEditorGenerator = (oldText: string) => {
     let text = ''
     if (oldText.startsWith(enclosingStart) && oldText.endsWith(enclosingEnd)) {
+      // Unwrap
       if (enclosingEnd.length > 0) {
         text = oldText.slice(enclosingStart.length, -enclosingEnd.length)
       } else {
         text = oldText.slice(enclosingStart.length)
       }
     } else {
+      // Wrap
       text = enclosingStart + oldText + enclosingEnd
     }
 
@@ -191,6 +193,9 @@ const onToolbarClick = (action: string) => {
       break
     case 'code-block':
       editor.replaceLine(createWrapUnwrapGenerator('```\n', '\n```'))
+      break
+    case 'table':
+      editor.replaceLine(createWrapUnwrapGenerator('|   |   |\n' + '|---|---|\n' + '|   |   |\n' + '|   |   |\n', ''))
       break
 
     case 'fullscreen':

@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-//go:generate rm -r ./static/*
+//go:generate rm -rf ./static/*
 //go:generate cp -r ../frontend/.output/public/* ./static/
 //go:embed all:static
 var frontendFs embed.FS

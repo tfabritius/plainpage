@@ -31,7 +31,7 @@ const route = useRoute()
           <div>
             <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
               <ElLink :href="href" :underline="false" @click="navigate">
-                <h1 class="hover:underline font-light flex items-center">
+                <h1 class="hover:underline my-0 py-3 font-light flex items-center">
                   <slot name="title" />
                 </h1>
               </ElLink>

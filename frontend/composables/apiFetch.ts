@@ -17,7 +17,7 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 401) {
       if (loggedIn) {
-        logout()
+        await logout()
       }
 
       if (route.path !== '/_login') {

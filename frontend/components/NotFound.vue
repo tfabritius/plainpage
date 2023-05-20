@@ -29,12 +29,12 @@ const editing = computed({
 
 useHead(() => ({ title: t('not-found') }))
 
-const createThisPage = () => {
+function createThisPage() {
   editablePage.value = deepClone(emptyPage)
   editing.value = true
 }
 
-const createThisFolder = async () => {
+async function createThisFolder() {
   await apiFetch(`/pages/${urlPath.value}`, { method: 'PUT', body: { page: null } })
 
   ElMessage({
@@ -44,7 +44,7 @@ const createThisFolder = async () => {
   emit('refresh')
 }
 
-const onSavePage = async () => {
+async function onSavePage() {
   try {
     await apiFetch(`/pages/${urlPath.value}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
@@ -64,7 +64,7 @@ const onSavePage = async () => {
 
 const cancelEditConfirmOpen = ref(false)
 
-const onCancelEdit = async () => {
+async function onCancelEdit() {
   if (cancelEditConfirmOpen.value) {
     ElMessageBox.close()
     cancelEditConfirmOpen.value = false

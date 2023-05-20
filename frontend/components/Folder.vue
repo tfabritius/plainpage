@@ -35,7 +35,7 @@ const PermissionsIcon = h(Icon, { name: 'ci:shield' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
-const createPage = async () => {
+async function createPage() {
   let name
   try {
     const msgBox = await ElMessageBox.prompt(t('enter-page-name'), t('create-page'), {
@@ -52,7 +52,7 @@ const createPage = async () => {
   await navigateTo({ path: `${urlPath.value}/${name}`, query: { edit: 'true' } })
 }
 
-const createFolder = async () => {
+async function createFolder() {
   let name
   try {
     const msgBox = await ElMessageBox.prompt(t('enter-folder-name'), t('create-folder'), {
@@ -83,7 +83,7 @@ const createFolder = async () => {
 }
 
 const deleteConfirmOpen = ref(false)
-const onDeleteFolder = async () => {
+async function onDeleteFolder() {
   if (deleteConfirmOpen.value) {
     // Prevent multiple dialogs at the same time
     return
@@ -122,7 +122,7 @@ const onDeleteFolder = async () => {
   }
 }
 
-const handleDropdownMenuCommand = async (command: string | number | object) => {
+async function handleDropdownMenuCommand(command: string | number | object) {
   if (command === 'reload') {
     await props.onReload()
     ElMessage({ message: t('folder-reloaded'), type: 'success' })

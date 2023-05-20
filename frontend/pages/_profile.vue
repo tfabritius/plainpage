@@ -34,7 +34,7 @@ const profileFormRules = {
   ],
 } satisfies FormRules
 
-const onSave = async () => {
+async function onSave() {
   if (!profileFormRef.value) {
     return
   }
@@ -52,7 +52,7 @@ const onSave = async () => {
   })
 }
 
-const onDelete = async () => {
+async function onDelete() {
   try {
     await ElMessageBox.confirm(
       t('are-you-sure-to-delete-this-account'),

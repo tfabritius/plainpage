@@ -52,11 +52,11 @@ const RevisionsIcon = h(Icon, { name: 'ic:baseline-restore' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
-const onEditPage = () => {
+function onEditPage() {
   editing.value = true
 }
 
-const onSavePage = async () => {
+async function onSavePage() {
   try {
     await apiFetch(`/pages${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
@@ -76,7 +76,7 @@ const onSavePage = async () => {
 }
 
 const deleteConfirmOpen = ref(false)
-const onDeletePage = async () => {
+async function onDeletePage() {
   if (deleteConfirmOpen.value) {
     // Prevent multiple dialogs at the same time
     return
@@ -115,7 +115,7 @@ const onDeletePage = async () => {
   }
 }
 
-const handleDropdownMenuCommand = async (command: string | number | object) => {
+async function handleDropdownMenuCommand(command: string | number | object) {
   if (command === 'reload') {
     await props.onReload()
     ElMessage({ message: t('page-reloaded'), type: 'success' })
@@ -132,7 +132,7 @@ const handleDropdownMenuCommand = async (command: string | number | object) => {
 
 const cancelEditConfirmOpen = ref(false)
 
-const onCancelEdit = async () => {
+async function onCancelEdit() {
   if (cancelEditConfirmOpen.value) {
     ElMessageBox.close()
     cancelEditConfirmOpen.value = false

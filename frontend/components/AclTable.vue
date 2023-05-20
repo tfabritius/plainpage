@@ -124,7 +124,7 @@ function onRemoveRule(subject: string) {
   editableACL.value = editableACL.value?.filter(rule => rule.subject !== subject)
 }
 
-const onAddRule = () => {
+function onAddRule() {
   if (!newUser.value) {
     return
   }

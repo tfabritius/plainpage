@@ -20,7 +20,7 @@ const markdown = computed({
 
 const segments = ref<Segment[]>([])
 
-const lineNoToSegment = (lineNo: number): Segment | null => {
+function lineNoToSegment(lineNo: number): Segment | null {
   for (const s of segments.value) {
     if (s.lineStart >= lineNo) {
       return s
@@ -30,7 +30,7 @@ const lineNoToSegment = (lineNo: number): Segment | null => {
 }
 
 // Splits markdown into segments, adds tokens of type space to previous segment
-const splitMdToSegments = (markdown: string): Segment[] => {
+function splitMdToSegments(markdown: string): Segment[] {
   const tokens = marked.lexer(markdown)
 
   const segments: Segment[] = []
@@ -87,7 +87,7 @@ segments.value = splitMdToSegments(markdown.value)
 const codeEditorRef = ref<InstanceType<typeof MdCodeEditor>>()
 const previewRef = ref<InstanceType<typeof MdPreview>>()
 
-const onEditorScroll = ({ firstVisibleLineNo }: { firstVisibleLineNo: number }) => {
+function onEditorScroll({ firstVisibleLineNo }: { firstVisibleLineNo: number }) {
   const firstVisibleSegment = lineNoToSegment(firstVisibleLineNo)
   if (firstVisibleSegment === null) {
     throw new Error(`no segment found for line number ${firstVisibleLineNo}`)
@@ -96,12 +96,12 @@ const onEditorScroll = ({ firstVisibleLineNo }: { firstVisibleLineNo: number }) 
   previewRef.value?.scrollToSegmentIdx(firstVisibleSegment.idx)
 }
 
-const onPreviewScroll = ({ firstVisibleSegmentIdx }: { firstVisibleSegmentIdx: number }) => {
+function onPreviewScroll({ firstVisibleSegmentIdx }: { firstVisibleSegmentIdx: number }) {
   const segment = segments.value[firstVisibleSegmentIdx]
   codeEditorRef.value?.scrollToLineNo(segment.lineStart)
 }
 
-const createWrapUnwrapGenerator = (enclosingStart: string, enclosingEnd: string) => {
+function createWrapUnwrapGenerator(enclosingStart: string, enclosingEnd: string) {
   const generator: MdEditorGenerator = (oldText: string) => {
     let text = ''
     if (oldText.startsWith(enclosingStart) && oldText.endsWith(enclosingEnd)) {
@@ -128,7 +128,7 @@ const createWrapUnwrapGenerator = (enclosingStart: string, enclosingEnd: string)
 const showPreview = ref(true)
 const showFullscreen = ref(false)
 
-const onToolbarClick = (action: string) => {
+function onToolbarClick(action: string) {
   const editor = codeEditorRef.value
   if (!editor) {
     return

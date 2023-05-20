@@ -18,7 +18,7 @@ const segments = computed(() => props.segments)
 const renderer = new marked.Renderer()
 renderer.link = (href: string, title: string, text: string) => `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
 
-const renderSegmentsToHtml = (segments: Segment[]): string => {
+function renderSegmentsToHtml(segments: Segment[]): string {
   return segments.map((segment) => {
     const tokens = segment.tokens
     const content = marked.parser(tokens, { gfm: true, renderer })
@@ -53,7 +53,7 @@ function updatePositionsOfPreviewSegments() {
   }
 }
 
-const positionToSegmentIdx = (pos: number) => {
+function positionToSegmentIdx(pos: number) {
   for (let i = 0; i < segmentPositions.value.length; i++) {
     if (segmentPositions.value[i].top + segmentPositions.value[i].height >= pos) {
       return i
@@ -65,7 +65,7 @@ const positionToSegmentIdx = (pos: number) => {
 // Is set to true while preview area scrolles programmatically
 const ignoreScrollEvent = ref(false)
 
-const onScroll = ({ scrollTop }: { scrollTop: number }) => {
+function onScroll({ scrollTop }: { scrollTop: number }) {
   if (ignoreScrollEvent.value) {
     return
   }
@@ -83,7 +83,7 @@ const previewScrollbar = ref<InstanceType<typeof ElScrollbar>>()
 
 const scrollTimeoutId = ref<number>()
 
-const scrollToSegmentIdx = (idx: number) => {
+function scrollToSegmentIdx(idx: number) {
   const scrollTo = segmentPositions.value[idx].top
   if (scrollTo !== undefined) {
     window.clearTimeout(scrollTimeoutId.value)

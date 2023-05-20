@@ -23,11 +23,11 @@ const customPermissions = ref(!!meta.value.acl)
 
 const aclTableRef = ref<InstanceType<typeof AclTable>>()
 
-const onGoBack = async () => {
+async function onGoBack() {
   await navigateTo({ query: { } })
 }
 
-const onSave = async () => {
+async function onSave() {
   const apiData = (customPermissions.value || urlPath.value === '') ? aclTableRef.value?.getAcl() : null
 
   await apiFetch(`/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })

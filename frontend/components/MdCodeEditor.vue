@@ -30,11 +30,11 @@ const firstVisibleLineOffsetScrollTo = 1
 // Codemirror EditorView instance ref
 const editorView = shallowRef<EditorView>()
 
-const handleReady = (payload: { view: EditorView }) => {
+function handleReady(payload: { view: EditorView }) {
   editorView.value = payload.view
 }
 
-const getFirstVisibleLineNo = (view: EditorView) => {
+function getFirstVisibleLineNo(view: EditorView) {
   // Editor position on document
   const editorRect = view.dom.getBoundingClientRect()
 
@@ -50,7 +50,7 @@ const getFirstVisibleLineNo = (view: EditorView) => {
 // Is set to true while editor scrolles programmatically
 const ignoreScrollEvent = ref(false)
 
-const onScroll = () => {
+function onScroll() {
   if (ignoreScrollEvent.value) {
     return
   }
@@ -64,7 +64,7 @@ const onScroll = () => {
 
 const scrollTimeoutId = ref<number>()
 
-const scrollToLineNo = (lineNo: number) => {
+function scrollToLineNo(lineNo: number) {
   if (editorView.value) {
     window.clearTimeout(scrollTimeoutId.value)
     ignoreScrollEvent.value = true
@@ -83,7 +83,7 @@ const scrollToLineNo = (lineNo: number) => {
   }
 }
 
-const replaceLine = (generator: MdEditorGenerator) => {
+function replaceLine(generator: MdEditorGenerator) {
   const view = editorView.value
   if (!view) {
     return
@@ -104,7 +104,7 @@ const replaceLine = (generator: MdEditorGenerator) => {
   view.focus()
 }
 
-const replaceSelection = (generator: MdEditorGenerator) => {
+function replaceSelection(generator: MdEditorGenerator) {
   const view = editorView.value
   if (!view) {
     return

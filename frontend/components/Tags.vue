@@ -20,20 +20,20 @@ const inputValue = ref('')
 const inputVisible = ref(false)
 const InputRef = ref<InstanceType<typeof ElInput>>()
 
-const handleClose = (tag: string) => {
+function handleClose(tag: string) {
   if (tags.value !== null) {
     tags.value.splice(tags.value.indexOf(tag), 1)
   }
 }
 
-const showInput = () => {
+function showInput() {
   inputVisible.value = true
   nextTick(() => {
     InputRef.value!.input!.focus()
   })
 }
 
-const onInputConfirm = () => {
+function onInputConfirm() {
   if (inputValue.value !== '') {
     if (tags.value === null) {
       tags.value = [inputValue.value]
@@ -46,7 +46,7 @@ const onInputConfirm = () => {
   inputValue.value = ''
 }
 
-const onCancelInput = () => {
+function onCancelInput() {
   inputVisible.value = false
   inputValue.value = ''
 }

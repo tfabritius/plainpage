@@ -46,19 +46,19 @@ const userFormRules = computed(() => ({
   ],
 } satisfies FormRules))
 
-const onCreate = async () => {
+async function onCreate() {
   userFormData.value = { ...emptyUser }
   userFormRef.value?.clearValidate()
   userFormVisible.value = true
 }
 
-const onEdit = async (user: User) => {
+async function onEdit(user: User) {
   userFormData.value = { ...user, currentUsername: user.username, password: '', passwordConfirm: '' }
   userFormRef.value?.clearValidate()
   userFormVisible.value = true
 }
 
-const onSubmit = async () => {
+async function onSubmit() {
   if (!userFormRef.value) {
     return
   }
@@ -93,7 +93,7 @@ const onSubmit = async () => {
   }
 }
 
-const onDelete = async (user: User) => {
+async function onDelete(user: User) {
   try {
     await ElMessageBox.confirm(
       t('are-you-sure-to-delete-user', [user.username]),

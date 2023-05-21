@@ -17,12 +17,15 @@ jobs:
         working-directory: ./frontend
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: 'frontend/package.json'
       - uses: pnpm/action-setup@v2
         with:
           version: 8
+        # pnpm has to be installed before node to make use of caching
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'frontend/package.json'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm lint
@@ -38,6 +41,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
       - run: go build -v ./...
       - run: go test -v ./... -cover -covermode=atomic -coverpkg=./... -coverprofile=coverage.txt
       - uses: codecov/codecov-action@v3

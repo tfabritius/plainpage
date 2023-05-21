@@ -1,5 +1,8 @@
 {
   "private": true,
+  "engines": {
+    "node": "18"
+  },
   "scripts": {
     "cleanup": "nuxt cleanup",
     "build": "nuxt build",

@@ -24,7 +24,7 @@ devDependencies:
     version: 8.0.0-beta.12
   '@pinia-plugin-persistedstate/nuxt':
     specifier: ^1.1.1
-    version: 1.1.1(@pinia/nuxt@0.4.11)(pinia@2.0.33)
+    version: 1.1.1(@pinia/nuxt@0.4.11)(pinia@2.1.3)
   '@pinia/nuxt':
     specifier: ^0.4.11
     version: 0.4.11(typescript@5.0.2)
@@ -74,8 +74,8 @@ devDependencies:
     specifier: ^0.4.1
     version: 0.4.1
   pinia:
-    specifier: ^2.0.33
-    version: 2.0.33(typescript@5.0.2)
+    specifier: ^2.1.3
+    version: 2.1.3(typescript@5.0.2)
   sass:
     specifier: ^1.62.1
     version: 1.62.1
@@ -1543,7 +1543,7 @@ packages:
       - vue-router
     dev: true
 
-  /@pinia-plugin-persistedstate/nuxt@1.1.1(@pinia/nuxt@0.4.11)(pinia@2.0.33):
+  /@pinia-plugin-persistedstate/nuxt@1.1.1(@pinia/nuxt@0.4.11)(pinia@2.1.3):
     resolution: {integrity: sha512-b6ZNP3Re8COmfZEpj4KQmbp2TuDKrLggDFLZa8FiJF68xE/oCsPXIuXUvAt8E4ht/5sq4Z/grlA+iGXaI2aeKQ==}
     peerDependencies:
       '@pinia/nuxt': ^0.4.4
@@ -1551,7 +1551,7 @@ packages:
       '@nuxt/kit': 3.3.1
       '@pinia/nuxt': 0.4.11(typescript@5.0.2)
       defu: 6.1.2
-      pinia-plugin-persistedstate: 3.1.0(pinia@2.0.33)
+      pinia-plugin-persistedstate: 3.1.0(pinia@2.1.3)
     transitivePeerDependencies:
       - pinia
       - rollup
@@ -2513,7 +2513,7 @@ packages:
       '@types/web-bluetooth': 0.0.16
       '@vueuse/metadata': 9.13.0
       '@vueuse/shared': 9.13.0
-      vue-demi: 0.14.0
+      vue-demi: 0.14.5
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -2563,7 +2563,7 @@ packages:
   /@vueuse/shared@10.1.2:
     resolution: {integrity: sha512-1uoUTPBlgyscK9v6ScGeVYDDzlPSFXBlxuK7SfrDGyUTBiznb3mNceqhwvZHjtDRELZEN79V5uWPTF1VDV8svA==}
     dependencies:
-      vue-demi: 0.14.0
+      vue-demi: 0.14.5
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -2572,7 +2572,7 @@ packages:
   /@vueuse/shared@9.13.0:
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
     dependencies:
-      vue-demi: 0.14.0
+      vue-demi: 0.14.5
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -6261,31 +6261,12 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /pinia-plugin-persistedstate@3.1.0(pinia@2.0.33):
+  /pinia-plugin-persistedstate@3.1.0(pinia@2.1.3):
     resolution: {integrity: sha512-8UN+vYMEPBdgNLwceY08mi5olI0wkYaEb8b6hD6xW7SnBRuPydWHlEhZvUWgNb/ibuf4PvufpvtS+dmhYjJQOw==}
     peerDependencies:
       pinia: ^2.0.0
     dependencies:
-      pinia: 2.0.33(typescript@5.0.2)
-    dev: true
-
-  /pinia@2.0.33(typescript@5.0.2):
-    resolution: {integrity: sha512-HOj1yVV2itw6rNIrR2f7+MirGNxhORjrULL8GWgRwXsGSvEqIQ+SE0MYt6cwtpegzCda3i+rVTZM+AM7CG+kRg==}
-    peerDependencies:
-      '@vue/composition-api': ^1.4.0
-      typescript: '>=4.4.4'
-      vue: ^2.6.14 || ^3.2.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-      typescript:
-        optional: true
-      vue:
-        optional: true
-    dependencies:
-      '@vue/devtools-api': 6.5.0
-      typescript: 5.0.2
-      vue-demi: 0.13.11
+      pinia: 2.1.3(typescript@5.0.2)
     dev: true
 
   /pinia@2.1.3(typescript@5.0.2):

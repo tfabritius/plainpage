@@ -71,8 +71,8 @@ devDependencies:
     specifier: ^3.5.0
     version: 3.5.0(@types/node@20.1.1)(eslint@8.39.0)(sass@1.62.1)(typescript@5.0.2)(vue-tsc@1.6.5)
   nuxt-icon:
-    specifier: ^0.4.0
-    version: 0.4.0
+    specifier: ^0.4.1
+    version: 0.4.1
   pinia:
     specifier: ^2.0.33
     version: 2.0.33(typescript@5.0.2)
@@ -5874,11 +5874,11 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /nuxt-icon@0.4.0:
-    resolution: {integrity: sha512-j7phHbE4Ug2MsHvj9SidH5Nx9Bs2i/XpoH7HjQJD7DPlWNaI9srJGDOPY1g83S8i4vmDJvCc6KqkLjRasJZlYA==}
+  /nuxt-icon@0.4.1:
+    resolution: {integrity: sha512-QTpxewOgLfdPx2uwHhoU5XQ4AtQ9N31ifbwnbn4Sx5NM+W2slNfGq1eEKmUl0CpSUAhGEdKbzd5CjA3c7dVa1Q==}
     dependencies:
       '@iconify/vue': 4.1.1
-      '@nuxt/kit': 3.4.3
+      '@nuxt/kit': 3.5.0
     transitivePeerDependencies:
       - rollup
       - supports-color

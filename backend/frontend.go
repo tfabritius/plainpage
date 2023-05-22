@@ -8,7 +8,7 @@ import (
 )
 
 //go:generate rm -rf ./static/*
-//go:generate cp -r ../frontend/.output/public/* ./static/
+//go:generate sh -c "cp -r ../frontend/.output/public/* ./static/"
 //go:embed all:static
 var frontendFs embed.FS
 

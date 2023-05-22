@@ -14,7 +14,7 @@ const { t } = useI18n()
 useHead({ title: t('configuration') })
 
 const app = useAppStore()
-const { gitSha } = storeToRefs(app)
+const { version } = storeToRefs(app)
 
 const { data, error, refresh } = await useAsyncData('/config', () => apiFetch<Config>('/config'))
 
@@ -70,7 +70,7 @@ async function onSave() {
       </ElFormItem>
       <ElFormItem :label="$t('version')">
         <ElInput
-          :value="gitSha" disabled
+          :value="version" disabled
         />
       </ElFormItem>
     </ElForm>

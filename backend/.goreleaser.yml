@@ -30,7 +30,7 @@ builds:
       - -s
       - -w
       # Embed version
-      - -X main.version={{.Version}}
+      - -X github.com/tfabritius/plainpage/build.version={{.Version}}
 
 archives:
   - name_template: >-

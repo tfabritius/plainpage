@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/tfabritius/plainpage/build"
 	"github.com/tfabritius/plainpage/server"
 	"github.com/tfabritius/plainpage/service"
 )
@@ -41,6 +42,8 @@ func getDataDir() string {
 }
 
 func main() {
+	log.Printf("📄 Plainpage %s\n", build.GetVersion())
+
 	if err := godotenv.Load(); err != nil && !errors.Is(err, fs.ErrNotExist) {
 		log.Fatalln("Error loading .env file:", err)
 	}

@@ -14,13 +14,13 @@ export const useAppStore = defineStore(
     const appTitle = computed(() => data.value?.appTitle ?? 'PlainPage')
     const allowAdmin = computed(() => data.value?.allowAdmin || false)
     const allowRegister = computed(() => data.value?.allowRegister ?? false)
-    const gitSha = computed(() => data.value?.gitSha ?? '')
+    const version = computed(() => data.value?.version ?? '')
 
     return {
       appTitle,
       allowAdmin,
       allowRegister,
-      gitSha,
+      version,
       refresh,
     }
   },

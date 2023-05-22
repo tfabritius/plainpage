@@ -29,8 +29,8 @@ devDependencies:
     specifier: ^0.4.11
     version: 0.4.11(typescript@5.0.2)
   '@types/dompurify':
-    specifier: ^3.0.0
-    version: 3.0.0
+    specifier: ^3.0.2
+    version: 3.0.2
   '@types/marked':
     specifier: ^5.0.0
     version: 5.0.0
@@ -1770,8 +1770,8 @@ packages:
     engines: {node: '>=10.13.0'}
     dev: true
 
-  /@types/dompurify@3.0.0:
-    resolution: {integrity: sha512-EcSqmgm/xJwH8CcJPy9AHNypp/j58CYga3nWdl93/wLxX6OH+rSD3aAj75NQazcZd1YKHJ/pjNZ9qmgVajggwQ==}
+  /@types/dompurify@3.0.2:
+    resolution: {integrity: sha512-YBL4ziFebbbfQfH5mlC+QTJsvh0oJUrWbmxKMyEdL7emlHJqGR2Qb34TEFKj+VCayBvjKy3xczMFNhugThUsfQ==}
     dependencies:
       '@types/trusted-types': 2.0.3
     dev: true

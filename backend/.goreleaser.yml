@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+
+before:
+  hooks:
+    - go mod download
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+    # Ensure reproducible builds:
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+    flags:
+      - -trimpath
+
+    ldflags:
+      # Reduce size:
+      - -s
+      - -w
+      # Embed version
+      - -X main.version={{.Version}}
+
+archives:
+  - name_template: >-
+      {{ .ProjectName }}-
+      {{- .Version }}-
+      {{- .Os }}-
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format: tar.gz
+    format_overrides:
+    # use zip for windows archives
+    - goos: windows
+      format: zip
+
+dockers:
+  - image_templates:
+    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64'
+    goarch: amd64
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+    - --pull
+    - --platform=linux/amd64
+  - image_templates:
+    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64'
+    goarch: arm64
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+    - --pull
+    - --platform=linux/arm64
+
+docker_manifests:
+  - name_template: 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}'
+    image_templates:
+    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64'
+    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64'
+  - name_template: 'ghcr.io/tfabritius/{{ .ProjectName }}:latest'
+    image_templates:
+    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64'
+    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64'

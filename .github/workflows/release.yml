@@ -9,18 +9,47 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
+      # Allow upload of assets to release
       contents: write
+      # Allow push of docker images
+      packages: write
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 8
-    - uses: actions/setup-go@v4
-    - run: sh ./.github/release.sh
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_REPO: ${{ github.repository }}
-        GITHUB_RELEASE: ${{ github.event.release.id }}
+      - uses: actions/checkout@v3
+        with:
+          # Required by goreleaser
+          fetch-depth: 0
+
+      ### Frontend
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+        # pnpm has to be installed before node to make use of caching
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'frontend/package.json'
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: frontend
+      - run: pnpm generate
+        working-directory: frontend
+
+      ### Backend
+      - uses: docker/setup-qemu-action@v2
+        # Required by goreleaser to build docker images with buildx
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - uses: goreleaser/goreleaser-action@v4
+        with:
+          args: release --clean
+          workdir: backend
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

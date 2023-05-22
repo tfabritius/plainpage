@@ -1,2 +1,5 @@
 /data
 /test/data
+
+# goreleaser output
+dist/

@@ -5,8 +5,8 @@ devDependencies:
     specifier: ^0.39.1
     version: 0.39.1(eslint@8.39.0)(typescript@5.0.4)
   '@codemirror/lang-markdown':
-    specifier: ^6.1.0
-    version: 6.1.0
+    specifier: ^6.1.1
+    version: 6.1.1
   '@codemirror/state':
     specifier: ^6.2.0
     version: 6.2.0
@@ -599,8 +599,8 @@ packages:
       '@lezer/javascript': 1.4.1
     dev: true
 
-  /@codemirror/lang-markdown@6.1.0:
-    resolution: {integrity: sha512-HQDJg1Js19fPKKsI3Rp1X0J6mxyrRy2NX6+Evh0+/jGm6IZHL5ygMGKBYNWKXodoDQFvgdofNRG33gWOwV59Ag==}
+  /@codemirror/lang-markdown@6.1.1:
+    resolution: {integrity: sha512-n87Ms6Y5UYb1UkFu8sRzTLfq/yyF1y2AYiWvaVdbBQi5WDj1tFk5N+AKA+WC0Jcjc1VxvrCCM0iizjdYYi9sFQ==}
     dependencies:
       '@codemirror/lang-html': 6.4.2
       '@codemirror/language': 6.6.0

@@ -56,8 +56,8 @@ devDependencies:
     specifier: ^2.30.0
     version: 2.30.0
   dompurify:
-    specifier: ^3.0.1
-    version: 3.0.1
+    specifier: ^3.0.3
+    version: 3.0.3
   element-plus:
     specifier: ^2.3.5
     version: 2.3.5
@@ -3568,8 +3568,8 @@ packages:
       domelementtype: 2.3.0
     dev: true
 
-  /dompurify@3.0.1:
-    resolution: {integrity: sha512-60tsgvPKwItxZZdfLmamp0MTcecCta3avOhsLgPZ0qcWt96OasFfhkeIRbJ6br5i0fQawT1/RBGB5L58/Jpwuw==}
+  /dompurify@3.0.3:
+    resolution: {integrity: sha512-axQ9zieHLnAnHh0sfAamKYiqXMJAVwu+LM/alQ7WDagoWessyWvMSFyW65CqF3owufNu8HBcE4cM2Vflu7YWcQ==}
     dev: true
 
   /domutils@3.0.1:

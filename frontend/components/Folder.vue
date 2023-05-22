@@ -18,15 +18,11 @@ const { t } = useI18n()
 const app = useAppStore()
 const { allowAdmin } = storeToRefs(app)
 
-const urlPath = computed(() => props.urlPath)
-const folder = computed(() => props.folder)
-const breadcrumbs = computed(() => props.breadcrumbs)
-
 const pageTitle = computed(() => {
-  if (urlPath.value === '') {
+  if (props.urlPath === '') {
     return t('home')
   }
-  return breadcrumbs.value.slice(-1)[0]?.name
+  return props.breadcrumbs.slice(-1)[0]?.name
 })
 
 useHead(() => ({ title: pageTitle.value }))
@@ -49,7 +45,7 @@ async function createPage() {
     return
   }
 
-  await navigateTo({ path: `${urlPath.value}/${name}`, query: { edit: 'true' } })
+  await navigateTo({ path: `${props.urlPath}/${name}`, query: { edit: 'true' } })
 }
 
 async function createFolder() {
@@ -67,13 +63,13 @@ async function createFolder() {
   }
 
   try {
-    await apiFetch(`/pages${urlPath.value}/${name}`, { method: 'PUT', body: { page: null } })
+    await apiFetch(`/pages${props.urlPath}/${name}`, { method: 'PUT', body: { page: null } })
 
     ElMessage({
       message: t('folder-created'),
       type: 'success',
     })
-    await navigateTo(`${urlPath.value}/${name}`)
+    await navigateTo(`${props.urlPath}/${name}`)
   } catch (err) {
     ElMessage({
       message: String(err),
@@ -106,7 +102,7 @@ async function onDeleteFolder() {
   deleteConfirmOpen.value = false
 
   try {
-    await apiFetch(`/pages${urlPath.value}`, { method: 'DELETE' })
+    await apiFetch(`/pages${props.urlPath}`, { method: 'DELETE' })
 
     ElMessage({
       message: t('folder-deleted'),
@@ -136,7 +132,7 @@ async function handleDropdownMenuCommand(command: string | number | object) {
 }
 
 onKeyStroke('Delete', (e) => {
-  if (urlPath.value !== '' && props.allowDelete) {
+  if (props.urlPath !== '' && props.allowDelete) {
     e.preventDefault()
     onDeleteFolder()
   }

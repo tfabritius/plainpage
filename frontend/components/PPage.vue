@@ -20,13 +20,7 @@ const route = useRoute()
 const app = useAppStore()
 const { allowAdmin } = storeToRefs(app)
 
-const page = computed(() => props.page)
-const breadcrumbs = computed(() => props.breadcrumbs)
-
-const allowWrite = computed(() => props.allowWrite)
-const allowDelete = computed(() => props.allowDelete)
-
-const pageTitle = computed(() => page.value.meta.title || t('untitled'))
+const pageTitle = computed(() => props.page.meta.title || t('untitled'))
 
 useHead(() => ({ title: pageTitle.value }))
 
@@ -35,7 +29,7 @@ const editablePage = ref(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')
 const editing = computed({
-  get() { return editQuery.value === 'true' && allowWrite.value },
+  get() { return editQuery.value === 'true' && props.allowWrite },
   set(value) {
     editQuery.value = value ? 'true' : null
   },
@@ -43,7 +37,7 @@ const editing = computed({
 
 watch(editing, (editing) => {
   if (editing) {
-    editablePage.value = deepClone(page.value)
+    editablePage.value = deepClone(props.page)
   }
 }, { immediate: true })
 
@@ -139,7 +133,7 @@ async function onCancelEdit() {
     return
   }
 
-  if (!deepEqual(page.value, editablePage.value)) {
+  if (!deepEqual(props.page, editablePage.value)) {
     try {
       cancelEditConfirmOpen.value = true
       await ElMessageBox.confirm(t('discard-changes-to-this-page'), {
@@ -159,14 +153,14 @@ async function onCancelEdit() {
 }
 
 onKeyStroke('e', (e) => {
-  if (!editing.value && allowWrite.value) {
+  if (!editing.value && props.allowWrite) {
     e.preventDefault()
     onEditPage()
   }
 })
 
 onKeyStroke('Delete', (e) => {
-  if (!editing.value && allowDelete.value) {
+  if (!editing.value && props.allowDelete) {
     e.preventDefault()
     onDeletePage()
   }

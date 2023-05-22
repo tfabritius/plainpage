@@ -12,16 +12,12 @@ const emit = defineEmits<{ (e: 'refresh'): void }>()
 
 const { t } = useI18n()
 
-const urlPath = computed(() => props.urlPath)
-const allowCreate = computed(() => props.allowCreate)
-const breadcrumbs = computed(() => props.breadcrumbs)
-
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref<Page>(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')
 const editing = computed({
-  get() { return editQuery.value === 'true' && allowCreate.value },
+  get() { return editQuery.value === 'true' && props.allowCreate },
   set(value) {
     editQuery.value = value ? 'true' : null
   },
@@ -35,7 +31,7 @@ function createThisPage() {
 }
 
 async function createThisFolder() {
-  await apiFetch(`/pages/${urlPath.value}`, { method: 'PUT', body: { page: null } })
+  await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: null } })
 
   ElMessage({
     message: 'Folder created',
@@ -46,7 +42,7 @@ async function createThisFolder() {
 
 async function onSavePage() {
   try {
-    await apiFetch(`/pages/${urlPath.value}`, { method: 'PUT', body: { page: editablePage.value } })
+    await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
 
     ElMessage({

@@ -10,12 +10,10 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const urlPath = computed(() => props.urlPath)
-
 useHead(() => ({ title: `${t('revisions')}: ${props.title}` }))
 
-const { data } = await useAsyncData(`/attic${urlPath.value}`, async () => {
-  const data = await apiFetch<GetAtticListResponse>(`/attic${urlPath.value}`)
+const { data } = await useAsyncData(`/attic${props.urlPath}`, async () => {
+  const data = await apiFetch<GetAtticListResponse>(`/attic${props.urlPath}`)
 
   const entries = data.entries.map(e => ({ ...e, date: new Date(e.rev * 1000) }))
     .sort((a, b) => b.rev - a.rev)

@@ -12,12 +12,9 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const urlPath = computed(() => props.urlPath)
-const revision = computed(() => props.revision)
-
-const { data, error, refresh } = await useAsyncData(`/attic${urlPath.value}?rev=${revision.value}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/attic${props.urlPath}?rev=${props.revision}`, async () => {
   try {
-    const data = await apiFetch<GetContentResponse>(`/attic${urlPath.value}?rev=${revision.value}`)
+    const data = await apiFetch<GetContentResponse>(`/attic${props.urlPath}?rev=${props.revision}`)
     return {
       notFound: false,
       page: data.page,
@@ -44,7 +41,7 @@ const pageTitle = computed(() => {
 
 useHead(() => ({ title: pageTitle.value }))
 
-const revDate = computed(() => new Date(Number(revision.value) * 1000))
+const revDate = computed(() => new Date(Number(props.revision) * 1000))
 </script>
 
 <template>

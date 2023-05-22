@@ -14,12 +14,7 @@ const emit = defineEmits<{ (e: 'refresh'): void }>()
 
 useHead(() => ({ title: `Permissions: ${props.title}` }))
 
-const urlPath = computed(() => props.urlPath)
-const meta = computed(() => props.meta)
-const title = computed(() => props.title)
-const isFolder = computed(() => props.isFolder)
-
-const customPermissions = ref(!!meta.value.acl)
+const customPermissions = ref(!!props.meta.acl)
 
 const aclTableRef = ref<InstanceType<typeof AclTable>>()
 
@@ -28,9 +23,9 @@ async function onGoBack() {
 }
 
 async function onSave() {
-  const apiData = (customPermissions.value || urlPath.value === '') ? aclTableRef.value?.getAcl() : null
+  const apiData = (customPermissions.value || props.urlPath === '') ? aclTableRef.value?.getAcl() : null
 
-  await apiFetch(`/pages${urlPath.value}`, { method: 'PATCH', body: [{ op: 'replace', path: isFolder.value ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })
+  await apiFetch(`/pages${props.urlPath}`, { method: 'PATCH', body: [{ op: 'replace', path: props.isFolder ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })
 
   emit('refresh')
   onGoBack()

@@ -13,8 +13,6 @@ const emit = defineEmits<{
   (e: 'scroll', payload: { firstVisibleSegmentIdx: number }): void
 }>()
 
-const segments = computed(() => props.segments)
-
 const renderer = new marked.Renderer()
 renderer.link = (href: string, title: string, text: string) => `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
 
@@ -27,7 +25,7 @@ function renderSegmentsToHtml(segments: Segment[]): string {
   }).join('')
 }
 
-const html = computed(() => renderSegmentsToHtml(segments.value))
+const html = computed(() => renderSegmentsToHtml(props.segments))
 
 const previewArea = ref<InstanceType<typeof HTMLDivElement>>()
 

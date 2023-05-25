@@ -159,8 +159,8 @@ onKeyStroke('e', (e) => {
   }
 })
 
-onKeyStroke('Delete', (e) => {
-  if (!editing.value && props.allowDelete) {
+onKeyStroke('Backspace', (e) => {
+  if (!editing.value && props.allowDelete && e.ctrlKey) {
     e.preventDefault()
     onDeletePage()
   }

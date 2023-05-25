@@ -131,8 +131,8 @@ async function handleDropdownMenuCommand(command: string | number | object) {
   }
 }
 
-onKeyStroke('Delete', (e) => {
-  if (props.urlPath !== '' && props.allowDelete) {
+onKeyStroke('Backspace', (e) => {
+  if (props.urlPath !== '' && props.allowDelete && e.ctrlKey) {
     e.preventDefault()
     onDeleteFolder()
   }

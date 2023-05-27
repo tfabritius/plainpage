@@ -137,8 +137,6 @@ onKeyStroke('s', (e) => {
       </ElButton>
     </div>
 
-    <div v-else>
-      <PageEditor v-model="editablePage" />
-    </div>
+    <PageEditor v-else v-model="editablePage" />
   </Layout>
 </template>

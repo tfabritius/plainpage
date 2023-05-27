@@ -12,7 +12,9 @@ const route = useRoute()
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen box-border p-2 flex flex-col">
+    <AppHeader />
+
     <ElCard>
       <template #header>
         <div v-if="breadcrumbs">

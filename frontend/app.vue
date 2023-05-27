@@ -29,9 +29,8 @@ useHead(() => ({ titleTemplate: `%s | ${appTitle.value}` }))
 </script>
 
 <template>
-  <div class="min-h-screen box-border p-2 flex flex-col">
-    <AppHeader />
-    <NuxtPage class="flex-grow" />
+  <div>
+    <NuxtPage />
     <NuxtLoadingIndicator />
   </div>
 </template>

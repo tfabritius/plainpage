@@ -52,7 +52,7 @@ const toggleDark = useToggle(isDark)
   <div class="flex justify-between">
     <NuxtLink v-slot="{ navigate, href }" custom to="/">
       <ElLink :underline="false" :href="href" @click="navigate">
-        <span class="text-xl font-light flex items-center">
+        <span class="text-xl font-light flex items-center  whitespace-nowrap">
           <Icon name="ci:file-blank" />
           <span>{{ appTitle }}</span>
         </span>

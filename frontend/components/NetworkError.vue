@@ -10,7 +10,9 @@ useHead(() => ({ title: t('error') }))
 </script>
 
 <template>
-  <div class="flex">
+  <div class="min-h-screen box-border p-2 flex flex-col">
+    <AppHeader />
+
     <div class="m-auto text-center text-gray-500">
       <Icon name="ci:cloud-off" size="5em" />
 

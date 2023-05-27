@@ -36,7 +36,9 @@ async function submit() {
 </script>
 
 <template>
-  <div class="flex">
+  <div class="min-h-screen box-border p-2 flex flex-col">
+    <AppHeader />
+
     <div class="m-auto text-center text-gray-500">
       <Icon name="ci:user-circle" size="5em" class="mb-3" />
 

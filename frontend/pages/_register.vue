@@ -86,7 +86,9 @@ async function submit() {
 </script>
 
 <template>
-  <div class="flex">
+  <div class="min-h-screen box-border p-2 flex flex-col">
+    <AppHeader />
+
     <div class="m-auto text-center text-gray-500">
       <h2>{{ $t('register-account') }}</h2>
 

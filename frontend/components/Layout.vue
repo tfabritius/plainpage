@@ -15,8 +15,8 @@ const route = useRoute()
   <div class="min-h-screen box-border p-2 flex flex-col">
     <AppHeader />
 
-    <ElCard>
-      <template #header>
+    <div class="border rounded border-gray-300 border-solid">
+      <div class="p-5 border-b border-b-gray-300 border-b-solid">
         <div v-if="breadcrumbs">
           <ElBreadcrumb :separator-icon="ChevronIcon">
             <ElBreadcrumbItem :to="{ path: '/' }">
@@ -48,10 +48,12 @@ const route = useRoute()
             <slot name="actions" />
           </div>
         </div>
-      </template>
+      </div>
 
-      <slot />
-    </ElCard>
+      <div class="p-5">
+        <slot />
+      </div>
+    </div>
 
     <div class="text-center">
       <ElLink :underline="false" href="https://github.com/tfabritius/plainpage">

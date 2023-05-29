@@ -34,7 +34,7 @@ const PermissionsIcon = h(Icon, { name: 'ci:shield' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
-const newPageDialogVisible = ref(true)
+const newPageDialogVisible = ref(false)
 const newPageFormRef = ref<FormInstance>()
 const newPageFormData = ref({ title: '', name: '' })
 const newPageDialogExpanded = ref(false)

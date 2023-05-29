@@ -175,7 +175,10 @@ onKeyStroke('s', (e) => {
 </script>
 
 <template>
-  <Layout :breadcrumbs="breadcrumbs">
+  <Layout
+    :breadcrumbs="breadcrumbs"
+    :use-full-height="editing"
+  >
     <template #title>
       <span v-if="page?.meta.title">{{ pageTitle }}</span>
       <span v-else class="italic">

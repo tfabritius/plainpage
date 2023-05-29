@@ -101,7 +101,10 @@ onKeyStroke('s', (e) => {
 </script>
 
 <template>
-  <Layout :breadcrumbs="breadcrumbs">
+  <Layout
+    :breadcrumbs="breadcrumbs"
+    :use-full-height="editing"
+  >
     <template #title>
       <span class="italic">{{ $t('not-found') }}</span>
     </template>

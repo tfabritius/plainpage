@@ -4,6 +4,7 @@ import { Icon } from '#components'
 
 const _props = defineProps<{
   breadcrumbs?: Breadcrumb[]
+  useFullHeight?: boolean
 }>()
 
 const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
@@ -12,10 +13,19 @@ const route = useRoute()
 </script>
 
 <template>
-  <div class="min-h-screen box-border p-2 flex flex-col">
+  <div
+    class="box-border p-2 flex flex-col"
+    :class="{
+      'min-h-screen': !useFullHeight,
+      'h-screen': useFullHeight,
+    }"
+  >
     <AppHeader />
 
-    <div class="border rounded border-gray-300 border-solid">
+    <div
+      class="border rounded border-gray-300 border-solid flex flex-col min-h-0"
+      :class="{ grow: useFullHeight }"
+    >
       <div class="p-5 border-b border-b-gray-300 border-b-solid">
         <div v-if="breadcrumbs">
           <ElBreadcrumb :separator-icon="ChevronIcon">
@@ -50,7 +60,10 @@ const route = useRoute()
         </div>
       </div>
 
-      <div class="p-5">
+      <div
+        class="p-5 flex flex-col min-h-0"
+        :class="{ grow: useFullHeight }"
+      >
         <slot />
       </div>
     </div>

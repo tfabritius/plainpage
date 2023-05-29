@@ -23,7 +23,7 @@ const page = computed({
 
   <MdEditor
     v-model="page.content"
-    height="400px"
+    class="grow min-h-0"
     @escape="emit('escape')"
   />
 

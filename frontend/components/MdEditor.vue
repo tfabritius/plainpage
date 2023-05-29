@@ -5,7 +5,6 @@ import { MdCodeEditor, MdPreview } from '#components'
 
 const props = defineProps<{
   modelValue: string
-  height: string
 }>()
 
 const emit = defineEmits<{
@@ -217,10 +216,6 @@ const containerClasses = computed(() => {
   return 'border border-gray-300 border-solid'
 })
 
-const containerStyle = computed(() => ({
-  height: showFullscreen.value ? '100%' : props.height,
-}))
-
 onKeyStroke('Escape', async (_e) => {
   if (showFullscreen.value) {
     showFullscreen.value = false
@@ -231,13 +226,21 @@ onKeyStroke('Escape', async (_e) => {
 </script>
 
 <template>
-  <div class="flex flex-col" :class="containerClasses" :style="containerStyle">
+  <div
+    class="flex flex-col"
+    :class="containerClasses"
+  >
     <MdEditorToolbar :show-fullscreen="showFullscreen" class="border-b border-b-gray-300 border-b-solid " :show-preview="showPreview" @click="onToolbarClick" />
     <div class="grow flex overflow-auto">
-      <div class="h-full" :class="showPreview ? 'w-1/2' : 'w-full'">
+      <div
+        :class="showPreview ? 'w-1/2' : 'w-full'"
+      >
         <MdCodeEditor ref="codeEditorRef" v-model="markdown" @scroll="onEditorScroll" />
       </div>
-      <div class="w-1/2 h-full overflow-auto border-l border-l-gray-300 border-l-solid" :class="showPreview ? 'w-1/2' : 'hidden'">
+      <div
+        class="w-1/2 overflow-auto border-l border-l-gray-300 border-l-solid"
+        :class="showPreview ? 'w-1/2' : 'hidden'"
+      >
         <MdPreview v-show="showPreview" ref="previewRef" :segments="segments" @scroll="onPreviewScroll" />
       </div>
     </div>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Breadcrumb, PageMeta } from '~/types/'
+import type { Breadcrumb, ContentMeta } from '~/types/'
 import { AclTable } from '#components'
 
 const props = defineProps<{
   urlPath: string
-  meta: PageMeta
+  meta: ContentMeta
   title: string | undefined
   breadcrumbs: Breadcrumb[]
   isFolder: boolean

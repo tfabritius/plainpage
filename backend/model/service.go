@@ -1,20 +1,20 @@
 package model
 
 type Page struct {
-	Url     string   `json:"url"`
-	Content string   `json:"content"`
-	Meta    PageMeta `json:"meta"`
-}
-
-type PageMeta struct {
-	Title string        `json:"title" yaml:"title"`
-	Tags  []string      `json:"tags" yaml:"tags"`
-	ACL   *[]AccessRule `json:"acl" yaml:"acl"`
+	Url     string      `json:"url"`
+	Content string      `json:"content"`
+	Meta    ContentMeta `json:"meta"`
 }
 
 type Folder struct {
 	Content []FolderEntry `json:"content"`
-	Meta    PageMeta      `json:"meta"`
+	Meta    ContentMeta   `json:"meta"`
+}
+
+type ContentMeta struct {
+	Title string        `json:"title" yaml:"title"`
+	Tags  []string      `json:"tags" yaml:"tags"`
+	ACL   *[]AccessRule `json:"acl" yaml:"acl"`
 }
 
 type FolderEntry struct {
@@ -72,7 +72,7 @@ type Config struct {
 
 type SearchHit struct {
 	Url          string              `json:"url"`
-	Meta         PageMeta            `json:"meta"`
+	Meta         ContentMeta         `json:"meta"`
 	Fragments    map[string][]string `json:"fragments"`
 	EffectiveACL *[]AccessRule       `json:"-"`
 }

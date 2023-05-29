@@ -53,7 +53,7 @@ func (s *ContentService) initializeStorage() error {
 		defaultACL := []model.AccessRule{
 			{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}},
 		}
-		if err := s.SaveFolder("/", model.PageMeta{ACL: &defaultACL}); err != nil {
+		if err := s.SaveFolder("/", model.ContentMeta{ACL: &defaultACL}); err != nil {
 			return fmt.Errorf("could not create default ACL: %w", err)
 		}
 	}
@@ -204,7 +204,7 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 	return page, nil
 }
 
-func (s *ContentService) SavePage(urlPath, content string, meta model.PageMeta) error {
+func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMeta) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}
@@ -259,7 +259,7 @@ func (s *ContentService) DeletePage(urlPath string) error {
 	return nil
 }
 
-func (s *ContentService) CreateFolder(urlPath string, meta model.PageMeta) error {
+func (s *ContentService) CreateFolder(urlPath string, meta model.ContentMeta) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}
@@ -338,7 +338,7 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 	return folder, nil
 }
 
-func (s *ContentService) SaveFolder(urlPath string, meta model.PageMeta) error {
+func (s *ContentService) SaveFolder(urlPath string, meta model.ContentMeta) error {
 	indexPath := filepath.Join("pages", urlPath, "_index.md")
 
 	serialized, err := serializeFrontMatter(meta, "")

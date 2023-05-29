@@ -49,15 +49,15 @@ export interface TokenUserResponse {
 export interface Page {
   url: string
   content: string
-  meta: PageMeta
+  meta: ContentMeta
 }
 
 export interface Folder {
   content: FolderEntry[]
-  meta: PageMeta
+  meta: ContentMeta
 }
 
-export interface PageMeta {
+export interface ContentMeta {
   title: string
   tags: string[] | null
   acl?: AccessRule[] | null
@@ -100,7 +100,7 @@ export interface Config {
 
 export interface SearchHit {
   url: string
-  meta: PageMeta
+  meta: ContentMeta
   fragments: Record<string, string[]>
 }
 

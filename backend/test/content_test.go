@@ -80,8 +80,8 @@ func (s *ContentTestSuite) SetupTest() {
 	}
 
 	for _, folder := range folders {
-		r.NoError(s.app.Content.CreateFolder(folder.Name, model.PageMeta{Title: folder.Name}))
-		r.NoError(s.app.Content.SaveFolder(folder.Name, model.PageMeta{ACL: &folder.ACL}))
+		r.NoError(s.app.Content.CreateFolder(folder.Name, model.ContentMeta{Title: folder.Name}))
+		r.NoError(s.app.Content.SaveFolder(folder.Name, model.ContentMeta{ACL: &folder.ACL}))
 	}
 }
 
@@ -138,7 +138,7 @@ func (s *ContentTestSuite) TestCreatePage() {
 			r := require.New(t)
 
 			res := s.api("PUT", "/pages/"+tc.url,
-				model.PutRequest{Page: &model.Page{Meta: model.PageMeta{Title: "Title"}}},
+				model.PutRequest{Page: &model.Page{Meta: model.ContentMeta{Title: "Title"}}},
 				tc.token)
 			r.Equal(tc.responseCode, res.Code)
 
@@ -157,7 +157,7 @@ func (s *ContentTestSuite) TestCreatePage() {
 
 func (s *ContentTestSuite) TestCreateFolder() {
 	r := s.Require()
-	r.NoError(s.app.Content.SavePage("existingpage", "", model.PageMeta{}))
+	r.NoError(s.app.Content.SavePage("existingpage", "", model.ContentMeta{}))
 
 	tests := []struct {
 		name         string
@@ -258,7 +258,7 @@ func (s *ContentTestSuite) TestReadPage() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.PageMeta{Title: "Title"}))
+			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}))
 
 			// Test
 			res := s.api("GET", "/pages/"+tc.url,
@@ -274,7 +274,7 @@ func (s *ContentTestSuite) TestReadPage() {
 
 				// Change ACL
 				acl := []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}}
-				r.NoError(s.app.Content.SavePage(tc.url, "Content", model.PageMeta{Title: "Title", ACL: &acl}))
+				r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title", ACL: &acl}))
 
 				// Test ACL in output
 				res := s.api("GET", "/pages/"+tc.url,
@@ -441,7 +441,7 @@ func (s *ContentTestSuite) TestDeletePage() {
 		t.Run(tc.name, func(t *testing.T) {
 			r := require.New(t)
 
-			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.PageMeta{Title: "Title"}))
+			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}))
 
 			res := s.api("DELETE", "/pages/"+tc.url,
 				nil,
@@ -492,7 +492,7 @@ func (s *ContentTestSuite) TestDeleteFolder() {
 		t.Run(tc.name, func(t *testing.T) {
 			r := require.New(t)
 
-			r.NoError(s.app.Content.CreateFolder(tc.url, model.PageMeta{}))
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.ContentMeta{}))
 
 			res := s.api("DELETE", "/pages/"+tc.url,
 				model.PutRequest{Folder: &model.Folder{}},
@@ -563,8 +563,8 @@ func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
 	r := s.Require()
 
 	// Prepare
-	r.NoError(s.app.Content.CreateFolder("folder", model.PageMeta{}))
-	r.NoError(s.app.Content.SavePage("folder/page", "", model.PageMeta{}))
+	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{}))
+	r.NoError(s.app.Content.SavePage("folder/page", "", model.ContentMeta{}))
 
 	// Test
 	{
@@ -625,14 +625,14 @@ func (s *ContentTestSuite) TestUpdatePage() {
 			r.NoError(s.app.Content.SavePage(
 				tc.url,
 				"Old content",
-				model.PageMeta{Title: "Old title", Tags: []string{"old tag"}},
+				model.ContentMeta{Title: "Old title", Tags: []string{"old tag"}},
 			))
 
 			// Test
 			res := s.api("PUT", "/pages/"+tc.url,
 				model.PutRequest{Page: &model.Page{
 					Content: "New content",
-					Meta: model.PageMeta{
+					Meta: model.ContentMeta{
 						Title: "New title",
 						Tags:  []string{"new tag"},
 						ACL:   &[]model.AccessRule{},
@@ -700,7 +700,7 @@ func (s *ContentTestSuite) TestUpdatePageACL() {
 			// Prepare
 			r.NoError(s.app.Content.SavePage(
 				tc.url, "",
-				model.PageMeta{ACL: nil},
+				model.ContentMeta{ACL: nil},
 			))
 
 			acl := []model.AccessRule{
@@ -773,12 +773,12 @@ func (s *ContentTestSuite) TestUpdateFolder() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.CreateFolder(tc.url, model.PageMeta{Title: "Old Title"}))
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.ContentMeta{Title: "Old Title"}))
 
 			// Test
 			res := s.api("PUT", "/pages/"+tc.url,
 				model.PutRequest{Folder: &model.Folder{
-					Meta: model.PageMeta{
+					Meta: model.ContentMeta{
 						Title: "New Title",
 						ACL:   &[]model.AccessRule{},
 					},
@@ -836,7 +836,7 @@ func (s *ContentTestSuite) TestUpdateFolderACL() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.CreateFolder(tc.url, model.PageMeta{}))
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.ContentMeta{}))
 
 			// Test
 			acl := []model.AccessRule{
@@ -885,7 +885,7 @@ func (s *ContentTestSuite) TestAtticRevisions() {
 		err := (s.app.Content.SavePage(
 			url,
 			"Old content",
-			model.PageMeta{Title: "Old title", Tags: []string{"old tag"}},
+			model.ContentMeta{Title: "Old title", Tags: []string{"old tag"}},
 		))
 		r.NoError(err)
 	}
@@ -894,7 +894,7 @@ func (s *ContentTestSuite) TestAtticRevisions() {
 		err := (s.app.Content.SavePage(
 			url,
 			"New content",
-			model.PageMeta{Title: "New title", Tags: []string{"new tag"}},
+			model.ContentMeta{Title: "New title", Tags: []string{"new tag"}},
 		))
 		r.NoError(err)
 	}
@@ -973,7 +973,7 @@ func (s *ContentTestSuite) TestSearch() {
 		err := s.app.Content.SavePage(
 			url,
 			"Content",
-			model.PageMeta{Title: "Title", Tags: []string{"tag"}},
+			model.ContentMeta{Title: "Title", Tags: []string{"tag"}},
 		)
 		r.NoError(err)
 	}

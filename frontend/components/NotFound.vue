@@ -34,7 +34,7 @@ async function createThisFolder() {
   await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: null } })
 
   ElMessage({
-    message: 'Folder created',
+    message: t('folder-created'),
     type: 'success',
   })
   emit('refresh')

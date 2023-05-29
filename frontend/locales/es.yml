@@ -40,6 +40,7 @@ error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
 folder-reloaded: Carpeta recargada
+folder-title: Título de la carpeta
 folders: Carpetas
 home: Inicio
 inherit-permissions: Heredar permisos de la carpeta principal
@@ -80,6 +81,7 @@ this-page-doesnt-exist: ¡Esta página no existe!
 title: Título
 try-again: Intentar otra vez
 untitled: Intitulado
+updated: Actualizado
 user-created: Usuario creado
 user-deleted: Usuario eliminado
 user-updated: Usuario actualizado

@@ -40,6 +40,7 @@ error: Error
 folder-created: Folder created
 folder-deleted: Folder deleted
 folder-reloaded: Folder reloaded
+folder-title: Folder title
 folders: Folders
 home: Home
 inherit-permissions: Inherit permissions from parent folder
@@ -80,6 +81,7 @@ this-page-doesnt-exist: This page doesn't exist!
 title: Title
 try-again: Try again
 untitled: Untitled
+updated: Updated
 user-created: User created
 user-deleted: User deleted
 user-updated: User updated

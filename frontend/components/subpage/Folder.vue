@@ -3,7 +3,7 @@ import { storeToRefs } from 'pinia'
 import slugify from 'slugify'
 import type { FormInstance, FormRules } from 'element-plus'
 
-import type { Breadcrumb, Folder } from '~/types'
+import type { Breadcrumb, Folder, PutRequest } from '~/types'
 import { Icon } from '#components'
 import { useAppStore } from '~/store/app'
 
@@ -25,7 +25,7 @@ const pageTitle = computed(() => {
   if (props.urlPath === '') {
     return t('home')
   }
-  return props.breadcrumbs.slice(-1)[0]?.name
+  return props.folder.meta.title || props.breadcrumbs.slice(-1)[0]?.name
 })
 
 useHead(() => ({ title: pageTitle.value }))
@@ -113,6 +113,32 @@ async function createFolder() {
   }
 }
 
+async function onEditTitle() {
+  let title = props.folder.meta.title
+  try {
+    const msgBox = await ElMessageBox.prompt(t('folder-title'), {
+      inputValue: title,
+      confirmButtonText: t('ok'),
+      cancelButtonText: t('cancel'),
+    })
+    title = msgBox.value
+  } catch (e) {
+    return
+  }
+
+  try {
+    const body = { folder: { meta: { title, tags: null }, content: [] } } satisfies PutRequest
+    await apiFetch(`/pages${props.urlPath}`, { method: 'PUT', body })
+
+    props.onReload()
+  } catch (err) {
+    ElMessage({
+      message: String(err),
+      type: 'error',
+    })
+  }
+}
+
 const deleteConfirmOpen = ref(false)
 async function onDeleteFolder() {
   if (deleteConfirmOpen.value) {
@@ -179,6 +205,12 @@ onKeyStroke('Backspace', (e) => {
     <template #title>
       <Icon name="ci:folder" class="mr-1" />
       {{ pageTitle }}
+    </template>
+
+    <template v-if="urlPath !== ''" #title:suffix>
+      <ElLink :underline="false" class="opacity-0 group-hover:opacity-100 duration-100" @click="onEditTitle">
+        <Icon name="ci:edit" class="w-6 h-6" />
+      </ElLink>
     </template>
 
     <template #actions>

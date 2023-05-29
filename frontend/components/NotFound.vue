@@ -25,6 +25,14 @@ const editing = computed({
 
 useHead(() => ({ title: t('not-found') }))
 
+onMounted(() => {
+  // Take new page's title from state if available.
+  // Creating new page via dialog will set this value.
+  if (window.history.state.title) {
+    editablePage.value.meta.title = window.history.state.title
+  }
+})
+
 function createThisPage() {
   editablePage.value = deepClone(emptyPage)
   editing.value = true

@@ -36,7 +36,6 @@ displayname-required: Please enter display name
 edit: Edit
 edit-user: Edit user
 enter-folder-name: Please enter folder name
-enter-page-name: Please enter page name
 error: Error
 folder-created: Folder created
 folder-deleted: Folder deleted
@@ -53,7 +52,10 @@ not-found: Not found
 ok: OK
 old-revisions-of: Old revisions of
 page-deleted: Page deleted
+page-name: Page name
+page-name-required: Please enter page name
 page-reloaded: Page reloaded
+page-title: Page title
 pages: Pages
 password: Password
 password-repeat: Repeat password

@@ -36,7 +36,6 @@ displayname-required: Ingrese el nombre para mostrar
 edit: Editar
 edit-user: Editar usuario
 enter-folder-name: Por favor ingrese el nombre de la carpeta
-enter-page-name: Por favor ingrese el nombre de la página
 error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
@@ -53,7 +52,10 @@ not-found: Extraviado
 ok: Acceptar
 old-revisions-of: Revisiones antiguas de
 page-deleted: Página eliminada
+page-name: Nombre de la página
+page-name-required: Por favor ingrese el nombre de la página
 page-reloaded: Página recargada
+page-title: Título de la página
 pages: Paginas
 password: Contraseña
 password-repeat: Repita la contraseña

@@ -79,6 +79,9 @@ devDependencies:
   sass:
     specifier: ^1.62.1
     version: 1.62.1
+  slugify:
+    specifier: ^1.6.6
+    version: 1.6.6
   typescript:
     specifier: ^5.0.4
     version: 5.0.4
@@ -1027,6 +1030,11 @@ packages:
   /@intlify/shared@9.3.0-beta.17:
     resolution: {integrity: sha512-mscf7RQsUTOil35jTij4KGW1RC9SWQjYScwLxP53Ns6g24iEd5HN7ksbt9O6FvTmlQuX77u+MXpBdfJsGqizLQ==}
     engines: {node: '>= 14'}
+    dev: true
+
+  /@intlify/shared@9.3.0-beta.18:
+    resolution: {integrity: sha512-Z+XZ1YQL/ZudauayZFNbW2PDf4ac7UBs3PCRsBRb2UcAgat3jN9IZYNDyluQBx4Gmko02kvqc8kC5uJmMlGhmQ==}
+    engines: {node: '>= 16'}
     dev: true
 
   /@intlify/unplugin-vue-i18n@0.10.0(vue-i18n@9.3.0-beta.17):
@@ -6888,6 +6896,11 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
+  /slugify@1.6.6:
+    resolution: {integrity: sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==}
+    engines: {node: '>=8.0.0'}
+    dev: true
+
   /smob@1.1.1:
     resolution: {integrity: sha512-i5aqEBPnDv9d77+NDxfjROtywxzNdAVNyaOr+RsLhM28Ts+Ar7luIp/Q+SBYa6wv/7BBcOpEkrhtDxsl2WA9Jg==}
     dev: true
@@ -7776,7 +7789,7 @@ packages:
       vue-router:
         optional: true
     dependencies:
-      '@intlify/shared': 9.3.0-beta.17
+      '@intlify/shared': 9.3.0-beta.18
       '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.17)
       '@intlify/vue-router-bridge': 0.8.0
       ufo: 1.1.2

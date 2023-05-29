@@ -36,7 +36,6 @@ displayname-required: Bitte Anzeigename eingeben
 edit: Bearbeiten
 edit-user: Benutzer bearbeiten
 enter-folder-name: Bitte Name des Ordners eingeben
-enter-page-name: Bitte Name der Seite eingeben
 error: Fehler
 folder-created: Ordner angelegt
 folder-deleted: Ordner gelöscht
@@ -53,7 +52,10 @@ not-found: Nicht gefunden
 ok: OK
 old-revisions-of: Alte Überarbeitungen von
 page-deleted: Seite gelöscht
+page-name: Name der Seite
+page-name-required: Bitte Name der Seite eingeben
 page-reloaded: Seite neu geladen
+page-title: Titel der Seite
 pages: Seiten
 password: Passwort
 password-repeat: Passwort (Wiederholung)

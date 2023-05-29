@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import slugify from 'slugify'
+import type { FormInstance, FormRules } from 'element-plus'
+
 import type { Breadcrumb, Folder } from '~/types'
 import { Icon } from '#components'
 import { useAppStore } from '~/store/app'
@@ -31,21 +34,53 @@ const PermissionsIcon = h(Icon, { name: 'ci:shield' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
-async function createPage() {
-  let name
-  try {
-    const msgBox = await ElMessageBox.prompt(t('enter-page-name'), t('create-page'), {
-      confirmButtonText: t('ok'),
-      cancelButtonText: t('cancel'),
-      inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      inputErrorMessage: t('invalid-page-name'),
-    })
-    name = msgBox.value
-  } catch (e) {
+const newPageDialogVisible = ref(true)
+const newPageFormRef = ref<FormInstance>()
+const newPageFormData = ref({ title: '', name: '' })
+const newPageDialogExpanded = ref(false)
+const toggleNewPageDialogExpanded = useToggle(newPageDialogExpanded)
+const newPageNameChangedManually = ref(false)
+const newPageFormRules = {
+  name: [
+    { required: true, message: t('page-name-required'), trigger: 'blur' },
+    { pattern: /^[a-z0-9-][a-z0-9_-]*$/, message: t('invalid-page-name'), trigger: 'blur' },
+  ],
+} satisfies FormRules
+
+async function showNewPageDialog() {
+  newPageFormData.value = { title: '', name: '' }
+  newPageDialogExpanded.value = false
+  newPageNameChangedManually.value = false
+  newPageDialogVisible.value = true
+}
+
+function onNewPageTitleChanged() {
+  if (!newPageNameChangedManually.value) {
+    newPageFormData.value.name = slugify(
+      newPageFormData.value.title,
+      { lower: true, strict: true },
+    )
+  }
+}
+
+function onNewPageNameChanged() {
+  newPageNameChangedManually.value = true
+}
+
+async function submitNewPageDialog() {
+  if (!newPageFormRef.value) {
     return
   }
 
-  await navigateTo({ path: `${props.urlPath}/${name}`, query: { edit: 'true' } })
+  const formValid = await new Promise<boolean>(resolve => newPageFormRef.value?.validate(valid => resolve(valid)))
+  if (!formValid) {
+    newPageDialogExpanded.value = true
+    return
+  }
+
+  newPageDialogVisible.value = false
+
+  await navigateTo({ path: `${props.urlPath}/${newPageFormData.value.name}`, query: { edit: 'true' }, state: { title: newPageFormData.value.title } })
 }
 
 async function createFolder() {
@@ -148,7 +183,7 @@ onKeyStroke('Backspace', (e) => {
 
     <template #actions>
       <div>
-        <PlainButton v-if="allowWrite" icon="ci:file-add" :label="$t('create-page')" @click="createPage" />
+        <PlainButton v-if="allowWrite" icon="ci:file-add" :label="$t('create-page')" @click="showNewPageDialog" />
         <PlainButton v-if="allowWrite" icon="ci:folder-add" :label="$t('create-folder')" @click="createFolder" />
 
         <ElDropdown trigger="click" class="ml-3" @command="handleDropdownMenuCommand">
@@ -199,5 +234,40 @@ onKeyStroke('Backspace', (e) => {
         </NuxtLink>
       </div>
     </div>
+
+    <ClientOnly>
+      <ElDialog
+        v-model="newPageDialogVisible"
+        :title="$t('create-page')"
+        width="40%"
+      >
+        <ElForm
+          ref="newPageFormRef"
+          :model="newPageFormData"
+          :rules="newPageFormRules"
+          label-position="top"
+          @submit.prevent
+          @keypress.enter="submitNewPageDialog"
+        >
+          <ElFormItem :label="$t('page-title')" prop="title">
+            <ElInput v-model="newPageFormData.title" @input="onNewPageTitleChanged" />
+          </ElFormItem>
+
+          <span class="cursor-pointer text-xs" @click="toggleNewPageDialogExpanded()">
+            <Icon name="ci:chevron-right" :class="newPageDialogExpanded && 'rotate-90 transform'" />
+            {{ $t('more') }}
+          </span>
+          <div v-show="newPageDialogExpanded">
+            <ElFormItem :label="$t('page-name')" prop="name">
+              <ElInput v-model="newPageFormData.name" @input="onNewPageNameChanged" />
+            </ElFormItem>
+          </div>
+        </ElForm>
+        <template #footer>
+          <PlainButton :label="$t('cancel')" @click="newPageDialogVisible = false" />
+          <PlainButton type="primary" :label="$t('ok')" @click="submitNewPageDialog" />
+        </template>
+      </ElDialog>
+    </ClientOnly>
   </Layout>
 </template>

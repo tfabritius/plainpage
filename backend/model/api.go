@@ -32,7 +32,8 @@ type GetAppResponse struct {
 }
 
 type PutRequest struct {
-	Page *Page `json:"page"`
+	Page   *Page   `json:"page"`
+	Folder *Folder `json:"folder"`
 }
 
 type PostUserRequest struct {

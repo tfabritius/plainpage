@@ -222,9 +222,26 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = app.Content.SavePage(urlPath, body.Page.Content, body.Page.Meta)
-	} else {
-		err = app.Content.CreateFolder(urlPath)
+	} else if body.Folder != nil {
+		if app.Content.IsFolder(urlPath) {
+			// if folder exists already, take over ACL
+			oldFolder, err := app.Content.ReadFolder(urlPath)
+			if err != nil {
+				panic(err)
+			}
+			body.Folder.Meta.ACL = oldFolder.Meta.ACL
+
+			// and update
+			err = app.Content.SaveFolder(urlPath, body.Folder.Meta)
+		} else {
+			// make sure ACLs are not set
+			body.Folder.Meta.ACL = nil
+
+			// and create
+			err = app.Content.CreateFolder(urlPath, body.Folder.Meta)
+		}
 	}
+
 	if err != nil {
 		if errors.Is(err, model.ErrParentFolderNotFound) {
 			http.Error(w, err.Error(), http.StatusBadRequest)

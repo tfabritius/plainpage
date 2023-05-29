@@ -80,7 +80,7 @@ func (s *ContentTestSuite) SetupTest() {
 	}
 
 	for _, folder := range folders {
-		r.NoError(s.app.Content.CreateFolder(folder.Name))
+		r.NoError(s.app.Content.CreateFolder(folder.Name, model.PageMeta{Title: folder.Name}))
 		r.NoError(s.app.Content.SaveFolder(folder.Name, model.PageMeta{ACL: &folder.ACL}))
 	}
 }
@@ -205,7 +205,7 @@ func (s *ContentTestSuite) TestCreateFolder() {
 			r := require.New(t)
 
 			res := s.api("PUT", "/pages/"+tc.url,
-				model.PutRequest{Page: nil},
+				model.PutRequest{Folder: &model.Folder{}},
 				tc.token)
 			r.Equal(tc.responseCode, res.Code)
 
@@ -492,10 +492,10 @@ func (s *ContentTestSuite) TestDeleteFolder() {
 		t.Run(tc.name, func(t *testing.T) {
 			r := require.New(t)
 
-			r.NoError(s.app.Content.CreateFolder(tc.url))
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.PageMeta{}))
 
 			res := s.api("DELETE", "/pages/"+tc.url,
-				model.PutRequest{Page: nil},
+				model.PutRequest{Folder: &model.Folder{}},
 				tc.token)
 			r.Equal(tc.responseCode, res.Code)
 
@@ -563,25 +563,25 @@ func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
 	r := s.Require()
 
 	// Prepare
-	r.NoError(s.app.Content.CreateFolder("folder"))
+	r.NoError(s.app.Content.CreateFolder("folder", model.PageMeta{}))
 	r.NoError(s.app.Content.SavePage("folder/page", "", model.PageMeta{}))
 
 	// Test
 	{
 		res := s.api("DELETE", "/pages/folder",
-			model.PutRequest{Page: nil},
+			nil,
 			s.adminToken)
 		r.Equal(400, res.Code)
 	}
 	{
 		res := s.api("DELETE", "/pages/folder",
-			model.PutRequest{Page: nil},
+			nil,
 			s.userToken)
 		r.Equal(400, res.Code)
 	}
 	{
 		res := s.api("DELETE", "/pages/folder",
-			model.PutRequest{Page: nil},
+			nil,
 			nil)
 		r.Equal(401, res.Code)
 	}
@@ -746,25 +746,25 @@ func (s *ContentTestSuite) TestUpdateFolder() {
 		responseCode int
 	}{
 		// root
-		{"admin:root", s.adminToken, "folder", 400},
-		{"user:root", s.userToken, "folder", 400},
+		{"admin:root", s.adminToken, "folder", 200},
+		{"user:root", s.userToken, "folder", 200},
 		{"anonymous:root", nil, "folder", 401},
 		// admin-only
-		{"admin:adminOnly", s.adminToken, "admin-only/folder", 400},
+		{"admin:adminOnly", s.adminToken, "admin-only/folder", 200},
 		{"user:adminOnly", s.userToken, "admin-only/folder", 403},
 		{"anonymous:adminOnly", nil, "admin-only/folder", 401},
 		// read-only
-		{"admin:readOnly", s.adminToken, "read-only/folder", 400},
+		{"admin:readOnly", s.adminToken, "read-only/folder", 200},
 		{"user:readOnly", s.userToken, "read-only/folder", 403},
 		{"anonymous:readOnly", nil, "read-only/folder", 401},
 		// published
-		{"admin:published", s.adminToken, "published/folder", 400},
-		{"user:published", s.userToken, "published/folder", 400},
+		{"admin:published", s.adminToken, "published/folder", 200},
+		{"user:published", s.userToken, "published/folder", 200},
 		{"anonymous:published", nil, "published/folder", 401},
 		// public
-		{"admin:public", s.adminToken, "public/folder", 400},
-		{"user:public", s.userToken, "public/folder", 400},
-		{"anonymous:public", nil, "public/folder", 400},
+		{"admin:public", s.adminToken, "public/folder", 200},
+		{"user:public", s.userToken, "public/folder", 200},
+		{"anonymous:public", nil, "public/folder", 200},
 	}
 
 	for _, tc := range tests {
@@ -773,16 +773,26 @@ func (s *ContentTestSuite) TestUpdateFolder() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.CreateFolder(tc.url))
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.PageMeta{Title: "Old Title"}))
 
 			// Test
 			res := s.api("PUT", "/pages/"+tc.url,
-				model.PutRequest{Page: nil},
+				model.PutRequest{Folder: &model.Folder{
+					Meta: model.PageMeta{
+						Title: "New Title",
+						ACL:   &[]model.AccessRule{},
+					},
+				}},
 				tc.token)
 			r.Equal(tc.responseCode, res.Code)
 
 			folder, err := s.app.Content.ReadFolder(tc.url)
 			r.NoError(err)
+			if tc.responseCode == 200 {
+				r.Equal("New Title", folder.Meta.Title)
+			} else {
+				r.Equal("Old Title", folder.Meta.Title)
+			}
 			r.Nil(folder.Meta.ACL) // ACL remains unchanged
 
 			// Cleanup
@@ -826,7 +836,7 @@ func (s *ContentTestSuite) TestUpdateFolderACL() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.CreateFolder(tc.url))
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.PageMeta{}))
 
 			// Test
 			acl := []model.AccessRule{

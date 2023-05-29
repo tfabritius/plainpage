@@ -14,6 +14,11 @@ export interface GetAppResponse {
   gitSha: string
 }
 
+export interface PutRequest {
+  page?: Page
+  folder?: Folder
+}
+
 export interface GetContentResponse {
   page: Page | null
   folder: Folder | null

@@ -259,12 +259,17 @@ func (s *ContentService) DeletePage(urlPath string) error {
 	return nil
 }
 
-func (s *ContentService) CreateFolder(urlPath string) error {
+func (s *ContentService) CreateFolder(urlPath string, meta model.PageMeta) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}
 	if s.IsPage(urlPath) || s.IsFolder(urlPath) {
 		return model.ErrPageOrFolderExistsAlready
+	}
+
+	serialized, err := serializeFrontMatter(meta, "")
+	if err != nil {
+		return fmt.Errorf("could not serialize frontmatter: %w", err)
 	}
 
 	dirPath := filepath.Join("pages", urlPath)
@@ -273,7 +278,7 @@ func (s *ContentService) CreateFolder(urlPath string) error {
 	}
 
 	indexPath := filepath.Join("pages", urlPath, "_index.md")
-	if err := s.storage.WriteFile(indexPath, nil); err != nil {
+	if err := s.storage.WriteFile(indexPath, []byte(serialized)); err != nil {
 		return err
 	}
 

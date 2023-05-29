@@ -20,7 +20,10 @@ const emit = defineEmits<{
       <MdToolbarButton icon="lucide:subscript" @click="emit('click', 'subscript')" />
       <span class="text-gray mx-2">|</span>
 
-      <ElDropdown trigger="hover" style="font-size:inherit;color:inherit;line-height:inherit;display:inline-block">
+      <ElDropdown
+        trigger="hover"
+        style="font-size:inherit;color:inherit;line-height:inherit;display:inline-block"
+      >
         <MdToolbarButton icon="lucide:heading" />
         <template #dropdown>
           <MdToolbarButton icon="lucide:heading-1" style="font-size:initial" @click="emit('click', 'heading-1')" />
@@ -44,8 +47,14 @@ const emit = defineEmits<{
       <MdToolbarButton icon="lucide:table" @click="emit('click', 'table')" />
     </div>
     <div>
-      <MdToolbarButton :icon="showFullscreen ? 'ic:round-fullscreen-exit' : 'ic:round-fullscreen'" @click="emit('click', 'fullscreen')" />
-      <MdToolbarButton :icon="showPreview ? 'lucide:eye-off' : 'lucide:eye'" @click="emit('click', 'preview')" />
+      <MdToolbarButton
+        :icon="showFullscreen ? 'ic:round-fullscreen-exit' : 'ic:round-fullscreen'"
+        @click="emit('click', 'fullscreen')"
+      />
+      <MdToolbarButton
+        :icon="showPreview ? 'lucide:eye-off' : 'lucide:eye'"
+        @click="emit('click', 'preview')"
+      />
     </div>
   </div>
 </template>

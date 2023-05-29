@@ -43,7 +43,15 @@ const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${lo
     }
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 403) {
-      return { accessDenied: true, notFound: false, page: null, folder: null, breadcrumbs: [], allowWrite: false, allowDelete: false }
+      return {
+        accessDenied: true,
+        notFound: false,
+        page: null,
+        folder: null,
+        breadcrumbs: [],
+        allowWrite: false,
+        allowDelete: false,
+      }
     }
     if (err instanceof FetchError && err.statusCode === 404) {
       editablePage.value.url = route.path
@@ -75,9 +83,19 @@ const pageTitle = computed(() => {
     :msg="error?.message"
     :on-reload="refresh"
   />
-  <AccessDenied v-else-if="data?.accessDenied" />
-  <AtticList v-else-if="revQuery === null" :title="pageTitle" :url-path="urlPath" />
-  <AtticPage v-else-if="revQuery !== undefined" :url-path="urlPath" :revision="revQuery" />
+  <AccessDenied
+    v-else-if="data?.accessDenied"
+  />
+  <AtticList
+    v-else-if="revQuery === null"
+    :title="pageTitle"
+    :url-path="urlPath"
+  />
+  <AtticPage
+    v-else-if="revQuery !== undefined"
+    :url-path="urlPath"
+    :revision="revQuery"
+  />
   <ContentPermissions
     v-else-if="folder && aclQuery"
     :is-folder="true"
@@ -96,7 +114,15 @@ const pageTitle = computed(() => {
     :url-path="urlPath"
     :on-reload="refresh"
   />
-  <ContentPermissions v-else-if="page && aclQuery" :is-folder="false" :url-path="urlPath" :meta="deepClone(page.meta)" :title="page.meta.title" :breadcrumbs="data?.breadcrumbs ?? []" @refresh="refresh" />
+  <ContentPermissions
+    v-else-if="page && aclQuery"
+    :is-folder="false"
+    :url-path="urlPath"
+    :meta="deepClone(page.meta)"
+    :title="page.meta.title"
+    :breadcrumbs="data?.breadcrumbs ?? []"
+    @refresh="refresh"
+  />
   <PPage
     v-else-if="page"
     :page="page"

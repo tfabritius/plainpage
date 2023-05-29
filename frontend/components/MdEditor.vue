@@ -230,18 +230,32 @@ onKeyStroke('Escape', async (_e) => {
     class="flex flex-col"
     :class="containerClasses"
   >
-    <MdEditorToolbar :show-fullscreen="showFullscreen" class="border-b border-b-gray-300 border-b-solid " :show-preview="showPreview" @click="onToolbarClick" />
+    <MdEditorToolbar
+      :show-fullscreen="showFullscreen"
+      class="border-b border-b-gray-300 border-b-solid "
+      :show-preview="showPreview"
+      @click="onToolbarClick"
+    />
     <div class="grow flex overflow-auto">
       <div
         :class="showPreview ? 'w-1/2' : 'w-full'"
       >
-        <MdCodeEditor ref="codeEditorRef" v-model="markdown" @scroll="onEditorScroll" />
+        <MdCodeEditor
+          ref="codeEditorRef"
+          v-model="markdown"
+          @scroll="onEditorScroll"
+        />
       </div>
       <div
         class="w-1/2 overflow-auto border-l border-l-gray-300 border-l-solid"
         :class="showPreview ? 'w-1/2' : 'hidden'"
       >
-        <MdPreview v-show="showPreview" ref="previewRef" :segments="segments" @scroll="onPreviewScroll" />
+        <MdPreview
+          v-show="showPreview"
+          ref="previewRef"
+          :segments="segments"
+          @scroll="onPreviewScroll"
+        />
       </div>
     </div>
   </div>

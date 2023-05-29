@@ -33,7 +33,11 @@ const route = useRoute()
               <Icon name="ic:outline-home" />
             </ElBreadcrumbItem>
 
-            <ElBreadcrumbItem v-for="crumb in breadcrumbs" :key="crumb.url" :to="{ path: crumb.url }">
+            <ElBreadcrumbItem
+              v-for="crumb in breadcrumbs"
+              :key="crumb.url"
+              :to="{ path: crumb.url }"
+            >
               {{ crumb.name }}
             </ElBreadcrumbItem>
           </ElBreadcrumb>
@@ -70,7 +74,11 @@ const route = useRoute()
 
     <div class="text-center">
       <ElLink :underline="false" href="https://github.com/tfabritius/plainpage">
-        <span class="font-normal text-gray-300 dark:text-gray-500 hover:text-current">PlainPage</span>
+        <span
+          class="font-normal text-gray-300 dark:text-gray-500 hover:text-current"
+        >
+          PlainPage
+        </span>
       </ElLink>
     </div>
   </div>

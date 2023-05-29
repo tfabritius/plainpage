@@ -86,7 +86,12 @@ async function onDelete() {
         <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
       </ElButton>
     </template>
-    <ElForm ref="profileFormRef" :model="profileFormData" label-position="top" :rules="profileFormRules">
+    <ElForm
+      ref="profileFormRef"
+      :model="profileFormData"
+      label-position="top"
+      :rules="profileFormRules"
+    >
       <ElFormItem :label="$t('username')">
         <ElInput :value="auth.user?.username" :disabled="true" />
       </ElFormItem>

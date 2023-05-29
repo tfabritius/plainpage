@@ -44,11 +44,19 @@ async function submit() {
 
       <ElForm label-position="top" class="w-50" @submit.prevent @keypress.enter="submit">
         <ElFormItem>
-          <ElInput v-model="loginFormData.username" type="username" :placeholder="$t('username')" autofocus />
+          <ElInput
+            v-model="loginFormData.username"
+            type="username"
+            :placeholder="$t('username')"
+            autofocus
+          />
         </ElFormItem>
         <ElFormItem>
           <ElInput
-            v-model="loginFormData.password" type="password" show-password :placeholder="$t('password')"
+            v-model="loginFormData.password"
+            type="password"
+            show-password
+            :placeholder="$t('password')"
           />
         </ElFormItem>
         <ElFormItem>
@@ -58,7 +66,12 @@ async function submit() {
         </ElFormItem>
       </ElForm>
 
-      <NuxtLink v-if="allowRegister" v-slot="{ navigate, href }" custom :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`">
+      <NuxtLink
+        v-if="allowRegister"
+        v-slot="{ navigate, href }"
+        custom
+        :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`"
+      >
         <ElLink :underline="false" :href="href" @click="navigate">
           {{ $t('_login.link-to-register') }}
         </ElLink>

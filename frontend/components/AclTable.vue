@@ -36,15 +36,39 @@ function mapAPI2Table(acl: AccessRule[]): TableRow[] {
   })
 
   if (props.showAdminRule) {
-    table.push({ subject: 'admin', user: undefined, read: true, write: true, delete: true, register: true, admin: true })
+    table.push({
+      subject: 'admin',
+      user: undefined,
+      read: true,
+      write: true,
+      delete: true,
+      register: true,
+      admin: true,
+    })
   }
 
   if (!table.some(acl => acl.subject === 'all')) {
-    table.push({ subject: 'all', user: undefined, read: false, write: false, delete: false, register: false, admin: false })
+    table.push({
+      subject: 'all',
+      user: undefined,
+      read: false,
+      write: false,
+      delete: false,
+      register: false,
+      admin: false,
+    })
   }
 
   if (!table.some(acl => acl.subject === 'anonymous')) {
-    table.push({ subject: 'anonymous', user: undefined, read: false, write: false, delete: false, register: false, admin: false })
+    table.push({
+      subject: 'anonymous',
+      user: undefined,
+      read: false,
+      write: false,
+      delete: false,
+      register: false,
+      admin: false,
+    })
   }
 
   // Sort the list so that the first elements are always these:
@@ -151,40 +175,79 @@ defineExpose({ getAcl })
   <ElTable :data="editableACL">
     <ElTableColumn :label="$t('acl.subject')">
       <template #default="{ row }">
-        <span v-if="row.subject === 'all'" class="italic">{{ $t('all-registered-users') }}</span>
-        <span v-else-if="row.subject === 'anonymous'" class="italic">{{ $t('anonymous-users') }}</span>
-        <span v-else-if="row.subject === 'admin'" class="italic">{{ $t('administrators') }}</span>
-        <span v-else>{{ row.user ? row.user.displayName : row.subject }}</span>
+        <span
+          v-if="row.subject === 'all'"
+          class="italic"
+        >
+          {{ $t('all-registered-users') }}
+        </span>
+        <span
+          v-else-if="row.subject === 'anonymous'"
+          class="italic"
+        >
+          {{ $t('anonymous-users') }}
+        </span>
+        <span
+          v-else-if="row.subject === 'admin'"
+          class="italic"
+        >
+          {{ $t('administrators') }}
+        </span>
+        <span v-else>
+          {{ row.user ? row.user.displayName : row.subject }}
+        </span>
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('read')" :label="$t('read')">
+    <ElTableColumn
+      v-if="props.showColumns.includes('read')"
+      :label="$t('read')"
+    >
       <template #default="{ row }">
         <ElCheckbox v-model="row.read" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('write')" :label="$t('write')">
+    <ElTableColumn
+      v-if="props.showColumns.includes('write')"
+      :label="$t('write')"
+    >
       <template #default="{ row }">
         <ElCheckbox v-model="row.write" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('delete')" :label="$t('delete')">
+    <ElTableColumn
+      v-if="props.showColumns.includes('delete')"
+      :label="$t('delete')"
+    >
       <template #default="{ row }">
         <ElCheckbox v-model="row.delete" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('register')" :label="$t('register')">
+    <ElTableColumn
+      v-if="props.showColumns.includes('register')"
+      :label="$t('register')"
+    >
       <template #default="{ row }">
         <ElCheckbox v-model="row.register" :disabled="row.subject === 'admin'" />
       </template>
     </ElTableColumn>
-    <ElTableColumn v-if="props.showColumns.includes('admin')" :label="$t('acl.admin')">
+    <ElTableColumn
+      v-if="props.showColumns.includes('admin')"
+      :label="$t('acl.admin')"
+    >
       <template #default="{ row }">
-        <ElCheckbox v-model="row.admin" :disabled="['anonymous', 'all', 'admin'].includes(row.subject)" />
+        <ElCheckbox
+          v-model="row.admin"
+          :disabled="['anonymous', 'all', 'admin'].includes(row.subject)"
+        />
       </template>
     </ElTableColumn>
     <ElTableColumn>
       <template #default="{ row }">
-        <ElButton v-if="!['anonymous', 'all', 'admin'].includes(row.subject)" text @click="onRemoveRule(row.subject)">
+        <ElButton
+          v-if="!['anonymous', 'all', 'admin'].includes(row.subject)"
+          text
+          @click="onRemoveRule(row.subject)"
+        >
           <Icon class="text-red" name="ci:trash-full" />
         </ElButton>
       </template>

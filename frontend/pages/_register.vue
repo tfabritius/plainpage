@@ -92,21 +92,43 @@ async function submit() {
     <div class="m-auto text-center text-gray-500">
       <h2>{{ $t('register-account') }}</h2>
 
-      <ElForm ref="registerFormRef" :model="registerFormData" :rules="registerFormRules" label-position="top" class="w-50" @submit.prevent @keypress.enter="submit">
+      <ElForm
+        ref="registerFormRef"
+        :model="registerFormData"
+        :rules="registerFormRules"
+        label-position="top"
+        class="w-50"
+        @submit.prevent
+        @keypress.enter="submit"
+      >
         <ElFormItem prop="displayName">
-          <ElInput v-model="registerFormData.displayName" :placeholder="$t('display-name')" autofocus />
+          <ElInput
+            v-model="registerFormData.displayName"
+            :placeholder="$t('display-name')"
+            autofocus
+          />
         </ElFormItem>
         <ElFormItem prop="username">
-          <ElInput v-model="registerFormData.username" type="username" :placeholder="$t('username')" autofocus />
+          <ElInput
+            v-model="registerFormData.username"
+            type="username"
+            :placeholder="$t('username')"
+          />
         </ElFormItem>
         <ElFormItem prop="password">
           <ElInput
-            v-model="registerFormData.password" type="password" show-password :placeholder="$t('password')"
+            v-model="registerFormData.password"
+            type="password"
+            show-password
+            :placeholder="$t('password')"
           />
         </ElFormItem>
         <ElFormItem prop="passwordConfirm">
           <ElInput
-            v-model="registerFormData.passwordConfirm" type="password" show-password :placeholder="$t('password-repeat')"
+            v-model="registerFormData.passwordConfirm"
+            type="password"
+            show-password
+            :placeholder="$t('password-repeat')"
           />
         </ElFormItem>
         <ElFormItem>

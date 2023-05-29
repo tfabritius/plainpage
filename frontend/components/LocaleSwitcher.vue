@@ -43,7 +43,12 @@ async function handleCommand(command: string | number | object) {
     </ElLink>
     <template #dropdown>
       <ElDropdownMenu>
-        <ElDropdownItem v-for="l of locales" :key="l.code" :icon="l.iconComp" :command="l.code">
+        <ElDropdownItem
+          v-for="l of locales"
+          :key="l.code"
+          :icon="l.iconComp"
+          :command="l.code"
+        >
           {{ l.name }}
         </ElDropdownItem>
       </ElDropdownMenu>

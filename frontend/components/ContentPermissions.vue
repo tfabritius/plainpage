@@ -25,7 +25,14 @@ async function onGoBack() {
 async function onSave() {
   const apiData = (customPermissions.value || props.urlPath === '') ? aclTableRef.value?.getAcl() : null
 
-  await apiFetch(`/pages${props.urlPath}`, { method: 'PATCH', body: [{ op: 'replace', path: props.isFolder ? '/folder/meta/acl' : '/page/meta/acl', value: apiData }] })
+  await apiFetch(`/pages${props.urlPath}`, {
+    method: 'PATCH',
+    body: [{
+      op: 'replace',
+      path: props.isFolder ? '/folder/meta/acl' : '/page/meta/acl',
+      value: apiData,
+    }],
+  })
 
   emit('refresh')
   onGoBack()
@@ -57,7 +64,12 @@ async function onSave() {
       :inactive-text="$t('inherit-permissions')"
     />
     <div v-if="customPermissions">
-      <AclTable ref="aclTableRef" :acl="meta.acl ?? []" :show-admin-rule="true" :show-columns="['read', 'write', 'delete']" />
+      <AclTable
+        ref="aclTableRef"
+        :acl="meta.acl ?? []"
+        :show-admin-rule="true"
+        :show-columns="['read', 'write', 'delete']"
+      />
     </div>
   </Layout>
 </template>

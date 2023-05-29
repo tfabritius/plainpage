@@ -86,7 +86,11 @@ export const useAuthStore = defineStore(
       const jsonStr = window.atob(token.value.split('.')[1])
 
       const payload = JSON.parse(jsonStr) as unknown
-      if (typeof payload === 'object' && payload !== null && 'exp' in payload && typeof payload.exp === 'number') {
+      if (typeof payload === 'object'
+        && payload !== null
+        && 'exp' in payload
+        && typeof payload.exp === 'number'
+      ) {
         return payload.exp
       }
       throw new Error('invalid token payload format')

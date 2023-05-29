@@ -139,7 +139,13 @@ async function onDelete(user: User) {
       :title="userFormData.currentUsername ? $t('edit-user') : $t('create-user')"
       width="50%"
     >
-      <ElForm ref="userFormRef" :model="userFormData" label-position="top" :rules="userFormRules" :validate-on-rule-change="false">
+      <ElForm
+        ref="userFormRef"
+        :model="userFormData"
+        label-position="top"
+        :rules="userFormRules"
+        :validate-on-rule-change="false"
+      >
         <ElFormItem :label="$t('username')" prop="username">
           <ElInput v-model="userFormData.username" autocomplete="off" />
         </ElFormItem>

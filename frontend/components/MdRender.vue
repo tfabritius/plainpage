@@ -7,7 +7,8 @@ const props = defineProps<{
 }>()
 
 const renderer = new marked.Renderer()
-renderer.link = (href: string, title: string, text: string) => `<a class="markdown-link" title="${title ?? ''}" href="${href}">${text}</a>`
+renderer.link = (href: string, title: string, text: string) =>
+  `<a class="markdown-link" title="${title ?? ''}" href="${href}">${text}</a>`
 
 const html = computed(
   () => dompurify.sanitize(

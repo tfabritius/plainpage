@@ -79,7 +79,12 @@ const toggleDark = useToggle(isDark)
 
       <LocaleSwitcher class="m-1" />
 
-      <ElDropdown v-if="auth.loggedIn" trigger="click" class="m-1" @command="handleDropdownMenuCommand">
+      <ElDropdown
+        v-if="auth.loggedIn"
+        trigger="click"
+        class="m-1"
+        @command="handleDropdownMenuCommand"
+      >
         <ElLink :underline="false" href="#">
           <Icon name="ci:user" class="mr-1" />
           <span class="font-normal">{{ auth.user?.displayName }}</span>

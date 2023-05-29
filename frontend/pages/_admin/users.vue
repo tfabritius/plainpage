@@ -118,7 +118,7 @@ async function onDelete(user: User) {
 </script>
 
 <template>
-  <NetworkError
+  <SubpageNetworkError
     v-if="!data"
     :msg="error?.message"
     :on-reload="refresh"

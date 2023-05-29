@@ -79,25 +79,25 @@ const pageTitle = computed(() => {
 
 <template>
   <div class="flex flex-col">
-    <NetworkError
+    <SubpageNetworkError
       v-if="!folder && !page && !notFound && !accessDenied"
       :msg="error?.message"
       :on-reload="refresh"
     />
-    <AccessDenied
+    <SubpageAccessDenied
       v-else-if="data?.accessDenied"
     />
-    <AtticList
+    <SubpageAtticList
       v-else-if="revQuery === null"
       :title="pageTitle"
       :url-path="urlPath"
     />
-    <AtticPage
+    <SubpageAtticPage
       v-else-if="revQuery !== undefined"
       :url-path="urlPath"
       :revision="revQuery"
     />
-    <ContentPermissions
+    <SubpageContentPermissions
       v-else-if="folder && aclQuery"
       :is-folder="true"
       :url-path="urlPath"
@@ -106,7 +106,7 @@ const pageTitle = computed(() => {
       :breadcrumbs="data?.breadcrumbs ?? []"
       @refresh="refresh"
     />
-    <Folder
+    <SubpageFolder
       v-else-if="folder"
       :allow-write="data?.allowWrite ?? false"
       :allow-delete="data?.allowDelete ?? false"
@@ -115,7 +115,7 @@ const pageTitle = computed(() => {
       :url-path="urlPath"
       :on-reload="refresh"
     />
-    <ContentPermissions
+    <SubpageContentPermissions
       v-else-if="page && aclQuery"
       :is-folder="false"
       :url-path="urlPath"
@@ -124,7 +124,7 @@ const pageTitle = computed(() => {
       :breadcrumbs="data?.breadcrumbs ?? []"
       @refresh="refresh"
     />
-    <PPage
+    <SubpagePage
       v-else-if="page"
       :page="page"
       :breadcrumbs="data?.breadcrumbs ?? []"
@@ -132,7 +132,7 @@ const pageTitle = computed(() => {
       :allow-delete="data?.allowDelete ?? false"
       :on-reload="refresh"
     />
-    <NotFound
+    <SubpageNotFound
       v-else
       :url-path="urlPath"
       :breadcrumbs="data?.breadcrumbs ?? []"

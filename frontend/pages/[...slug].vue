@@ -78,64 +78,66 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-  <NetworkError
-    v-if="!folder && !page && !notFound && !accessDenied"
-    :msg="error?.message"
-    :on-reload="refresh"
-  />
-  <AccessDenied
-    v-else-if="data?.accessDenied"
-  />
-  <AtticList
-    v-else-if="revQuery === null"
-    :title="pageTitle"
-    :url-path="urlPath"
-  />
-  <AtticPage
-    v-else-if="revQuery !== undefined"
-    :url-path="urlPath"
-    :revision="revQuery"
-  />
-  <ContentPermissions
-    v-else-if="folder && aclQuery"
-    :is-folder="true"
-    :url-path="urlPath"
-    :meta="deepClone(folder.meta)"
-    :title="urlPath === '' ? $t('home') : data?.breadcrumbs.slice(-1)[0]?.name"
-    :breadcrumbs="data?.breadcrumbs ?? []"
-    @refresh="refresh"
-  />
-  <Folder
-    v-else-if="folder"
-    :allow-write="data?.allowWrite ?? false"
-    :allow-delete="data?.allowDelete ?? false"
-    :breadcrumbs="data?.breadcrumbs ?? []"
-    :folder="folder"
-    :url-path="urlPath"
-    :on-reload="refresh"
-  />
-  <ContentPermissions
-    v-else-if="page && aclQuery"
-    :is-folder="false"
-    :url-path="urlPath"
-    :meta="deepClone(page.meta)"
-    :title="page.meta.title"
-    :breadcrumbs="data?.breadcrumbs ?? []"
-    @refresh="refresh"
-  />
-  <PPage
-    v-else-if="page"
-    :page="page"
-    :breadcrumbs="data?.breadcrumbs ?? []"
-    :allow-write="data?.allowWrite ?? false"
-    :allow-delete="data?.allowDelete ?? false"
-    :on-reload="refresh"
-  />
-  <NotFound
-    v-else
-    :url-path="urlPath"
-    :breadcrumbs="data?.breadcrumbs ?? []"
-    :allow-create="data?.allowWrite ?? false"
-    @refresh="refresh"
-  />
+  <div class="flex flex-col">
+    <NetworkError
+      v-if="!folder && !page && !notFound && !accessDenied"
+      :msg="error?.message"
+      :on-reload="refresh"
+    />
+    <AccessDenied
+      v-else-if="data?.accessDenied"
+    />
+    <AtticList
+      v-else-if="revQuery === null"
+      :title="pageTitle"
+      :url-path="urlPath"
+    />
+    <AtticPage
+      v-else-if="revQuery !== undefined"
+      :url-path="urlPath"
+      :revision="revQuery"
+    />
+    <ContentPermissions
+      v-else-if="folder && aclQuery"
+      :is-folder="true"
+      :url-path="urlPath"
+      :meta="deepClone(folder.meta)"
+      :title="urlPath === '' ? $t('home') : data?.breadcrumbs.slice(-1)[0]?.name"
+      :breadcrumbs="data?.breadcrumbs ?? []"
+      @refresh="refresh"
+    />
+    <Folder
+      v-else-if="folder"
+      :allow-write="data?.allowWrite ?? false"
+      :allow-delete="data?.allowDelete ?? false"
+      :breadcrumbs="data?.breadcrumbs ?? []"
+      :folder="folder"
+      :url-path="urlPath"
+      :on-reload="refresh"
+    />
+    <ContentPermissions
+      v-else-if="page && aclQuery"
+      :is-folder="false"
+      :url-path="urlPath"
+      :meta="deepClone(page.meta)"
+      :title="page.meta.title"
+      :breadcrumbs="data?.breadcrumbs ?? []"
+      @refresh="refresh"
+    />
+    <PPage
+      v-else-if="page"
+      :page="page"
+      :breadcrumbs="data?.breadcrumbs ?? []"
+      :allow-write="data?.allowWrite ?? false"
+      :allow-delete="data?.allowDelete ?? false"
+      :on-reload="refresh"
+    />
+    <NotFound
+      v-else
+      :url-path="urlPath"
+      :breadcrumbs="data?.breadcrumbs ?? []"
+      :allow-create="data?.allowWrite ?? false"
+      @refresh="refresh"
+    />
+  </div>
 </template>

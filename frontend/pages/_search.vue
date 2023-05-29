@@ -54,10 +54,7 @@ watch(q, () => {
 
     <ElForm class="flex" @submit.prevent="onSearch">
       <ElInput v-model="query" :placeholder="t('search')" />
-      <ElButton type="primary" class="ml-2" :loading="loading" @click="onSearch">
-        <Icon name="ci:search" />
-        <span class="ml-1">{{ $t('search') }}</span>
-      </ElButton>
+      <PlainButton type="primary" icon="ci:search" class="ml-2" :loading="loading" :label="$t('search')" @click="onSearch" />
     </ElForm>
 
     <div v-if="results !== undefined">

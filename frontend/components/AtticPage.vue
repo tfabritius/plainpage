@@ -62,9 +62,12 @@ const revDate = computed(() => new Date(Number(props.revision) * 1000))
     </template>
 
     <template #actions>
-      <ElButton v-if="!data.notFound" class="m-1" @click="navigateTo({ query: { rev: undefined } })">
-        <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">{{ $t('current-version') }}</span>
-      </ElButton>
+      <PlainButton
+        v-if="!data.notFound"
+        icon="ic:baseline-update"
+        :label="$t('current-version')"
+        @click="navigateTo({ query: { rev: undefined } })"
+      />
     </template>
 
     <div v-if="data.page">
@@ -77,9 +80,11 @@ const revDate = computed(() => new Date(Number(props.revision) * 1000))
           {{ $t('revision-doesnt-exist') }}
         </div>
 
-        <ElButton @click="navigateTo({ query: { rev: undefined } })">
-          <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">{{ $t('current-version') }}</span>
-        </ElButton>
+        <PlainButton
+          icon="ic:baseline-update"
+          :label="$t('current-version')"
+          @click="navigateTo({ query: { rev: undefined } })"
+        />
       </div>
     </div>
   </Layout>

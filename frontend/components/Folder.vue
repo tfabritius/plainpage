@@ -148,18 +148,11 @@ onKeyStroke('Backspace', (e) => {
 
     <template #actions>
       <div>
-        <ElButton v-if="allowWrite" class="m-1" @click="createPage">
-          <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">{{ $t('create-page') }}</span>
-        </ElButton>
-        <span />
-        <ElButton v-if="allowWrite" class="m-1" @click="createFolder">
-          <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">{{ $t('create-folder') }}</span>
-        </ElButton>
+        <PlainButton v-if="allowWrite" icon="ci:file-add" :label="$t('create-page')" @click="createPage" />
+        <PlainButton v-if="allowWrite" icon="ci:folder-add" :label="$t('create-folder')" @click="createFolder" />
 
-        <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
-          <ElButton>
-            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">{{ $t('more') }}</span>
-          </ElButton>
+        <ElDropdown trigger="click" class="ml-3" @command="handleDropdownMenuCommand">
+          <PlainButton icon="ci:more-vertical" :label="$t('more')" />
           <template #dropdown>
             <ElDropdownMenu>
               <ElDropdownItem :icon="ReloadIcon" command="reload">

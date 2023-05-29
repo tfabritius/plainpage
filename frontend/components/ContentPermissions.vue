@@ -48,13 +48,8 @@ async function onSave() {
     </template>
 
     <template #actions>
-      <ElButton class="m-1" @click="onGoBack">
-        <Icon name="ci:skip-back" /> <span class="hidden md:inline ml-1">{{ $t('back-to-content') }}</span>
-      </ElButton>
-      <span />
-      <ElButton class="m-1" type="success" @click="onSave">
-        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
-      </ElButton>
+      <PlainButton icon="ci:skip-back" :label="$t('back-to-content')" @click="onGoBack" />
+      <PlainButton icon="ci:save" :label="$t('save')" type="success" @click="onSave" />
     </template>
 
     <ElSwitch

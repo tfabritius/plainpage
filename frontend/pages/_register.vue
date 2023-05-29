@@ -132,9 +132,13 @@ async function submit() {
           />
         </ElFormItem>
         <ElFormItem>
-          <ElButton type="primary" class="w-full" :loading="loading" @click="submit">
-            {{ $t('register') }}
-          </ElButton>
+          <PlainButton
+            type="primary"
+            class="w-full"
+            :label="$t('register')"
+            :loading="loading"
+            @click="submit"
+          />
         </ElFormItem>
       </ElForm>
     </div>

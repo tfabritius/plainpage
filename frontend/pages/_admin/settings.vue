@@ -53,9 +53,7 @@ async function onSave() {
     </template>
 
     <template #actions>
-      <ElButton class="m-1" type="success" @click="onSave">
-        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
-      </ElButton>
+      <PlainButton type="success" icon="ci:save" :label="$t('save')" @click="onSave" />
     </template>
 
     <ElForm

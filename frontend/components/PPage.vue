@@ -188,14 +188,10 @@ onKeyStroke('s', (e) => {
 
     <template #actions>
       <div v-if="!editing">
-        <ElButton v-if="allowWrite" class="m-1" @click="onEditPage">
-          <Icon name="ci:edit" /> <span class="hidden md:inline ml-1">{{ $t('edit') }}</span>
-        </ElButton>
+        <PlainButton v-if="allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
 
-        <ElDropdown trigger="click" class="m-1" @command="handleDropdownMenuCommand">
-          <ElButton>
-            <Icon name="ci:more-vertical" /> <span class="hidden md:inline ml-1">{{ $t('more') }}</span>
-          </ElButton>
+        <ElDropdown trigger="click" class="ml-3" @command="handleDropdownMenuCommand">
+          <PlainButton icon="ci:more-vertical" :label="$t('more')" />
           <template #dropdown>
             <ElDropdownMenu>
               <ElDropdownItem :icon="ReloadIcon" command="reload">
@@ -216,12 +212,8 @@ onKeyStroke('s', (e) => {
       </div>
 
       <div v-if="editing">
-        <ElButton class="ml-2" @click="onCancelEdit">
-          <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">{{ $t('cancel') }}</span>
-        </ElButton>
-        <ElButton type="success" @click="onSavePage">
-          <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
-        </ElButton>
+        <PlainButton class="ml-2" icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+        <PlainButton type="success" icon="ci:save" :label="$t('save')" @click="onSavePage" />
       </div>
     </template>
 

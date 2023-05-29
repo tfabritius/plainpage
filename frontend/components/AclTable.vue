@@ -243,13 +243,13 @@ defineExpose({ getAcl })
     </ElTableColumn>
     <ElTableColumn>
       <template #default="{ row }">
-        <ElButton
+        <PlainButton
           v-if="!['anonymous', 'all', 'admin'].includes(row.subject)"
           text
+          type="danger"
+          icon="ci:trash-full"
           @click="onRemoveRule(row.subject)"
-        >
-          <Icon class="text-red" name="ci:trash-full" />
-        </ElButton>
+        />
       </template>
     </ElTableColumn>
   </ElTable>
@@ -261,8 +261,6 @@ defineExpose({ getAcl })
         <Icon v-else-if="newUser === null" class="text-red" name="ci:close-circle" />
       </template>
     </ElInput>
-    <ElButton :disabled="!newUser" class="ml-2" @click="onAddRule">
-      {{ $t('add') }}
-    </ElButton>
+    <PlainButton :disabled="!newUser" :label="$t('add')" class="ml-2" @click="onAddRule" />
   </div>
 </template>

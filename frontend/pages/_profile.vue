@@ -82,9 +82,7 @@ async function onDelete() {
     </template>
 
     <template #actions>
-      <ElButton class="m-1" type="success" @click="onSave">
-        <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
-      </ElButton>
+      <PlainButton type="success" icon="ci:save" :label="$t('save')" @click="onSave" />
     </template>
     <ElForm
       ref="profileFormRef"
@@ -106,8 +104,6 @@ async function onDelete() {
       </ElFormItem>
     </ElForm>
 
-    <ElButton type="danger" @click="onDelete">
-      {{ $t('delete-my-account') }}
-    </ElButton>
+    <PlainButton type="danger" :label="$t('delete-my-account')" @click="onDelete" />
   </Layout>
 </template>

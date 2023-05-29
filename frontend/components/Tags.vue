@@ -76,8 +76,12 @@ function onCancelInput() {
       @keyup.esc.stop="onCancelInput"
     />
 
-    <ElButton v-if="editable && !inputVisible" size="small" @click="showInput">
-      <Icon name="ci:plus" class="mr-1" /> {{ $t('add-tag') }}
-    </ElButton>
+    <PlainButton
+      v-if="editable && !inputVisible"
+      icon="ci:plus"
+      :label="$t('add-tag')"
+      size="small"
+      @click="showInput"
+    />
   </div>
 </template>

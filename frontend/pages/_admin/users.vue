@@ -129,9 +129,7 @@ async function onDelete(user: User) {
     </template>
 
     <template #actions>
-      <ElButton class="m-1" @click="onCreate">
-        <Icon name="ci:user-add" /> <span class="hidden md:inline ml-1">{{ $t('create-user') }}</span>
-      </ElButton>
+      <PlainButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
     </template>
 
     <ElDialog
@@ -161,10 +159,9 @@ async function onDelete(user: User) {
       </ElForm>
       <template #footer>
         <span class="dialog-footer">
-          <ElButton @click="userFormVisible = false">{{ $t('cancel') }}</ElButton>
-          <ElButton type="primary" @click="onSubmit">
-            {{ userFormData.currentUsername ? $t('save') : $t('create') }}
-          </ElButton>
+          <PlainButton :label="$t('cancel')" @click="userFormVisible = false" />
+          <PlainButton v-if="userFormData.currentUsername" type="primary" :label="$t('save')" @click="onSubmit" />
+          <PlainButton v-else type="primary" :label="$t('create')" @click="onSubmit" />
         </span>
       </template>
     </ElDialog>
@@ -174,12 +171,8 @@ async function onDelete(user: User) {
       <ElTableColumn :label="$t('display-name')" prop="displayName" />
       <ElTableColumn>
         <template #default="{ row }">
-          <ElButton text>
-            <Icon name="ci:edit" @click="onEdit(row)" />
-          </ElButton>
-          <ElButton text @click="onDelete(row)">
-            <Icon class="text-red" name="ci:trash-full" />
-          </ElButton>
+          <PlainButton text icon="ci:edit" @click="onEdit(row)" />
+          <PlainButton text icon="ci:trash-full" type="danger" @click="onDelete(row)" />
         </template>
       </ElTableColumn>
     </ElTable>

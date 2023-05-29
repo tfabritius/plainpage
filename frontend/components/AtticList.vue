@@ -32,9 +32,11 @@ const { data } = await useAsyncData(`/attic${props.urlPath}`, async () => {
     </template>
 
     <template #actions>
-      <ElButton class="m-1" @click="navigateTo({ query: { rev: undefined } })">
-        <Icon name="ic:baseline-update" /> <span class="hidden md:inline ml-1">{{ $t('current-version') }}</span>
-      </ElButton>
+      <PlainButton
+        icon="ic:baseline-update"
+        :label="$t('current-version')"
+        @click="navigateTo({ query: { rev: undefined } })"
+      />
     </template>
 
     <div v-for="(el, idx) in data?.entries" :key="el.rev">

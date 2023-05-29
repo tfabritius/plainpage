@@ -111,12 +111,8 @@ onKeyStroke('s', (e) => {
 
     <template #actions>
       <div v-if="editing">
-        <ElButton class="ml-2" @click="onCancelEdit">
-          <Icon name="ci:close-md" /> <span class="hidden md:inline ml-1">{{ $t('cancel') }}</span>
-        </ElButton>
-        <ElButton type="success" @click="onSavePage">
-          <Icon name="ci:save" /> <span class="hidden md:inline ml-1">{{ $t('save') }}</span>
-        </ElButton>
+        <PlainButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+        <PlainButton icon="ci:save" :label="$t('save')" type="success" @click="onSavePage" />
       </div>
     </template>
 
@@ -127,17 +123,11 @@ onKeyStroke('s', (e) => {
       </div>
 
       <div v-if="allowCreate">
-        <ElButton @click="createThisPage">
-          <Icon name="ci:file-add" /> <span class="hidden md:inline ml-1">{{ $t('create-page') }}</span>
-        </ElButton>
-        <ElButton @click="createThisFolder">
-          <Icon name="ci:folder-add" /> <span class="hidden md:inline ml-1">{{ $t('create-folder') }}</span>
-        </ElButton>
+        <PlainButton icon="ci:file-add" :label="$t('create-page')" @click="createThisPage" />
+        <PlainButton icon="ci:folder-add" :label="$t('create-folder')" @click="createThisFolder" />
       </div>
 
-      <ElButton v-else @click="navigateTo('/')">
-        <Icon name="ic:outline-home" /> <span class="hidden md:inline ml-1">{{ $t('back-home') }}</span>
-      </ElButton>
+      <PlainButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navigateTo('/')" />
     </div>
 
     <PageEditor v-else v-model="editablePage" />

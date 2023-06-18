@@ -66,6 +66,7 @@ export interface ContentMeta {
 export interface FolderEntry {
   url: string
   name: string
+  title: string
   isFolder: boolean
 }
 

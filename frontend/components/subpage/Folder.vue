@@ -254,7 +254,7 @@ onKeyStroke('Backspace', (e) => {
       <div v-for="entry of folder.content.filter(e => e.isFolder)" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
           <ElLink :href="href" @click="navigate">
-            <Icon name="ci:folder" class="mr-1" /> {{ entry.name }}
+            <Icon name="ci:folder" class="mr-1" /> {{ entry.title }}
           </ElLink>
         </NuxtLink>
       </div>
@@ -268,7 +268,7 @@ onKeyStroke('Backspace', (e) => {
       <div v-for="entry of folder.content.filter(e => !e.isFolder)" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
           <ElLink :href="href" @click="navigate">
-            {{ entry.name }}
+            {{ entry.title }}
           </ElLink>
         </NuxtLink>
       </div>

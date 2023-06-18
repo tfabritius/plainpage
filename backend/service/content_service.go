@@ -297,7 +297,7 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 	folderEntries := make([]model.FolderEntry, 0, len(fileInfos))
 	for _, fi := range fileInfos {
 
-		u, err := url.JoinPath("/", urlPath, fi.Name())
+		u, err := url.JoinPath(urlPath, fi.Name())
 		if err != nil {
 			return model.Folder{}, fmt.Errorf("could not join url: %w", err)
 		}
@@ -307,14 +307,30 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 			Name:     fi.Name(),
 			IsFolder: fi.IsDir(),
 		}
-		if !e.IsFolder {
+
+		if e.IsFolder {
+			folder, err := s.ReadFolder(e.Url)
+			if err != nil {
+				return model.Folder{}, fmt.Errorf("could not read folder %s: %w", e.Url, err)
+			}
+			e.Title = folder.Meta.Title
+		} else {
 			if !strings.HasPrefix(e.Name, "_") && strings.HasSuffix(e.Name, ".md") {
 				e.Name = strings.TrimSuffix(e.Name, ".md")
 				e.Url = strings.TrimSuffix(e.Url, ".md")
 			} else {
 				continue
 			}
+
+			page, err := s.ReadPage(e.Url, nil)
+			if err != nil {
+				return model.Folder{}, fmt.Errorf("could not read page %s: %w", e.Url, err)
+			}
+
+			e.Title = page.Meta.Title
 		}
+
+		e.Url = "/" + e.Url
 
 		folderEntries = append(folderEntries, e)
 	}

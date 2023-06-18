@@ -20,6 +20,7 @@ type ContentMeta struct {
 type FolderEntry struct {
 	Url      string `json:"url"`
 	Name     string `json:"name"`
+	Title    string `json:"title"`
 	IsFolder bool   `json:"isFolder"`
 }
 

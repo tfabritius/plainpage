@@ -5,8 +5,9 @@ import (
 )
 
 type Breadcrumb struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
+	Name  string `json:"name"`
+	Title string `json:"title"`
+	Url   string `json:"url"`
 }
 
 type GetContentResponse struct {

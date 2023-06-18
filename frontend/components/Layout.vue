@@ -38,7 +38,7 @@ const route = useRoute()
               :key="crumb.url"
               :to="{ path: crumb.url }"
             >
-              {{ crumb.name }}
+              {{ crumb.title || crumb.name }}
             </ElBreadcrumbItem>
           </ElBreadcrumb>
         </div>

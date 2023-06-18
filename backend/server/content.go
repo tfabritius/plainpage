@@ -25,17 +25,39 @@ func isValidUrl(urlPath string) bool {
 	return urlPath == "" || urlRegex.MatchString(urlPath)
 }
 
-func getBreadcrumbs(urlPath string) []model.Breadcrumb {
+func (app App) getBreadcrumbs(urlPath string) []model.Breadcrumb {
 	breadcrumbs := []model.Breadcrumb{}
 	paths := strings.Split(urlPath, "/")
 	currentPath := ""
 	for _, path := range paths {
 		if path != "" {
-			currentPath += "/" + path
+			var err error
+			currentPath, err = url.JoinPath(currentPath, path)
+			if err != nil {
+				panic(err)
+			}
+
 			breadcrumb := model.Breadcrumb{
 				Name: path,
-				Url:  currentPath,
+				Url:  "/" + currentPath,
 			}
+
+			if app.Content.IsFolder(currentPath) {
+				folder, err := app.Content.ReadFolder(currentPath)
+				if err != nil {
+					panic(err)
+				}
+				breadcrumb.Title = folder.Meta.Title
+			} else if app.Content.IsPage(currentPath) {
+				page, err := app.Content.ReadPage(currentPath, nil)
+				if err != nil {
+					panic(err)
+				}
+				breadcrumb.Title = page.Meta.Title
+			} else {
+				// Don't add title for nonexistent content
+			}
+
 			breadcrumbs = append(breadcrumbs, breadcrumb)
 		}
 	}
@@ -58,7 +80,7 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 
 	validUrl := isValidUrl(urlPath)
 
-	response.Breadcrumbs = getBreadcrumbs(urlPath)
+	response.Breadcrumbs = app.getBreadcrumbs(urlPath)
 
 	if validUrl && app.Content.IsPage(urlPath) {
 		page, err := app.Content.ReadPage(urlPath, nil)
@@ -298,7 +320,7 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	breadcrumbs := getBreadcrumbs(urlPath)
+	breadcrumbs := app.getBreadcrumbs(urlPath)
 
 	var revision int64
 	if queryRev == "" {

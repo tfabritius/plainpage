@@ -2,6 +2,7 @@
 
 export interface Breadcrumb {
   name: string
+  title: string
   url: string
 }
 

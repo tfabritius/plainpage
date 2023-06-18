@@ -34,82 +34,81 @@ const PermissionsIcon = h(Icon, { name: 'ci:shield' })
 const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
 const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
-const newPageDialogVisible = ref(false)
-const newPageFormRef = ref<FormInstance>()
-const newPageFormData = ref({ title: '', name: '' })
-const newPageDialogExpanded = ref(false)
-const toggleNewPageDialogExpanded = useToggle(newPageDialogExpanded)
-const newPageNameChangedManually = ref(false)
-const newPageFormRules = {
+const newContentDialogVisible = ref(false)
+const newContentFormRef = ref<FormInstance>()
+const newContentType = ref<'page' | 'folder'>('page')
+const newContentFormData = ref({ title: '', name: '' })
+const newContentDialogExpanded = ref(false)
+const toggleNewContentDialogExpanded = useToggle(newContentDialogExpanded)
+const newContentNameChangedManually = ref(false)
+const newContentFormRules = computed(() => ({
   name: [
-    { required: true, message: t('page-name-required'), trigger: 'blur' },
-    { pattern: /^[a-z0-9-][a-z0-9_-]*$/, message: t('invalid-page-name'), trigger: 'blur' },
+    {
+      required: true,
+      message: newContentType.value === 'page' ? t('page-name-required') : t('folder-name-required'),
+      trigger: 'blur',
+    },
+    {
+      pattern: /^[a-z0-9-][a-z0-9_-]*$/,
+      message: newContentType.value === 'page' ? t('invalid-page-name') : t('invalid-folder-name'),
+      trigger: 'blur',
+    },
   ],
-} satisfies FormRules
+} satisfies FormRules))
 
-async function showNewPageDialog() {
-  newPageFormData.value = { title: '', name: '' }
-  newPageDialogExpanded.value = false
-  newPageNameChangedManually.value = false
-  newPageDialogVisible.value = true
+async function showNewContentDialog(type: 'page' | 'folder') {
+  newContentType.value = type
+  newContentFormData.value = { title: '', name: '' }
+  newContentDialogExpanded.value = false
+  newContentNameChangedManually.value = false
+  newContentDialogVisible.value = true
 }
 
-function onNewPageTitleChanged() {
-  if (!newPageNameChangedManually.value) {
-    newPageFormData.value.name = slugify(
-      newPageFormData.value.title,
+function onNewContentTitleChanged() {
+  if (!newContentNameChangedManually.value) {
+    newContentFormData.value.name = slugify(
+      newContentFormData.value.title,
       { lower: true, strict: true },
     )
   }
 }
 
-function onNewPageNameChanged() {
-  newPageNameChangedManually.value = true
+function onNewContentNameChanged() {
+  newContentNameChangedManually.value = true
 }
 
-async function submitNewPageDialog() {
-  if (!newPageFormRef.value) {
+async function submitNewContentDialog() {
+  if (!newContentFormRef.value) {
     return
   }
 
-  const formValid = await new Promise<boolean>(resolve => newPageFormRef.value?.validate(valid => resolve(valid)))
+  const formValid = await new Promise<boolean>(resolve => newContentFormRef.value?.validate(valid => resolve(valid)))
   if (!formValid) {
-    newPageDialogExpanded.value = true
+    newContentDialogExpanded.value = true
     return
   }
 
-  newPageDialogVisible.value = false
+  newContentDialogVisible.value = false
 
-  await navigateTo({ path: `${props.urlPath}/${newPageFormData.value.name}`, query: { edit: 'true' }, state: { title: newPageFormData.value.title } })
-}
-
-async function createFolder() {
-  let name
-  try {
-    const msgBox = await ElMessageBox.prompt(t('enter-folder-name'), t('create-folder'), {
-      confirmButtonText: t('ok'),
-      cancelButtonText: t('cancel'),
-      inputPattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      inputErrorMessage: t('invalid-folder-name'),
+  if (newContentType.value === 'page') {
+    await navigateTo({
+      path: `${props.urlPath}/${newContentFormData.value.name}`,
+      query: { edit: 'true' },
+      state: { title: newContentFormData.value.title },
     })
-    name = msgBox.value
-  } catch (e) {
-    return
-  }
-
-  try {
-    await apiFetch(`/pages${props.urlPath}/${name}`, { method: 'PUT', body: { page: null } })
-
-    ElMessage({
-      message: t('folder-created'),
-      type: 'success',
-    })
-    await navigateTo(`${props.urlPath}/${name}`)
-  } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
-    })
+  } else {
+    try {
+      await apiFetch(`/pages${props.urlPath}/${newContentFormData.value.name}`, {
+        method: 'PUT',
+        body: { folder: { meta: { title: newContentFormData.value.title } } },
+      })
+    } catch (err) {
+      ElMessage({
+        message: String(err),
+        type: 'error',
+      })
+    }
+    await navigateTo(`${props.urlPath}/${newContentFormData.value.name}`)
   }
 }
 
@@ -215,8 +214,8 @@ onKeyStroke('Backspace', (e) => {
 
     <template #actions>
       <div>
-        <PlainButton v-if="allowWrite" icon="ci:file-add" :label="$t('create-page')" @click="showNewPageDialog" />
-        <PlainButton v-if="allowWrite" icon="ci:folder-add" :label="$t('create-folder')" @click="createFolder" />
+        <PlainButton v-if="allowWrite" icon="ci:file-add" :label="$t('create-page')" @click="showNewContentDialog('page')" />
+        <PlainButton v-if="allowWrite" icon="ci:folder-add" :label="$t('create-folder')" @click="showNewContentDialog('folder')" />
 
         <ElDropdown trigger="click" class="ml-3" @command="handleDropdownMenuCommand">
           <PlainButton icon="ci:more-vertical" :label="$t('more')" />
@@ -269,35 +268,35 @@ onKeyStroke('Backspace', (e) => {
 
     <ClientOnly>
       <ElDialog
-        v-model="newPageDialogVisible"
-        :title="$t('create-page')"
+        v-model="newContentDialogVisible"
+        :title="newContentType === 'page' ? $t('create-page') : $t('create-folder')"
         width="40%"
       >
         <ElForm
-          ref="newPageFormRef"
-          :model="newPageFormData"
-          :rules="newPageFormRules"
+          ref="newContentFormRef"
+          :model="newContentFormData"
+          :rules="newContentFormRules"
           label-position="top"
           @submit.prevent
-          @keypress.enter="submitNewPageDialog"
+          @keypress.enter="submitNewContentDialog"
         >
-          <ElFormItem :label="$t('page-title')" prop="title">
-            <ElInput v-model="newPageFormData.title" @input="onNewPageTitleChanged" />
+          <ElFormItem :label="newContentType === 'page' ? $t('page-title') : $t('folder-title')" prop="title">
+            <ElInput v-model="newContentFormData.title" @input="onNewContentTitleChanged" />
           </ElFormItem>
 
-          <span class="cursor-pointer text-xs" @click="toggleNewPageDialogExpanded()">
-            <Icon name="ci:chevron-right" :class="newPageDialogExpanded && 'rotate-90 transform'" />
+          <span class="cursor-pointer text-xs" @click="toggleNewContentDialogExpanded()">
+            <Icon name="ci:chevron-right" :class="newContentDialogExpanded && 'rotate-90 transform'" />
             {{ $t('more') }}
           </span>
-          <div v-show="newPageDialogExpanded">
-            <ElFormItem :label="$t('page-name')" prop="name">
-              <ElInput v-model="newPageFormData.name" @input="onNewPageNameChanged" />
+          <div v-show="newContentDialogExpanded">
+            <ElFormItem :label="newContentType === 'page' ? $t('page-name') : $t('folder-name')" prop="name">
+              <ElInput v-model="newContentFormData.name" @input="onNewContentNameChanged" />
             </ElFormItem>
           </div>
         </ElForm>
         <template #footer>
-          <PlainButton :label="$t('cancel')" @click="newPageDialogVisible = false" />
-          <PlainButton type="primary" :label="$t('ok')" @click="submitNewPageDialog" />
+          <PlainButton :label="$t('cancel')" @click="newContentDialogVisible = false" />
+          <PlainButton type="primary" :label="$t('ok')" @click="submitNewContentDialog" />
         </template>
       </ElDialog>
     </ClientOnly>

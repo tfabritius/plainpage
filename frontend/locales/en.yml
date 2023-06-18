@@ -35,10 +35,11 @@ display-name: Display name
 displayname-required: Please enter display name
 edit: Edit
 edit-user: Edit user
-enter-folder-name: Please enter folder name
 error: Error
 folder-created: Folder created
 folder-deleted: Folder deleted
+folder-name: Folder name
+folder-name-required: Please enter folder name
 folder-reloaded: Folder reloaded
 folder-title: Folder title
 folders: Folders

@@ -35,10 +35,11 @@ display-name: Nombre para mostrar
 displayname-required: Ingrese el nombre para mostrar
 edit: Editar
 edit-user: Editar usuario
-enter-folder-name: Por favor ingrese el nombre de la carpeta
 error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
+folder-name: Nombre de lar carpeta
+folder-name-required: Por favor ingrese el nombre de la carpeta
 folder-reloaded: Carpeta recargada
 folder-title: Título de la carpeta
 folders: Carpetas

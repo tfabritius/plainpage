@@ -247,7 +247,8 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 	} else if body.Folder != nil {
 		if app.Content.IsFolder(urlPath) {
 			// if folder exists already, take over ACL
-			oldFolder, err := app.Content.ReadFolder(urlPath)
+			var oldFolder model.Folder
+			oldFolder, err = app.Content.ReadFolder(urlPath)
 			if err != nil {
 				panic(err)
 			}

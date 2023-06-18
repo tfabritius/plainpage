@@ -2,6 +2,7 @@ package test
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -80,8 +81,13 @@ func (s *ContentTestSuite) SetupTest() {
 	}
 
 	for _, folder := range folders {
-		r.NoError(s.app.Content.CreateFolder(folder.Name, model.ContentMeta{Title: folder.Name}))
-		r.NoError(s.app.Content.SaveFolder(folder.Name, model.ContentMeta{ACL: &folder.ACL}))
+		r.NoError(s.app.Content.CreateFolder(
+			folder.Name,
+			model.ContentMeta{
+				Title: folder.Name,
+				ACL:   &folder.ACL,
+			},
+		))
 	}
 }
 
@@ -205,7 +211,7 @@ func (s *ContentTestSuite) TestCreateFolder() {
 			r := require.New(t)
 
 			res := s.api("PUT", "/pages/"+tc.url,
-				model.PutRequest{Folder: &model.Folder{}},
+				model.PutRequest{Folder: &model.Folder{Meta: model.ContentMeta{Title: tc.name}}},
 				tc.token)
 			r.Equal(tc.responseCode, res.Code)
 
@@ -213,6 +219,7 @@ func (s *ContentTestSuite) TestCreateFolder() {
 				folder, err := s.app.Content.ReadFolder(tc.url)
 				r.NoError(err)
 				r.Len(folder.Content, 0)
+				r.Equal(tc.name, folder.Meta.Title)
 
 				r.NoError(s.app.Content.DeleteEmptyFolder(tc.url))
 			} else {
@@ -222,7 +229,7 @@ func (s *ContentTestSuite) TestCreateFolder() {
 	}
 }
 
-func (s *ContentTestSuite) TestCreateContentInvalidFolder() {
+func (s *ContentTestSuite) TestCreateContentInvalid() {
 	r := s.Require()
 
 	res := s.api("PUT", "/pages/test",
@@ -280,6 +287,12 @@ func (s *ContentTestSuite) TestReadPage() {
 				r.Nil(body.Folder)
 				r.NotNil(body.Page)
 				r.Equal("Title", body.Page.Meta.Title)
+
+				// Breadcrumbs
+				r.Len(body.Breadcrumbs, strings.Count(tc.url, "/")+1)
+				r.Equal("/"+tc.url, body.Breadcrumbs[len(body.Breadcrumbs)-1].Url)
+				r.Equal("page", body.Breadcrumbs[len(body.Breadcrumbs)-1].Name)
+				r.Equal("Title", body.Breadcrumbs[len(body.Breadcrumbs)-1].Title)
 
 				// Change ACL
 				acl := []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}}
@@ -404,6 +417,18 @@ func (s *ContentTestSuite) TestReadFolder() {
 				r.Nil(body.Page)
 				r.NotNil(body.Folder)
 				r.Len(body.Folder.Content, tc.entries)
+
+				for _, c := range body.Folder.Content {
+					r.Equal(c.Name, c.Title)
+				}
+
+				// Breadcrumbs
+				r.Len(body.Breadcrumbs, strings.Count(tc.url, "/"))
+				if len(body.Breadcrumbs) > 0 {
+					r.Equal(tc.url, body.Breadcrumbs[len(body.Breadcrumbs)-1].Url)
+					r.Equal(strings.TrimPrefix(tc.url, "/"), body.Breadcrumbs[len(body.Breadcrumbs)-1].Name)
+					r.Equal(strings.TrimPrefix(tc.url, "/"), body.Breadcrumbs[len(body.Breadcrumbs)-1].Title)
+				}
 
 				// Test ACL in output
 				if tc.showACL {

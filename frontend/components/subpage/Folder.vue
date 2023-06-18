@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import slugify from 'slugify'
+import { ElInput } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 
 import type { Breadcrumb, Folder, PutRequest } from '~/types'
@@ -36,6 +37,7 @@ const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
 
 const newContentDialogVisible = ref(false)
 const newContentFormRef = ref<FormInstance>()
+const newContentTitleInputRef = ref<typeof ElInput>()
 const newContentType = ref<'page' | 'folder'>('page')
 const newContentFormData = ref({ title: '', name: '' })
 const newContentDialogExpanded = ref(false)
@@ -64,6 +66,10 @@ async function showNewContentDialog(type: 'page' | 'folder') {
   newContentFormRef.value?.clearValidate()
 
   newContentDialogVisible.value = true
+}
+
+function focusNewContentDialog() {
+  newContentTitleInputRef.value?.focus()
 }
 
 function onNewContentTitleChanged() {
@@ -273,6 +279,7 @@ onKeyStroke('Backspace', (e) => {
         v-model="newContentDialogVisible"
         :title="newContentType === 'page' ? $t('create-page') : $t('create-folder')"
         width="40%"
+        @opened="focusNewContentDialog"
       >
         <ElForm
           ref="newContentFormRef"
@@ -284,7 +291,7 @@ onKeyStroke('Backspace', (e) => {
           @keypress.enter="submitNewContentDialog"
         >
           <ElFormItem :label="newContentType === 'page' ? $t('page-title') : $t('folder-title')" prop="title">
-            <ElInput v-model="newContentFormData.title" @input="onNewContentTitleChanged" />
+            <ElInput ref="newContentTitleInputRef" v-model="newContentFormData.title" @input="onNewContentTitleChanged" />
           </ElFormItem>
 
           <span class="cursor-pointer text-xs" @click="toggleNewContentDialogExpanded()">

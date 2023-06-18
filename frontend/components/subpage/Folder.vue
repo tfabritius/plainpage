@@ -61,6 +61,8 @@ async function showNewContentDialog(type: 'page' | 'folder') {
   newContentFormData.value = { title: '', name: '' }
   newContentDialogExpanded.value = false
   newContentNameChangedManually.value = false
+  newContentFormRef.value?.clearValidate()
+
   newContentDialogVisible.value = true
 }
 
@@ -276,6 +278,7 @@ onKeyStroke('Backspace', (e) => {
           ref="newContentFormRef"
           :model="newContentFormData"
           :rules="newContentFormRules"
+          :validate-on-rule-change="false"
           label-position="top"
           @submit.prevent
           @keypress.enter="submitNewContentDialog"

@@ -222,6 +222,15 @@ func (s *ContentTestSuite) TestCreateFolder() {
 	}
 }
 
+func (s *ContentTestSuite) TestCreateContentInvalidFolder() {
+	r := s.Require()
+
+	res := s.api("PUT", "/pages/test",
+		model.PutRequest{},
+		s.adminToken)
+	r.Equal(400, res.Code)
+}
+
 func (s *ContentTestSuite) TestReadPage() {
 	tests := []struct {
 		name         string

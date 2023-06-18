@@ -240,6 +240,9 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 			// and create
 			err = app.Content.CreateFolder(urlPath, body.Folder.Meta)
 		}
+	} else {
+		http.Error(w, "Content missing", http.StatusBadRequest)
+		return
 	}
 
 	if err != nil {

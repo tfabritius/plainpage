@@ -20,7 +20,7 @@
     "@codemirror/state": "^6.2.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@element-plus/nuxt": "^1.0.5",
-    "@iconify/json": "^2.2.68",
+    "@iconify/json": "^2.2.80",
     "@nuxtjs/i18n": "8.0.0-beta.12",
     "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
     "@pinia/nuxt": "^0.4.11",

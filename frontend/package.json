@@ -36,7 +36,7 @@
     "dompurify": "^3.0.3",
     "element-plus": "^2.3.6",
     "eslint": "^8.43.0",
-    "marked": "^5.0.2",
+    "marked": "^5.1.0",
     "nuxt": "^3.5.2",
     "nuxt-icon": "^0.4.1",
     "pinia": "^2.1.3",

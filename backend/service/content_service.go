@@ -140,10 +140,11 @@ func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
 		if err != nil {
 			return nil, err
 		}
-		acl, err := s.GetEffectivePermissions(r.ID)
+		metas, err := s.ReadAncestorsMeta(r.ID)
 		if err != nil {
 			return nil, err
 		}
+		acl := s.GetEffectivePermissions(page.Meta, metas)
 
 		ret = append(ret, model.SearchHit{
 			Url:          r.ID,
@@ -420,38 +421,49 @@ func (s *ContentService) DeleteAll() error {
 	return nil
 }
 
-func (s *ContentService) GetEffectivePermissions(urlPath string) (*[]model.AccessRule, error) {
-	if s.IsPage(urlPath) {
-		page, err := s.ReadPage(urlPath, nil)
-		if err != nil {
-			return nil, err
-		}
+func (s *ContentService) ReadAncestorsMeta(urlPath string) ([]model.ContentMetaWithURL, error) {
+	return s.addFolderMetaFromParent(urlPath, []model.ContentMetaWithURL{})
+}
 
-		if page.Meta.ACL != nil {
-			return page.Meta.ACL, nil
-		}
-
-	} else if s.IsFolder(urlPath) {
-		folder, err := s.ReadFolder(urlPath)
-		if err != nil {
-			return nil, err
-		}
-
-		if folder.Meta.ACL != nil {
-			return folder.Meta.ACL, nil
-		}
-	}
-
-	if urlPath == "" {
-		return nil, nil
-	}
-
+func (s *ContentService) addFolderMetaFromParent(urlPath string, metas []model.ContentMetaWithURL) ([]model.ContentMetaWithURL, error) {
 	parentUrl, err := url.JoinPath(urlPath, "..")
 	if err != nil {
 		return nil, err
 	}
 
-	return s.GetEffectivePermissions(parentUrl)
+	if s.IsFolder(parentUrl) {
+		folder, err := s.ReadFolder(parentUrl)
+		if err != nil {
+			return nil, err
+		}
+
+		meta := model.ContentMetaWithURL{
+			Url:         parentUrl,
+			ContentMeta: folder.Meta,
+		}
+
+		metas = append(metas, meta)
+	}
+	// if it doesn't exist, skip it
+
+	if parentUrl == "" {
+		return metas, nil
+	}
+	return s.addFolderMetaFromParent(parentUrl, metas)
+}
+
+func (s *ContentService) GetEffectivePermissions(meta model.ContentMeta, ancestorsMetas []model.ContentMetaWithURL) *[]model.AccessRule {
+	if meta.ACL != nil {
+		return meta.ACL
+	}
+
+	for i := range ancestorsMetas {
+		if ancestorsMetas[i].ACL != nil {
+			return ancestorsMetas[i].ACL
+		}
+	}
+
+	return nil
 }
 
 func (s *ContentService) ListAttic(urlPath string) ([]model.AtticEntry, error) {

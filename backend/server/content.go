@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"path"
 	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
@@ -25,69 +25,58 @@ func isValidUrl(urlPath string) bool {
 	return urlPath == "" || urlRegex.MatchString(urlPath)
 }
 
-func (app App) getBreadcrumbs(urlPath string) []model.Breadcrumb {
+func (App) getBreadcrumbs(urlPath string, page *model.Page, folder *model.Folder, ancestorsMeta []model.ContentMetaWithURL) []model.Breadcrumb {
 	breadcrumbs := []model.Breadcrumb{}
-	paths := strings.Split(urlPath, "/")
-	currentPath := ""
-	for _, path := range paths {
-		if path != "" {
-			var err error
-			currentPath, err = url.JoinPath(currentPath, path)
-			if err != nil {
-				panic(err)
-			}
 
-			breadcrumb := model.Breadcrumb{
-				Name: path,
-				Url:  "/" + currentPath,
-			}
-
-			if app.Content.IsFolder(currentPath) {
-				folder, err := app.Content.ReadFolder(currentPath)
-				if err != nil {
-					panic(err)
-				}
-				breadcrumb.Title = folder.Meta.Title
-			} else if app.Content.IsPage(currentPath) {
-				page, err := app.Content.ReadPage(currentPath, nil)
-				if err != nil {
-					panic(err)
-				}
-				breadcrumb.Title = page.Meta.Title
-			} else {
-				// Don't add title for nonexistent content
-			}
-
-			breadcrumbs = append(breadcrumbs, breadcrumb)
+	for i := len(ancestorsMeta) - 1; i >= 0; i-- {
+		if ancestorsMeta[i].Url == "" {
+			continue
 		}
+
+		breadcrumb := model.Breadcrumb{
+			Url:   "/" + ancestorsMeta[i].Url,
+			Title: ancestorsMeta[i].Title,
+			Name:  path.Base(ancestorsMeta[i].Url),
+		}
+
+		breadcrumbs = append(breadcrumbs, breadcrumb)
 	}
+
+	if page != nil {
+		breadcrumbs = append(breadcrumbs, model.Breadcrumb{
+			Url:   "/" + urlPath,
+			Title: page.Meta.Title,
+			Name:  path.Base(urlPath),
+		})
+	} else if folder != nil && urlPath != "" {
+		breadcrumbs = append(breadcrumbs, model.Breadcrumb{
+			Url:   "/" + urlPath,
+			Title: folder.Meta.Title,
+			Name:  path.Base(urlPath),
+		})
+	}
+
 	return breadcrumbs
 }
 
 func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
+
 	userID := ctxutil.UserID(r.Context())
+	page := ctxutil.Page(r.Context())
+	folder := ctxutil.Folder(r.Context())
+	metas := ctxutil.AncestorsMeta(r.Context())
 
 	response := model.GetContentResponse{}
 
-	acl, err := app.Content.GetEffectivePermissions(urlPath)
-	if err != nil {
-		panic(err)
-	}
+	parentAcl := app.Content.GetEffectivePermissions(model.ContentMeta{ACL: nil}, metas)
 
-	response.AllowWrite = app.Users.CheckContentPermissions(acl, userID, model.AccessOpWrite) == nil
-	response.AllowDelete = app.Users.CheckContentPermissions(acl, userID, model.AccessOpDelete) == nil
+	response.AllowWrite = app.Users.CheckContentPermissions(parentAcl, userID, model.AccessOpWrite) == nil
+	response.AllowDelete = app.Users.CheckContentPermissions(parentAcl, userID, model.AccessOpDelete) == nil
 
-	validUrl := isValidUrl(urlPath)
+	response.Breadcrumbs = app.getBreadcrumbs(urlPath, page, folder, metas)
 
-	response.Breadcrumbs = app.getBreadcrumbs(urlPath)
-
-	if validUrl && app.Content.IsPage(urlPath) {
-		page, err := app.Content.ReadPage(urlPath, nil)
-		if err != nil {
-			panic(err)
-		}
-
+	if page != nil {
 		if app.isAdmin(userID) {
 			if err := app.Users.EnhanceACLWithUserInfo(page.Meta.ACL); err != nil {
 				panic(err)
@@ -96,13 +85,8 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 			page.Meta.ACL = nil // Hide ACL
 		}
 
-		response.Page = &page
-	} else if validUrl && app.Content.IsFolder(urlPath) {
-		folder, err := app.Content.ReadFolder(urlPath)
-		if err != nil {
-			panic(err)
-		}
-
+		response.Page = page
+	} else if folder != nil {
 		if app.isAdmin(userID) {
 			if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
 				panic(err)
@@ -111,7 +95,7 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 			folder.Meta.ACL = nil // Hide ACL
 		}
 
-		response.Folder = &folder
+		response.Folder = folder
 	} else {
 		// Not found
 		w.WriteHeader(http.StatusNotFound)
@@ -140,6 +124,9 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
+	page := ctxutil.Page(r.Context())
+	folder := ctxutil.Folder(r.Context())
+
 	if !isValidUrl(urlPath) {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -152,22 +139,9 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var page model.Page
-	var folder model.Folder
-	isFolder := false
-	var err error
-	if app.Content.IsPage(urlPath) {
-		page, err = app.Content.ReadPage(urlPath, nil)
-		if err != nil {
-			panic(err)
-		}
-	} else if app.Content.IsFolder(urlPath) {
-		folder, err = app.Content.ReadFolder(urlPath)
-		if err != nil {
-			panic(err)
-		}
-		isFolder = true
-	} else {
+	isFolder := folder != nil
+
+	if page != nil && folder != nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -180,7 +154,7 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 
 		var acl []model.AccessRule
 		if operation.Value != nil {
-			err = json.Unmarshal([]byte(*operation.Value), &acl)
+			err := json.Unmarshal([]byte(*operation.Value), &acl)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
@@ -205,6 +179,7 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var err error
 	if isFolder {
 		err = app.Content.SaveFolder(urlPath, folder.Meta)
 	} else {
@@ -221,6 +196,9 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
+	page := ctxutil.Page(r.Context())
+	folder := ctxutil.Folder(r.Context())
+
 	if !isValidUrl(urlPath) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -234,25 +212,16 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 
 	var err error
 	if body.Page != nil {
-		if app.Content.IsPage(urlPath) {
+		if page != nil {
 			// if page exists already, take over ACL
-			oldPage, err := app.Content.ReadPage(urlPath, nil)
-			if err != nil {
-				panic(err)
-			}
-			body.Page.Meta.ACL = oldPage.Meta.ACL
+			body.Page.Meta.ACL = page.Meta.ACL
 		}
 
 		err = app.Content.SavePage(urlPath, body.Page.Content, body.Page.Meta)
 	} else if body.Folder != nil {
-		if app.Content.IsFolder(urlPath) {
+		if folder != nil {
 			// if folder exists already, take over ACL
-			var oldFolder model.Folder
-			oldFolder, err = app.Content.ReadFolder(urlPath)
-			if err != nil {
-				panic(err)
-			}
-			body.Folder.Meta.ACL = oldFolder.Meta.ACL
+			body.Folder.Meta.ACL = folder.Meta.ACL
 
 			// and update
 			err = app.Content.SaveFolder(urlPath, body.Folder.Meta)
@@ -285,16 +254,19 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 func (app App) deleteContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 
+	page := ctxutil.Page(r.Context())
+	folder := ctxutil.Folder(r.Context())
+
 	if !isValidUrl(urlPath) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
 	var err error
-	if app.Content.IsPage(urlPath) {
+	if page != nil {
 		err = app.Content.DeletePage(urlPath)
 
-	} else if app.Content.IsFolder(urlPath) {
+	} else if folder != nil {
 		err = app.Content.DeleteEmptyFolder(urlPath)
 
 	} else {
@@ -316,12 +288,15 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 	urlPath := chi.URLParam(r, "*")
 	queryRev := r.URL.Query().Get("rev")
 
-	if !isValidUrl(urlPath) || !app.Content.IsPage(urlPath) {
+	page := ctxutil.Page(r.Context())
+	ancestorsMeta := ctxutil.AncestorsMeta(r.Context())
+
+	if !isValidUrl(urlPath) || page == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	breadcrumbs := app.getBreadcrumbs(urlPath)
+	breadcrumbs := app.getBreadcrumbs(urlPath, page, nil, ancestorsMeta)
 
 	var revision int64
 	if queryRev == "" {

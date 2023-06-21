@@ -88,7 +88,7 @@ func (app App) GetHandler() http.Handler {
 			r.With(app.RequireAdminPermission).Get("/config", app.getConfig)
 			r.With(app.RequireAdminPermission).Patch("/config", app.patchConfig)
 
-			r.Route("/pages", func(r chi.Router) {
+			r.With(app.RetrieveContentMiddleware).Route("/pages", func(r chi.Router) {
 				r.Get("/*",
 					app.RequireContentPermission(model.AccessOpRead,
 						http.HandlerFunc(app.getContent),
@@ -107,7 +107,7 @@ func (app App) GetHandler() http.Handler {
 					).ServeHTTP)
 			})
 
-			r.Route("/attic", func(r chi.Router) {
+			r.With(app.RetrieveContentMiddleware).Route("/attic", func(r chi.Router) {
 				r.Get("/*",
 					app.RequireContentPermission(model.AccessOpRead,
 						http.HandlerFunc(app.getAttic),

@@ -17,6 +17,11 @@ type ContentMeta struct {
 	ACL   *[]AccessRule `json:"acl" yaml:"acl"`
 }
 
+type ContentMetaWithURL struct {
+	ContentMeta
+	Url string
+}
+
 type FolderEntry struct {
 	Url      string `json:"url"`
 	Name     string `json:"name"`

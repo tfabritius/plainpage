@@ -39,16 +39,61 @@ func (app App) RequireAdminPermission(next http.Handler) http.Handler {
 	return app.RequireAuth(http.HandlerFunc(fn))
 }
 
+func (app App) RetrieveContentMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		urlPath := chi.URLParam(r, "*")
+
+		validUrl := isValidUrl(urlPath)
+
+		var page *model.Page
+		var folder *model.Folder
+
+		if validUrl && app.Content.IsPage(urlPath) {
+			p, err := app.Content.ReadPage(urlPath, nil)
+			if err != nil {
+				panic(err)
+			}
+			page = &p
+		} else if validUrl && app.Content.IsFolder(urlPath) {
+			f, err := app.Content.ReadFolder(urlPath)
+			if err != nil {
+				panic(err)
+			}
+
+			folder = &f
+		}
+
+		metas, err := app.Content.ReadAncestorsMeta(urlPath)
+		if err != nil {
+			panic(err)
+		}
+
+		// Store information in request context
+		ctx := r.Context()
+		ctx = ctxutil.WithContent(ctx, page, folder, metas)
+		r = r.WithContext(ctx)
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (app App) RequireContentPermission(op model.AccessOp, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := ctxutil.UserID(r.Context())
 
-		urlPath := chi.URLParam(r, "*")
+		page := ctxutil.Page(r.Context())
+		folder := ctxutil.Folder(r.Context())
+		metas := ctxutil.AncestorsMeta(r.Context())
 
-		acl, err := app.Content.GetEffectivePermissions(urlPath)
-		if err != nil {
-			panic(err)
+		var meta model.ContentMeta
+
+		if page != nil {
+			meta = page.Meta
+		} else if folder != nil {
+			meta = folder.Meta
 		}
+
+		acl := app.Content.GetEffectivePermissions(meta, metas)
 
 		if err := app.Users.CheckContentPermissions(acl, userID, op); err != nil {
 			if e, ok := err.(*service.AccessDeniedError); ok {

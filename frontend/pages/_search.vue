@@ -65,7 +65,7 @@ watch(q, () => {
           <NuxtLink v-slot="{ navigate, href }" custom :to="`/${result.url}`">
             <ElLink :underline="false" :href="href" @click="navigate">
               <span class="text-xl flex items-center">
-                <Icon name="ci:file-blank" class="mr-1" />
+                <Icon :name="result.isFolder ? 'ci:folder' : 'ci:file-blank'" class="mr-1" />
                 <span v-if="'meta.title' in result.fragments" v-html="result.fragments['meta.title'][0]" />
                 <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
               </span>

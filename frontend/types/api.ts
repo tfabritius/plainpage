@@ -104,6 +104,7 @@ export interface SearchHit {
   url: string
   meta: ContentMeta
   fragments: Record<string, string[]>
+  isFolder: boolean
 }
 
 // corresponding to service/user_service.go

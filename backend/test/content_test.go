@@ -1019,9 +1019,9 @@ func (s *ContentTestSuite) TestSearch() {
 		q        string
 		nResults int
 	}{
-		{"admin", s.adminToken, "page", 5},
-		{"user", s.userToken, "page", 4},
-		{"anonymous", nil, "page", 2},
+		{"admin", s.adminToken, "title", 5},
+		{"user", s.userToken, "title", 4},
+		{"anonymous", nil, "title", 2},
 	}
 	for _, tc := range tests {
 		t := s.T()
@@ -1043,7 +1043,7 @@ func (s *ContentTestSuite) TestSearch() {
 				r.Equal("Title", hit.Meta.Title)
 				r.Len(hit.Meta.Tags, 1)
 				r.Equal("tag", hit.Meta.Tags[0])
-				r.NotEmpty(hit.Fragments["url"])
+				r.NotEmpty(hit.Fragments["meta.title"])
 			}
 		})
 	}
@@ -1054,7 +1054,7 @@ func (s *ContentTestSuite) TestSearch() {
 		q        string
 		nResults int
 	}{
-		{"url", "page", 5},
+		{"url", "page", 0},
 		{"content", "content", 5},
 		{"meta.title", "title", 5},
 		{"meta.tags", "tag", 5},
@@ -1089,6 +1089,42 @@ func (s *ContentTestSuite) TestSearch() {
 				} else if tc.name == "meta.tags" {
 					r.Equal("<mark>tag</mark>", hit.Fragments[tc.name][0])
 				}
+			}
+		})
+	}
+}
+
+func (s *ContentTestSuite) TestSearchFolder() {
+	tests := []struct {
+		name     string
+		q        string
+		nResults int
+	}{
+		{"meta.title", "published", 1},
+	}
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("POST", "/search?q="+tc.q,
+				nil,
+				s.adminToken)
+			r.Equal(200, res.Code)
+
+			body, _ := jsonbody[[]model.SearchHit](res)
+			r.Len(body, tc.nResults)
+
+			for _, hit := range body {
+				r.Nil(hit.EffectiveACL)
+				r.Nil(hit.Meta.ACL)
+				r.NotEmpty(hit.Url)
+				r.Equal(tc.q, hit.Meta.Title)
+				r.Len(hit.Meta.Tags, 0)
+
+				r.NotEmpty(hit.Fragments["meta.title"])
+				r.Len(hit.Fragments["meta.title"], 1)
+				r.Equal("<mark>"+tc.q+"</mark>", hit.Fragments["meta.title"][0])
 			}
 		})
 	}

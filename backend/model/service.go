@@ -6,9 +6,17 @@ type Page struct {
 	Meta    ContentMeta `json:"meta"`
 }
 
+func (Page) BleveType() string {
+	return "page"
+}
+
 type Folder struct {
 	Content []FolderEntry `json:"content"`
 	Meta    ContentMeta   `json:"meta"`
+}
+
+func (Folder) BleveType() string {
+	return "folder"
 }
 
 type ContentMeta struct {
@@ -81,4 +89,5 @@ type SearchHit struct {
 	Meta         ContentMeta         `json:"meta"`
 	Fragments    map[string][]string `json:"fragments"`
 	EffectiveACL *[]AccessRule       `json:"-"`
+	IsFolder     bool                `json:"isFolder"`
 }

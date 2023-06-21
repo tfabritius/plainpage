@@ -49,11 +49,11 @@ func (s *ContentService) initializeStorage() error {
 	}
 
 	// Create _index.md with default ACL if it doesn't exist
-	if !s.IsFolder("/") {
+	if !s.IsFolder("") {
 		defaultACL := []model.AccessRule{
 			{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}},
 		}
-		if err := s.SaveFolder("/", model.ContentMeta{ACL: &defaultACL}); err != nil {
+		if err := s.SaveFolder("", model.ContentMeta{ACL: &defaultACL}); err != nil {
 			return fmt.Errorf("could not create default ACL: %w", err)
 		}
 	}
@@ -89,9 +89,16 @@ func (*ContentService) createIndexMapping() *mapping.IndexMappingImpl {
 
 	pageMapping := bleve.NewDocumentMapping()
 	pageMapping.AddSubDocumentMapping("meta", metaMapping)
+	pageMapping.AddSubDocumentMapping("url", bleve.NewDocumentDisabledMapping())
+
+	folderMapping := bleve.NewDocumentMapping()
+	folderMapping.AddSubDocumentMapping("meta", metaMapping)
+	folderMapping.AddSubDocumentMapping("content", bleve.NewDocumentDisabledMapping())
 
 	indexMapping := bleve.NewIndexMapping()
+	indexMapping.TypeField = "BleveType"
 	indexMapping.AddDocumentMapping("page", pageMapping)
+	indexMapping.AddDocumentMapping("folder", folderMapping)
 	return indexMapping
 }
 
@@ -101,12 +108,21 @@ func (s *ContentService) indexFolder(urlPath string, idx *bleve.Index) error {
 		return err
 	}
 
+	if urlPath != "" {
+		// Index the folder itself
+		if err := (*idx).Index(urlPath, folder); err != nil {
+			return err
+		}
+	}
+
 	for _, c := range folder.Content {
 		if c.IsFolder {
+			// Recursively index subfolder
 			if err := s.indexFolder(c.Url, idx); err != nil {
 				return err
 			}
 		} else {
+			// Index page
 			page, err := s.ReadPage(c.Url, nil)
 			if err != nil {
 				return err
@@ -136,21 +152,38 @@ func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
 
 	ret := []model.SearchHit{}
 	for _, r := range results.Hits {
-		page, err := s.ReadPage(r.ID, nil)
-		if err != nil {
-			return nil, err
+		var meta model.ContentMeta
+		isFolder := false
+
+		if s.IsPage(r.ID) {
+			page, err := s.ReadPage(r.ID, nil)
+			if err != nil {
+				return nil, err
+			}
+			meta = page.Meta
+		} else if s.IsFolder(r.ID) {
+			isFolder = true
+			folder, err := s.ReadFolder(r.ID)
+			if err != nil {
+				return nil, err
+			}
+			meta = folder.Meta
+		} else {
+			continue
 		}
+
 		metas, err := s.ReadAncestorsMeta(r.ID)
 		if err != nil {
 			return nil, err
 		}
-		acl := s.GetEffectivePermissions(page.Meta, metas)
+		acl := s.GetEffectivePermissions(meta, metas)
 
 		ret = append(ret, model.SearchHit{
 			Url:          r.ID,
-			Meta:         page.Meta,
+			Meta:         meta,
 			Fragments:    r.Fragments,
 			EffectiveACL: acl,
+			IsFolder:     isFolder,
 		})
 	}
 
@@ -278,6 +311,15 @@ func (s *ContentService) CreateFolder(urlPath string, meta model.ContentMeta) er
 		return err
 	}
 
+	// Update search index
+	folder := model.Folder{
+		Content: nil,
+		Meta:    meta,
+	}
+	if err := s.index.Index(urlPath, folder); err != nil {
+		log.Println("[INDEX] Could not add folder "+urlPath+":", err)
+	}
+
 	return nil
 }
 
@@ -360,6 +402,17 @@ func (s *ContentService) SaveFolder(urlPath string, meta model.ContentMeta) erro
 		return fmt.Errorf("could not write index file: %w", err)
 	}
 
+	// Update search index
+	if urlPath != "" {
+		folder := model.Folder{
+			Content: nil,
+			Meta:    meta,
+		}
+		if err := s.index.Index(urlPath, folder); err != nil {
+			log.Println("[INDEX] Could not update folder "+urlPath+":", err)
+		}
+	}
+
 	return nil
 }
 
@@ -377,6 +430,11 @@ func (s *ContentService) DeleteEmptyFolder(urlPath string) error {
 
 	if err := s.storage.DeleteEmptyDirectory(dirPath); err != nil {
 		return err
+	}
+
+	// Update search index
+	if err := s.index.Delete(urlPath); err != nil {
+		log.Println("[INDEX] Could not delete folder "+urlPath+":", err)
 	}
 
 	return nil

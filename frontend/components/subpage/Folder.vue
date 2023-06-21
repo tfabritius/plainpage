@@ -100,13 +100,13 @@ async function submitNewContentDialog() {
 
   if (newContentType.value === 'page') {
     await navigateTo({
-      path: `${props.urlPath}/${newContentFormData.value.name}`,
+      path: `/${props.urlPath}/${newContentFormData.value.name}`,
       query: { edit: 'true' },
       state: { title: newContentFormData.value.title },
     })
   } else {
     try {
-      await apiFetch(`/pages${props.urlPath}/${newContentFormData.value.name}`, {
+      await apiFetch(`/pages/${props.urlPath}/${newContentFormData.value.name}`, {
         method: 'PUT',
         body: { folder: { meta: { title: newContentFormData.value.title } } },
       })
@@ -116,7 +116,7 @@ async function submitNewContentDialog() {
         type: 'error',
       })
     }
-    await navigateTo(`${props.urlPath}/${newContentFormData.value.name}`)
+    await navigateTo(`/${props.urlPath}/${newContentFormData.value.name}`)
   }
 }
 
@@ -135,7 +135,7 @@ async function onEditTitle() {
 
   try {
     const body = { folder: { meta: { title, tags: null }, content: [] } } satisfies PutRequest
-    await apiFetch(`/pages${props.urlPath}`, { method: 'PUT', body })
+    await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body })
 
     props.onReload()
   } catch (err) {
@@ -170,7 +170,7 @@ async function onDeleteFolder() {
   deleteConfirmOpen.value = false
 
   try {
-    await apiFetch(`/pages${props.urlPath}`, { method: 'DELETE' })
+    await apiFetch(`/pages/${props.urlPath}`, { method: 'DELETE' })
 
     ElMessage({
       message: t('folder-deleted'),
@@ -252,7 +252,7 @@ onKeyStroke('Backspace', (e) => {
         {{ $t('folders') }}
       </h2>
       <div v-for="entry of folder.content.filter(e => e.isFolder)" :key="entry.name">
-        <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
+        <NuxtLink v-slot="{ navigate, href }" :to="`/${entry.url}`" custom>
           <ElLink :href="href" @click="navigate">
             <Icon name="ci:folder" class="mr-1" /> {{ entry.title || entry.name }}
           </ElLink>
@@ -266,7 +266,7 @@ onKeyStroke('Backspace', (e) => {
         {{ $t('pages') }}
       </h2>
       <div v-for="entry of folder.content.filter(e => !e.isFolder)" :key="entry.name">
-        <NuxtLink v-slot="{ navigate, href }" :to="entry.url" custom>
+        <NuxtLink v-slot="{ navigate, href }" :to="`/${entry.url}`" custom>
           <ElLink :href="href" @click="navigate">
             {{ entry.title || entry.name }}
           </ElLink>

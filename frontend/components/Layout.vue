@@ -36,7 +36,7 @@ const route = useRoute()
             <ElBreadcrumbItem
               v-for="crumb in breadcrumbs"
               :key="crumb.url"
-              :to="{ path: crumb.url }"
+              :to="{ path: `/${crumb.url}` }"
             >
               {{ crumb.title || crumb.name }}
             </ElBreadcrumbItem>

@@ -34,7 +34,7 @@ func (App) getBreadcrumbs(urlPath string, page *model.Page, folder *model.Folder
 		}
 
 		breadcrumb := model.Breadcrumb{
-			Url:   "/" + ancestorsMeta[i].Url,
+			Url:   ancestorsMeta[i].Url,
 			Title: ancestorsMeta[i].Title,
 			Name:  path.Base(ancestorsMeta[i].Url),
 		}
@@ -44,13 +44,13 @@ func (App) getBreadcrumbs(urlPath string, page *model.Page, folder *model.Folder
 
 	if page != nil {
 		breadcrumbs = append(breadcrumbs, model.Breadcrumb{
-			Url:   "/" + urlPath,
+			Url:   urlPath,
 			Title: page.Meta.Title,
 			Name:  path.Base(urlPath),
 		})
 	} else if folder != nil && urlPath != "" {
 		breadcrumbs = append(breadcrumbs, model.Breadcrumb{
-			Url:   "/" + urlPath,
+			Url:   urlPath,
 			Title: folder.Meta.Title,
 			Name:  path.Base(urlPath),
 		})

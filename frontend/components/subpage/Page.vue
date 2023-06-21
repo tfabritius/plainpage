@@ -52,7 +52,7 @@ function onEditPage() {
 
 async function onSavePage() {
   try {
-    await apiFetch(`/pages${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
+    await apiFetch(`/pages/${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
 
     ElMessage({

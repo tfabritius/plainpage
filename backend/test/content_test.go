@@ -290,7 +290,7 @@ func (s *ContentTestSuite) TestReadPage() {
 
 				// Breadcrumbs
 				r.Len(body.Breadcrumbs, strings.Count(tc.url, "/")+1)
-				r.Equal("/"+tc.url, body.Breadcrumbs[len(body.Breadcrumbs)-1].Url)
+				r.Equal(tc.url, body.Breadcrumbs[len(body.Breadcrumbs)-1].Url)
 				r.Equal("page", body.Breadcrumbs[len(body.Breadcrumbs)-1].Name)
 				r.Equal("Title", body.Breadcrumbs[len(body.Breadcrumbs)-1].Title)
 
@@ -425,7 +425,7 @@ func (s *ContentTestSuite) TestReadFolder() {
 				// Breadcrumbs
 				r.Len(body.Breadcrumbs, strings.Count(tc.url, "/"))
 				if len(body.Breadcrumbs) > 0 {
-					r.Equal(tc.url, body.Breadcrumbs[len(body.Breadcrumbs)-1].Url)
+					r.Equal(strings.TrimPrefix(tc.url, "/"), body.Breadcrumbs[len(body.Breadcrumbs)-1].Url)
 					r.Equal(strings.TrimPrefix(tc.url, "/"), body.Breadcrumbs[len(body.Breadcrumbs)-1].Name)
 					r.Equal(strings.TrimPrefix(tc.url, "/"), body.Breadcrumbs[len(body.Breadcrumbs)-1].Title)
 				}

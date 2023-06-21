@@ -2,13 +2,13 @@
 import { FetchError } from 'ofetch'
 import { storeToRefs } from 'pinia'
 
-import type { GetContentResponse, Page } from '~/types/'
+import type { GetContentResponse } from '~/types/'
 import { useAuthStore } from '~/store/auth'
 
 const { t } = useI18n()
 
 const route = useRoute()
-const urlPath = computed(() => route.path === '/' ? '' : route.path)
+const urlPath = computed(() => route.path.replace(/^\//, ''))
 
 const revQuery = computed(() => {
   const data = route.query.rev
@@ -30,12 +30,10 @@ const aclQuery = computed(() => {
 
 const auth = useAuthStore()
 const { loggedIn } = storeToRefs(auth)
-const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
-const editablePage = ref(deepClone(emptyPage))
 
-const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${loggedIn}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/pages/${urlPath.value}:${loggedIn}`, async () => {
   try {
-    const data = await apiFetch<GetContentResponse>(`/pages${urlPath.value}`)
+    const data = await apiFetch<GetContentResponse>(`/pages/${urlPath.value}`)
     return {
       notFound: false,
       accessDenied: false,
@@ -54,8 +52,6 @@ const { data, error, refresh } = await useAsyncData(`/pages${urlPath.value}:${lo
       }
     }
     if (err instanceof FetchError && err.statusCode === 404) {
-      editablePage.value.url = route.path
-
       const data = JSON.parse(err.response?._data) as GetContentResponse
       return { notFound: true, accessDenied: false, ...data }
     }

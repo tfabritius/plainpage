@@ -62,7 +62,7 @@ watch(q, () => {
 
       <div v-if="results.length > 0">
         <div v-for="(result, i) in results" :key="i" class="mb-4">
-          <NuxtLink v-slot="{ navigate, href }" custom :to="result.url">
+          <NuxtLink v-slot="{ navigate, href }" custom :to="`/${result.url}`">
             <ElLink :underline="false" :href="href" @click="navigate">
               <span class="text-xl flex items-center">
                 <Icon name="ci:file-blank" class="mr-1" />

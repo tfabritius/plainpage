@@ -192,13 +192,8 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 		return model.Page{}, fmt.Errorf("could not parse frontmatter: %w", err)
 	}
 
-	u, err := url.JoinPath("/", urlPath)
-	if err != nil {
-		return model.Page{}, fmt.Errorf("could not join url: %w", err)
-	}
-
 	page := model.Page{
-		Url:     u,
+		Url:     urlPath,
 		Content: content,
 		Meta:    fm,
 	}
@@ -234,7 +229,7 @@ func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMet
 
 	// Update search index
 	page := model.Page{
-		Url:     "/" + urlPath,
+		Url:     urlPath,
 		Content: content,
 		Meta:    meta,
 	}
@@ -330,8 +325,6 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 
 			e.Title = page.Meta.Title
 		}
-
-		e.Url = "/" + e.Url
 
 		folderEntries = append(folderEntries, e)
 	}

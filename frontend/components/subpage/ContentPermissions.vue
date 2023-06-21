@@ -25,7 +25,7 @@ async function onGoBack() {
 async function onSave() {
   const apiData = (customPermissions.value || props.urlPath === '') ? aclTableRef.value?.getAcl() : null
 
-  await apiFetch(`/pages${props.urlPath}`, {
+  await apiFetch(`/pages/${props.urlPath}`, {
     method: 'PATCH',
     body: [{
       op: 'replace',

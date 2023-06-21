@@ -12,9 +12,9 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
-const { data, error, refresh } = await useAsyncData(`/attic${props.urlPath}?rev=${props.revision}`, async () => {
+const { data, error, refresh } = await useAsyncData(`/attic/${props.urlPath}?rev=${props.revision}`, async () => {
   try {
-    const data = await apiFetch<GetContentResponse>(`/attic${props.urlPath}?rev=${props.revision}`)
+    const data = await apiFetch<GetContentResponse>(`/attic/${props.urlPath}?rev=${props.revision}`)
     return {
       notFound: false,
       page: data.page,

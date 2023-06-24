@@ -17,8 +17,8 @@ devDependencies:
     specifier: ^1.0.5
     version: 1.0.5(@element-plus/icons-vue@2.1.0)(element-plus@2.3.7)
   '@iconify/json':
-    specifier: ^2.2.80
-    version: 2.2.80
+    specifier: ^2.2.82
+    version: 2.2.82
   '@nuxtjs/i18n':
     specifier: 8.0.0-beta.12
     version: 8.0.0-beta.12
@@ -943,11 +943,11 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@iconify/json@2.2.80:
-    resolution: {integrity: sha512-YPBG1YKKrmmDcKmUZTwCzwtkOhDCfuUdYpJafrAuB0LBE7IMJkYxZ0Aro07NkMBwivxWXNAx9RBm//v8AUKDgA==}
+  /@iconify/json@2.2.82:
+    resolution: {integrity: sha512-MBnhpcVZl6Gq0L50+yO1x4t+IWS3jpJUjnelBNHvXgQZ1lhQOmL6q5fIyrkTIBas8XA+tbhWwYe2kdZabNDH8w==}
     dependencies:
       '@iconify/types': 2.0.0
-      pathe: 1.1.0
+      pathe: 1.1.1
     dev: true
 
   /@iconify/types@2.0.0:

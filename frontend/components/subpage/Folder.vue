@@ -262,7 +262,7 @@ onKeyStroke('Backspace', (e) => {
 
     <div>
       <h2
-        v-if="subfolders"
+        v-if="subfolders.length > 0"
         class="font-light text-xl"
       >
         {{ $t('folders') }}
@@ -276,7 +276,7 @@ onKeyStroke('Backspace', (e) => {
       </div>
 
       <h2
-        v-if="pages"
+        v-if="pages.length > 0"
         class="font-light text-xl"
       >
         {{ $t('pages') }}

@@ -17,6 +17,20 @@ const props = defineProps<{
   onReload: Function
 }>()
 
+const subfolders = computed(() =>
+  props.folder.content
+    .filter(e => e.isFolder)
+    // Sort by title or name (if title is empty)
+    .sort((a, b) => (a.title || a.name).localeCompare(b.title || b.name)),
+)
+
+const pages = computed(() =>
+  props.folder.content
+    .filter(e => !e.isFolder)
+    // Sort by title or name (if title is empty)
+    .sort((a, b) => (a.title || a.name).localeCompare(b.title || b.name)),
+)
+
 const { t } = useI18n()
 
 const app = useAppStore()
@@ -248,12 +262,12 @@ onKeyStroke('Backspace', (e) => {
 
     <div>
       <h2
-        v-if="folder.content.some(e => e.isFolder)"
+        v-if="subfolders"
         class="font-light text-xl"
       >
         {{ $t('folders') }}
       </h2>
-      <div v-for="entry of folder.content.filter(e => e.isFolder)" :key="entry.name">
+      <div v-for="entry of subfolders" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="`/${entry.url}`" custom>
           <ElLink :href="href" @click="navigate">
             <Icon name="ci:folder" class="mr-1" /> {{ entry.title || entry.name }}
@@ -262,12 +276,12 @@ onKeyStroke('Backspace', (e) => {
       </div>
 
       <h2
-        v-if="folder.content.some(e => !e.isFolder)"
+        v-if="pages"
         class="font-light text-xl"
       >
         {{ $t('pages') }}
       </h2>
-      <div v-for="entry of folder.content.filter(e => !e.isFolder)" :key="entry.name">
+      <div v-for="entry of pages" :key="entry.name">
         <NuxtLink v-slot="{ navigate, href }" :to="`/${entry.url}`" custom>
           <ElLink :href="href" @click="navigate">
             {{ entry.title || entry.name }}

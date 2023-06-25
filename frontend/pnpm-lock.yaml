@@ -20,9 +20,18 @@ devDependencies:
   '@element-plus/nuxt':
     specifier: ^1.0.5
     version: 1.0.5(@element-plus/icons-vue@2.1.0)(element-plus@2.3.7)
-  '@iconify/json':
-    specifier: ^2.2.82
-    version: 2.2.82
+  '@iconify-json/ci':
+    specifier: ^1.1.9
+    version: 1.1.9
+  '@iconify-json/flagpack':
+    specifier: ^1.1.6
+    version: 1.1.6
+  '@iconify-json/ic':
+    specifier: ^1.1.13
+    version: 1.1.13
+  '@iconify-json/lucide':
+    specifier: ^1.1.105
+    version: 1.1.105
   '@nuxtjs/i18n':
     specifier: 8.0.0-beta.12
     version: 8.0.0-beta.12
@@ -1142,11 +1151,28 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@iconify/json@2.2.82:
-    resolution: {integrity: sha512-MBnhpcVZl6Gq0L50+yO1x4t+IWS3jpJUjnelBNHvXgQZ1lhQOmL6q5fIyrkTIBas8XA+tbhWwYe2kdZabNDH8w==}
+  /@iconify-json/ci@1.1.9:
+    resolution: {integrity: sha512-ZMz5YTH7vz3PEM6j1v2GCxKsfjCtNYenyOS/c4xk2tBHPCUtUuSQvgnqO4INTOMb7dERHV5VLziXFChhcfn02A==}
     dependencies:
       '@iconify/types': 2.0.0
-      pathe: 1.1.1
+    dev: true
+
+  /@iconify-json/flagpack@1.1.6:
+    resolution: {integrity: sha512-9HJHthI84MQmBGinBRm2r47PRgxG4gWSgAAG6Jzi/kyL4cCLgqmtA2odnCXoHvWveWshzrC3IyAIL10EXuhitw==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/ic@1.1.13:
+    resolution: {integrity: sha512-5i5zal/VRwTrs99iMTnG1Zu97bgX9Mkiu9TzR1U1rHBylUnBW+HkOweoQVEPgQITGG024/lNbZxU+3Aa2xuDww==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/lucide@1.1.105:
+    resolution: {integrity: sha512-90Rx0TjvgcCeRpRFD1aGTAuIkSFeWQ1ot4ZXATeVBuLD9QyySF/5yhTbXJjWLTJDJDfAIaW9qDqB5eWcyobIug==}
+    dependencies:
+      '@iconify/types': 2.0.0
     dev: true
 
   /@iconify/types@2.0.0:

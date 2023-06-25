@@ -17,19 +17,8 @@ const props = defineProps<{
   onReload: Function
 }>()
 
-const subfolders = computed(() =>
-  props.folder.content
-    .filter(e => e.isFolder)
-    // Sort by title or name (if title is empty)
-    .sort((a, b) => (a.title || a.name).localeCompare(b.title || b.name)),
-)
-
-const pages = computed(() =>
-  props.folder.content
-    .filter(e => !e.isFolder)
-    // Sort by title or name (if title is empty)
-    .sort((a, b) => (a.title || a.name).localeCompare(b.title || b.name)),
-)
+const subfolders = computed(() => props.folder.content.filter(e => e.isFolder))
+const pages = computed(() => props.folder.content.filter(e => !e.isFolder))
 
 const { t } = useI18n()
 
@@ -260,34 +249,42 @@ onKeyStroke('Backspace', (e) => {
       </div>
     </template>
 
-    <div>
-      <h2
-        v-if="subfolders.length > 0"
-        class="font-light text-xl"
-      >
+    <div v-if="subfolders.length > 0">
+      <h2 class="font-light text-xl">
         {{ $t('folders') }}
       </h2>
-      <div v-for="entry of subfolders" :key="entry.name">
-        <NuxtLink v-slot="{ navigate, href }" :to="`/${entry.url}`" custom>
-          <ElLink :href="href" @click="navigate">
-            <Icon name="ci:folder" class="mr-1" /> {{ entry.title || entry.name }}
-          </ElLink>
-        </NuxtLink>
-      </div>
-
-      <h2
-        v-if="pages.length > 0"
-        class="font-light text-xl"
+      <MultiColumnList
+        :items="subfolders"
+        :sort-and-group-by="item => item.title || item.name"
+        :group-if-more-than="10"
       >
+        <template #item="{ item }">
+          <NuxtLink v-slot="{ navigate, href }" :to="`/${item.url}`" custom>
+            <ElLink :href="href" @click="navigate">
+              <Icon name="ci:folder" class="mr-1" /> {{ item.title || item.name }}
+            </ElLink>
+          </NuxtLink>
+        </template>
+      </MultiColumnList>
+    </div>
+
+    <div v-if="pages.length > 0">
+      <h2 class="font-light text-xl">
         {{ $t('pages') }}
       </h2>
-      <div v-for="entry of pages" :key="entry.name">
-        <NuxtLink v-slot="{ navigate, href }" :to="`/${entry.url}`" custom>
-          <ElLink :href="href" @click="navigate">
-            {{ entry.title || entry.name }}
-          </ElLink>
-        </NuxtLink>
-      </div>
+      <MultiColumnList
+        :items="pages"
+        :sort-and-group-by="item => item.title || item.name"
+        :group-if-more-than="10"
+      >
+        <template #item="{ item }">
+          <NuxtLink v-slot="{ navigate, href }" :to="`/${item.url}`" custom>
+            <ElLink :href="href" @click="navigate">
+              {{ item.title || item.name }}
+            </ElLink>
+          </NuxtLink>
+        </template>
+      </MultiColumnList>
     </div>
 
     <ClientOnly>

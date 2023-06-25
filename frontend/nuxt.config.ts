@@ -6,7 +6,6 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@unocss/nuxt',
     '@vueuse/nuxt',
-    'nuxt-icon',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/i18n',
@@ -20,7 +19,7 @@ export default defineNuxtConfig({
   unocss: {
     // presets
     uno: true, // enable `@unocss/preset-uno`
-    icons: true, // enable `@unocss/preset-icons`
+    icons: { prefix: '' }, // enable `@unocss/preset-icons`
     attributify: true, // enable `@unocss/preset-attributify`,
 
     // core options
@@ -48,7 +47,7 @@ export default defineNuxtConfig({
   },
 
   typescript: {
-    // typeCheck: true,
+    typeCheck: true,
     strict: true,
   },
 

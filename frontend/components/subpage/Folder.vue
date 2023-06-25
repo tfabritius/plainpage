@@ -98,15 +98,17 @@ async function submitNewContentDialog() {
 
   newContentDialogVisible.value = false
 
+  const newUrl = `${props.urlPath !== '' ? `/${props.urlPath}` : ''}/${newContentFormData.value.name}`
+
   if (newContentType.value === 'page') {
     await navigateTo({
-      path: `/${props.urlPath}/${newContentFormData.value.name}`,
+      path: newUrl,
       query: { edit: 'true' },
       state: { title: newContentFormData.value.title },
     })
   } else {
     try {
-      await apiFetch(`/pages/${props.urlPath}/${newContentFormData.value.name}`, {
+      await apiFetch(`/pages${newUrl}`, {
         method: 'PUT',
         body: { folder: { meta: { title: newContentFormData.value.title } } },
       })
@@ -116,7 +118,7 @@ async function submitNewContentDialog() {
         type: 'error',
       })
     }
-    await navigateTo(`/${props.urlPath}/${newContentFormData.value.name}`)
+    await navigateTo(newUrl)
   }
 }
 

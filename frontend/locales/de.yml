@@ -79,6 +79,25 @@ sign-in: Anmelden
 sign-out: Abmelden
 there-was-an-error: Es gab einen Fehler.
 this-page-doesnt-exist: Diese Seite existiert nicht!
+timeAgo:
+  "just-now": "gerade eben"
+  "ago": "vor {0}"
+  "in": "in {0}"
+  "last-month": "letzten Monat"
+  "next-month": "nächsten Monat"
+  "month": "Monat | Monaten"
+  "last-year": "letztes Jahr"
+  "next-year": "nächstes Jahr"
+  "year": "Jahr | Jahren"
+  "yesterday": "gestern"
+  "tomorrow": "morgen"
+  "day": "Tag | Tagen"
+  "last-week": "letzte Woche"
+  "next-week": "nächste Woche"
+  "week": "Woche | Wochen"
+  "hour": "Stunde | Stunden"
+  "minute": "Minute | Minuten"
+  "second": "Sekunde | Sekunden"
 title: Titel
 try-again: Nochmal versuchen
 untitled: Ohne Titel

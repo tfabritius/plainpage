@@ -80,6 +80,25 @@ sign-out: Cerrar sesión
 there-was-an-error: Hubo un error.
 this-page-doesnt-exist: ¡Esta página no existe!
 title: Título
+timeAgo:
+  "just-now": "justo ahora"
+  "ago": "hace {0}"
+  "in": "en {0}"
+  "last-month": "el mes pasado"
+  "next-month": "el próximo mes"
+  "month": "mes | meses"
+  "last-year": "el año pasado"
+  "next-year": "el próximo año"
+  "year": "año | años"
+  "yesterday": "ayer"
+  "tomorrow": "mañana"
+  "day": "día | días"
+  "last-week": "la semana pasada"
+  "next-week": "la próxima semana"
+  "week": "semana | semanas"
+  "hour": "hora | horas"
+  "minute": "minuto | minutos"
+  "second": "segundo | segundos"
 try-again: Intentar otra vez
 untitled: Intitulado
 updated: Actualizado

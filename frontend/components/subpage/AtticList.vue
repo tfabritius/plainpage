@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { format } from 'date-fns'
+import { UseTimeAgo } from '@vueuse/components'
+import { timeAgoMessages } from '~/composables/timeAgoMessages'
 import type { GetAtticListResponse } from '~/types'
 import { Icon } from '#components'
 
@@ -42,7 +44,10 @@ const { data } = await useAsyncData(`/attic/${props.urlPath}`, async () => {
     <div v-for="(el, idx) in data?.entries" :key="el.rev">
       <NuxtLink v-slot="{ navigate, href }" :to="`?rev=${el.rev}`" custom>
         <ElLink :href="href" @click="navigate">
-          {{ format(el.date, 'yyyy-MM-dd HH:mm') }} ({{ el.rev }})
+          {{ format(el.date, 'yyyy-MM-dd HH:mm:ss') }}
+          <UseTimeAgo v-slot="{ timeAgo }" :time="el.date" :messages="timeAgoMessages()">
+            ({{ timeAgo }})
+          </UseTimeAgo>
           <span v-if="idx === 0"> <Icon class="ml-2" name="ci:show" /> ({{ $t('current-version') }})</span>
         </ElLink>
       </NuxtLink>

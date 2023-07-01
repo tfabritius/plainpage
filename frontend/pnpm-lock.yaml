@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^0.39.6
     version: 0.39.6(eslint@8.43.0)(typescript@5.1.6)
   '@codemirror/lang-markdown':
-    specifier: ^6.1.1
-    version: 6.1.1
+    specifier: ^6.2.0
+    version: 6.2.0
   '@codemirror/state':
     specifier: ^6.2.1
     version: 6.2.1
@@ -598,9 +598,10 @@ packages:
       '@lezer/javascript': 1.4.3
     dev: true
 
-  /@codemirror/lang-markdown@6.1.1:
-    resolution: {integrity: sha512-n87Ms6Y5UYb1UkFu8sRzTLfq/yyF1y2AYiWvaVdbBQi5WDj1tFk5N+AKA+WC0Jcjc1VxvrCCM0iizjdYYi9sFQ==}
+  /@codemirror/lang-markdown@6.2.0:
+    resolution: {integrity: sha512-deKegEQVzfBAcLPqsJEa+IxotqPVwWZi90UOEvQbfa01NTAw8jNinrykuYPTULGUj+gha0ZG2HBsn4s5d64Qrg==}
     dependencies:
+      '@codemirror/autocomplete': 6.7.1(@codemirror/language@6.7.0)(@codemirror/state@6.2.1)(@codemirror/view@6.12.0)(@lezer/common@1.0.2)
       '@codemirror/lang-html': 6.4.3
       '@codemirror/language': 6.7.0
       '@codemirror/state': 6.2.1

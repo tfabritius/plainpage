@@ -30,8 +30,8 @@ devDependencies:
     specifier: ^1.1.13
     version: 1.1.13
   '@iconify-json/lucide':
-    specifier: ^1.1.105
-    version: 1.1.105
+    specifier: ^1.1.107
+    version: 1.1.107
   '@nuxtjs/i18n':
     specifier: 8.0.0-beta.12
     version: 8.0.0-beta.12
@@ -1172,8 +1172,8 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
-  /@iconify-json/lucide@1.1.105:
-    resolution: {integrity: sha512-90Rx0TjvgcCeRpRFD1aGTAuIkSFeWQ1ot4ZXATeVBuLD9QyySF/5yhTbXJjWLTJDJDfAIaW9qDqB5eWcyobIug==}
+  /@iconify-json/lucide@1.1.107:
+    resolution: {integrity: sha512-dngxs/0vav6SFvBC7W0HYk2js3+Onf+C2EgyziKGQjMPeyJy8PiVBb6bCxX7dIuzn581cUeKStWjovtZhCKEcg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

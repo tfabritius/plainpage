@@ -30,8 +30,8 @@ devDependencies:
     specifier: ^1.1.13
     version: 1.1.13
   '@iconify-json/lucide':
-    specifier: ^1.1.107
-    version: 1.1.107
+    specifier: ^1.1.109
+    version: 1.1.109
   '@nuxtjs/i18n':
     specifier: 8.0.0-beta.12
     version: 8.0.0-beta.12
@@ -1174,8 +1174,8 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
-  /@iconify-json/lucide@1.1.107:
-    resolution: {integrity: sha512-dngxs/0vav6SFvBC7W0HYk2js3+Onf+C2EgyziKGQjMPeyJy8PiVBb6bCxX7dIuzn581cUeKStWjovtZhCKEcg==}
+  /@iconify-json/lucide@1.1.109:
+    resolution: {integrity: sha512-1+zYieiKUAjN1x66kvcRmmtgBJaDbD7i4To8mhB6+3bEm/i61un76nspJ45LOSGovzBMvYZFIJpqJrGMipWPzw==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true
@@ -1251,8 +1251,8 @@ packages:
     engines: {node: '>= 14'}
     dev: true
 
-  /@intlify/shared@9.3.0-beta.20:
-    resolution: {integrity: sha512-RucSPqh8O9FFxlYUysQTerSw0b9HIRpyoN1Zjogpm0qLiHK+lBNSa5sh1nCJ4wSsNcjphzgpLQCyR60GZlRV8g==}
+  /@intlify/shared@9.3.0-beta.24:
+    resolution: {integrity: sha512-AKxJ8s7eKIQWkNaf4wyyoLRwf4puCuQgjSChlDJm5JBEt6T8HGgnYTJLRXu6LD/JACn3Qwu6hM/XRX1c9yvjmQ==}
     engines: {node: '>= 16'}
     dev: true
 
@@ -8074,7 +8074,7 @@ packages:
       vue-router:
         optional: true
     dependencies:
-      '@intlify/shared': 9.3.0-beta.20
+      '@intlify/shared': 9.3.0-beta.24
       '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.17)
       '@intlify/vue-router-bridge': 0.8.0
       ufo: 1.1.2

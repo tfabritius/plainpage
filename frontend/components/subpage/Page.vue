@@ -10,7 +10,7 @@ const props = defineProps<{
   breadcrumbs: Breadcrumb[]
   allowWrite: boolean
   allowDelete: boolean
-  onReload: Function
+  onReload: () => void
 }>()
 
 const { t } = useI18n()

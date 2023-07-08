@@ -14,7 +14,7 @@ const props = defineProps<{
   breadcrumbs: Breadcrumb[]
   allowWrite: boolean
   allowDelete: boolean
-  onReload: Function
+  onReload: () => void
 }>()
 
 const subfolders = computed(() => props.folder.content.filter(e => e.isFolder))

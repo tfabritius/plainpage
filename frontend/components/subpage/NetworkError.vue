@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const _props = defineProps<{
   msg?: string
-  onReload: Function
+  onReload: () => void
 }>()
 
 const { t } = useI18n()

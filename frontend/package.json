@@ -39,7 +39,7 @@
     "date-fns": "^2.30.0",
     "dompurify": "^3.0.4",
     "element-plus": "^2.3.8",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
     "marked": "^5.1.1",
     "nuxt": "^3.6.3",
     "pinia": "^2.1.4",

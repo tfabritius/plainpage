@@ -45,8 +45,8 @@ devDependencies:
     specifier: ^3.0.2
     version: 3.0.2
   '@types/marked':
-    specifier: ^5.0.0
-    version: 5.0.0
+    specifier: ^5.0.1
+    version: 5.0.1
   '@types/node':
     specifier: ^20.4.1
     version: 20.4.1
@@ -1969,8 +1969,8 @@ packages:
     resolution: {integrity: sha512-r22s9tAS7imvBt2lyHC9B8AGwWnXaYb1tY09oyLkXDs4vArpYJzw09nj8MLx5VfciBPGIb+ZwG0ssYnEPJxn/g==}
     dev: true
 
-  /@types/marked@5.0.0:
-    resolution: {integrity: sha512-YcZe50jhltsCq7rc9MNZC/4QB/OnA2Pd6hrOSTOFajtabN+38slqgDDCeE/0F83SjkKBQcsZUj7VLWR0H5cKRA==}
+  /@types/marked@5.0.1:
+    resolution: {integrity: sha512-Y3pAUzHKh605fN6fvASsz5FDSWbZcs/65Q6xYRmnIP9ZIYz27T4IOmXfH9gWJV1dpi7f1e7z7nBGUTx/a0ptpA==}
     dev: true
 
   /@types/mdast@3.0.11:

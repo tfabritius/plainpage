@@ -54,8 +54,8 @@ devDependencies:
     specifier: ^0.53.4
     version: 0.53.4(postcss@8.4.24)
   '@vueuse/components':
-    specifier: ^10.2.1
-    version: 10.2.1
+    specifier: ^10.3.0
+    version: 10.3.0
   '@vueuse/core':
     specifier: ^10.3.0
     version: 10.3.0
@@ -2775,11 +2775,11 @@ packages:
       - typescript
     dev: true
 
-  /@vueuse/components@10.2.1:
-    resolution: {integrity: sha512-S21ZAfNSRouD/UokdGjBIrzvXH8WS7sz4t47ZWP+QRVWfsK9aIc5PmKMgkQrR5e8K3aNLiczqX8TuBa+l+CmDA==}
+  /@vueuse/components@10.3.0:
+    resolution: {integrity: sha512-EeZz3kjmJI7bH7JSxxMlLyk21LGl6GQjXfpl2n/GiI9QSJi+BVzIra5kEty5eM8McwAanx3e/HnK4drYTgFOWw==}
     dependencies:
-      '@vueuse/core': 10.2.1
-      '@vueuse/shared': 10.2.1
+      '@vueuse/core': 10.3.0
+      '@vueuse/shared': 10.3.0
       vue-demi: 0.14.5
     transitivePeerDependencies:
       - '@vue/composition-api'

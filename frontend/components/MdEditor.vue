@@ -44,7 +44,7 @@ function splitMdToSegments(markdown: string): Segment[] {
   let idx = 0
 
   for (const token of tokens) {
-    const tokenLines = token.raw.split('\n').length - 1
+    const tokenLines = token.raw ? token.raw.split('\n').length - 1 : 0
 
     if (token.type !== 'space') {
       // Start a new segment

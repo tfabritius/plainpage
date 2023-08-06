@@ -1,4 +1,4 @@
-import type { marked } from 'marked'
+import type { Token } from 'marked'
 
 export * from './api'
 
@@ -7,7 +7,7 @@ export interface Segment {
   lineStart: number
   lineEnd: number
 
-  tokens: marked.Token[]
+  tokens: Token[]
 }
 
 export type MdEditorGenerator = (text: string) => {

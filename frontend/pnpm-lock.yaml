@@ -27,8 +27,8 @@ devDependencies:
     specifier: ^1.1.6
     version: 1.1.6
   '@iconify-json/ic':
-    specifier: ^1.1.13
-    version: 1.1.13
+    specifier: ^1.1.14
+    version: 1.1.14
   '@iconify-json/lucide':
     specifier: ^1.1.115
     version: 1.1.115
@@ -1172,8 +1172,8 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
-  /@iconify-json/ic@1.1.13:
-    resolution: {integrity: sha512-5i5zal/VRwTrs99iMTnG1Zu97bgX9Mkiu9TzR1U1rHBylUnBW+HkOweoQVEPgQITGG024/lNbZxU+3Aa2xuDww==}
+  /@iconify-json/ic@1.1.14:
+    resolution: {integrity: sha512-vbATa9uwb9pIsRWQ+iXObQCgLTePk/0vo4shBr3Td0GnTjsAU/7VUGTkrZFVf5vpgiG6OsXkcKMPzBPvt966sg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

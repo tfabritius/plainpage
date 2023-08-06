@@ -24,8 +24,8 @@ devDependencies:
     specifier: ^1.1.10
     version: 1.1.10
   '@iconify-json/flagpack':
-    specifier: ^1.1.6
-    version: 1.1.6
+    specifier: ^1.1.7
+    version: 1.1.7
   '@iconify-json/ic':
     specifier: ^1.1.14
     version: 1.1.14
@@ -1166,8 +1166,8 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
-  /@iconify-json/flagpack@1.1.6:
-    resolution: {integrity: sha512-9HJHthI84MQmBGinBRm2r47PRgxG4gWSgAAG6Jzi/kyL4cCLgqmtA2odnCXoHvWveWshzrC3IyAIL10EXuhitw==}
+  /@iconify-json/flagpack@1.1.7:
+    resolution: {integrity: sha512-PoSx+BMPx/zaYCHb0ugSA+Wrvpor+sPENGEzSN49NjAtpWPNJ892wbGe8roVN9V6T+zC0JPaNGVvQFpntADjzA==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

@@ -20,7 +20,7 @@
     "@codemirror/state": "^6.2.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@element-plus/nuxt": "^1.0.5",
-    "@iconify-json/ci": "^1.1.9",
+    "@iconify-json/ci": "^1.1.10",
     "@iconify-json/flagpack": "^1.1.6",
     "@iconify-json/ic": "^1.1.13",
     "@iconify-json/lucide": "^1.1.115",

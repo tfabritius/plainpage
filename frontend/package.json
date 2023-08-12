@@ -21,7 +21,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@element-plus/nuxt": "^1.0.5",
     "@iconify-json/ci": "^1.1.10",
-    "@iconify-json/flagpack": "^1.1.7",
+    "@iconify-json/flagpack": "^1.1.8",
     "@iconify-json/ic": "^1.1.14",
     "@iconify-json/lucide": "^1.1.117",
     "@nuxtjs/i18n": "8.0.0-rc.2",

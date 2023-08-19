@@ -15,9 +15,6 @@ const html = computed(
     marked.parse(props.markdown, {
       gfm: true,
       renderer,
-      // Suppress warnings about deprecated options:
-      mangle: false,
-      headerIds: false,
     }),
   ),
 )

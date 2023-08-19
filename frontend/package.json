@@ -30,7 +30,7 @@
     "@types/dompurify": "^3.0.2",
     "@types/marked": "^5.0.1",
     "@types/node": "^20.5.1",
-    "@unocss/nuxt": "^0.54.1",
+    "@unocss/nuxt": "^0.55.2",
     "@vueuse/components": "^10.3.0",
     "@vueuse/core": "^10.3.0",
     "@vueuse/nuxt": "^10.3.0",

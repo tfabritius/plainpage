@@ -24,7 +24,7 @@
     "@iconify-json/flagpack": "^1.1.9",
     "@iconify-json/ic": "^1.1.14",
     "@iconify-json/lucide": "^1.1.119",
-    "@nuxtjs/i18n": "8.0.0-rc.2",
+    "@nuxtjs/i18n": "8.0.0-rc.3",
     "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
     "@pinia/nuxt": "^0.4.11",
     "@types/dompurify": "^3.0.2",

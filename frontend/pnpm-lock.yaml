@@ -33,8 +33,8 @@ devDependencies:
     specifier: ^1.1.119
     version: 1.1.119
   '@nuxtjs/i18n':
-    specifier: 8.0.0-rc.2
-    version: 8.0.0-rc.2
+    specifier: 8.0.0-rc.3
+    version: 8.0.0-rc.3
   '@pinia-plugin-persistedstate/nuxt':
     specifier: ^1.1.1
     version: 1.1.1(@pinia/nuxt@0.4.11)(pinia@2.1.6)
@@ -1197,7 +1197,7 @@ packages:
       - supports-color
     dev: true
 
-  /@intlify/bundle-utils@7.0.2(vue-i18n@9.3.0-beta.24):
+  /@intlify/bundle-utils@7.0.2(vue-i18n@9.3.0-beta.26):
     resolution: {integrity: sha512-8wbx9xhbawBFTE5LPTECiK26RRqrNS31jyWSur72ZXZZ4it5jiZTcG6eUJlNirr4+jXYio2DGY299JsGVT4cpw==}
     engines: {node: '>= 14.16'}
     peerDependencies:
@@ -1218,25 +1218,25 @@ packages:
       magic-string: 0.30.2
       mlly: 1.4.0
       source-map-js: 1.0.2
-      vue-i18n: 9.3.0-beta.24
+      vue-i18n: 9.3.0-beta.26
       yaml-eslint-parser: 0.3.2
     dev: true
 
-  /@intlify/core-base@9.3.0-beta.24:
-    resolution: {integrity: sha512-2R03Swr6pmu3jBCYxCCpHAnuqLpyQZNfQR/Csf9OJBRAFUMvbK6/hqZszQJfEMG8OIyWWSinA4JscvpkDHvEWw==}
+  /@intlify/core-base@9.3.0-beta.26:
+    resolution: {integrity: sha512-omhEuB6+uE3D36wAtBazTkjQxfMy+sHAdvPe51aPINVcIiL9RZiSMgecipbvkjqnL/5ogTcCc/UXKWlM3jb90g==}
     engines: {node: '>= 16'}
     dependencies:
-      '@intlify/devtools-if': 9.3.0-beta.24
-      '@intlify/message-compiler': 9.3.0-beta.24
-      '@intlify/shared': 9.3.0-beta.24
-      '@intlify/vue-devtools': 9.3.0-beta.24
+      '@intlify/devtools-if': 9.3.0-beta.26
+      '@intlify/message-compiler': 9.3.0-beta.26
+      '@intlify/shared': 9.3.0-beta.26
+      '@intlify/vue-devtools': 9.3.0-beta.26
     dev: true
 
-  /@intlify/devtools-if@9.3.0-beta.24:
-    resolution: {integrity: sha512-ZpVMduLgOD5DLByBWUSUph3c98kSiiWupRFTsBEDHTZlH80ypyhjH4c3JzVv4ppEH1TRqY/cP3svfee1FFi79w==}
+  /@intlify/devtools-if@9.3.0-beta.26:
+    resolution: {integrity: sha512-N13XwjkT/payWlr8DqBVylsPlwjm4WyaI+eaG+eVdBKPw0yI/9c4zJ3U+/ASRBRuzArVJxALE+LT/cI1NxWGvw==}
     engines: {node: '>= 16'}
     dependencies:
-      '@intlify/shared': 9.3.0-beta.24
+      '@intlify/shared': 9.3.0-beta.26
     dev: true
 
   /@intlify/message-compiler@9.3.0-beta.24:
@@ -1244,6 +1244,14 @@ packages:
     engines: {node: '>= 16'}
     dependencies:
       '@intlify/shared': 9.3.0-beta.24
+      source-map-js: 1.0.2
+    dev: true
+
+  /@intlify/message-compiler@9.3.0-beta.26:
+    resolution: {integrity: sha512-qsfU6Lca7mI80ts1vgy+pfNvGm2gHy0nERpT/K1GYgnECmsKwud0e8SG1PPxKPEHKa5Mdngzs4pS7X1wH0SCGA==}
+    engines: {node: '>= 16'}
+    dependencies:
+      '@intlify/shared': 9.3.0-beta.26
       source-map-js: 1.0.2
     dev: true
 
@@ -1257,7 +1265,7 @@ packages:
     engines: {node: '>= 16'}
     dev: true
 
-  /@intlify/unplugin-vue-i18n@0.12.2(vue-i18n@9.3.0-beta.24):
+  /@intlify/unplugin-vue-i18n@0.12.2(vue-i18n@9.3.0-beta.26):
     resolution: {integrity: sha512-IIgzLRSPUKZM1FBdUAZ9NwVPiLUr4ea5g/HLWe2lB7gNtPDz4FOfUNUllIT504hT+3pDoJmjaYJ6pyqT7F4Wuw==}
     engines: {node: '>= 14.16'}
     peerDependencies:
@@ -1272,9 +1280,9 @@ packages:
       vue-i18n-bridge:
         optional: true
     dependencies:
-      '@intlify/bundle-utils': 7.0.2(vue-i18n@9.3.0-beta.24)
+      '@intlify/bundle-utils': 7.0.2(vue-i18n@9.3.0-beta.26)
       '@intlify/shared': 9.3.0-beta.24
-      '@rollup/pluginutils': 5.0.3
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@vue/compiler-sfc': 3.3.4
       debug: 4.3.4
       fast-glob: 3.3.1
@@ -1284,21 +1292,21 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
       unplugin: 1.4.0
-      vue-i18n: 9.3.0-beta.24
+      vue-i18n: 9.3.0-beta.26
     transitivePeerDependencies:
       - rollup
       - supports-color
     dev: true
 
-  /@intlify/vue-devtools@9.3.0-beta.24:
-    resolution: {integrity: sha512-ACK+FnGCYEP+d4NVTp/G+ldnZk49kwl7iNKsxBVr31NzzdUd/2m4ANFsuvDSvIYzzIGrDggJFNC+ON4Rl7mm1A==}
+  /@intlify/vue-devtools@9.3.0-beta.26:
+    resolution: {integrity: sha512-IwJM8jUCM+savGDvgcOQaVHNMPDbvRf9dVjB+skCemYA7DBqtJ0YypTlRDtt6PO9rDfkWU2Z0ueaY/o6OaGtRg==}
     engines: {node: '>= 16'}
     dependencies:
-      '@intlify/core-base': 9.3.0-beta.24
-      '@intlify/shared': 9.3.0-beta.24
+      '@intlify/core-base': 9.3.0-beta.26
+      '@intlify/shared': 9.3.0-beta.26
     dev: true
 
-  /@intlify/vue-i18n-bridge@0.8.0(vue-i18n@9.3.0-beta.24):
+  /@intlify/vue-i18n-bridge@0.8.0(vue-i18n@9.3.0-beta.26):
     resolution: {integrity: sha512-wQ18fSccm9QaWpUW2vq2QHvojgKIog7s+UMj9LeY3pUV3yD9bU4YZI+1PTNoX3tOA+BE71gQyqVGox/TVQKP6Q==}
     engines: {node: '>= 12'}
     hasBin: true
@@ -1315,7 +1323,7 @@ packages:
       vue-i18n-bridge:
         optional: true
     dependencies:
-      vue-i18n: 9.3.0-beta.24
+      vue-i18n: 9.3.0-beta.26
     dev: true
 
   /@intlify/vue-router-bridge@0.8.0:
@@ -1565,7 +1573,7 @@ packages:
       pkg-types: 1.0.3
       postcss-import-resolver: 2.0.0
       std-env: 3.3.3
-      ufo: 1.1.2
+      ufo: 1.2.0
       unimport: 3.0.14(rollup@3.26.2)
       untyped: 1.3.2
     transitivePeerDependencies:
@@ -1643,7 +1651,7 @@ packages:
       rollup-plugin-visualizer: 5.9.2(rollup@3.26.2)
       std-env: 3.3.3
       strip-literal: 1.0.1
-      ufo: 1.1.2
+      ufo: 1.2.0
       unplugin: 1.4.0
       vite: 4.3.9(@types/node@20.5.1)(sass@1.66.1)
       vite-node: 0.33.0(@types/node@20.5.1)(sass@1.66.1)
@@ -1669,12 +1677,12 @@ packages:
       - vue-tsc
     dev: true
 
-  /@nuxtjs/i18n@8.0.0-rc.2:
-    resolution: {integrity: sha512-UTPPljKGbIuS9+S6quvEzCSmEGqrS4V0ZxmBIIqNnYi96Qhj3i4tsiaHntbJEn9aTUcHBsF9ZrcfkPLTQcy+DA==}
+  /@nuxtjs/i18n@8.0.0-rc.3:
+    resolution: {integrity: sha512-TrJF7OxCK1CcEnKQHcP3VjVnb0K22OdMxdbWOk/kUzD9DX6+hrcrfrQD6W7xDA5pnEhBnsw1pLT2I+DYVpK/gw==}
     engines: {node: ^14.16.0 || >=16.11.0}
     dependencies:
-      '@intlify/shared': 9.3.0-beta.24
-      '@intlify/unplugin-vue-i18n': 0.12.2(vue-i18n@9.3.0-beta.24)
+      '@intlify/shared': 9.3.0-beta.26
+      '@intlify/unplugin-vue-i18n': 0.12.2(vue-i18n@9.3.0-beta.26)
       '@mizchi/sucrase': 4.1.0
       '@nuxt/kit': 3.6.5
       '@vue/compiler-sfc': 3.3.4
@@ -1692,8 +1700,8 @@ packages:
       ufo: 1.2.0
       unplugin: 1.4.0
       unstorage: 1.7.0
-      vue-i18n: 9.3.0-beta.24
-      vue-i18n-routing: 0.13.3(vue-i18n@9.3.0-beta.24)
+      vue-i18n: 9.3.0-beta.26
+      vue-i18n-routing: 0.13.3(vue-i18n@9.3.0-beta.26)
     transitivePeerDependencies:
       - '@azure/app-configuration'
       - '@azure/cosmos'
@@ -1767,7 +1775,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       commondir: 1.0.1
       estree-walker: 2.0.2
       glob: 8.1.0
@@ -1785,7 +1793,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       estree-walker: 2.0.2
       magic-string: 0.27.0
       rollup: 3.26.2
@@ -1800,7 +1808,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       rollup: 3.26.2
     dev: true
 
@@ -1813,7 +1821,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-builtin-module: 3.2.1
@@ -1831,7 +1839,7 @@ packages:
       rollup:
         optional: true
     dependencies:
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       magic-string: 0.27.0
       rollup: 3.26.2
     dev: true
@@ -1871,22 +1879,7 @@ packages:
       picomatch: 2.3.1
     dev: true
 
-  /@rollup/pluginutils@5.0.2(rollup@3.26.2):
-    resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-    dependencies:
-      '@types/estree': 1.0.1
-      estree-walker: 2.0.2
-      picomatch: 2.3.1
-      rollup: 3.26.2
-    dev: true
-
-  /@rollup/pluginutils@5.0.3:
+  /@rollup/pluginutils@5.0.3(rollup@3.26.2):
     resolution: {integrity: sha512-hfllNN4a80rwNQ9QCxhxuHCGHMAvabXqxNdaChUSSadMre7t4iEUI6fFAhBOn/eIYTgYVhBv7vCLsAJ4u3lf3g==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
@@ -1898,6 +1891,7 @@ packages:
       '@types/estree': 1.0.1
       estree-walker: 2.0.2
       picomatch: 2.3.1
+      rollup: 3.26.2
     dev: true
 
   /@sxzz/popperjs-es@2.11.7:
@@ -2238,7 +2232,7 @@ packages:
     hasBin: true
     dependencies:
       '@ampproject/remapping': 2.2.1
-      '@rollup/pluginutils': 5.0.3
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@unocss/config': 0.55.2
       '@unocss/core': 0.55.2
       '@unocss/preset-uno': 0.55.2
@@ -2424,7 +2418,7 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.2.1
-      '@rollup/pluginutils': 5.0.3
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@unocss/config': 0.55.2
       '@unocss/core': 0.55.2
       '@unocss/inspector': 0.55.2
@@ -2446,7 +2440,7 @@ packages:
         optional: true
     dependencies:
       '@ampproject/remapping': 2.2.1
-      '@rollup/pluginutils': 5.0.3
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@unocss/config': 0.55.2
       '@unocss/core': 0.55.2
       chokidar: 3.5.3
@@ -2544,7 +2538,7 @@ packages:
         optional: true
     dependencies:
       '@babel/types': 7.21.5
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@vue/compiler-sfc': 3.3.4
       local-pkg: 0.4.3
       magic-string-ast: 0.1.2
@@ -4584,7 +4578,7 @@ packages:
       destr: 2.0.0
       iron-webcrypto: 0.7.0
       radix3: 1.0.1
-      ufo: 1.1.2
+      ufo: 1.2.0
       uncrypto: 0.1.3
     dev: true
 
@@ -5368,7 +5362,7 @@ packages:
       acorn: 8.10.0
       pathe: 1.1.1
       pkg-types: 1.0.3
-      ufo: 1.1.2
+      ufo: 1.2.0
     dev: true
 
   /mri@1.2.0:
@@ -5432,7 +5426,7 @@ packages:
       '@rollup/plugin-replace': 5.0.2(rollup@3.26.2)
       '@rollup/plugin-terser': 0.4.3(rollup@3.26.2)
       '@rollup/plugin-wasm': 6.1.3(rollup@3.26.2)
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@types/http-proxy': 1.17.11
       '@vercel/nft': 0.22.6
       archiver: 5.3.1
@@ -5481,7 +5475,7 @@ packages:
       serve-static: 1.15.0
       source-map-support: 0.5.21
       std-env: 3.3.3
-      ufo: 1.1.2
+      ufo: 1.2.0
       uncrypto: 0.1.3
       unenv: 1.5.1
       unimport: 3.0.14(rollup@3.26.2)
@@ -7066,7 +7060,7 @@ packages:
   /unimport@3.0.14(rollup@3.26.2):
     resolution: {integrity: sha512-67Rh/sGpEuVqdHWkXaZ6NOq+I7sKt86o+DUtKeGB6dh4Hk1A8AQrzyVGg2+LaVEYotStH7HwvV9YSaRjyT7Uqg==}
     dependencies:
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       escape-string-regexp: 5.0.0
       fast-glob: 3.3.1
       local-pkg: 0.4.3
@@ -7140,7 +7134,7 @@ packages:
         optional: true
     dependencies:
       '@babel/types': 7.21.5
-      '@rollup/pluginutils': 5.0.2(rollup@3.26.2)
+      '@rollup/pluginutils': 5.0.3(rollup@3.26.2)
       '@vue-macros/common': 1.3.1(vue@3.3.4)
       ast-walker-scope: 0.4.1
       chokidar: 3.5.3
@@ -7227,7 +7221,7 @@ packages:
       mri: 1.2.0
       node-fetch-native: 1.2.0
       ofetch: 1.1.1
-      ufo: 1.1.2
+      ufo: 1.2.0
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7429,7 +7423,7 @@ packages:
   /vue-bundle-renderer@1.0.3:
     resolution: {integrity: sha512-EfjX+5TTUl70bki9hPuVp+54JiZOvFIfoWBcfXsSwLzKEiDYyHNi5iX8srnqLIv3YRnvxgbntdcG1WPq0MvffQ==}
     dependencies:
-      ufo: 1.1.2
+      ufo: 1.2.0
     dev: true
 
   /vue-codemirror@6.1.1(codemirror@6.0.1):
@@ -7500,7 +7494,7 @@ packages:
       - supports-color
     dev: true
 
-  /vue-i18n-routing@0.13.3(vue-i18n@9.3.0-beta.24):
+  /vue-i18n-routing@0.13.3(vue-i18n@9.3.0-beta.26):
     resolution: {integrity: sha512-RdYFuo8w653yv9D6AAf0KqtwI11P1/28b3WgPKyY9Kr+QQ+du9c9HvZTP/AVh1Ag2lrfubpTmL0nyH9LHZ0cgQ==}
     engines: {node: '>= 14.6'}
     peerDependencies:
@@ -7522,15 +7516,15 @@ packages:
         optional: true
     dependencies:
       '@intlify/shared': 9.3.0-beta.26
-      '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.24)
+      '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.26)
       '@intlify/vue-router-bridge': 0.8.0
       ufo: 1.2.0
       vue-demi: 0.14.5
-      vue-i18n: 9.3.0-beta.24
+      vue-i18n: 9.3.0-beta.26
     dev: true
 
-  /vue-i18n@9.3.0-beta.24:
-    resolution: {integrity: sha512-ssfAG66M8w+G2FesolGxiKmjZZ1rVRVSFYcPKPhMeCdnlxfid2DGqOwhwqJT4fyvgGadL1to3KbmHzt5Wu39Ww==}
+  /vue-i18n@9.3.0-beta.26:
+    resolution: {integrity: sha512-RfyxO4wMJ3SiqjxKGydA1RnJ6rvl4y60Urzqab80x9weCooNdb7++fRce+ZtSqtvnt4NTSq4je/WWyU8EAR9cA==}
     engines: {node: '>= 16'}
     peerDependencies:
       vue: ^3.0.0
@@ -7538,9 +7532,9 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@intlify/core-base': 9.3.0-beta.24
-      '@intlify/shared': 9.3.0-beta.24
-      '@intlify/vue-devtools': 9.3.0-beta.24
+      '@intlify/core-base': 9.3.0-beta.26
+      '@intlify/shared': 9.3.0-beta.26
+      '@intlify/vue-devtools': 9.3.0-beta.26
       '@vue/devtools-api': 6.5.0
     dev: true
 

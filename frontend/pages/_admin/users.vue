@@ -143,6 +143,7 @@ async function onDelete(user: User) {
         label-position="top"
         :rules="userFormRules"
         :validate-on-rule-change="false"
+        @keypress.enter="onSubmit"
       >
         <ElFormItem :label="$t('username')" prop="username">
           <ElInput v-model="userFormData.username" autocomplete="off" />

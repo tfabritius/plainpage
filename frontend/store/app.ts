@@ -13,7 +13,7 @@ export const useAppStore = defineStore(
 
     const appTitle = computed(() => data.value?.appTitle ?? 'PlainPage')
     const allowAdmin = computed(() => data.value?.allowAdmin || false)
-    const allowRegister = computed(() => data.value?.allowRegister ?? false)
+    const allowRegister = computed(() => (data.value?.allowRegister ?? false) || (data.value?.setupMode ?? false))
     const version = computed(() => data.value?.version ?? '')
 
     return {

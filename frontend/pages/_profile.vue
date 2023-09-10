@@ -91,7 +91,7 @@ async function onDelete() {
       :rules="profileFormRules"
     >
       <ElFormItem :label="$t('username')">
-        <ElInput :value="auth.user?.username" :disabled="true" />
+        <ElInput :model-value="auth.user?.username" :disabled="true" />
       </ElFormItem>
       <ElFormItem :label="$t('display-name')" prop="displayName">
         <ElInput v-model="profileFormData.displayName" autocomplete="off" />

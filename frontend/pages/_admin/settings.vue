@@ -68,7 +68,7 @@ async function onSave() {
       </ElFormItem>
       <ElFormItem :label="$t('version')">
         <ElInput
-          :value="version" disabled
+          :model-value="version" disabled
         />
       </ElFormItem>
     </ElForm>

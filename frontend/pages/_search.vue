@@ -17,7 +17,7 @@ function readQuery() {
 }
 
 function updateQuery() {
-  q.value = query.value || null
+  q.value = query.value || (undefined as any)
 }
 
 async function onSearch() {

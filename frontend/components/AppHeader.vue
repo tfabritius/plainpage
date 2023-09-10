@@ -111,7 +111,7 @@ const toggleDark = useToggle(isDark)
         v-else-if="route.path !== '/_login'"
         v-slot="{ navigate, href }"
         custom
-        :to="`/_login?returnTo=${route.query.returnTo || encodeURIComponent(route.fullPath)}`"
+        :to="`/_login?returnTo=${route.query.returnTo || route.fullPath}`"
       >
         <ElLink :underline="false" :href="href" @click="navigate">
           <Icon name="ic:round-log-in" class="mr-1" /> <span class="font-normal">{{ $t('sign-in') }}</span>

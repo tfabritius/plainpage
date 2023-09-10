@@ -74,7 +74,7 @@ async function submit() {
         v-if="allowRegister"
         v-slot="{ navigate, href }"
         custom
-        :to="`_register?returnTo=${encodeURIComponent(String(route.query.returnTo || '/'))}`"
+        :to="`_register?returnTo=${String(route.query.returnTo || '/')}`"
       >
         <ElLink :underline="false" :href="href" @click="navigate">
           {{ $t('_login.link-to-register') }}

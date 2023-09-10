@@ -21,7 +21,7 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
       }
 
       if (route.path !== '/_login') {
-        await navigateTo(`/_login?returnTo=${encodeURIComponent(route.fullPath)}`)
+        await navigateTo({ path: '/_login', query: { returnTo: route.fullPath } })
         throw new Error('redirected to /_login')
       }
     }

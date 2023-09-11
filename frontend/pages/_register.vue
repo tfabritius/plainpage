@@ -71,6 +71,8 @@ async function submit() {
     } else {
       ElMessage({ message: String(e), type: 'error' })
     }
+    loading.value = false
+    return
   }
 
   const ok = await auth.login(registerFormData.value)

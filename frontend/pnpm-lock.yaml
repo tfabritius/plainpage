@@ -81,8 +81,8 @@ devDependencies:
     specifier: ^8.49.0
     version: 8.49.0
   marked:
-    specifier: ^8.0.1
-    version: 8.0.1
+    specifier: ^9.0.1
+    version: 9.0.1
   nuxt:
     specifier: ^3.7.3
     version: 3.7.3(@types/node@20.6.2)(eslint@8.49.0)(sass@1.66.1)(typescript@5.2.2)(vue-tsc@1.8.8)
@@ -5359,8 +5359,8 @@ packages:
       semver: 6.3.1
     dev: true
 
-  /marked@8.0.1:
-    resolution: {integrity: sha512-eEbeEb/mJwh+sNLEhHOWtxMgjN/NEwZUBs1nkiIH2sTQTq07KmPMQ48ihyvo5+Ya56spVOPhunfGr6406crCVA==}
+  /marked@9.0.1:
+    resolution: {integrity: sha512-U6DB4r9D40jiszUTAB15mrNDfS7AREySx/ch7OJProHn/NebNKknQHZq7MaubLaUpL/4AkES/Osr0S6efQrtNQ==}
     engines: {node: '>= 16'}
     hasBin: true
     dev: true

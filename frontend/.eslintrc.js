@@ -21,6 +21,6 @@ module.exports = {
       },
     ],
     'curly': ['warn', 'all'],
-    '@typescript-eslint/brace-style': ['warn', '1tbs', { allowSingleLine: true }],
+    '@stylistic/ts/brace-style': ['warn', '1tbs', { allowSingleLine: true }],
   },
 }

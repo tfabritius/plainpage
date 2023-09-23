@@ -29,7 +29,7 @@
     "@pinia/nuxt": "^0.4.11",
     "@types/dompurify": "^3.0.3",
     "@types/marked": "^5.0.1",
-    "@types/node": "^20.6.2",
+    "@types/node": "^20.6.3",
     "@unocss/nuxt": "^0.56.1",
     "@vueuse/components": "^10.4.1",
     "@vueuse/core": "^10.4.1",

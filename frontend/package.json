@@ -27,7 +27,7 @@
     "@nuxtjs/i18n": "8.0.0-rc.4",
     "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
     "@pinia/nuxt": "^0.4.11",
-    "@types/dompurify": "^3.0.2",
+    "@types/dompurify": "^3.0.3",
     "@types/marked": "^5.0.1",
     "@types/node": "^20.6.2",
     "@unocss/nuxt": "^0.56.1",

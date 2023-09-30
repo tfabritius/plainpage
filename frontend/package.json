@@ -28,7 +28,7 @@
     "@pinia-plugin-persistedstate/nuxt": "^1.1.2",
     "@pinia/nuxt": "^0.4.11",
     "@types/dompurify": "^3.0.3",
-    "@types/marked": "^5.0.1",
+    "@types/marked": "^5.0.2",
     "@types/node": "^20.6.3",
     "@unocss/nuxt": "^0.56.4",
     "@vueuse/components": "^10.4.1",

@@ -47,7 +47,7 @@ jobs:
         with:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
-      - uses: goreleaser/goreleaser-action@v4
+      - uses: goreleaser/goreleaser-action@v5
         with:
           args: release --clean
           workdir: backend

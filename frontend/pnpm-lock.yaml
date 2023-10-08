@@ -63,8 +63,8 @@ devDependencies:
     specifier: ^10.5.0
     version: 10.5.0(nuxt@3.7.3)
   '@vueuse/router':
-    specifier: ^10.4.1
-    version: 10.4.1
+    specifier: ^10.5.0
+    version: 10.5.0
   codemirror:
     specifier: ^6.0.1
     version: 6.0.1(@lezer/common@1.0.2)
@@ -3103,7 +3103,7 @@ packages:
       '@types/web-bluetooth': 0.0.16
       '@vueuse/metadata': 9.13.0
       '@vueuse/shared': 9.13.0
-      vue-demi: 0.14.5
+      vue-demi: 0.14.6
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3139,16 +3139,16 @@ packages:
       - vue
     dev: true
 
-  /@vueuse/router@10.4.1:
-    resolution: {integrity: sha512-gsMuSIDTUj7Gt91pnFbrhUCDaGObceQAs3+XGguRNj/WgzqLpywe37mE4645McDspEbig/n9nvn8SSmo6XRvPw==}
+  /@vueuse/router@10.5.0:
+    resolution: {integrity: sha512-KboRSnSTaRBvKiwhCJ9RJHidaUMy5+5RyAwq46IPovVtKm9nIUfV0/F8dPwYx36rxAWn9iNWZUbKfu4cGW3XuA==}
     peerDependencies:
       vue-router: '>=4.0.0-rc.1'
     peerDependenciesMeta:
       vue-router:
         optional: true
     dependencies:
-      '@vueuse/shared': 10.4.1
-      vue-demi: 0.14.5
+      '@vueuse/shared': 10.5.0
+      vue-demi: 0.14.6
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3157,7 +3157,7 @@ packages:
   /@vueuse/shared@10.4.1:
     resolution: {integrity: sha512-vz5hbAM4qA0lDKmcr2y3pPdU+2EVw/yzfRsBdu+6+USGa4PxqSQRYIUC9/NcT06y+ZgaTsyURw2I9qOFaaXHAg==}
     dependencies:
-      vue-demi: 0.14.5
+      vue-demi: 0.14.6
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3175,7 +3175,7 @@ packages:
   /@vueuse/shared@9.13.0:
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
     dependencies:
-      vue-demi: 0.14.5
+      vue-demi: 0.14.6
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -7967,7 +7967,7 @@ packages:
       '@intlify/vue-i18n-bridge': 0.8.0(vue-i18n@9.3.0-beta.27)
       '@intlify/vue-router-bridge': 0.8.0
       ufo: 1.3.0
-      vue-demi: 0.14.5
+      vue-demi: 0.14.6
       vue-i18n: 9.3.0-beta.27
     dev: true
 

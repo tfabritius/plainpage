@@ -45,8 +45,8 @@ devDependencies:
     specifier: ^3.0.3
     version: 3.0.3
   '@types/marked':
-    specifier: ^5.0.2
-    version: 5.0.2
+    specifier: ^6.0.0
+    version: 6.0.0
   '@types/node':
     specifier: ^20.8.6
     version: 20.8.6
@@ -2189,8 +2189,11 @@ packages:
     resolution: {integrity: sha512-r22s9tAS7imvBt2lyHC9B8AGwWnXaYb1tY09oyLkXDs4vArpYJzw09nj8MLx5VfciBPGIb+ZwG0ssYnEPJxn/g==}
     dev: true
 
-  /@types/marked@5.0.2:
-    resolution: {integrity: sha512-OucS4KMHhFzhz27KxmWg7J+kIYqyqoW5kdIEI319hqARQQUTqhao3M/F+uFnDXD0Rg72iDDZxZNxq5gvctmLlg==}
+  /@types/marked@6.0.0:
+    resolution: {integrity: sha512-jmjpa4BwUsmhxcfsgUit/7A9KbrC48Q0q8KvnY107ogcjGgTFDlIL3RpihNpx2Mu1hM4mdFQjoVc4O6JoGKHsA==}
+    deprecated: This is a stub types definition. marked provides its own type definitions, so you do not need this installed.
+    dependencies:
+      marked: 9.1.2
     dev: true
 
   /@types/mdast@3.0.11:

@@ -27,7 +27,7 @@
     "@nuxtjs/i18n": "8.0.0-rc.5",
     "@pinia-plugin-persistedstate/nuxt": "^1.1.2",
     "@pinia/nuxt": "^0.4.11",
-    "@types/dompurify": "^3.0.3",
+    "@types/dompurify": "^3.0.4",
     "@types/node": "^20.8.7",
     "@unocss/nuxt": "^0.56.5",
     "@vueuse/components": "^10.5.0",

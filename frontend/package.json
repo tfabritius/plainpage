@@ -42,7 +42,7 @@
     "marked": "^9.1.5",
     "nuxt": "^3.8.0",
     "pinia": "^2.1.7",
-    "sass": "^1.69.4",
+    "sass": "^1.69.5",
     "slugify": "^1.6.6",
     "typescript": "^5.2.2",
     "vue-codemirror": "^6.1.1",

@@ -42,8 +42,8 @@ devDependencies:
     specifier: ^0.5.1
     version: 0.5.1(typescript@5.2.2)
   '@types/dompurify':
-    specifier: ^3.0.4
-    version: 3.0.4
+    specifier: ^3.0.5
+    version: 3.0.5
   '@types/node':
     specifier: ^20.9.0
     version: 20.9.0
@@ -2490,8 +2490,8 @@ packages:
       minimatch: 9.0.3
     dev: true
 
-  /@types/dompurify@3.0.4:
-    resolution: {integrity: sha512-1Jk8S/IRzNSbwQRbuGuLFHviwxQ8pX81ZEW3INY9432Cwb4VedkBYan8gSIXVLOLHBtimOmUTEYphjRVmo+30g==}
+  /@types/dompurify@3.0.5:
+    resolution: {integrity: sha512-1Wg0g3BtQF7sSb27fJQAKck1HECM6zV1EB66j8JH9i3LCjYabJa0FSdiSgsD5K/RbrsR0SiraKacLB+T8ZVYAg==}
     dependencies:
       '@types/trusted-types': 2.0.3
     dev: true

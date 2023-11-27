@@ -166,7 +166,8 @@ async function onDeleteFolder() {
         confirmButtonText: t('delete'),
         cancelButtonText: t('cancel'),
         type: 'warning',
-      })
+      },
+    )
   } catch {
     // do nothing
     deleteConfirmOpen.value = false

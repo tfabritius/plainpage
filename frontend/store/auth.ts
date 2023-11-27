@@ -11,7 +11,7 @@ export const useAuthStore = defineStore(
     const token = ref('')
     const loggedIn = computed(() => token.value !== '')
 
-    async function login(credentials: { username: string; password: string }): Promise<boolean> {
+    async function login(credentials: { username: string, password: string }): Promise<boolean> {
       token.value = ''
       user.value = undefined
 
@@ -50,7 +50,7 @@ export const useAuthStore = defineStore(
       await router.replace({ path: router.currentRoute.value.fullPath, force: true })
     }
 
-    async function updateMe(newMe: { displayName: string; password: string }) {
+    async function updateMe(newMe: { displayName: string, password: string }) {
       if (!user.value) {
         throw new Error('not logged in')
       }

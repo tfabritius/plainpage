@@ -36,7 +36,7 @@ export interface GetAtticListResponse {
 export interface PatchOperation {
   op: 'replace'
   path: string
-  value?: any
+  value?: unknown
   from?: string
 }
 

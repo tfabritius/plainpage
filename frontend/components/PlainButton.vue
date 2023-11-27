@@ -7,7 +7,7 @@ defineProps<{
   size?: 'small' | 'large'
   text?: boolean
   type?: 'success' | 'primary' | 'danger'
-  onClick?: (e: MouseEvent) => any
+  onClick?: (e: MouseEvent) => unknown
 }>()
 </script>
 

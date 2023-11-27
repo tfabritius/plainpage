@@ -38,7 +38,7 @@ onMounted(() => {
   updatePositionsOfPreviewSegments()
 })
 
-const segmentPositions = ref<{ top: number; height: number }[]>([])
+const segmentPositions = ref<{ top: number, height: number }[]>([])
 
 function updatePositionsOfPreviewSegments() {
   segmentPositions.value = []

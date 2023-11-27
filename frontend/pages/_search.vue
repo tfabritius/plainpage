@@ -17,6 +17,7 @@ function readQuery() {
 }
 
 function updateQuery() {
+  // eslint-disable-next-line ts/no-explicit-any
   q.value = query.value || (undefined as any)
 }
 
@@ -81,6 +82,7 @@ watch(q, () => {
             <div v-for="(f, ii) in result.fragments.content" :key="ii" v-html="f" />
           </div>
 
+          <!-- eslint-disable vue/no-v-text-v-html-on-component -->
           <ElTag
             v-for="tag in result.fragments['meta.tags']"
             :key="tag"

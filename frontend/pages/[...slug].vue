@@ -57,8 +57,9 @@ const { data, error, refresh } = await useAsyncData(`/pages/${urlPath.value}:${l
     }
     throw err
   }
-},
-{ watch: [loggedIn] })
+}, {
+  watch: [loggedIn],
+})
 
 const accessDenied = computed(() => data.value?.accessDenied ?? false)
 const page = computed(() => data.value?.page ?? null)

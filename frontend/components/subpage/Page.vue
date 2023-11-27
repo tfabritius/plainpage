@@ -84,7 +84,8 @@ async function onDeletePage() {
         confirmButtonText: t('delete'),
         cancelButtonText: t('cancel'),
         type: 'warning',
-      })
+      },
+    )
   } catch {
     // do nothing
     deleteConfirmOpen.value = false

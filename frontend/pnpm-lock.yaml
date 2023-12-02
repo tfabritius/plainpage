@@ -19,7 +19,7 @@ devDependencies:
     version: 6.1.2
   '@element-plus/nuxt':
     specifier: ^1.0.6
-    version: 1.0.6(@element-plus/icons-vue@2.1.0)(element-plus@2.4.2)
+    version: 1.0.6(@element-plus/icons-vue@2.1.0)(element-plus@2.4.3)
   '@iconify-json/ci':
     specifier: ^1.1.10
     version: 1.1.10
@@ -72,8 +72,8 @@ devDependencies:
     specifier: ^3.0.6
     version: 3.0.6
   element-plus:
-    specifier: ^2.4.2
-    version: 2.4.2
+    specifier: ^2.4.3
+    version: 2.4.3
   eslint:
     specifier: ^8.54.0
     version: 8.54.0
@@ -887,7 +887,16 @@ packages:
         optional: true
     dev: true
 
-  /@element-plus/nuxt@1.0.6(@element-plus/icons-vue@2.1.0)(element-plus@2.4.2):
+  /@element-plus/icons-vue@2.3.1:
+    resolution: {integrity: sha512-XxVUZv48RZAd87ucGS48jPf6pKu0yV5UCg9f4FFwtrYxXOwWuVJo6wOvSLKEoMQKjv8GsX/mhP6UsC1lRwbUWg==}
+    peerDependencies:
+      vue: ^3.2.0
+    peerDependenciesMeta:
+      vue:
+        optional: true
+    dev: true
+
+  /@element-plus/nuxt@1.0.6(@element-plus/icons-vue@2.1.0)(element-plus@2.4.3):
     resolution: {integrity: sha512-UdZ1YD4gSpXL7vIciYVRXBHPMTq/FFfLqtWiTVA18n/65tAw75HvJE1OmvA3ZhW8tMAxhv3IGzh4zA5zdFXCFg==}
     peerDependencies:
       '@element-plus/icons-vue': '>=0.2.6'
@@ -895,7 +904,7 @@ packages:
     dependencies:
       '@element-plus/icons-vue': 2.1.0
       '@nuxt/kit': 3.7.3
-      element-plus: 2.4.2
+      element-plus: 2.4.3
       magic-string: 0.27.0
       unplugin: 1.4.0
     transitivePeerDependencies:
@@ -4539,8 +4548,8 @@ packages:
     resolution: {integrity: sha512-FFa8QKjQK/A5QuFr2167myhMesGrhlOBD+3cYNxO9/S4XzHEXesyTD/1/xF644gC8buFPz3ca6G1LOQD0tZrrg==}
     dev: true
 
-  /element-plus@2.4.2:
-    resolution: {integrity: sha512-E/HwXX7JF1LPvQSjs0fZ8WblIoc0quoXsRXQZiL7QDq7xJdNGSUaXtdk7xiEv7axPmLfEFtxE5du9fFspDrmJw==}
+  /element-plus@2.4.3:
+    resolution: {integrity: sha512-b3q26j+lM4SBqiyzw8HybybGnP2pk4MWgrnzzzYW5qKQUgV6EG1Zg7nMCfgCVccI8tNvZoTiUHb2mFaiB9qT8w==}
     peerDependencies:
       vue: ^3.2.0
     peerDependenciesMeta:
@@ -4548,7 +4557,7 @@ packages:
         optional: true
     dependencies:
       '@ctrl/tinycolor': 3.6.0
-      '@element-plus/icons-vue': 2.1.0
+      '@element-plus/icons-vue': 2.3.1
       '@floating-ui/dom': 1.2.8
       '@popperjs/core': /@sxzz/popperjs-es@2.11.7
       '@types/lodash': 4.14.194

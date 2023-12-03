@@ -19,7 +19,7 @@ devDependencies:
     version: 6.1.2
   '@element-plus/nuxt':
     specifier: ^1.0.6
-    version: 1.0.6(@element-plus/icons-vue@2.1.0)(element-plus@2.4.3)
+    version: 1.0.6(@element-plus/icons-vue@2.3.1)(element-plus@2.4.3)
   '@iconify-json/ci':
     specifier: ^1.1.10
     version: 1.1.10
@@ -27,8 +27,8 @@ devDependencies:
     specifier: ^1.1.9
     version: 1.1.9
   '@iconify-json/ic':
-    specifier: ^1.1.14
-    version: 1.1.14
+    specifier: ^1.1.16
+    version: 1.1.16
   '@iconify-json/lucide':
     specifier: ^1.1.144
     version: 1.1.144
@@ -878,15 +878,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /@element-plus/icons-vue@2.1.0:
-    resolution: {integrity: sha512-PSBn3elNoanENc1vnCfh+3WA9fimRC7n+fWkf3rE5jvv+aBohNHABC/KAR5KWPecxWxDTVT1ERpRbOMRcOV/vA==}
-    peerDependencies:
-      vue: ^3.2.0
-    peerDependenciesMeta:
-      vue:
-        optional: true
-    dev: true
-
   /@element-plus/icons-vue@2.3.1:
     resolution: {integrity: sha512-XxVUZv48RZAd87ucGS48jPf6pKu0yV5UCg9f4FFwtrYxXOwWuVJo6wOvSLKEoMQKjv8GsX/mhP6UsC1lRwbUWg==}
     peerDependencies:
@@ -896,13 +887,13 @@ packages:
         optional: true
     dev: true
 
-  /@element-plus/nuxt@1.0.6(@element-plus/icons-vue@2.1.0)(element-plus@2.4.3):
+  /@element-plus/nuxt@1.0.6(@element-plus/icons-vue@2.3.1)(element-plus@2.4.3):
     resolution: {integrity: sha512-UdZ1YD4gSpXL7vIciYVRXBHPMTq/FFfLqtWiTVA18n/65tAw75HvJE1OmvA3ZhW8tMAxhv3IGzh4zA5zdFXCFg==}
     peerDependencies:
       '@element-plus/icons-vue': '>=0.2.6'
       element-plus: '>=2'
     dependencies:
-      '@element-plus/icons-vue': 2.1.0
+      '@element-plus/icons-vue': 2.3.1
       '@nuxt/kit': 3.7.3
       element-plus: 2.4.3
       magic-string: 0.27.0
@@ -1413,8 +1404,8 @@ packages:
       '@iconify/types': 2.0.0
     dev: true
 
-  /@iconify-json/ic@1.1.14:
-    resolution: {integrity: sha512-vbATa9uwb9pIsRWQ+iXObQCgLTePk/0vo4shBr3Td0GnTjsAU/7VUGTkrZFVf5vpgiG6OsXkcKMPzBPvt966sg==}
+  /@iconify-json/ic@1.1.16:
+    resolution: {integrity: sha512-bsscCY0Zn2e08eML/1trQlmwudlgd5X/YN2kFmvCuNSzI42TEEEezHPypjxl0RjEZXk2vXw3dH8vN6OwcvKXpg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

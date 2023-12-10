@@ -40,7 +40,7 @@
     "dompurify": "^3.0.6",
     "element-plus": "^2.4.3",
     "eslint": "^8.55.0",
-    "marked": "^10.0.0",
+    "marked": "^11.0.1",
     "nuxt": "^3.8.2",
     "pinia": "^2.1.7",
     "sass": "^1.69.5",

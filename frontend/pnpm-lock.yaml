@@ -49,7 +49,7 @@ devDependencies:
     version: 20.9.0
   '@unocss/nuxt':
     specifier: ^0.57.7
-    version: 0.57.7(postcss@8.4.31)
+    version: 0.57.7(postcss@8.4.32)
   '@vueuse/components':
     specifier: ^10.6.1
     version: 10.6.1
@@ -78,8 +78,8 @@ devDependencies:
     specifier: ^8.55.0
     version: 8.55.0
   marked:
-    specifier: ^10.0.0
-    version: 10.0.0
+    specifier: ^11.0.1
+    version: 11.0.1
   nuxt:
     specifier: ^3.8.2
     version: 3.8.2(@types/node@20.9.0)(eslint@8.55.0)(sass@1.69.5)(typescript@5.2.2)(vue-tsc@1.8.19)
@@ -3010,7 +3010,7 @@ packages:
       sirv: 2.0.3
     dev: true
 
-  /@unocss/nuxt@0.57.7(postcss@8.4.31):
+  /@unocss/nuxt@0.57.7(postcss@8.4.32):
     resolution: {integrity: sha512-txmi7qEU+uumF/APebRULtbRF2JTsyFlylkXyjwJPdVxYZrv6FakVi6ZDt4j3F3nyQFagG+qT3IcqmLX1i8aFA==}
     dependencies:
       '@nuxt/kit': 3.8.1
@@ -3026,7 +3026,7 @@ packages:
       '@unocss/reset': 0.57.7
       '@unocss/vite': 0.57.7
       '@unocss/webpack': 0.57.7
-      unocss: 0.57.7(@unocss/webpack@0.57.7)(postcss@8.4.31)
+      unocss: 0.57.7(@unocss/webpack@0.57.7)(postcss@8.4.32)
     transitivePeerDependencies:
       - postcss
       - rollup
@@ -3035,7 +3035,7 @@ packages:
       - webpack
     dev: true
 
-  /@unocss/postcss@0.57.7(postcss@8.4.31):
+  /@unocss/postcss@0.57.7(postcss@8.4.32):
     resolution: {integrity: sha512-13c9p5ecTvYa6inDky++8dlVuxQ0JuKaKW5A0NW3XuJ3Uz1t8Pguji+NAUddfTYEFF6GHu47L3Aac7vpI8pMcQ==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -3047,7 +3047,7 @@ packages:
       css-tree: 2.3.1
       fast-glob: 3.3.2
       magic-string: 0.30.5
-      postcss: 8.4.31
+      postcss: 8.4.32
     dev: true
 
   /@unocss/preset-attributify@0.57.7:
@@ -6561,8 +6561,8 @@ packages:
       - supports-color
     dev: true
 
-  /marked@10.0.0:
-    resolution: {integrity: sha512-YiGcYcWj50YrwBgNzFoYhQ1hT6GmQbFG8SksnYJX1z4BXTHSOrz1GB5/Jm2yQvMg4nN1FHP4M6r03R10KrVUiA==}
+  /marked@11.0.1:
+    resolution: {integrity: sha512-P4kDhFEMlvLePBPRwOcMOv6+lYUbhfbSxJFs3Jb4Qx7v6K7l+k8Dxh9CEGfRvK71tL+qIFz5y7Pe4uzt4+/A3A==}
     engines: {node: '>= 18'}
     hasBin: true
     dev: true
@@ -8960,7 +8960,7 @@ packages:
     engines: {node: '>= 10.0.0'}
     dev: true
 
-  /unocss@0.57.7(@unocss/webpack@0.57.7)(postcss@8.4.31):
+  /unocss@0.57.7(@unocss/webpack@0.57.7)(postcss@8.4.32):
     resolution: {integrity: sha512-Z99ZZPkbkjIUXEM7L+K/7Y5V5yqUS0VigG7ZIFzLf/npieKmXHKlrPyvQWFQaf3OqooMFuKBQivh75TwvSOkcQ==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -8976,7 +8976,7 @@ packages:
       '@unocss/cli': 0.57.7
       '@unocss/core': 0.57.7
       '@unocss/extractor-arbitrary-variants': 0.57.7
-      '@unocss/postcss': 0.57.7(postcss@8.4.31)
+      '@unocss/postcss': 0.57.7(postcss@8.4.32)
       '@unocss/preset-attributify': 0.57.7
       '@unocss/preset-icons': 0.57.7
       '@unocss/preset-mini': 0.57.7

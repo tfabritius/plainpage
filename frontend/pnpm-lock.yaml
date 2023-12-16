@@ -60,8 +60,8 @@ devDependencies:
     specifier: ^10.6.1
     version: 10.6.1(nuxt@3.8.2)
   '@vueuse/router':
-    specifier: ^10.6.1
-    version: 10.6.1
+    specifier: ^10.7.0
+    version: 10.7.0
   codemirror:
     specifier: ^6.0.1
     version: 6.0.1(@lezer/common@1.0.2)
@@ -3558,15 +3558,15 @@ packages:
       - vue
     dev: true
 
-  /@vueuse/router@10.6.1:
-    resolution: {integrity: sha512-9EMf30SownmxYKC3h36tl8uALSBGFkz3Dc2n+lQgJuyOYPIO/VotzDdkBxuEoHYKaCWw2JQa/S1q+t8NR26PvQ==}
+  /@vueuse/router@10.7.0:
+    resolution: {integrity: sha512-8NQ12V3dtiIEKyd32RzzXLOqU+NC5/9cf7kv5cGOQzJB+Ne8j+1VmRz4ciOhOyHuiBJSfjwSqKDTzvsczZUBlQ==}
     peerDependencies:
       vue-router: '>=4.0.0-rc.1'
     peerDependenciesMeta:
       vue-router:
         optional: true
     dependencies:
-      '@vueuse/shared': 10.6.1
+      '@vueuse/shared': 10.7.0
       vue-demi: 0.14.6
     transitivePeerDependencies:
       - '@vue/composition-api'

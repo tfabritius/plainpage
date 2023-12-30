@@ -10,14 +10,15 @@ const renderer = new marked.Renderer()
 renderer.link = (href: string, title: string, text: string) =>
   `<a class="markdown-link" title="${title ?? ''}" href="${href}">${text}</a>`
 
-const html = computed(
-  () => dompurify.sanitize(
-    marked.parse(props.markdown, {
-      gfm: true,
-      renderer,
-    }),
-  ),
-)
+const html = ref('')
+
+watchEffect(async () => {
+  const parsedMarkdown = await marked.parse(props.markdown, {
+    gfm: true,
+    renderer,
+  })
+  html.value = dompurify.sanitize(parsedMarkdown)
+})
 
 onMounted(() => {
   document.querySelectorAll('a.markdown-link').forEach((item) => {

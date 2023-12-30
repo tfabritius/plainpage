@@ -54,8 +54,8 @@ devDependencies:
     specifier: ^10.7.1
     version: 10.7.1
   '@vueuse/core':
-    specifier: ^10.7.0
-    version: 10.7.0
+    specifier: ^10.7.1
+    version: 10.7.1
   '@vueuse/nuxt':
     specifier: ^10.7.1
     version: 10.7.1(nuxt@3.9.0)
@@ -3398,18 +3398,6 @@ packages:
       - vue
     dev: true
 
-  /@vueuse/core@10.7.0:
-    resolution: {integrity: sha512-4EUDESCHtwu44ZWK3Gc/hZUVhVo/ysvdtwocB5vcauSV4B7NiGY5972WnsojB3vRNdxvAt7kzJWE2h9h7C9d5w==}
-    dependencies:
-      '@types/web-bluetooth': 0.0.20
-      '@vueuse/metadata': 10.7.0
-      '@vueuse/shared': 10.7.0
-      vue-demi: 0.14.6
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-    dev: true
-
   /@vueuse/core@10.7.1:
     resolution: {integrity: sha512-74mWHlaesJSWGp1ihg76vAnfVq9NTv1YT0SYhAQ6zwFNdBkkP+CKKJmVOEHcdSnLXCXYiL5e7MaewblfiYLP7g==}
     dependencies:
@@ -3432,10 +3420,6 @@ packages:
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
-    dev: true
-
-  /@vueuse/metadata@10.7.0:
-    resolution: {integrity: sha512-GlaH7tKP2iBCZ3bHNZ6b0cl9g0CJK8lttkBNUX156gWvNYhTKEtbweWLm9rxCPIiwzYcr/5xML6T8ZUEt+DkvA==}
     dev: true
 
   /@vueuse/metadata@10.7.1:
@@ -3473,15 +3457,6 @@ packages:
         optional: true
     dependencies:
       '@vueuse/shared': 10.7.1
-      vue-demi: 0.14.6
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-    dev: true
-
-  /@vueuse/shared@10.7.0:
-    resolution: {integrity: sha512-kc00uV6CiaTdc3i1CDC4a3lBxzaBE9AgYNtFN87B5OOscqeWElj/uza8qVDmk7/U8JbqoONLbtqiLJ5LGRuqlw==}
-    dependencies:
       vue-demi: 0.14.6
     transitivePeerDependencies:
       - '@vue/composition-api'

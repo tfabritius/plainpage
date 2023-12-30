@@ -21,8 +21,8 @@ devDependencies:
     specifier: ^1.0.6
     version: 1.0.6(@element-plus/icons-vue@2.3.1)(element-plus@2.4.4)
   '@iconify-json/ci':
-    specifier: ^1.1.10
-    version: 1.1.10
+    specifier: ^1.1.13
+    version: 1.1.13
   '@iconify-json/flagpack':
     specifier: ^1.1.9
     version: 1.1.9
@@ -1218,8 +1218,8 @@ packages:
     resolution: {integrity: sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==}
     dev: true
 
-  /@iconify-json/ci@1.1.10:
-    resolution: {integrity: sha512-eqUypGZG6xZxCXKZE3MMbg7ifTeuEWySSIwnYT9DkCqQT1pyf2Xj6UF2lSUWK8YJlSnTUW4zetVa20pRADO0Ew==}
+  /@iconify-json/ci@1.1.13:
+    resolution: {integrity: sha512-UXKTbxmWMUy4Iz6OL2GXzy2PtzKzT5WkM7IJ9OEdq7fe210yJ535hdNaJ6TeKHsxZ0TrVgTvR2gvctAMVobBeg==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

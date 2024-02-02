@@ -45,7 +45,7 @@ const revDate = computed(() => new Date(Number(props.revision) * 1000))
 </script>
 
 <template>
-  <NetworkError
+  <SubpageNetworkError
     v-if="error || !data"
     :msg="error?.message || ''"
     :on-reload="refresh"

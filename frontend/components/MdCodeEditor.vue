@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { minimalSetup } from 'codemirror'
+import { Codemirror } from 'vue-codemirror'
 import { EditorView, highlightActiveLine } from '@codemirror/view'
 import { Compartment, EditorSelection } from '@codemirror/state'
 import { markdown } from '@codemirror/lang-markdown'

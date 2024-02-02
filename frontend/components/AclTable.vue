@@ -195,7 +195,7 @@ defineExpose({ getAcl })
         </span>
         <span v-else>
           <template v-if="row.user">{{ row.user.username }} ({{ row.user.displayName }})</template>
-          <template v-else><Tt>{{ row.subject }}</Tt></template>
+          <template v-else><samp>{{ row.subject }}</samp></template>
         </span>
       </template>
     </ElTableColumn>

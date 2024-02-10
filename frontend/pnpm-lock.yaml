@@ -36,8 +36,8 @@ devDependencies:
     specifier: ^1.1.162
     version: 1.1.162
   '@nuxtjs/i18n':
-    specifier: 8.0.1
-    version: 8.0.1(rollup@3.29.4)
+    specifier: 8.1.0
+    version: 8.1.0(rollup@3.29.4)
   '@pinia-plugin-persistedstate/nuxt':
     specifier: ^1.2.0
     version: 1.2.0(@pinia/nuxt@0.5.1)(pinia@2.1.7)(rollup@3.29.4)
@@ -1448,7 +1448,7 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/message-compiler': 9.8.0
+      '@intlify/message-compiler': 9.9.1
       '@intlify/shared': 9.9.1
       acorn: 8.11.3
       escodegen: 2.0.0
@@ -2048,7 +2048,7 @@ packages:
       std-env: 3.7.0
       ufo: 1.3.2
       unimport: 3.7.1(rollup@3.29.4)
-      untyped: 1.4.0
+      untyped: 1.4.2
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -2064,11 +2064,11 @@ packages:
       hookable: 5.5.3
       pathe: 1.1.2
       pkg-types: 1.0.3
-      scule: 1.1.1
+      scule: 1.2.0
       std-env: 3.7.0
       ufo: 1.3.2
       unimport: 3.7.1(rollup@3.29.4)
-      untyped: 1.4.0
+      untyped: 1.4.2
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -2084,11 +2084,11 @@ packages:
       hookable: 5.5.3
       pathe: 1.1.2
       pkg-types: 1.0.3
-      scule: 1.1.1
+      scule: 1.2.0
       std-env: 3.7.0
       ufo: 1.3.2
       unimport: 3.7.1(rollup@3.29.4)
-      untyped: 1.4.0
+      untyped: 1.4.2
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -2188,8 +2188,8 @@ packages:
       - vue-tsc
     dev: true
 
-  /@nuxtjs/i18n@8.0.1(rollup@3.29.4):
-    resolution: {integrity: sha512-h1IBAY/sdGYHEud/HrL28tx632wteggQ1hFWO+XBj/5xBAVfgSYjcaB3bWtB6KNXYktojWOifW0QIis5lfx7UQ==}
+  /@nuxtjs/i18n@8.1.0(rollup@3.29.4):
+    resolution: {integrity: sha512-4J3rvqb8TAAwMWgQxU4qzu+61bJBm/4531ISN1dDG498zT4ozpwHC72noAd9h2iV6BpRA4wFASiqFMSMnFBBZQ==}
     engines: {node: ^14.16.0 || >=16.11.0}
     dependencies:
       '@intlify/h3': 0.5.0
@@ -9220,7 +9220,7 @@ packages:
       defu: 6.1.4
       jiti: 1.21.0
       mri: 1.2.0
-      scule: 1.1.1
+      scule: 1.2.0
     transitivePeerDependencies:
       - supports-color
     dev: true

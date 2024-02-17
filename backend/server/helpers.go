@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
@@ -41,7 +40,7 @@ func (app App) RequireAdminPermission(next http.Handler) http.Handler {
 
 func (app App) RetrieveContentMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		urlPath := chi.URLParam(r, "*")
+		urlPath := r.PathValue("*")
 
 		validUrl := isValidUrl(urlPath)
 

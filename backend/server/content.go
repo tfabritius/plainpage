@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
@@ -60,7 +59,7 @@ func (App) getBreadcrumbs(urlPath string, page *model.Page, folder *model.Folder
 }
 
 func (app App) getContent(w http.ResponseWriter, r *http.Request) {
-	urlPath := chi.URLParam(r, "*")
+	urlPath := r.PathValue("*")
 
 	userID := ctxutil.UserID(r.Context())
 	page := ctxutil.Page(r.Context())
@@ -122,7 +121,7 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
-	urlPath := chi.URLParam(r, "*")
+	urlPath := r.PathValue("*")
 
 	page := ctxutil.Page(r.Context())
 	folder := ctxutil.Folder(r.Context())
@@ -194,7 +193,7 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) putContent(w http.ResponseWriter, r *http.Request) {
-	urlPath := chi.URLParam(r, "*")
+	urlPath := r.PathValue("*")
 
 	page := ctxutil.Page(r.Context())
 	folder := ctxutil.Folder(r.Context())
@@ -252,7 +251,7 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) deleteContent(w http.ResponseWriter, r *http.Request) {
-	urlPath := chi.URLParam(r, "*")
+	urlPath := r.PathValue("*")
 
 	page := ctxutil.Page(r.Context())
 	folder := ctxutil.Folder(r.Context())
@@ -285,7 +284,7 @@ func (app App) deleteContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
-	urlPath := chi.URLParam(r, "*")
+	urlPath := r.PathValue("*")
 	queryRev := r.URL.Query().Get("rev")
 
 	page := ctxutil.Page(r.Context())

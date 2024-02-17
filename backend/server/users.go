@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
@@ -22,7 +21,7 @@ func (app App) getUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) getUser(w http.ResponseWriter, r *http.Request) {
-	username := chi.URLParam(r, "username")
+	username := r.PathValue("username")
 
 	user, err := app.Users.GetByUsername(username)
 	if errors.Is(err, model.ErrNotFound) {
@@ -94,7 +93,7 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
-	username := chi.URLParam(r, "username")
+	username := r.PathValue("username")
 	userID := ctxutil.UserID(r.Context())
 
 	isAdmin := app.isAdmin(userID)
@@ -165,7 +164,7 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
-	username := chi.URLParam(r, "username")
+	username := r.PathValue("username")
 	userID := ctxutil.UserID(r.Context())
 
 	isAdmin := app.isAdmin(userID)

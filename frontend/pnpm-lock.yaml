@@ -54,8 +54,8 @@ devDependencies:
     specifier: ^0.58.5
     version: 0.58.5(postcss@8.4.35)(rollup@3.29.4)
   '@vueuse/components':
-    specifier: ^10.7.2
-    version: 10.7.2
+    specifier: ^10.8.0
+    version: 10.8.0
   '@vueuse/core':
     specifier: ^10.8.0
     version: 10.8.0
@@ -3612,12 +3612,12 @@ packages:
     resolution: {integrity: sha512-ChLCWzXiJboQ009oVkemhEoUdrxHme7v3ip+Kh+/kDDeF1WtHWGt0knRLGm1Y4YqCRTSs9QxsZIY8paJj5Szrw==}
     dev: true
 
-  /@vueuse/components@10.7.2:
-    resolution: {integrity: sha512-r39DLLtRo1hEKI/SQzVQjCts7yelwFyUrTxDFi821NdyU3EfQ9GCNNBcMirXcn3IQApFBRKrvTTtQ9cJGrb/+A==}
+  /@vueuse/components@10.8.0:
+    resolution: {integrity: sha512-5k/4Cxgt+aoxeHIOWSet6kkHXY+96QuPkJzGpOHaCj9DD0ASBni6L/wHQUWL118Ac9xq5+QQJuK5VvFs/yBAEw==}
     dependencies:
-      '@vueuse/core': 10.7.2
-      '@vueuse/shared': 10.7.2
-      vue-demi: 0.14.6
+      '@vueuse/core': 10.8.0
+      '@vueuse/shared': 10.8.0
+      vue-demi: 0.14.7
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3629,7 +3629,7 @@ packages:
       '@types/web-bluetooth': 0.0.20
       '@vueuse/metadata': 10.7.2
       '@vueuse/shared': 10.7.2
-      vue-demi: 0.14.6
+      vue-demi: 0.14.7
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3653,7 +3653,7 @@ packages:
       '@types/web-bluetooth': 0.0.16
       '@vueuse/metadata': 9.13.0
       '@vueuse/shared': 9.13.0
-      vue-demi: 0.14.6
+      vue-demi: 0.14.7
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3707,7 +3707,7 @@ packages:
   /@vueuse/shared@10.7.2:
     resolution: {integrity: sha512-qFbXoxS44pi2FkgFjPvF4h7c9oMDutpyBdcJdMYIMg9XyXli2meFMuaKn+UMgsClo//Th6+beeCgqweT/79BVA==}
     dependencies:
-      vue-demi: 0.14.6
+      vue-demi: 0.14.7
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -3725,7 +3725,7 @@ packages:
   /@vueuse/shared@9.13.0:
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
     dependencies:
-      vue-demi: 0.14.6
+      vue-demi: 0.14.7
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue

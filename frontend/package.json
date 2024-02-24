@@ -37,7 +37,7 @@
     "@vueuse/router": "^10.8.0",
     "codemirror": "^6.0.1",
     "date-fns": "^3.3.1",
-    "dompurify": "^3.0.8",
+    "dompurify": "^3.0.9",
     "element-plus": "^2.5.5",
     "eslint": "^8.56.0",
     "marked": "^12.0.0",

@@ -16,7 +16,7 @@
     "lintfix": "eslint . --fix"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.6.4",
+    "@antfu/eslint-config": "^2.8.0",
     "@codemirror/lang-markdown": "^6.2.4",
     "@codemirror/state": "^6.4.1",
     "@codemirror/theme-one-dark": "^6.1.2",

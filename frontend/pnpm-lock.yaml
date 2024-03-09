@@ -81,8 +81,8 @@ devDependencies:
     specifier: ^8.56.0
     version: 8.56.0
   marked:
-    specifier: ^12.0.0
-    version: 12.0.0
+    specifier: ^12.0.1
+    version: 12.0.1
   nuxt:
     specifier: ^3.10.3
     version: 3.10.3(@types/node@20.11.24)(eslint@8.56.0)(rollup@3.29.4)(sass@1.71.1)(typescript@5.4.2)(vue-tsc@1.8.27)
@@ -6642,8 +6642,8 @@ packages:
       - supports-color
     dev: true
 
-  /marked@12.0.0:
-    resolution: {integrity: sha512-Vkwtq9rLqXryZnWaQc86+FHLC6tr/fycMfYAhiOIXkrNmeGAyhSxjqu0Rs1i0bBqw5u0S7+lV9fdH2ZSVaoa0w==}
+  /marked@12.0.1:
+    resolution: {integrity: sha512-Y1/V2yafOcOdWQCX0XpAKXzDakPOpn6U0YLxTJs3cww6VxOzZV1BTOOYWLvH3gX38cq+iLwljHHTnMtlDfg01Q==}
     engines: {node: '>= 18'}
     hasBin: true
     dev: true

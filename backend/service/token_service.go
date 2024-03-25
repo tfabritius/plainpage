@@ -12,7 +12,7 @@ import (
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
-const tokenValidityDuration = 7 * 24 * time.Hour
+const tokenValidityDuration = 6 * 30 * 24 * time.Hour // 6 months
 
 func NewTokenService(jwtSecret string) TokenService {
 	return TokenService{

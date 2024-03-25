@@ -2,7 +2,8 @@ import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
 import type { PatchOperation, TokenUserResponse, User } from '~/types'
 
-const minRemainingTokenValidity = 6 * 24 * 60 * 60 // in seconds
+const hour = 60 * 60 // in seconds
+const minRemainingTokenValidity = 5 * 30 * 24 * hour // 5 months
 
 export const useAuthStore = defineStore(
   'auth',

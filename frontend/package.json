@@ -30,7 +30,7 @@
     "@pinia/nuxt": "^0.5.1",
     "@types/dompurify": "^3.0.5",
     "@types/node": "^20.11.30",
-    "@unocss/nuxt": "^0.58.6",
+    "@unocss/nuxt": "^0.60.4",
     "@vueuse/components": "^10.9.0",
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",

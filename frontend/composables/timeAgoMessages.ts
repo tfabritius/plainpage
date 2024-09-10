@@ -1,5 +1,5 @@
-import type { UseTimeAgoMessages, UseTimeAgoUnitNamesDefault } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
+import type { UseTimeAgoMessages, UseTimeAgoUnitNamesDefault } from '@vueuse/core'
 
 export function timeAgoMessages(): UseTimeAgoMessages<UseTimeAgoUnitNamesDefault> {
   const { t } = useI18n()

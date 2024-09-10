@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Breadcrumb } from '~/types'
 import { Icon } from '#components'
+import type { Breadcrumb } from '~/types'
 
 const _props = defineProps<{
   breadcrumbs?: Breadcrumb[]

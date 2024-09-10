@@ -30,7 +30,5 @@ export default await antfu({
     'jsonc/sort-keys': 'off',
     'regexp/prefer-d': 'off',
     'regexp/prefer-w': 'off',
-    'perfectionist/sort-imports': 'off',
-    'perfectionist/sort-named-imports': 'off',
   },
 })

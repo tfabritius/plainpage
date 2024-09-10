@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { Icon } from '#components'
 import { useDark, useToggle } from '@vueuse/core'
 
-import { useAuthStore } from '~/store/auth'
-import { Icon } from '#components'
+import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
+import { useAuthStore } from '~/store/auth'
 
 const auth = useAuthStore()
 

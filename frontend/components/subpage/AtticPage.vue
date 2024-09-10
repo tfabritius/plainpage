@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
-import { format } from 'date-fns'
 import { Icon } from '#components'
+import { format } from 'date-fns'
+import { FetchError } from 'ofetch'
 
 import type { GetContentResponse } from '~/types/'
 

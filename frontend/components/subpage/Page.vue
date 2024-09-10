@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { Icon } from '#components'
 import { useRouteQuery } from '@vueuse/router'
 import { storeToRefs } from 'pinia'
-import type { Breadcrumb, Page } from '~/types'
 import { useAppStore } from '~/store/app'
-import { Icon } from '#components'
+import type { Breadcrumb, Page } from '~/types'
 
 const props = defineProps<{
   page: Page

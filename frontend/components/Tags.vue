@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue'
 import { ElInput } from 'element-plus'
+import { nextTick, ref } from 'vue'
 
 const props = withDefaults(defineProps<{
   modelValue: string[] | null

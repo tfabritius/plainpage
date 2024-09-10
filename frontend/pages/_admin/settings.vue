@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-
-import type { Config } from '~/types'
 import { AclTable } from '#components'
+
+import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
+import type { Config } from '~/types'
 
 definePageMeta({
   middleware: ['require-auth'],

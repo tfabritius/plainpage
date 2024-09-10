@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { MdCodeEditor, MdPreview } from '#components'
 import { marked } from 'marked'
 import type { MdEditorGenerator, Segment } from '~/types/'
-import { MdCodeEditor, MdPreview } from '#components'
 
 const props = defineProps<{
   modelValue: string

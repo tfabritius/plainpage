@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type Tokens, marked } from 'marked'
 import dompurify from 'dompurify'
+import { marked, type Tokens } from 'marked'
 
 const props = defineProps<{
   markdown: string

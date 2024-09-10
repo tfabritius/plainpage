@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Breadcrumb, ContentMeta } from '~/types/'
 import { AclTable } from '#components'
+import type { Breadcrumb, ContentMeta } from '~/types/'
 
 const props = defineProps<{
   urlPath: string

@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { Icon } from '#components'
+import { ElInput } from 'element-plus'
 import { storeToRefs } from 'pinia'
 import slugify from 'slugify'
-import { ElInput } from 'element-plus'
-import type { FormInstance, FormRules } from 'element-plus'
 
-import type { Breadcrumb, Folder, PutRequest } from '~/types'
-import { Icon } from '#components'
+import type { FormInstance, FormRules } from 'element-plus'
 import { useAppStore } from '~/store/app'
+import type { Breadcrumb, Folder, PutRequest } from '~/types'
 
 const props = defineProps<{
   urlPath: string

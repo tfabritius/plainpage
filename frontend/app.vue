@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 
-import { useAuthStore } from '~/store/auth'
 import { useAppStore } from '~/store/app'
+import { useAuthStore } from '~/store/auth'
 
 import 'element-plus/theme-chalk/src/dark/css-vars.scss'
 

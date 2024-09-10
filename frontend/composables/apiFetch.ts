@@ -1,5 +1,5 @@
-import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack'
 import { FetchError } from 'ofetch'
+import type { NitroFetchOptions, NitroFetchRequest } from 'nitropack'
 import { useAuthStore } from '~/store/auth'
 
 export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<NitroFetchRequest>) {

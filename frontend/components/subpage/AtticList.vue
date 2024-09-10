@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { format } from 'date-fns'
+import { Icon } from '#components'
 import { UseTimeAgo } from '@vueuse/components'
+import { format } from 'date-fns'
 import { timeAgoMessages } from '~/composables/timeAgoMessages'
 import type { GetAtticListResponse } from '~/types'
-import { Icon } from '#components'
 
 const props = defineProps<{
   urlPath: string

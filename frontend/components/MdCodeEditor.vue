@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { markdown } from '@codemirror/lang-markdown'
+import { Compartment, EditorSelection } from '@codemirror/state'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { EditorView, highlightActiveLine } from '@codemirror/view'
 import { minimalSetup } from 'codemirror'
 import { Codemirror } from 'vue-codemirror'
-import { EditorView, highlightActiveLine } from '@codemirror/view'
-import { Compartment, EditorSelection } from '@codemirror/state'
-import { markdown } from '@codemirror/lang-markdown'
-import { oneDark } from '@codemirror/theme-one-dark'
 
 import type { MdEditorGenerator } from '~/types'
 

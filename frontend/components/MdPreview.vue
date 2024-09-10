@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { type Tokens, marked } from 'marked'
 import dompurify from 'dompurify'
 import { ElScrollbar } from 'element-plus'
+import { marked, type Tokens } from 'marked'
 
 import type { Segment } from '~/types/'
 

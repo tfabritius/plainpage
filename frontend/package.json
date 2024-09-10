@@ -32,7 +32,7 @@
     "@types/node": "^22.5.4",
     "@unocss/nuxt": "^0.62.3",
     "@vueuse/components": "^11.0.3",
-    "@vueuse/core": "^10.9.0",
+    "@vueuse/core": "^11.0.3",
     "@vueuse/nuxt": "^11.0.3",
     "@vueuse/router": "^10.9.0",
     "codemirror": "^6.0.1",

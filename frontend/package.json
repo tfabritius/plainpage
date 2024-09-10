@@ -50,9 +50,6 @@
     "vue-tsc": "^1.8.27"
   },
   "pnpm": {
-    "overrides": {
-      "vue": "3.4.8"
-    },
     "peerDependencyRules": {
       "ignoreMissing": [
         "webpack",

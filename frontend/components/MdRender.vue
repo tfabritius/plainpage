@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { marked } from 'marked'
+import { type Tokens, marked } from 'marked'
 import dompurify from 'dompurify'
 
 const props = defineProps<{
@@ -7,8 +7,7 @@ const props = defineProps<{
 }>()
 
 const renderer = new marked.Renderer()
-renderer.link = (href: string, title: string, text: string) =>
-  `<a class="markdown-link" title="${title ?? ''}" href="${href}">${text}</a>`
+renderer.link = ({ href, title, text }: Tokens.Link) => `<a class="markdown-link" title="${title ?? ''}" href="${href}">${text}</a>`
 
 const html = ref('')
 

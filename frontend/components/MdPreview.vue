@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { marked } from 'marked'
+import { type Tokens, marked } from 'marked'
 import dompurify from 'dompurify'
 import { ElScrollbar } from 'element-plus'
 
@@ -14,8 +14,7 @@ const emit = defineEmits<{
 }>()
 
 const renderer = new marked.Renderer()
-renderer.link = (href: string, title: string, text: string) =>
-  `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
+renderer.link = ({ href, title, text }: Tokens.Link) => `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
 
 function renderSegmentsToHtml(segments: Segment[]): string {
   return segments.map((segment) => {

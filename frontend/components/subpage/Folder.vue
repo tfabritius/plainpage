@@ -134,7 +134,7 @@ async function onEditTitle() {
       cancelButtonText: t('cancel'),
     })
     title = msgBox.value
-  } catch (e) {
+  } catch {
     return
   }
 

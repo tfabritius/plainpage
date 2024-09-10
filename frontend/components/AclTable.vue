@@ -134,7 +134,7 @@ const checkNewUser = useDebounceFn(async () => {
     } else {
       newUser.value = user
     }
-  } catch (e) {
+  } catch {
     newUser.value = null
   }
 }, 300)

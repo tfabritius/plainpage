@@ -106,6 +106,8 @@ onKeyStroke('s', (e) => {
     onSavePage()
   }
 })
+
+const navTo = navigateTo
 </script>
 
 <template>
@@ -135,7 +137,7 @@ onKeyStroke('s', (e) => {
         <PlainButton icon="ci:folder-add" :label="$t('create-folder')" @click="createThisFolder" />
       </div>
 
-      <PlainButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navigateTo('/')" />
+      <PlainButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navTo('/')" />
     </div>
 
     <PageEditor v-else v-model="editablePage" />

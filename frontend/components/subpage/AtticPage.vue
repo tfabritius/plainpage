@@ -42,6 +42,8 @@ const pageTitle = computed(() => {
 useHead(() => ({ title: pageTitle.value }))
 
 const revDate = computed(() => new Date(Number(props.revision) * 1000))
+
+const navTo = navigateTo
 </script>
 
 <template>
@@ -66,7 +68,7 @@ const revDate = computed(() => new Date(Number(props.revision) * 1000))
         v-if="!data.notFound"
         icon="ic:baseline-update"
         :label="$t('current-version')"
-        @click="navigateTo({ query: { rev: undefined } })"
+        @click="navTo({ query: { rev: undefined } })"
       />
     </template>
 
@@ -83,7 +85,7 @@ const revDate = computed(() => new Date(Number(props.revision) * 1000))
         <PlainButton
           icon="ic:baseline-update"
           :label="$t('current-version')"
-          @click="navigateTo({ query: { rev: undefined } })"
+          @click="navTo({ query: { rev: undefined } })"
         />
       </div>
     </div>

@@ -25,6 +25,8 @@ const { data } = await useAsyncData(`/attic/${props.urlPath}`, async () => {
     breadcrumbs: data.breadcrumbs,
   }
 })
+
+const navTo = navigateTo
 </script>
 
 <template>
@@ -37,7 +39,7 @@ const { data } = await useAsyncData(`/attic/${props.urlPath}`, async () => {
       <PlainButton
         icon="ic:baseline-update"
         :label="$t('current-version')"
-        @click="navigateTo({ query: { rev: undefined } })"
+        @click="navTo({ query: { rev: undefined } })"
       />
     </template>
 

@@ -22,8 +22,6 @@ jobs:
 
       ### Frontend
       - uses: pnpm/action-setup@v4
-        with:
-          version: 8
         # pnpm has to be installed before node to make use of caching
       - uses: actions/setup-node@v4
         with:

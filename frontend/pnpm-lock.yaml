@@ -15,8 +15,8 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0(@vue/compiler-sfc@3.4.21)(eslint@8.57.0)(typescript@5.4.3)
       '@codemirror/lang-markdown':
-        specifier: ^6.2.4
-        version: 6.2.4
+        specifier: ^6.2.5
+        version: 6.2.5
       '@codemirror/state':
         specifier: ^6.4.1
         version: 6.4.1
@@ -445,8 +445,8 @@ packages:
   '@codemirror/lang-javascript@6.1.8':
     resolution: {integrity: sha512-5cIA6IOkslTu1DtldcYnj7hsBm3p+cD37qSaKvW1kV16M6q9ysKvKrveCOWgbrj4+ilSWRL2JtSLudbeB158xg==}
 
-  '@codemirror/lang-markdown@6.2.4':
-    resolution: {integrity: sha512-UghkA1vSMs8bT7RSZM6vsIocigyah2bV00eRQuZy76401UmFZdsTsbQNBGdyxRQDOLeEvF5iFwap0BM8LKyd+g==}
+  '@codemirror/lang-markdown@6.2.5':
+    resolution: {integrity: sha512-Hgke565YcO4fd9pe2uLYxnMufHO5rQwRr+AAhFq8ABuhkrjyX8R5p5s+hZUTdV60O0dMRjxKhBLxz8pu/MkUVA==}
 
   '@codemirror/language@6.7.0':
     resolution: {integrity: sha512-4SMwe6Fwn57klCUsVN0y4/h/iWT+XIXFEmop2lIHHuWO0ubjCrF3suqSZLyOQlznxkNnNbOOfKe5HQbQGCAmTg==}
@@ -5586,7 +5586,7 @@ snapshots:
       '@lezer/common': 1.2.1
       '@lezer/javascript': 1.4.3
 
-  '@codemirror/lang-markdown@6.2.4':
+  '@codemirror/lang-markdown@6.2.5':
     dependencies:
       '@codemirror/autocomplete': 6.7.1(@codemirror/language@6.7.0)(@codemirror/state@6.4.1)(@codemirror/view@6.12.0)(@lezer/common@1.2.1)
       '@codemirror/lang-html': 6.4.3

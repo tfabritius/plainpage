@@ -27,17 +27,17 @@ importers:
         specifier: ^1.0.10
         version: 1.0.10(@element-plus/icons-vue@2.3.1(vue@3.4.8(typescript@5.4.3)))(element-plus@2.8.2(vue@3.4.8(typescript@5.4.3)))(magicast@0.3.5)(rollup@4.13.0)(webpack-sources@3.2.3)
       '@iconify-json/ci':
-        specifier: ^1.1.13
-        version: 1.1.13
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/flagpack':
-        specifier: ^1.1.14
-        version: 1.1.14
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/ic':
-        specifier: ^1.1.17
-        version: 1.1.17
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/lucide':
-        specifier: ^1.1.178
-        version: 1.1.178
+        specifier: ^1.2.3
+        version: 1.2.3
       '@nuxtjs/i18n':
         specifier: 8.2.0
         version: 8.2.0(rollup@4.13.0)(vue@3.4.8(typescript@5.4.3))(webpack-sources@3.2.3)
@@ -817,17 +817,17 @@ packages:
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     deprecated: Use @eslint/object-schema instead
 
-  '@iconify-json/ci@1.1.13':
-    resolution: {integrity: sha512-UXKTbxmWMUy4Iz6OL2GXzy2PtzKzT5WkM7IJ9OEdq7fe210yJ535hdNaJ6TeKHsxZ0TrVgTvR2gvctAMVobBeg==}
+  '@iconify-json/ci@1.2.0':
+    resolution: {integrity: sha512-6kHk5m4ZdPad/YOwlpqHTf3gpfiBc0MknR25JvYZmI5vnasejkb7maq/axjzUIGHBKDcaiS8D0bi/ZTb36V6CA==}
 
-  '@iconify-json/flagpack@1.1.14':
-    resolution: {integrity: sha512-XtjvjcrNvQgP5FRWBYlaZ32TR4CpNVYFM8wGBtfBw9V7dmw9G0rZU+GcP61+7ZReghEqOby48B/dVPK/81oG0A==}
+  '@iconify-json/flagpack@1.2.0':
+    resolution: {integrity: sha512-EJ+bXdr6CDLv14bfCgn7mqnDg+xjYPt6iggJ1DR2CG58Kk0gsYH/+Dn03VUTWn3VJE8DjMg45I78yhagW+4Jig==}
 
-  '@iconify-json/ic@1.1.17':
-    resolution: {integrity: sha512-EvAjZzVESmN36zlyefylePUNaU2BQ3eRKVZ6KQSQ2bG01ppoZaiFZRri74VTyvp5Mlv2yn68ux1fgCoT+etGmA==}
+  '@iconify-json/ic@1.2.0':
+    resolution: {integrity: sha512-L4+m77xTQB08X3I+3xs1+IrvK+aNcuN/7ODu5aUPznHKLU+/8UYcsjUgNHze6vPOGPQ0AG+kCwvy91EYPXSRxw==}
 
-  '@iconify-json/lucide@1.1.178':
-    resolution: {integrity: sha512-IW5Z3ytfOPtcAlIgeMCGNrbPD/wfOBOyUAXEUgNhGTWxJICtbeHQkmL4mEoJmScSkjpZvyevxOC9kfdJG8VBtg==}
+  '@iconify-json/lucide@1.2.3':
+    resolution: {integrity: sha512-NZ6gOFbLVHmsb2zVNoAANKUp+wFIbHP47JNNPMq3tsLAtY8anm2g4S980ZzyrS4M47RHkHXtpiiv+P2Mq3MEDA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -5867,19 +5867,19 @@ snapshots:
 
   '@humanwhocodes/object-schema@2.0.2': {}
 
-  '@iconify-json/ci@1.1.13':
+  '@iconify-json/ci@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/flagpack@1.1.14':
+  '@iconify-json/flagpack@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/ic@1.1.17':
+  '@iconify-json/ic@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/lucide@1.1.178':
+  '@iconify-json/lucide@1.2.3':
     dependencies:
       '@iconify/types': 2.0.0
 

@@ -66,8 +66,8 @@ importers:
         specifier: ^11.0.3
         version: 11.0.3(magicast@0.3.5)(nuxt@3.11.1(@parcel/watcher@2.4.1)(@types/node@22.5.4)(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.3.2)(magicast@0.3.5)(optionator@0.9.3)(rollup@4.13.0)(sass@1.78.0)(terser@5.32.0)(typescript@5.4.3)(vite@5.2.6(@types/node@22.5.4)(sass@1.78.0)(terser@5.32.0))(vue-tsc@1.8.27(typescript@5.4.3))(webpack-sources@3.2.3))(rollup@4.13.0)(vue@3.4.8(typescript@5.4.3))(webpack-sources@3.2.3)
       '@vueuse/router':
-        specifier: ^10.9.0
-        version: 10.9.0(vue-router@4.3.0(vue@3.4.8(typescript@5.4.3)))(vue@3.4.8(typescript@5.4.3))
+        specifier: ^11.0.3
+        version: 11.0.3(vue-router@4.3.0(vue@3.4.8(typescript@5.4.3)))(vue@3.4.8(typescript@5.4.3))
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.2.1)
@@ -1800,13 +1800,10 @@ packages:
     peerDependencies:
       nuxt: ^3.0.0
 
-  '@vueuse/router@10.9.0':
-    resolution: {integrity: sha512-MOmrCMQlRuPS4PExE1hy8T0XbZUXaNbEuh7CAG5mC8kdvdgANQMkdvJ7vIEOP27n5mXK/4YjvXJOZSsur4E0QQ==}
+  '@vueuse/router@11.0.3':
+    resolution: {integrity: sha512-Sa8wNATd4DoAWkO5NgV+sfTU9dOtC8pi+GEbtzOdC7/99fWK8k5/dfbfkt+OWcpwXoToNidBqnAZafknlYb2ig==}
     peerDependencies:
       vue-router: '>=4.0.0-rc.1'
-
-  '@vueuse/shared@10.9.0':
-    resolution: {integrity: sha512-Uud2IWncmAfJvRaFYzv5OHDli+FbOzxiVEQdLCKQKLyhz94PIyFC3CHcH7EDMwIn8NPtD06+PNbC/PiO0LGLtw==}
 
   '@vueuse/shared@11.0.3':
     resolution: {integrity: sha512-0rY2m6HS5t27n/Vp5cTDsKTlNnimCqsbh/fmT2LgE+aaU42EMfXo8+bNX91W9I7DDmxfuACXMmrd7d79JxkqWA==}
@@ -4955,17 +4952,6 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  vue-demi@0.14.7:
-    resolution: {integrity: sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==}
-    engines: {node: '>=12'}
-    hasBin: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: 3.4.8
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-
   vue-devtools-stub@0.1.0:
     resolution: {integrity: sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ==}
 
@@ -7487,18 +7473,11 @@ snapshots:
       - vue
       - webpack-sources
 
-  '@vueuse/router@10.9.0(vue-router@4.3.0(vue@3.4.8(typescript@5.4.3)))(vue@3.4.8(typescript@5.4.3))':
+  '@vueuse/router@11.0.3(vue-router@4.3.0(vue@3.4.8(typescript@5.4.3)))(vue@3.4.8(typescript@5.4.3))':
     dependencies:
-      '@vueuse/shared': 10.9.0(vue@3.4.8(typescript@5.4.3))
-      vue-demi: 0.14.7(vue@3.4.8(typescript@5.4.3))
-      vue-router: 4.3.0(vue@3.4.8(typescript@5.4.3))
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-
-  '@vueuse/shared@10.9.0(vue@3.4.8(typescript@5.4.3))':
-    dependencies:
+      '@vueuse/shared': 11.0.3(vue@3.4.8(typescript@5.4.3))
       vue-demi: 0.14.10(vue@3.4.8(typescript@5.4.3))
+      vue-router: 4.3.0(vue@3.4.8(typescript@5.4.3))
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -10988,10 +10967,6 @@ snapshots:
       vue: 3.4.8(typescript@5.4.3)
 
   vue-demi@0.14.10(vue@3.4.8(typescript@5.4.3)):
-    dependencies:
-      vue: 3.4.8(typescript@5.4.3)
-
-  vue-demi@0.14.7(vue@3.4.8(typescript@5.4.3)):
     dependencies:
       vue: 3.4.8(typescript@5.4.3)
 

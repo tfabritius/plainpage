@@ -22,7 +22,7 @@ importers:
         version: 6.1.2
       '@element-plus/nuxt':
         specifier: ^1.0.10
-        version: 1.0.10(@element-plus/icons-vue@2.3.1(vue@3.5.4(typescript@5.6.2)))(element-plus@2.8.2(vue@3.5.4(typescript@5.6.2)))(magicast@0.3.5)(rollup@4.21.2)(webpack-sources@3.2.3)
+        version: 1.0.10(@element-plus/icons-vue@2.3.1(vue@3.5.4(typescript@5.6.2)))(element-plus@2.8.3(vue@3.5.4(typescript@5.6.2)))(magicast@0.3.5)(rollup@4.21.2)(webpack-sources@3.2.3)
       '@iconify-json/ci':
         specifier: ^1.2.0
         version: 1.2.0
@@ -75,8 +75,8 @@ importers:
         specifier: ^3.1.6
         version: 3.1.6
       element-plus:
-        specifier: ^2.8.2
-        version: 2.8.2(vue@3.5.4(typescript@5.6.2))
+        specifier: ^2.8.3
+        version: 2.8.3(vue@3.5.4(typescript@5.6.2))
       eslint:
         specifier: ^9.10.0
         version: 9.10.0(jiti@1.21.6)
@@ -2410,8 +2410,8 @@ packages:
   electron-to-chromium@1.5.18:
     resolution: {integrity: sha512-1OfuVACu+zKlmjsNdcJuVQuVE61sZOLbNM4JAQ1Rvh6EOj0/EUKhMJjRH73InPlXSh8HIJk1cVZ8pyOV/FMdUQ==}
 
-  element-plus@2.8.2:
-    resolution: {integrity: sha512-pqoQlaUmzUFCjjTHyxGO7Cd0CizsQpIaad1ozV9PCaYjh2T4MIMnjfifqiYs2lWoZ/8GVwrRG1WTCfnZEjwfcg==}
+  element-plus@2.8.3:
+    resolution: {integrity: sha512-BXQOyDf0s7JHyNEV8iaO+iaOzTZPsBXVKMzMI967vLCodUBDLrtiY5vglAn1YEebQcUOEUMhGcttTpIvEkcBjQ==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -5419,11 +5419,11 @@ snapshots:
     dependencies:
       vue: 3.5.4(typescript@5.6.2)
 
-  '@element-plus/nuxt@1.0.10(@element-plus/icons-vue@2.3.1(vue@3.5.4(typescript@5.6.2)))(element-plus@2.8.2(vue@3.5.4(typescript@5.6.2)))(magicast@0.3.5)(rollup@4.21.2)(webpack-sources@3.2.3)':
+  '@element-plus/nuxt@1.0.10(@element-plus/icons-vue@2.3.1(vue@3.5.4(typescript@5.6.2)))(element-plus@2.8.3(vue@3.5.4(typescript@5.6.2)))(magicast@0.3.5)(rollup@4.21.2)(webpack-sources@3.2.3)':
     dependencies:
       '@element-plus/icons-vue': 2.3.1(vue@3.5.4(typescript@5.6.2))
       '@nuxt/kit': 3.13.1(magicast@0.3.5)(rollup@4.21.2)(webpack-sources@3.2.3)
-      element-plus: 2.8.2(vue@3.5.4(typescript@5.6.2))
+      element-plus: 2.8.3(vue@3.5.4(typescript@5.6.2))
       magic-string: 0.27.0
       unplugin: 1.14.0(webpack-sources@3.2.3)
     transitivePeerDependencies:
@@ -7681,7 +7681,7 @@ snapshots:
 
   electron-to-chromium@1.5.18: {}
 
-  element-plus@2.8.2(vue@3.5.4(typescript@5.6.2)):
+  element-plus@2.8.3(vue@3.5.4(typescript@5.6.2)):
     dependencies:
       '@ctrl/tinycolor': 3.6.0
       '@element-plus/icons-vue': 2.3.1(vue@3.5.4(typescript@5.6.2))

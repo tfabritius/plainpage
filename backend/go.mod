@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/blevesearch/bleve/v2 v2.4.2
-	github.com/go-chi/chi/v5 v5.0.14
+	github.com/go-chi/chi/v5 v5.1.0
 	github.com/go-chi/cors v1.2.1
 	github.com/go-chi/render v1.0.3
 	github.com/golang-jwt/jwt/v5 v5.2.1

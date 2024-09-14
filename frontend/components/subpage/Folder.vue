@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import type { FormInstance, FormRules } from 'element-plus'
 import { Icon } from '#components'
 import { ElInput } from 'element-plus'
 import { storeToRefs } from 'pinia'
-import slugify from 'slugify'
 
-import type { FormInstance, FormRules } from 'element-plus'
+import slugify from 'slugify'
 import { useAppStore } from '~/store/app'
 import type { Breadcrumb, Folder, PutRequest } from '~/types'
 

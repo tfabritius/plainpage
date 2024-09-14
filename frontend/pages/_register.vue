@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { FetchError } from 'ofetch'
 import type { FormInstance, FormRules } from 'element-plus'
+import { FetchError } from 'ofetch'
 import { useAuthStore } from '~/store/auth'
 import type { User } from '~/types'
 import { validUsernameRegex } from '~/types'

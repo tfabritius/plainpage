@@ -31,7 +31,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/node": "^22.5.5",
     "@unocss/nuxt": "^0.62.3",
-    "@vueuse/components": "^11.0.3",
+    "@vueuse/components": "^11.1.0",
     "@vueuse/core": "^11.0.3",
     "@vueuse/nuxt": "^11.0.3",
     "@vueuse/router": "^11.0.3",

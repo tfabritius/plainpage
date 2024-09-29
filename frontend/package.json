@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.1",
-    "@codemirror/lang-markdown": "^6.2.5",
+    "@codemirror/lang-markdown": "^6.3.0",
     "@codemirror/state": "^6.4.1",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@element-plus/nuxt": "^1.0.10",

@@ -29,7 +29,7 @@
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@pinia/nuxt": "^0.5.4",
     "@types/dompurify": "^3.0.5",
-    "@types/node": "^22.7.4",
+    "@types/node": "^22.7.7",
     "@unocss/nuxt": "^0.63.3",
     "@vueuse/components": "^11.1.0",
     "@vueuse/core": "^11.1.0",

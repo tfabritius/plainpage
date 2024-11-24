@@ -8,7 +8,9 @@ import { useAuthStore } from '~/store/auth'
 
 const { t, locale, setLocaleCookie } = useI18n()
 
-const locales = [
+type Locale = typeof locale.value
+
+const locales: { code: Locale, name: string, icon: string }[] = [
   {
     code: 'en',
     name: 'English',

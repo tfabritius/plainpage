@@ -1,5 +1,3 @@
-@use 'vars.scss' as *;
-
 @use 'sass:color';
 
 .markdown {
@@ -30,12 +28,16 @@
 
   h1,
   h2 {
-    padding-bottom: .3em;
-    border-bottom: 1px solid color.adjust($text-color-primary-light, $alpha: -0.7);
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--ui-border-accented);
+  }
 
-    .dark & {
-      border-bottom: 1px solid color.adjust($text-color-primary-dark, $alpha: -0.7);
-    }
+  h1 {
+    font-size: 2em;
+  }
+
+  h2 {
+    font-size: 1.5em;
   }
 
   h3 {
@@ -43,17 +45,13 @@
   }
 
   h5 {
-    font-size: .875em;
+    font-size: 0.875em;
   }
 
   h6 {
-    font-size: .85em;
+    font-size: 0.85em;
 
-    color: color.adjust($text-color-primary-light, $alpha: -0.2);
-
-    html.dark & {
-      color: color.adjust($text-color-primary-dark, $alpha: -0.2);
-    }
+    color: color-mix(in srgb, var(--ui-text) 80%, transparent);
   }
 
   table {
@@ -78,18 +76,35 @@
     margin-left: 0;
     padding: 0 1em;
 
-    border-left: .5em solid #dddddd;
-    color: color.adjust($text-color-primary-light, $alpha: -0.3);
+    border-left: 0.5em solid #dddddd;
+    color: color-mix(in srgb, var(--ui-text) 70%, transparent);
 
     html.dark & {
-      border-left: .5em solid #555555;
-      color: color.adjust($text-color-primary-dark, $alpha: -0.3);
+      border-left: 0.5em solid #555555;
     }
+  }
+
+  ul {
+    list-style: disc;
+    ul {
+      list-style: circle;
+      ul {
+        list-style: square;
+      }
+    }
+  }
+
+  ol {
+    list-style: decimal;
   }
 
   ul,
   ol {
     padding-left: 2em;
+
+    ul {
+      list-style: circle;
+    }
 
     ol {
       list-style-type: lower-roman;
@@ -104,7 +119,7 @@
   }
 
   hr {
-    height: .25em;
+    height: 0.25em;
     padding: 0;
     margin: 24px 0;
     border: 0;
@@ -116,18 +131,14 @@
     }
   }
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     margin: 0;
   }
 
   a {
     text-decoration: none;
 
-    color: $primary-color-light;
-
-    html.dark & {
-      color: $primary-color-dark;
-    }
+    color: var(--ui-primary);
 
     &:hover {
       text-decoration: underline;
@@ -189,7 +200,7 @@
   }
 
   code {
-    padding: .2em .4em;
+    padding: 0.2em 0.4em;
     font-size: 85%;
     white-space: break-spaces;
     border-radius: 6px;

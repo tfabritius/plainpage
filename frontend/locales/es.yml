@@ -27,6 +27,8 @@ create-folder: Crear carpeta
 create-page: Crear página
 create-user: Crear usuario
 current-version: Versión actual
+dark-mode-off: Luz apagada
+dark-mode-on: Luz encendida
 define-custom-permissions: Definir permisos propios
 delete: Borrar
 delete-my-account: Borrar mi cuenta
@@ -48,6 +50,8 @@ inherit-permissions: Heredar permisos de la carpeta principal
 invalid-credentials: Credenciales no válidas
 invalid-folder-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
+language: Idioma
+menu: Menú
 more: Más
 new-password: Nueva contraseña
 not-found: Extraviado

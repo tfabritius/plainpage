@@ -1,48 +1,34 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormSubmitEvent } from '@nuxt/ui'
 import { FetchError } from 'ofetch'
+import { z } from 'zod'
 import { useAuthStore } from '~/store/auth'
 import type { User } from '~/types'
 import { validUsernameRegex } from '~/types'
 
 const { t } = useI18n()
+const toast = useToast()
 
 const existingUsername = ref<string>()
 
-const registerFormRef = ref<FormInstance>()
-const registerFormData = ref({ displayName: '', username: '', password: '', passwordConfirm: '' })
-const registerFormRules = {
-  username: [
-    { required: true, message: t('username-required'), trigger: 'blur' },
-    { min: 4, max: 20, message: t('username-length'), trigger: 'blur' },
-    { pattern: validUsernameRegex, message: t('username-invalid'), trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        if (existingUsername.value === value) {
-          callback(new Error(t('username-not-unique')))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'change',
-    },
-  ],
-  displayName: [{ required: true, message: t('displayname-required'), trigger: 'blur' }],
-  password: [{ required: true, message: t('password-required'), trigger: 'blur' }],
-  passwordConfirm: [
-    { required: true, message: t('password-repeat-required'), trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        if (value !== registerFormData.value.password) {
-          callback(new Error(t('password-repeat-not-equal')))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'blur',
-    },
-  ],
-} satisfies FormRules
+const form = useTemplateRef('formRef')
+const formSchema = z.object({
+  username: z.string()
+    .trim()
+    .min(4, t('username-length'))
+    .max(20, t('username-length'))
+    .regex(validUsernameRegex, t('username-invalid'))
+    .refine(username => username !== existingUsername.value, { message: t('username-not-unique') }),
+  displayName: z.string().min(1, t('displayname-required')),
+  password: z.string().min(1, t('password-required')),
+  passwordConfirm: z.string(),
+})
+  .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
+
+type FormSchema = z.output<typeof formSchema>
+const formState = reactive<FormSchema>(
+  { displayName: '', username: '', password: '', passwordConfirm: '' },
+)
 
 useHead(() => ({ title: t('register') }))
 
@@ -51,36 +37,27 @@ const route = useRoute()
 
 const loading = ref(false)
 
-async function submit() {
-  if (!registerFormRef.value) {
-    return
-  }
-
-  const formValid = await new Promise<boolean>(resolve => registerFormRef.value?.validate(valid => resolve(valid)))
-  if (!formValid) {
-    return
-  }
-
+async function submit(_event: FormSubmitEvent<FormSchema>) {
   loading.value = true
   try {
-    await apiFetch<User>('/auth/users', { method: 'POST', body: registerFormData.value })
+    await apiFetch<User>('/auth/users', { method: 'POST', body: formState })
   } catch (e) {
     if (e instanceof FetchError && e.statusCode === 409) {
-      existingUsername.value = registerFormData.value.username
-      registerFormRef.value?.validate()
+      existingUsername.value = formState.username
+      form.value?.validate()
     } else {
-      ElMessage({ message: String(e), type: 'error' })
+      toast.add({ description: String(e), color: 'error' })
     }
     loading.value = false
     return
   }
 
-  const ok = await auth.login(registerFormData.value)
+  const ok = await auth.login(formState)
   if (ok) {
     const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
     await navigateTo(returnTo)
   } else {
-    ElMessage({ message: t('invalid-credentials'), type: 'error' })
+    toast.add({ description: t('invalid-credentials'), color: 'error' })
   }
 
   loading.value = false
@@ -92,57 +69,59 @@ async function submit() {
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <h2>{{ $t('register-account') }}</h2>
+      <h2 class="font-light text-xl my-4">
+        {{ $t('register-account') }}
+      </h2>
 
-      <ElForm
-        ref="registerFormRef"
-        :model="registerFormData"
-        :rules="registerFormRules"
-        label-position="top"
+      <UForm
+        ref="formRef"
+        :schema="formSchema"
+        :state="formState"
         class="w-50"
-        @submit.prevent
-        @keypress.enter="submit"
+        @submit="submit"
       >
-        <ElFormItem prop="displayName">
-          <ElInput
-            v-model="registerFormData.displayName"
+        <UFormField name="displayName" class="mt-4">
+          <UInput
+            v-model="formState.displayName"
             :placeholder="$t('display-name')"
             autofocus
+            class="w-full"
           />
-        </ElFormItem>
-        <ElFormItem prop="username">
-          <ElInput
-            v-model="registerFormData.username"
-            type="username"
+        </UFormField>
+        <UFormField name="username" class="mt-4">
+          <UInput
+            v-model="formState.username"
+            type="text"
             :placeholder="$t('username')"
+            class="w-full"
           />
-        </ElFormItem>
-        <ElFormItem prop="password">
-          <ElInput
-            v-model="registerFormData.password"
+        </UFormField>
+        <UFormField name="password" class="mt-4">
+          <UInput
+            v-model="formState.password"
             type="password"
-            show-password
             :placeholder="$t('password')"
+            class="w-full"
           />
-        </ElFormItem>
-        <ElFormItem prop="passwordConfirm">
-          <ElInput
-            v-model="registerFormData.passwordConfirm"
+        </UFormField>
+        <UFormField name="passwordConfirm" class="mt-4">
+          <UInput
+            v-model="formState.passwordConfirm"
             type="password"
-            show-password
             :placeholder="$t('password-repeat')"
+            class="w-full"
           />
-        </ElFormItem>
-        <ElFormItem>
+        </UFormField>
+        <UFormField class="mt-4">
           <PlainButton
-            type="primary"
+            type="submit"
+            color="primary"
             class="w-full"
             :label="$t('register')"
             :loading="loading"
-            @click="submit"
           />
-        </ElFormItem>
-      </ElForm>
+        </UFormField>
+      </UForm>
     </div>
   </div>
 </template>

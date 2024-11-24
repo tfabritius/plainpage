@@ -4,35 +4,20 @@ export default defineNuxtConfig({
   spaLoadingTemplate: 'spa-loading-template.html',
 
   modules: [
-    '@element-plus/nuxt',
-    '@unocss/nuxt',
+    '@nuxt/eslint',
+    '@nuxt/ui',
+    '@nuxt/icon',
     '@vueuse/nuxt',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/i18n',
   ],
-
-  elementPlus: {
-    icon: false,
-    importStyle: 'scss',
-  },
-
-  unocss: {
-    // presets
-    uno: true, // enable `@unocss/preset-uno`
-    icons: { prefix: '' }, // enable `@unocss/preset-icons`
-    attributify: true, // enable `@unocss/preset-attributify`,
-
-    // core options
-    shortcuts: [],
-    rules: [],
-  },
 
   css: [
     '@/assets/styles/markdown.scss',
   ],
 
-  piniaPersistedstate: {
+  piniaPluginPersistedstate: {
     storage: 'localStorage',
   },
 
@@ -47,6 +32,23 @@ export default defineNuxtConfig({
     ],
   },
 
+  icon: {
+    serverBundle: {
+      remote: false,
+    },
+    clientBundle: {
+      scan: {
+        globInclude: ['**/*.{vue,jsx,tsx,md,mdc,mdx,yml,yaml}', 'app.config.ts'],
+      },
+    },
+  },
+
+  eslint: {
+    config: {
+      standalone: false,
+    },
+  },
+
   typescript: {
     typeCheck: true,
     strict: true,
@@ -56,7 +58,7 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@use "@/assets/styles/elementplus.scss" as element;',
+          api: 'modern',
         },
       },
     },

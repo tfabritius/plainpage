@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '#components'
 import { UseTimeAgo } from '@vueuse/components'
 import { format } from 'date-fns'
 import { timeAgoMessages } from '~/composables/timeAgoMessages'
@@ -44,15 +43,18 @@ const navTo = navigateTo
     </template>
 
     <div v-for="(el, idx) in data?.entries" :key="el.rev">
-      <NuxtLink v-slot="{ navigate, href }" :to="`?rev=${el.rev}`" custom>
-        <ElLink :href="href" @click="navigate">
-          {{ format(el.date, 'yyyy-MM-dd HH:mm:ss') }}
-          <UseTimeAgo v-slot="{ timeAgo }" :time="el.date" :messages="timeAgoMessages()">
-            ({{ timeAgo }})
-          </UseTimeAgo>
-          <span v-if="idx === 0"> <Icon class="ml-2" name="ci:show" /> ({{ $t('current-version') }})</span>
-        </ElLink>
-      </NuxtLink>
+      <ULink :to="`?rev=${el.rev}`" :active="false">
+        {{ format(el.date, 'yyyy-MM-dd HH:mm:ss') }}
+        <UseTimeAgo v-slot="{ timeAgo }" :time="el.date" :messages="timeAgoMessages()">
+          ({{ timeAgo }})
+        </UseTimeAgo>
+        <span v-if="idx === 0">
+          <UIcon class="ml-2 align-middle" name="ci:show" />
+          <span class="align-middle">
+            ({{ $t('current-version') }})
+          </span>
+        </span>
+      </ULink>
     </div>
   </Layout>
 </template>

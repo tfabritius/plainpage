@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
-import { Icon } from '#components'
-import { ElInput } from 'element-plus'
+import type { DropdownMenuItem } from '@nuxt/ui'
 import { storeToRefs } from 'pinia'
 
-import slugify from 'slugify'
 import { useAppStore } from '~/store/app'
 import type { Breadcrumb, Folder, PutRequest } from '~/types'
 
@@ -21,6 +18,7 @@ const subfolders = computed(() => props.folder.content.filter(e => e.isFolder))
 const pages = computed(() => props.folder.content.filter(e => !e.isFolder))
 
 const { t } = useI18n()
+const toast = useToast()
 
 const app = useAppStore()
 const { allowAdmin } = storeToRefs(app)
@@ -34,122 +32,24 @@ const pageTitle = computed(() => {
 
 useHead(() => ({ title: pageTitle.value }))
 
-const PermissionsIcon = h(Icon, { name: 'ci:shield' })
-const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
-const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
-
-const newContentDialogVisible = ref(false)
-const newContentFormRef = ref<FormInstance>()
-const newContentTitleInputRef = ref<typeof ElInput>()
-const newContentType = ref<'page' | 'folder'>('page')
-const newContentFormData = ref({ title: '', name: '' })
-const newContentDialogExpanded = ref(false)
-const toggleNewContentDialogExpanded = useToggle(newContentDialogExpanded)
-const newContentNameChangedManually = ref(false)
-const newContentFormRules = computed(() => ({
-  name: [
-    {
-      required: true,
-      message: newContentType.value === 'page' ? t('page-name-required') : t('folder-name-required'),
-      trigger: 'blur',
-    },
-    {
-      pattern: /^[a-z0-9-][a-z0-9_-]*$/,
-      message: newContentType.value === 'page' ? t('invalid-page-name') : t('invalid-folder-name'),
-      trigger: 'blur',
-    },
-  ],
-} satisfies FormRules))
-
-async function showNewContentDialog(type: 'page' | 'folder') {
-  newContentType.value = type
-  newContentFormData.value = { title: '', name: '' }
-  newContentDialogExpanded.value = false
-  newContentNameChangedManually.value = false
-  newContentFormRef.value?.clearValidate()
-
-  newContentDialogVisible.value = true
-}
-
-function focusNewContentDialog() {
-  newContentTitleInputRef.value?.focus()
-}
-
-function onNewContentTitleChanged() {
-  if (!newContentNameChangedManually.value) {
-    newContentFormData.value.name = slugify(
-      newContentFormData.value.title,
-      { lower: true, strict: true },
-    )
-  }
-}
-
-function onNewContentNameChanged() {
-  newContentNameChangedManually.value = true
-}
-
-async function submitNewContentDialog() {
-  if (!newContentFormRef.value) {
-    return
-  }
-
-  const formValid = await new Promise<boolean>(resolve => newContentFormRef.value?.validate(valid => resolve(valid)))
-  if (!formValid) {
-    newContentDialogExpanded.value = true
-    return
-  }
-
-  newContentDialogVisible.value = false
-
-  const newUrl = `${props.urlPath !== '' ? `/${props.urlPath}` : ''}/${newContentFormData.value.name}`
-
-  if (newContentType.value === 'page') {
-    await navigateTo({
-      path: newUrl,
-      query: { edit: 'true' },
-      state: { title: newContentFormData.value.title },
-    })
-  } else {
-    try {
-      await apiFetch(`/pages${newUrl}`, {
-        method: 'PUT',
-        body: { folder: { meta: { title: newContentFormData.value.title } } },
-      })
-    } catch (err) {
-      ElMessage({
-        message: String(err),
-        type: 'error',
-      })
-    }
-    await navigateTo(newUrl)
-  }
-}
-
-async function onEditTitle() {
-  let title = props.folder.meta.title
+const editTitelOpen = ref(false)
+const editableTitle = ref('')
+async function saveEditedTitle() {
   try {
-    const msgBox = await ElMessageBox.prompt(t('folder-title'), {
-      inputValue: title,
-      confirmButtonText: t('ok'),
-      cancelButtonText: t('cancel'),
-    })
-    title = msgBox.value
-  } catch {
-    return
-  }
-
-  try {
-    const body = { folder: { meta: { title, tags: null }, content: [] } } satisfies PutRequest
+    const body = { folder: { meta: { title: editableTitle.value, tags: null }, content: [] } } satisfies PutRequest
     await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body })
 
+    editTitelOpen.value = false
     props.onReload()
   } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
+    toast.add({
+      description: String(err),
+      color: 'error',
     })
   }
 }
+
+const plainDialog = useTemplateRef('plainDialog')
 
 const deleteConfirmOpen = ref(false)
 async function onDeleteFolder() {
@@ -159,16 +59,13 @@ async function onDeleteFolder() {
   }
 
   deleteConfirmOpen.value = true
-  try {
-    await ElMessageBox.confirm(
-      t('are-you-sure-to-delete-this-folder'),
-      {
-        confirmButtonText: t('delete'),
-        cancelButtonText: t('cancel'),
-        type: 'warning',
-      },
-    )
-  } catch {
+  if (!await plainDialog.value?.confirm(
+    t('are-you-sure-to-delete-this-folder'),
+    {
+      confirmButtonText: t('delete'),
+      confirmButtonColor: 'warning',
+    },
+  )) {
     // do nothing
     deleteConfirmOpen.value = false
     return
@@ -178,32 +75,58 @@ async function onDeleteFolder() {
   try {
     await apiFetch(`/pages/${props.urlPath}`, { method: 'DELETE' })
 
-    ElMessage({
-      message: t('folder-deleted'),
-      type: 'success',
+    toast.add({
+      description: t('folder-deleted'),
+      color: 'success',
     })
 
     await navigateTo('./')
   } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
+    toast.add({
+      description: String(err),
+      color: 'error',
     })
   }
 }
 
-async function handleDropdownMenuCommand(command: string | number | object) {
-  if (command === 'reload') {
-    await props.onReload()
-    ElMessage({ message: t('folder-reloaded'), type: 'success' })
-  } else if (command === 'acl') {
-    await navigateTo({ query: { acl: null } })
-  } else if (command === 'delete') {
-    onDeleteFolder()
-  } else {
-    throw new Error(`Unhandled command ${command}`)
+const menuItems = computed(() => {
+  const items: DropdownMenuItem[] = []
+
+  items.push(
+    {
+      icon: 'ci:arrows-reload-01',
+      label: t('reload'),
+      onSelect: async () => {
+        await props.onReload()
+        toast.add({ description: t('folder-reloaded'), color: 'success' })
+      },
+    },
+  )
+
+  if (allowAdmin.value) {
+    items.push(
+      {
+        icon: 'ci:shield',
+        label: t('permissions'),
+        onSelect: async () => {
+          await navigateTo({ query: { acl: null } })
+        },
+      },
+    )
   }
-}
+
+  if (props.urlPath !== '' && props.allowDelete) {
+    items.push(
+      {
+        icon: 'ci:trash-full',
+        label: t('delete'),
+        onSelect: onDeleteFolder,
+      },
+    )
+  }
+
+  return items
+})
 
 onKeyStroke('Backspace', (e) => {
   if (props.urlPath !== '' && props.allowDelete && e.ctrlKey) {
@@ -216,42 +139,52 @@ onKeyStroke('Backspace', (e) => {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <Icon name="ci:folder" class="mr-1" />
+      <UIcon name="ci:folder" class="mr-1" />
       {{ pageTitle }}
     </template>
 
     <template v-if="urlPath !== ''" #title:suffix>
-      <ElLink :underline="false" class="opacity-0 group-hover:opacity-100 duration-100" @click="onEditTitle">
-        <Icon name="ci:edit" class="w-6 h-6" />
-      </ElLink>
+      <UModal v-model:open="editTitelOpen">
+        <UButton
+          class="opacity-0 group-hover:opacity-100 duration-100"
+          variant="link"
+          color="neutral"
+          @click="editableTitle = props.folder.meta.title"
+        >
+          <UIcon name="ci:edit" size="1.5em" />
+        </UButton>
+        <template #title>
+          {{ t('folder-title') }}
+        </template>
+        <template #body>
+          <form id="editTitleForm" @submit.prevent="saveEditedTitle">
+            <UInput v-model="editableTitle" class="w-full" autofocus />
+          </form>
+        </template>
+        <template #footer>
+          <PlainButton :label="t('cancel')" @click="editTitelOpen = false" />
+          <PlainButton color="primary" :label="t('ok')" type="submit" form="editTitleForm" />
+        </template>
+      </UModal>
     </template>
 
     <template #actions>
       <div>
-        <PlainButton v-if="allowWrite" icon="ci:file-add" :label="$t('create-page')" @click="showNewContentDialog('page')" />
-        <PlainButton v-if="allowWrite" icon="ci:folder-add" :label="$t('create-folder')" @click="showNewContentDialog('folder')" />
+        <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
+          <PlainButton icon="ci:file-add" :label="$t('create-page')" />
+        </NewContentModal>
+        <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
+          <PlainButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" />
+        </NewContentModal>
 
-        <ElDropdown trigger="click" class="ml-3" @command="handleDropdownMenuCommand">
-          <PlainButton icon="ci:more-vertical" :label="$t('more')" />
-          <template #dropdown>
-            <ElDropdownMenu>
-              <ElDropdownItem :icon="ReloadIcon" command="reload">
-                {{ $t('reload') }}
-              </ElDropdownItem>
-              <ElDropdownItem v-if="allowAdmin" :icon="PermissionsIcon" command="acl">
-                {{ $t('permissions') }}
-              </ElDropdownItem>
-              <ElDropdownItem v-if="urlPath !== '' && allowDelete" :icon="DeleteIcon" command="delete">
-                {{ $t('delete') }}
-              </ElDropdownItem>
-            </ElDropdownMenu>
-          </template>
-        </ElDropdown>
+        <UDropdownMenu :items="menuItems">
+          <PlainButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
+        </UDropdownMenu>
       </div>
     </template>
 
     <div v-if="subfolders.length > 0">
-      <h2 class="font-light text-xl">
+      <h2 class="font-light text-xl my-4">
         {{ $t('folders') }}
       </h2>
       <MultiColumnList
@@ -260,17 +193,15 @@ onKeyStroke('Backspace', (e) => {
         :group-if-more-than="10"
       >
         <template #item="{ item }">
-          <NuxtLink v-slot="{ navigate, href }" :to="`/${item.url}`" custom>
-            <ElLink :href="href" @click="navigate">
-              <Icon name="ci:folder" class="mr-1" /> {{ item.title || item.name }}
-            </ElLink>
-          </NuxtLink>
+          <ULink :to="`/${item.url}`">
+            <UIcon name="ci:folder" class="align-middle" /> <span class="align-middle">{{ item.title || item.name }}</span>
+          </ULink>
         </template>
       </MultiColumnList>
     </div>
 
     <div v-if="pages.length > 0">
-      <h2 class="font-light text-xl">
+      <h2 class="font-light text-xl my-4">
         {{ $t('pages') }}
       </h2>
       <MultiColumnList
@@ -279,50 +210,13 @@ onKeyStroke('Backspace', (e) => {
         :group-if-more-than="10"
       >
         <template #item="{ item }">
-          <NuxtLink v-slot="{ navigate, href }" :to="`/${item.url}`" custom>
-            <ElLink :href="href" @click="navigate">
-              {{ item.title || item.name }}
-            </ElLink>
-          </NuxtLink>
+          <ULink :to="`/${item.url}`">
+            {{ item.title || item.name }}
+          </ULink>
         </template>
       </MultiColumnList>
     </div>
 
-    <ClientOnly>
-      <ElDialog
-        v-model="newContentDialogVisible"
-        :title="newContentType === 'page' ? $t('create-page') : $t('create-folder')"
-        width="40%"
-        @opened="focusNewContentDialog"
-      >
-        <ElForm
-          ref="newContentFormRef"
-          :model="newContentFormData"
-          :rules="newContentFormRules"
-          :validate-on-rule-change="false"
-          label-position="top"
-          @submit.prevent
-          @keypress.enter="submitNewContentDialog"
-        >
-          <ElFormItem :label="newContentType === 'page' ? $t('page-title') : $t('folder-title')" prop="title">
-            <ElInput ref="newContentTitleInputRef" v-model="newContentFormData.title" @input="onNewContentTitleChanged" />
-          </ElFormItem>
-
-          <span class="cursor-pointer text-xs" @click="toggleNewContentDialogExpanded()">
-            <Icon name="ci:chevron-right" :class="newContentDialogExpanded && 'rotate-90 transform'" />
-            {{ $t('more') }}
-          </span>
-          <div v-show="newContentDialogExpanded">
-            <ElFormItem :label="newContentType === 'page' ? $t('page-name') : $t('folder-name')" prop="name">
-              <ElInput v-model="newContentFormData.name" @input="onNewContentNameChanged" />
-            </ElFormItem>
-          </div>
-        </ElForm>
-        <template #footer>
-          <PlainButton :label="$t('cancel')" @click="newContentDialogVisible = false" />
-          <PlainButton type="primary" :label="$t('ok')" @click="submitNewContentDialog" />
-        </template>
-      </ElDialog>
-    </ClientOnly>
+    <PlainDialog ref="plainDialog" />
   </Layout>
 </template>

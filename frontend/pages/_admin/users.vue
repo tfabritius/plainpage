@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
+import type { TableColumn } from '@nuxt/ui'
+import { z } from 'zod'
 import type { PatchOperation, User } from '~/types'
 import { validUsernameRegex } from '~/types'
 
@@ -8,111 +9,106 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const toast = useToast()
 
 useHead({ title: t('users') })
 
 const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
+const columns: TableColumn<User>[] = [
+  { header: t('username'), accessorKey: 'username' },
+  { header: t('display-name'), accessorKey: 'displayName' },
+  { header: '', id: 'actions' },
+]
+
 const userFormVisible = ref(false)
-const userFormRef = ref<FormInstance>()
-const emptyUser = {
-  currentUsername: '',
-  username: '',
-  displayName: '',
-  password: '',
-  passwordConfirm: '',
-}
-const userFormData = ref({ ...emptyUser })
-const userFormRules = computed(() => ({
-  username: [
-    { required: true, message: t('username-required'), trigger: 'blur' },
-    { min: 4, max: 20, message: t('username-length'), trigger: 'blur' },
-    { pattern: validUsernameRegex, message: t('username-invalid'), trigger: 'blur' },
-  ],
-  displayName: [{ required: true, message: t('displayname-required'), trigger: 'blur' }],
-  password: [{ required: !userFormData.value.currentUsername, message: t('password-required'), trigger: 'blur' }],
-  passwordConfirm: [
-    { required: !userFormData.value.currentUsername, message: t('password-repeat-required'), trigger: 'blur' },
-    {
-      validator: (rule, value, callback) => {
-        if (value !== userFormData.value.password) {
-          callback(new Error(t('password-repeat-not-equal')))
-        } else {
-          callback()
-        }
-      },
-      trigger: 'blur',
-    },
-  ],
-} satisfies FormRules))
+const userForm = useTemplateRef('userFormRef')
+const userFormSelectedUsername = ref('')
+const userFormSchema = z.object({
+  username: z.string()
+    .min(4, t('username-length'))
+    .max(20, t('username-length'))
+    .regex(validUsernameRegex, t('username-invalid')),
+  displayName: z.string().min(1, t('displayname-required')),
+  password: z.string().refine(password => userFormSelectedUsername.value || password.length > 0, t('password-required')),
+  passwordConfirm: z.string(),
+})
+  .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
+
+type UserFormSchema = z.output<typeof userFormSchema>
+const userFormState = reactive<UserFormSchema>(
+  { displayName: '', username: '', password: '', passwordConfirm: '' },
+)
 
 async function onCreate() {
-  userFormData.value = { ...emptyUser }
-  userFormRef.value?.clearValidate()
+  userFormState.displayName = ''
+  userFormState.username = ''
+  userFormState.password = ''
+  userFormState.passwordConfirm = ''
+  userFormSelectedUsername.value = ''
+  userForm.value?.clear()
   userFormVisible.value = true
 }
 
 async function onEdit(user: User) {
-  userFormData.value = { ...user, currentUsername: user.username, password: '', passwordConfirm: '' }
-  userFormRef.value?.clearValidate()
+  userFormState.displayName = user.displayName
+  userFormState.username = user.username
+  userFormState.password = ''
+  userFormState.passwordConfirm = ''
+  userFormSelectedUsername.value = user.username
+  userForm.value?.clear()
   userFormVisible.value = true
 }
 
 async function onSubmit() {
-  if (!userFormRef.value) {
-    return
-  }
-
-  const formValid = await new Promise<boolean>(resolve => userFormRef.value?.validate(valid => resolve(valid)))
-  if (!formValid) {
+  if (!userForm.value) {
     return
   }
 
   try {
-    if (userFormData.value.currentUsername) {
+    if (userFormSelectedUsername.value) {
       const ops: PatchOperation[] = [
-        { op: 'replace', path: '/username', value: userFormData.value.username },
-        { op: 'replace', path: '/displayName', value: userFormData.value.displayName },
+        { op: 'replace', path: '/username', value: userFormState.username },
+        { op: 'replace', path: '/displayName', value: userFormState.displayName },
       ]
-      if (userFormData.value.password) {
-        ops.push({ op: 'replace', path: '/password', value: userFormData.value.password })
+      if (userFormState.password) {
+        ops.push({ op: 'replace', path: '/password', value: userFormState.password })
       }
-      await apiFetch(`/auth/users/${userFormData.value.currentUsername}`, {
+      await apiFetch(`/auth/users/${userFormSelectedUsername.value}`, {
         method: 'PATCH',
         body: ops,
       })
-      ElMessage({ message: t('user-updated'), type: 'success' })
+      toast.add({ description: t('user-updated'), color: 'success' })
     } else {
-      await apiFetch('/auth/users', { method: 'POST', body: userFormData.value })
-      ElMessage({ message: t('user-created'), type: 'success' })
+      await apiFetch('/auth/users', { method: 'POST', body: userFormState })
+      toast.add({ description: t('user-created'), color: 'success' })
     }
     userFormVisible.value = false
     refresh()
   } catch (err) {
-    ElMessage({ message: String(err), type: 'error' })
+    toast.add({ description: String(err), color: 'error' })
   }
 }
 
+const plainDialog = useTemplateRef('plainDialog')
+
 async function onDelete(user: User) {
-  try {
-    await ElMessageBox.confirm(
-      t('are-you-sure-to-delete-user', [user.username]),
-      {
-        confirmButtonText: t('delete'),
-        cancelButtonText: t('cancel'),
-        type: 'warning',
-      },
-    )
-  } catch {
+  if (!await plainDialog.value?.confirm(
+    t('are-you-sure-to-delete-user', [user.username]),
+    {
+      confirmButtonText: t('delete'),
+      confirmButtonColor: 'warning',
+    },
+  )) {
     return
   }
 
   try {
     await apiFetch(`/auth/users/${user.username}`, { method: 'DELETE' })
-    ElMessage({ message: t('user-deleted'), type: 'success' })
+    toast.add({ description: t('user-deleted'), color: 'success' })
     refresh()
   } catch (err) {
-    ElMessage({ message: String(err), type: 'error' })
+    toast.add({ description: String(err), color: 'error' })
   }
 }
 </script>
@@ -132,50 +128,47 @@ async function onDelete(user: User) {
       <PlainButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
     </template>
 
-    <ElDialog
-      v-model="userFormVisible"
-      :title="userFormData.currentUsername ? $t('edit-user') : $t('create-user')"
-      width="50%"
+    <UModal
+      v-model:open="userFormVisible"
+      :title="userFormSelectedUsername ? $t('edit-user') : $t('create-user')"
     >
-      <ElForm
-        ref="userFormRef"
-        :model="userFormData"
-        label-position="top"
-        :rules="userFormRules"
-        :validate-on-rule-change="false"
-        @keypress.enter="onSubmit"
-      >
-        <ElFormItem :label="$t('username')" prop="username">
-          <ElInput v-model="userFormData.username" autocomplete="off" />
-        </ElFormItem>
-        <ElFormItem :label="$t('display-name')" prop="displayName">
-          <ElInput v-model="userFormData.displayName" autocomplete="off" />
-        </ElFormItem>
-        <ElFormItem :label="$t('password')" prop="password">
-          <ElInput v-model="userFormData.password" show-password autocomplete="off" />
-        </ElFormItem>
-        <ElFormItem :label="$t('password-repeat')" prop="passwordConfirm">
-          <ElInput v-model="userFormData.passwordConfirm" show-password autocomplete="off" />
-        </ElFormItem>
-      </ElForm>
-      <template #footer>
-        <span class="dialog-footer">
-          <PlainButton :label="$t('cancel')" @click="userFormVisible = false" />
-          <PlainButton v-if="userFormData.currentUsername" type="primary" :label="$t('save')" @click="onSubmit" />
-          <PlainButton v-else type="primary" :label="$t('create')" @click="onSubmit" />
-        </span>
+      <template #body>
+        <UForm
+          id="userForm"
+          ref="userFormRef"
+          :state="userFormState"
+          :schema="userFormSchema"
+          @submit="onSubmit"
+        >
+          <UFormField :label="$t('username')" name="username">
+            <UInput v-model="userFormState.username" autocomplete="off" class="w-full" />
+          </UFormField>
+          <UFormField :label="$t('display-name')" name="displayName">
+            <UInput v-model="userFormState.displayName" autocomplete="off" class="w-full" />
+          </UFormField>
+          <UFormField :label="$t('password')" name="password">
+            <UInput v-model="userFormState.password" type="password" autocomplete="off" class="w-full" />
+          </UFormField>
+          <UFormField :label="$t('password-repeat')" name="passwordConfirm">
+            <UInput v-model="userFormState.passwordConfirm" type="password" autocomplete="off" class="w-full" />
+          </UFormField>
+        </UForm>
       </template>
-    </ElDialog>
+      <template #footer>
+        <PlainButton :label="$t('cancel')" @click="userFormVisible = false" />
+        <PlainButton color="primary" :label="userFormSelectedUsername ? $t('save') : $t('create')" type="submit" form="userForm" />
+      </template>
+    </UModal>
 
-    <ElTable :data="data">
-      <ElTableColumn :label="$t('username')" prop="username" />
-      <ElTableColumn :label="$t('display-name')" prop="displayName" />
-      <ElTableColumn>
-        <template #default="{ row }">
-          <PlainButton text icon="ci:edit" @click="onEdit(row)" />
-          <PlainButton text icon="ci:trash-full" type="danger" @click="onDelete(row)" />
-        </template>
-      </ElTableColumn>
-    </ElTable>
+    <UTable
+      :data="data" :columns="columns"
+    >
+      <template #actions-cell="{ row }">
+        <PlainButton variant="link" icon="ci:edit" @click="onEdit(row.original)" />
+        <PlainButton variant="link" icon="ci:trash-full" color="error" @click="onDelete(row.original)" />
+      </template>
+    </UTable>
+
+    <PlainDialog ref="plainDialog" />
   </Layout>
 </template>

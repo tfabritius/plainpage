@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Icon } from '#components'
+import type { DropdownMenuItem } from '@nuxt/ui'
 import { useRouteQuery } from '@vueuse/router'
 import { storeToRefs } from 'pinia'
+
 import { useAppStore } from '~/store/app'
 import type { Breadcrumb, Page } from '~/types'
 
@@ -14,6 +15,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const toast = useToast()
 
 const route = useRoute()
 
@@ -23,6 +25,8 @@ const { allowAdmin } = storeToRefs(app)
 const pageTitle = computed(() => props.page.meta.title || t('untitled'))
 
 useHead(() => ({ title: pageTitle.value }))
+
+const plainDialog = useTemplateRef('plainDialog')
 
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
@@ -41,11 +45,6 @@ watch(editing, (editing) => {
   }
 }, { immediate: true })
 
-const PermissionsIcon = h(Icon, { name: 'ci:shield' })
-const RevisionsIcon = h(Icon, { name: 'ic:baseline-restore' })
-const DeleteIcon = h(Icon, { name: 'ci:trash-full' })
-const ReloadIcon = h(Icon, { name: 'ci:arrows-reload-01' })
-
 function onEditPage() {
   editing.value = true
 }
@@ -55,16 +54,16 @@ async function onSavePage() {
     await apiFetch(`/pages/${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
 
-    ElMessage({
-      message: t('saved'),
-      type: 'success',
+    toast.add({
+      description: t('saved'),
+      color: 'success',
     })
 
     await props.onReload()
   } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
+    toast.add({
+      description: String(err),
+      color: 'error',
     })
   }
 }
@@ -77,16 +76,14 @@ async function onDeletePage() {
   }
 
   deleteConfirmOpen.value = true
-  try {
-    await ElMessageBox.confirm(
-      t('are-you-sure-to-delete-this-page'),
-      {
-        confirmButtonText: t('delete'),
-        cancelButtonText: t('cancel'),
-        type: 'warning',
-      },
-    )
-  } catch {
+
+  if (!await plainDialog.value?.confirm(
+    t('are-you-sure-to-delete-this-page'),
+    {
+      confirmButtonText: t('delete'),
+      confirmButtonColor: 'warning',
+    },
+  )) {
     // do nothing
     deleteConfirmOpen.value = false
     return
@@ -96,58 +93,75 @@ async function onDeletePage() {
   try {
     await apiFetch(`/pages${route.path}`, { method: 'DELETE' })
 
-    ElMessage({
-      message: t('page-deleted'),
-      type: 'success',
+    toast.add({
+      description: t('page-deleted'),
+      color: 'success',
     })
 
     await navigateTo(route.path.substring(0, route.path.lastIndexOf('/') + 1))
   } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
+    toast.add({
+      description: String(err),
+      color: 'error',
     })
   }
 }
 
-async function handleDropdownMenuCommand(command: string | number | object) {
-  if (command === 'reload') {
-    await props.onReload()
-    ElMessage({ message: t('page-reloaded'), type: 'success' })
-  } else if (command === 'delete') {
-    onDeletePage()
-  } else if (command === 'rev') {
-    await navigateTo({ query: { rev: null } })
-  } else if (command === 'acl') {
-    await navigateTo({ query: { acl: null } })
-  } else {
-    throw new Error(`Unhandled command ${command}`)
-  }
-}
+const menuItems = computed(() => {
+  const items: DropdownMenuItem[] = []
 
-const cancelEditConfirmOpen = ref(false)
+  items.push({
+    icon: 'ci:arrows-reload-01',
+    label: t('reload'),
+    onSelect: async () => {
+      await props.onReload()
+      toast.add({ description: t('page-reloaded'), color: 'success' })
+    },
+  })
+
+  items.push({
+    icon: 'ic:baseline-restore',
+    label: t('revisions'),
+    onSelect: async () => {
+      await navigateTo({ query: { rev: null } })
+    },
+  })
+
+  if (allowAdmin.value) {
+    items.push(
+      {
+        icon: 'ci:shield',
+        label: t('permissions'),
+        onSelect: async () => {
+          await navigateTo({ query: { acl: null } })
+        },
+      },
+    )
+  }
+
+  if (props.allowDelete) {
+    items.push(
+      {
+        icon: 'ci:trash-full',
+        label: t('delete'),
+        onSelect: onDeletePage,
+      },
+    )
+  }
+
+  return items
+})
 
 async function onCancelEdit() {
-  if (cancelEditConfirmOpen.value) {
-    ElMessageBox.close()
-    cancelEditConfirmOpen.value = false
-    return
-  }
-
   if (!deepEqual(props.page, editablePage.value)) {
-    try {
-      cancelEditConfirmOpen.value = true
-      await ElMessageBox.confirm(t('discard-changes-to-this-page'), {
-        confirmButtonText: t('ok'),
-        cancelButtonText: t('cancel'),
-        type: 'warning',
-        closeOnPressEscape: false,
-      })
-    } catch {
-      cancelEditConfirmOpen.value = false
+    if (!await plainDialog.value?.confirm(
+      t('discard-changes-to-this-page'),
+      {
+        confirmButtonColor: 'warning',
+      },
+    )) {
       return
     }
-    cancelEditConfirmOpen.value = false
   }
 
   editing.value = false
@@ -191,30 +205,14 @@ onKeyStroke('s', (e) => {
       <div v-if="!editing">
         <PlainButton v-if="allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
 
-        <ElDropdown trigger="click" class="ml-3" @command="handleDropdownMenuCommand">
-          <PlainButton icon="ci:more-vertical" :label="$t('more')" />
-          <template #dropdown>
-            <ElDropdownMenu>
-              <ElDropdownItem :icon="ReloadIcon" command="reload">
-                {{ $t('reload') }}
-              </ElDropdownItem>
-              <ElDropdownItem :icon="RevisionsIcon" command="rev">
-                {{ $t('revisions') }}
-              </ElDropdownItem>
-              <ElDropdownItem v-if="allowAdmin" :icon="PermissionsIcon" command="acl">
-                {{ $t('permissions') }}
-              </ElDropdownItem>
-              <ElDropdownItem v-if="allowDelete" :icon="DeleteIcon" command="delete">
-                {{ $t('delete') }}
-              </ElDropdownItem>
-            </ElDropdownMenu>
-          </template>
-        </ElDropdown>
+        <UDropdownMenu :items="menuItems">
+          <PlainButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
+        </UDropdownMenu>
       </div>
 
       <div v-if="editing">
-        <PlainButton class="ml-2" icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-        <PlainButton type="success" icon="ci:save" :label="$t('save')" @click="onSavePage" />
+        <PlainButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+        <PlainButton class="ml-3" color="success" icon="ci:save" :label="$t('save')" @click="onSavePage" />
       </div>
     </template>
 
@@ -227,5 +225,7 @@ onKeyStroke('s', (e) => {
       v-model="editablePage"
       @escape="onCancelEdit"
     />
+
+    <PlainDialog ref="plainDialog" />
   </Layout>
 </template>

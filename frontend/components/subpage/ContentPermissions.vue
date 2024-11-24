@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { AclTable } from '#components'
 import type { Breadcrumb, ContentMeta } from '~/types/'
 
 const props = defineProps<{
@@ -16,14 +15,14 @@ useHead(() => ({ title: `Permissions: ${props.title}` }))
 
 const customPermissions = ref(!!props.meta.acl)
 
-const aclTableRef = ref<InstanceType<typeof AclTable>>()
+const aclTable = useTemplateRef('aclTableRef')
 
 async function onGoBack() {
   await navigateTo({ query: { } })
 }
 
 async function onSave() {
-  const apiData = (customPermissions.value || props.urlPath === '') ? aclTableRef.value?.getAcl() : null
+  const apiData = (customPermissions.value || props.urlPath === '') ? aclTable.value?.getAcl() : null
 
   await apiFetch(`/pages/${props.urlPath}`, {
     method: 'PATCH',
@@ -42,21 +41,20 @@ async function onSave() {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <Icon v-if="isFolder" name="ci:folder" class="mr-1" />
+      <UIcon v-if="isFolder" name="ci:folder" class="mr-1" />
       <span v-if="title">{{ title }}</span>
       <span v-else class="italic">{{ $t('untitled') }}</span>
     </template>
 
     <template #actions>
       <PlainButton icon="ci:skip-back" :label="$t('back-to-content')" @click="onGoBack" />
-      <PlainButton icon="ci:save" :label="$t('save')" type="success" @click="onSave" />
+      <PlainButton icon="ci:save" :label="$t('save')" color="success" class="ml-3" @click="onSave" />
     </template>
 
-    <ElSwitch
+    <USwitch
       v-if="urlPath !== ''"
       v-model="customPermissions"
-      :active-text="$t('define-custom-permissions')"
-      :inactive-text="$t('inherit-permissions')"
+      :label="customPermissions ? $t('define-custom-permissions') : $t('inherit-permissions')"
     />
     <div v-if="customPermissions">
       <AclTable

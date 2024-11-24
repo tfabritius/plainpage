@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ElInput } from 'element-plus'
 import { nextTick, ref } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -18,7 +17,7 @@ const tags = computed({
 
 const inputValue = ref('')
 const inputVisible = ref(false)
-const InputRef = ref<InstanceType<typeof ElInput>>()
+const input = useTemplateRef('InputRef')
 
 function handleClose(tag: string) {
   if (tags.value !== null) {
@@ -29,7 +28,7 @@ function handleClose(tag: string) {
 function showInput() {
   inputVisible.value = true
   nextTick(() => {
-    InputRef.value!.input!.focus()
+    input.value?.inputRef?.focus()
   })
 }
 
@@ -54,23 +53,23 @@ function onCancelInput() {
 
 <template>
   <div class="flex">
-    <ElTag
+    <UBadge
       v-for="tag in modelValue"
       :key="tag"
+      variant="outline"
       class="mr-1"
       :closable="editable"
-      :disable-transitions="false"
       @close="handleClose(tag)"
     >
       {{ tag }}
-    </ElTag>
+    </UBadge>
 
-    <ElInput
+    <UInput
       v-if="inputVisible"
       ref="InputRef"
       v-model="inputValue"
       class="max-w-20 inline"
-      size="small"
+      size="sm"
       @keyup.enter="onInputConfirm"
       @blur="onInputConfirm"
       @keyup.esc.stop="onCancelInput"

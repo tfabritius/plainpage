@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { AclTable } from '#components'
-
 import { storeToRefs } from 'pinia'
+
 import { useAppStore } from '~/store/app'
 import type { Config } from '~/types'
 
@@ -10,6 +9,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const toast = useToast()
 
 useHead({ title: t('configuration') })
 
@@ -18,10 +18,10 @@ const { version } = storeToRefs(app)
 
 const { data, error, refresh } = await useAsyncData('/config', () => apiFetch<Config>('/config'))
 
-const aclTableRef = ref<InstanceType<typeof AclTable>>()
+const aclTable = useTemplateRef('aclTableRef')
 
 async function onSave() {
-  const acl = aclTableRef.value?.getAcl()
+  const acl = aclTable.value?.getAcl()
 
   const response = await apiFetch<Config>('/config', {
     method: 'PATCH',
@@ -31,9 +31,9 @@ async function onSave() {
     ],
   })
 
-  ElMessage({
-    message: t('saved'),
-    type: 'success',
+  toast.add({
+    description: t('saved'),
+    color: 'success',
   })
 
   data.value = response
@@ -53,24 +53,25 @@ async function onSave() {
     </template>
 
     <template #actions>
-      <PlainButton type="success" icon="ci:save" :label="$t('save')" @click="onSave" />
+      <PlainButton color="success" icon="ci:save" :label="$t('save')" type="submit" form="settingsForm" />
     </template>
 
-    <ElForm
-      label-position="top"
-      @submit.prevent
+    <UForm
+      id="settingsForm"
+      :state="data"
+      @submit="onSave"
     >
-      <ElFormItem :label="$t('application-title')">
-        <ElInput v-model="data.appTitle" />
-      </ElFormItem>
-      <ElFormItem :label="$t('permissions')">
+      <UFormField :label="$t('application-title')">
+        <UInput v-model="data.appTitle" class="w-full" />
+      </UFormField>
+      <UFormField :label="$t('permissions')" class="mt-4">
         <AclTable ref="aclTableRef" :acl="data?.acl ?? []" :show-columns="['register', 'admin']" />
-      </ElFormItem>
-      <ElFormItem :label="$t('version')">
-        <ElInput
-          :model-value="version" disabled
+      </UFormField>
+      <UFormField :label="$t('version')" class="mt-4">
+        <UInput
+          :model-value="version" disabled class="w-full"
         />
-      </ElFormItem>
-    </ElForm>
+      </UFormField>
+    </UForm>
   </Layout>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TableColumn } from '@nuxt/ui'
 import { AccessOp } from '~/types'
 import type { AccessRule, User } from '~/types'
 
@@ -7,6 +8,8 @@ const props = defineProps<{
   showAdminRule?: boolean
   showColumns: Ops[]
 }>()
+
+const { t } = useI18n()
 
 function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
   return Object.keys(obj).filter(k => Number.isNaN(+k)) as K[]
@@ -20,6 +23,24 @@ type TableRow = {
   subject: string
   user?: User
 }
+
+const columns: TableColumn<TableRow>[] = [
+  { header: t('acl.subject'), id: 'subject', accessorKey: 'subject' },
+  { header: t('read'), accessorKey: 'read' },
+  { header: t('write'), accessorKey: 'write' },
+  { header: t('delete'), accessorKey: 'delete' },
+  { header: t('register'), accessorKey: 'register' },
+  { header: t('acl.admin'), accessorKey: 'admin' },
+  { header: 'TODO', id: 'actions' },
+]
+
+const columnVisibility = ref({
+  read: props.showColumns.includes('read'),
+  write: props.showColumns.includes('write'),
+  delete: props.showColumns.includes('delete'),
+  register: props.showColumns.includes('register'),
+  admin: props.showColumns.includes('admin'),
+})
 
 function mapAPI2Table(acl: AccessRule[]): TableRow[] {
   const table = acl.map((rule) => {
@@ -152,7 +173,7 @@ function onAddRule() {
   if (!newUser.value) {
     return
   }
-  editableACL.value?.push({
+  editableACL.value = [...editableACL.value, {
     subject: `user:${newUser.value.id}`,
     user: newUser.value,
     read: props.showColumns.includes('read'),
@@ -160,7 +181,7 @@ function onAddRule() {
     delete: false,
     register: false,
     admin: false,
-  })
+  }]
   newUserName.value = ''
 }
 
@@ -172,96 +193,68 @@ defineExpose({ getAcl })
 </script>
 
 <template>
-  <ElTable :data="editableACL">
-    <ElTableColumn :label="$t('acl.subject')">
-      <template #default="{ row }">
-        <span
-          v-if="row.subject === 'all'"
-          class="italic"
-        >
-          {{ $t('all-registered-users') }}
-        </span>
-        <span
-          v-else-if="row.subject === 'anonymous'"
-          class="italic"
-        >
-          {{ $t('anonymous-users') }}
-        </span>
-        <span
-          v-else-if="row.subject === 'admin'"
-          class="italic"
-        >
-          {{ $t('administrators') }}
-        </span>
-        <span v-else>
-          <template v-if="row.user">{{ row.user.username }} ({{ row.user.displayName }})</template>
-          <template v-else><samp>{{ row.subject }}</samp></template>
-        </span>
-      </template>
-    </ElTableColumn>
-    <ElTableColumn
-      v-if="props.showColumns.includes('read')"
-      :label="$t('read')"
-    >
-      <template #default="{ row }">
-        <ElCheckbox v-model="row.read" :disabled="row.subject === 'admin'" />
-      </template>
-    </ElTableColumn>
-    <ElTableColumn
-      v-if="props.showColumns.includes('write')"
-      :label="$t('write')"
-    >
-      <template #default="{ row }">
-        <ElCheckbox v-model="row.write" :disabled="row.subject === 'admin'" />
-      </template>
-    </ElTableColumn>
-    <ElTableColumn
-      v-if="props.showColumns.includes('delete')"
-      :label="$t('delete')"
-    >
-      <template #default="{ row }">
-        <ElCheckbox v-model="row.delete" :disabled="row.subject === 'admin'" />
-      </template>
-    </ElTableColumn>
-    <ElTableColumn
-      v-if="props.showColumns.includes('register')"
-      :label="$t('register')"
-    >
-      <template #default="{ row }">
-        <ElCheckbox v-model="row.register" :disabled="row.subject === 'admin'" />
-      </template>
-    </ElTableColumn>
-    <ElTableColumn
-      v-if="props.showColumns.includes('admin')"
-      :label="$t('acl.admin')"
-    >
-      <template #default="{ row }">
-        <ElCheckbox
-          v-model="row.admin"
-          :disabled="['anonymous', 'all', 'admin'].includes(row.subject)"
-        />
-      </template>
-    </ElTableColumn>
-    <ElTableColumn>
-      <template #default="{ row }">
-        <PlainButton
-          v-if="!['anonymous', 'all', 'admin'].includes(row.subject)"
-          text
-          type="danger"
-          icon="ci:trash-full"
-          @click="onRemoveRule(row.subject)"
-        />
-      </template>
-    </ElTableColumn>
-  </ElTable>
+  <UTable
+    v-model:column-visibility="columnVisibility"
+    :columns="columns"
+    :data="editableACL"
+  >
+    <template #subject-cell="{ row }">
+      <span
+        v-if="row.original.subject === 'all'"
+        class="italic"
+      >
+        {{ t('all-registered-users') }}
+      </span>
+      <span
+        v-else-if="row.original.subject === 'anonymous'"
+        class="italic"
+      >
+        {{ $t('anonymous-users') }}
+      </span>
+      <span
+        v-else-if="row.original.subject === 'admin'"
+        class="italic"
+      >
+        {{ $t('administrators') }}
+      </span>
+      <span v-else>
+        <template v-if="row.original.user">{{ row.original.user.username }} ({{ row.original.user.displayName }})</template>
+        <template v-else><samp>{{ row.original.subject }}</samp></template>
+      </span>
+    </template>
+    <template #read-cell="{ row }">
+      <UCheckbox v-model="row.original.read" :disabled="row.original.subject === 'admin'" />
+    </template>
+    <template #write-cell="{ row }">
+      <UCheckbox v-model="row.original.write" :disabled="row.original.subject === 'admin'" />
+    </template>
+    <template #delete-cell="{ row }">
+      <UCheckbox v-model="row.original.delete" :disabled="row.original.subject === 'admin'" />
+    </template>
+    <template #register-cell="{ row }">
+      <UCheckbox v-model="row.original.register" :disabled="row.original.subject === 'admin'" />
+    </template>
+    <template #admin-cell="{ row }">
+      <UCheckbox v-model="row.original.admin" :disabled="['anonymous', 'all', 'admin'].includes(row.original.subject)" />
+    </template>
+    <template #actions-cell="{ row }">
+      <PlainButton
+        v-if="!['anonymous', 'all', 'admin'].includes(row.original.subject)"
+        variant="link"
+        color="error"
+        icon="ci:trash-full"
+        @click="onRemoveRule(row.original.subject)"
+      />
+    </template>
+  </UTable>
 
   <div class="flex mt-2">
-    <ElInput v-model="newUserName" class="max-w-50" :placeholder="$t('username')">
-      <template #suffix>
-        <Icon v-if="newUser" class="text-green" name="ci:circle-check" />
-        <Icon v-else-if="newUser === null" class="text-red" name="ci:close-circle" />
+    <UInput v-model="newUserName" class="max-w-50" :placeholder="$t('username')">
+      <template #trailing>
+        <UIcon v-if="newUser" class="text-green-500" name="ci:circle-check" />
+        <UIcon v-else-if="newUser === null" class="text-red-500" name="ci:close-circle" />
       </template>
-    </ElInput>
+    </UInput>
     <PlainButton :disabled="!newUser" :label="$t('add')" class="ml-2" @click="onAddRule" />
   </div>
 </template>

@@ -6,9 +6,9 @@ const props = defineProps<{
 
 <template>
   <button
-    class="inline-block hover:text-blue-500 bg-inherit p-1 text-center cursor-pointer border-0"
+    class="inline-block hover:text-blue-500 bg-inherit p-1 text-center cursor-pointer border-0 h-6 w-6"
   >
-    <Icon :name="props.icon" />
+    <UIcon :name="props.icon" />
   </button>
 </template>
 

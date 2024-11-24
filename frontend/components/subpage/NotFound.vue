@@ -11,6 +11,7 @@ const props = defineProps<{
 const emit = defineEmits<{ (e: 'refresh'): void }>()
 
 const { t } = useI18n()
+const toast = useToast()
 
 const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref<Page>(deepClone(emptyPage))
@@ -41,9 +42,9 @@ function createThisPage() {
 async function createThisFolder() {
   await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: null } })
 
-  ElMessage({
-    message: t('folder-created'),
-    type: 'success',
+  toast.add({
+    description: t('folder-created'),
+    color: 'success',
   })
   emit('refresh')
 }
@@ -53,42 +54,31 @@ async function onSavePage() {
     await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: editablePage.value } })
     editing.value = false
 
-    ElMessage({
-      message: t('saved'),
-      type: 'success',
+    toast.add({
+      description: t('saved'),
+      color: 'success',
     })
     emit('refresh')
   } catch (err) {
-    ElMessage({
-      message: String(err),
-      type: 'error',
+    toast.add({
+      description: String(err),
+      color: 'error',
     })
   }
 }
 
-const cancelEditConfirmOpen = ref(false)
+const plainDialog = useTemplateRef('plainDialog')
 
 async function onCancelEdit() {
-  if (cancelEditConfirmOpen.value) {
-    ElMessageBox.close()
-    cancelEditConfirmOpen.value = false
-    return
-  }
-
   if (!deepEqual(emptyPage, editablePage.value)) {
-    try {
-      cancelEditConfirmOpen.value = true
-      await ElMessageBox.confirm(t('discard-changes-to-this-page'), {
-        confirmButtonText: t('ok'),
-        cancelButtonText: t('cancel'),
-        type: 'warning',
-        closeOnPressEscape: false,
-      })
-    } catch {
-      cancelEditConfirmOpen.value = false
+    if (!await plainDialog.value?.confirm(
+      t('discard-changes-to-this-page'),
+      {
+        confirmButtonColor: 'warning',
+      },
+    )) {
       return
     }
-    cancelEditConfirmOpen.value = false
   }
 
   editing.value = false
@@ -122,7 +112,7 @@ const navTo = navigateTo
     <template #actions>
       <div v-if="editing">
         <PlainButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-        <PlainButton icon="ci:save" :label="$t('save')" type="success" @click="onSavePage" />
+        <PlainButton icon="ci:save" :label="$t('save')" color="success" class="ml-3" @click="onSavePage" />
       </div>
     </template>
 
@@ -134,12 +124,14 @@ const navTo = navigateTo
 
       <div v-if="allowCreate">
         <PlainButton icon="ci:file-add" :label="$t('create-page')" @click="createThisPage" />
-        <PlainButton icon="ci:folder-add" :label="$t('create-folder')" @click="createThisFolder" />
+        <PlainButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" @click="createThisFolder" />
       </div>
 
       <PlainButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navTo('/')" />
     </div>
 
     <PageEditor v-else v-model="editablePage" />
+
+    <PlainDialog ref="plainDialog" />
   </Layout>
 </template>

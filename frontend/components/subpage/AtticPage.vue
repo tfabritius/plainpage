@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '#components'
 import { format } from 'date-fns'
 import { FetchError } from 'ofetch'
 
@@ -59,7 +58,7 @@ const navTo = navigateTo
     </template>
 
     <template v-if="!data?.notFound" #subtitle>
-      <Icon name="ci:clock" class="mr-1" />
+      <UIcon name="ci:clock" class="mr-1" />
       {{ format(revDate, 'yyyy-MM-dd HH:mm') }}
     </template>
 

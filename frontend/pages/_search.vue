@@ -53,29 +53,29 @@ watch(q, () => {
       {{ $t('search') }}
     </template>
 
-    <ElForm class="flex" @submit.prevent="onSearch">
-      <ElInput v-model="query" :placeholder="t('search')" />
-      <PlainButton type="primary" icon="ci:search" class="ml-2" :loading="loading" :label="$t('search')" @click="onSearch" />
-    </ElForm>
+    <form class="flex" @submit.prevent="onSearch">
+      <UInput v-model="query" :placeholder="t('search')" class="w-full" />
+      <PlainButton color="primary" icon="ci:search" class="ml-2" :loading="loading" :label="$t('search')" type="submit" />
+    </form>
 
     <div v-if="results !== undefined">
-      <h2>{{ $t('_search.results') }}</h2>
+      <h2 class="font-light text-xl my-4">
+        {{ $t('_search.results') }}
+      </h2>
 
       <div v-if="results.length > 0">
         <div v-for="(result, i) in results" :key="i" class="mb-4">
-          <NuxtLink v-slot="{ navigate, href }" custom :to="`/${result.url}`">
-            <ElLink :underline="false" :href="href" @click="navigate">
-              <span class="text-xl flex items-center">
-                <Icon :name="result.isFolder ? 'ci:folder' : 'ci:file-blank'" class="mr-1" />
-                <span v-if="'meta.title' in result.fragments" v-html="result.fragments['meta.title'][0]" />
-                <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
-              </span>
-              <span class="text-sm font-mono ml-2">
-                <span v-if="'url' in result.fragments" v-html="result.fragments.url[0]" />
-                <span v-else>{{ result.url }}</span>
-              </span>
-            </ElLink>
-          </NuxtLink>
+          <ULink :to="`/${result.url}`">
+            <span class="text-xl flex items-center">
+              <UIcon :name="result.isFolder ? 'ci:folder' : 'ci:file-blank'" class="mr-1" />
+              <span v-if="'meta.title' in result.fragments" v-html="result.fragments['meta.title'][0]" />
+              <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
+            </span>
+            <span class="text-sm font-mono ml-2">
+              <span v-if="'url' in result.fragments" v-html="result.fragments.url[0]" />
+              <span v-else>{{ result.url }}</span>
+            </span>
+          </ULink>
           <br>
 
           <div v-if="'content' in result.fragments" class="text-gray-400 dark:text-gray-500">
@@ -83,11 +83,10 @@ watch(q, () => {
           </div>
 
           <!-- eslint-disable vue/no-v-text-v-html-on-component -->
-          <ElTag
+          <UBadge
             v-for="tag in result.fragments['meta.tags']"
             :key="tag"
             class="mr-1"
-            :disable-transitions="true"
             v-html="tag"
           />
         </div>

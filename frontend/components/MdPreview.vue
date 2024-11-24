@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import dompurify from 'dompurify'
-import { ElScrollbar } from 'element-plus'
 import { marked, type Tokens } from 'marked'
 
 import type { Segment } from '~/types/'
@@ -27,7 +26,7 @@ function renderSegmentsToHtml(segments: Segment[]): string {
 
 const html = computed(() => renderSegmentsToHtml(props.segments))
 
-const previewArea = ref<InstanceType<typeof HTMLDivElement>>()
+const previewArea = useTemplateRef('previewArea')
 
 useMutationObserver(previewArea, () => {
   updatePositionsOfPreviewSegments()
@@ -77,7 +76,7 @@ function onScroll({ scrollTop }: { scrollTop: number }) {
   }
 }
 
-const previewScrollbar = ref<InstanceType<typeof ElScrollbar>>()
+const previewScrollbar = useTemplateRef('previewScrollbar')
 
 const scrollTimeoutId = ref<number>()
 
@@ -99,7 +98,7 @@ defineExpose({ scrollToSegmentIdx })
 </script>
 
 <template>
-  <ElScrollbar ref="previewScrollbar" height="100%" :always="true" @scroll="onScroll">
+  <PlainScrollbar ref="previewScrollbar" @scroll="onScroll">
     <div ref="previewArea" class="mx-1 markdown" v-html="html" />
-  </ElScrollbar>
+  </PlainScrollbar>
 </template>

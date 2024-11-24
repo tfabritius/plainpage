@@ -27,6 +27,8 @@ create-folder: Ordner anlegen
 create-page: Seite anlegen
 create-user: Benutzer anlegen
 current-version: Aktuelle Version
+dark-mode-off: Licht an
+dark-mode-on: Licht aus
 define-custom-permissions: Eigene Berechtigungen festlegen
 delete: Löschen
 delete-my-account: Lösche mein Konto
@@ -48,6 +50,8 @@ inherit-permissions: Berechtigungen vom übergeordneten Ordner erben
 invalid-credentials: Ungültige Zugangsdaten
 invalid-folder-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
 invalid-page-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
+language: Sprache
+menu: Menü
 more: Mehr
 new-password: Neues Passwort
 not-found: Nicht gefunden
@@ -107,7 +111,7 @@ user-deleted: Benutzer gelöscht
 user-updated: Benutzer aktualisiert
 username: Benutzername
 username-invalid: Benutzername ungültig
-username-length: Länge sollte 4 und 20 sein
+username-length: Länge muss zwischen 4 und 20 sein
 username-not-unique: Benutzername ist bereits vergeben
 username-required: Bitte Benutzernamen eingeben
 users: Benutzer

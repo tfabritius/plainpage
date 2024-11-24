@@ -27,6 +27,8 @@ create-folder: Create folder
 create-page: Create page
 create-user: Create user
 current-version: Current version
+dark-mode-off: Light on
+dark-mode-on: Light off
 define-custom-permissions: Define custom permissions
 delete: Delete
 delete-my-account: Delete my account
@@ -48,6 +50,8 @@ inherit-permissions: Inherit permissions from parent folder
 invalid-credentials: Invalid credentials
 invalid-folder-name: 'Invalid name (allowed: [a-z0-9_-])'
 invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
+language: Language
+menu: Menu
 more: More
 new-password: New password
 not-found: Not found

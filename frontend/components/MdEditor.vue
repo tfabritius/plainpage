@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { MdCodeEditor, MdPreview } from '#components'
 import { marked } from 'marked'
 import type { MdEditorGenerator, Segment } from '~/types/'
 
@@ -83,8 +82,8 @@ watch(markdown, (newVal) => {
 })
 segments.value = splitMdToSegments(markdown.value)
 
-const codeEditorRef = ref<InstanceType<typeof MdCodeEditor>>()
-const previewRef = ref<InstanceType<typeof MdPreview>>()
+const codeEditor = useTemplateRef('codeEditorRef')
+const preview = useTemplateRef('previewRef')
 
 function onEditorScroll({ firstVisibleLineNo }: { firstVisibleLineNo: number }) {
   const firstVisibleSegment = lineNoToSegment(firstVisibleLineNo)
@@ -92,12 +91,12 @@ function onEditorScroll({ firstVisibleLineNo }: { firstVisibleLineNo: number }) 
     throw new Error(`no segment found for line number ${firstVisibleLineNo}`)
   }
 
-  previewRef.value?.scrollToSegmentIdx(firstVisibleSegment.idx)
+  preview.value?.scrollToSegmentIdx(firstVisibleSegment.idx)
 }
 
 function onPreviewScroll({ firstVisibleSegmentIdx }: { firstVisibleSegmentIdx: number }) {
   const segment = segments.value[firstVisibleSegmentIdx]
-  codeEditorRef.value?.scrollToLineNo(segment.lineStart)
+  codeEditor.value?.scrollToLineNo(segment.lineStart)
 }
 
 function createWrapUnwrapGenerator(enclosingStart: string, enclosingEnd: string) {
@@ -128,7 +127,7 @@ const showPreview = ref(true)
 const showFullscreen = ref(false)
 
 function onToolbarClick(action: string) {
-  const editor = codeEditorRef.value
+  const editor = codeEditor.value
   if (!editor) {
     return
   }

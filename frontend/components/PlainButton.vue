@@ -1,27 +1,38 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   disabled?: boolean
   icon?: string
+  form?: string
+  variant?: 'link'
   label?: string
   loading?: boolean
-  size?: 'small' | 'large'
-  text?: boolean
-  type?: 'success' | 'primary' | 'danger'
-  onClick?: (e: MouseEvent) => unknown
+  type?: 'submit'
+  color?: 'success' | 'primary' | 'warning' | 'error'
+  onClick?: (e: MouseEvent) => void | Promise<void>
 }>()
+
+const variant = computed(() => {
+  if (props.variant === 'link') {
+    return 'link'
+  }
+  if (props.color) {
+    return 'solid'
+  }
+  return 'outline'
+})
 </script>
 
 <template>
-  <ElButton
+  <UButton
     :disabled="disabled"
     :loading="loading"
-    :size="size"
-    :text="text"
+    :icon="icon"
+    :form="form"
     :type="type"
+    :color="color"
+    :variant="variant"
     @click="onClick"
   >
-    <Icon v-if="icon" :name="icon" />
-    <span v-if="icon && label" class="hidden md:inline ml-1">{{ label }}</span>
-    <span v-else-if="label">{{ label }}</span>
-  </ElButton>
+    <span :class="icon ? 'hidden md:inline ml-1' : ''">{{ label }}</span>
+  </UButton>
 </template>

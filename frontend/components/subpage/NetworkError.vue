@@ -14,7 +14,7 @@ useHead(() => ({ title: t('error') }))
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <Icon name="ci:cloud-off" size="5em" />
+      <UIcon name="ci:cloud-off" size="5em" />
 
       <div class="m-2">
         {{ msg || $t('there-was-an-error') }}

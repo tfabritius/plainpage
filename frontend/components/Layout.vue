@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Icon } from '#components'
+import type { BreadcrumbItem } from '@nuxt/ui'
 import type { Breadcrumb } from '~/types'
 
 const _props = defineProps<{
@@ -7,9 +7,23 @@ const _props = defineProps<{
   useFullHeight?: boolean
 }>()
 
-const ChevronIcon = h(Icon, { name: 'ci:chevron-right' })
-
 const route = useRoute()
+
+const breadcrumbItems = computed(() => {
+  const items: BreadcrumbItem[] = []
+
+  items.push({ icon: 'ic:outline-home', class: 'text-[var(--ui-text-muted)]', to: '/' })
+
+  _props.breadcrumbs?.forEach((crumb, idx) => {
+    if (idx !== (_props.breadcrumbs?.length ?? 1) - 1) {
+      items.push({ label: crumb.title || crumb.name, to: { path: `/${crumb.url}` } })
+    } else {
+      items.push({ label: crumb.title || crumb.name, to: { path: `/${crumb.url}` }, class: 'text-[var(--ui-text-muted)]' })
+    }
+  })
+
+  return items
+})
 </script>
 
 <template>
@@ -28,31 +42,20 @@ const route = useRoute()
     >
       <div class="p-5 border-b border-b-gray-300 border-b-solid">
         <div v-if="breadcrumbs">
-          <ElBreadcrumb :separator-icon="ChevronIcon">
-            <ElBreadcrumbItem :to="{ path: '/' }">
-              <Icon name="ic:outline-home" />
-            </ElBreadcrumbItem>
-
-            <ElBreadcrumbItem
-              v-for="crumb in breadcrumbs"
-              :key="crumb.url"
-              :to="{ path: `/${crumb.url}` }"
-            >
-              {{ crumb.title || crumb.name }}
-            </ElBreadcrumbItem>
-          </ElBreadcrumb>
+          <UBreadcrumb
+            :items="breadcrumbItems"
+            :ui="{ link: 'hover:text-[var(--ui-primary)]' }"
+          />
         </div>
 
         <div class="flex justify-between items-center">
           <div>
-            <span class="group">
-              <NuxtLink v-slot="{ navigate, href }" custom :to="route.path">
-                <ElLink :href="href" :underline="false" @click="navigate">
-                  <h1 class="hover:underline my-0 py-3 font-light flex items-center">
-                    <slot name="title" />
-                  </h1>
-                </ElLink>
-              </NuxtLink>
+            <span class="group flex items-top">
+              <ULink :to="route.path" :active="false">
+                <h1 class="my-0 py-3 text-3xl font-light flex items-center">
+                  <slot name="title" />
+                </h1>
+              </ULink>
               <slot name="title:suffix" />
             </span>
 
@@ -76,13 +79,12 @@ const route = useRoute()
     </div>
 
     <div class="text-center">
-      <ElLink :underline="false" href="https://github.com/tfabritius/plainpage">
-        <span
-          class="font-normal text-gray-300 dark:text-gray-500 hover:text-current"
-        >
-          PlainPage
-        </span>
-      </ElLink>
+      <ULink
+        to="https://github.com/tfabritius/plainpage"
+        class="text-sm text-gray-300 dark:text-gray-500"
+      >
+        PlainPage
+      </ULink>
     </div>
   </div>
 </template>

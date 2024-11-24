@@ -17,8 +17,11 @@ const { allowRegister } = storeToRefs(app)
 
 const loading = ref(false)
 
+const toast = useToast()
+
 async function submit() {
   loading.value = true
+
   try {
     const success = await auth.login(loginFormData.value)
 
@@ -26,12 +29,13 @@ async function submit() {
       const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
       await navigateTo(returnTo)
     } else {
-      ElMessage({ message: t('invalid-credentials'), type: 'error' })
+      toast.add({ description: t('invalid-credentials'), color: 'error' })
+      loading.value = false
     }
   } catch (err) {
-    ElMessage({ message: String(err), type: 'error' })
+    toast.add({ description: String(err), color: 'error' })
+    loading.value = false
   }
-  loading.value = false
 }
 </script>
 
@@ -40,46 +44,45 @@ async function submit() {
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <Icon name="ci:user-circle" size="5em" class="mb-3" />
+      <UIcon name="ci:user-circle" size="5em" class="mb-3" />
 
-      <ElForm label-position="top" class="w-50" @submit.prevent @keypress.enter="submit">
-        <ElFormItem>
-          <ElInput
+      <form class="w-52" @submit.prevent @keypress.enter="submit">
+        <UFormField>
+          <UInput
             v-model="loginFormData.username"
-            type="username"
+            type="text"
             :placeholder="$t('username')"
             autofocus
+            class="w-full"
           />
-        </ElFormItem>
-        <ElFormItem>
-          <ElInput
+        </UFormField>
+        <UFormField class="mt-4">
+          <UInput
             v-model="loginFormData.password"
             type="password"
-            show-password
             :placeholder="$t('password')"
+            class="w-full"
           />
-        </ElFormItem>
-        <ElFormItem>
+        </UFormField>
+        <UFormField class="mt-4">
           <PlainButton
-            type="primary"
+            color="primary"
             class="w-full"
             :label="$t('sign-in')"
             :loading="loading"
             @click="submit"
           />
-        </ElFormItem>
-      </ElForm>
+          <i class="" />
+        </UFormField>
+      </form>
 
-      <NuxtLink
+      <ULink
         v-if="allowRegister"
-        v-slot="{ navigate, href }"
-        custom
         :to="`_register?returnTo=${String(route.query.returnTo || '/')}`"
+        class="text-sm"
       >
-        <ElLink :underline="false" :href="href" @click="navigate">
-          {{ $t('_login.link-to-register') }}
-        </ElLink>
-      </NuxtLink>
+        {{ $t('_login.link-to-register') }}
+      </ULink>
     </div>
   </div>
 </template>

@@ -96,8 +96,8 @@ importers:
         specifier: ^1.6.6
         version: 1.6.6
       tailwindcss:
-        specifier: 4.0.0-alpha.31
-        version: 4.0.0-alpha.31
+        specifier: 4.0.0-beta.2
+        version: 4.0.0-beta.2
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
@@ -4620,11 +4620,11 @@ packages:
     peerDependencies:
       tailwindcss: '*'
 
-  tailwindcss@4.0.0-alpha.31:
-    resolution: {integrity: sha512-wrS5eNGOwHclCJPGonDMxVuI/P1T3W9gjZw4q42Xfa13K5L1YJaRVMEP/UgP2F3Q7QULW6JR3XWrWjbgFU+/2w==}
-
   tailwindcss@4.0.0-alpha.34:
     resolution: {integrity: sha512-SST1h774z+bVCLTpRz4TYpjJLIcomZH1HBF4OPY1YusONUYqg0/XTq0N++12mNeyu6mK7VbFIkkNtf636yudWQ==}
+
+  tailwindcss@4.0.0-beta.2:
+    resolution: {integrity: sha512-uZ+vgVsy6i18Glc3XYMkTq7dl4GsU4m8X8qRTVlU4+g8Uit7g+wttwfDCl3p+ZOq5KCB09th9XgVDx1zFLCeHA==}
 
   tapable@2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
@@ -10752,9 +10752,9 @@ snapshots:
       tailwind-merge: 2.5.4
       tailwindcss: 4.0.0-alpha.34
 
-  tailwindcss@4.0.0-alpha.31: {}
-
   tailwindcss@4.0.0-alpha.34: {}
+
+  tailwindcss@4.0.0-beta.2: {}
 
   tapable@2.2.1: {}
 

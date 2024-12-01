@@ -44,6 +44,6 @@ jobs:
           cache-dependency-path: backend/go.sum
       - run: go build -v ./...
       - run: go test -v ./... -cover -covermode=atomic -coverpkg=./... -coverprofile=coverage.txt
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}

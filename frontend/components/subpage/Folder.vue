@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { storeToRefs } from 'pinia'
-
-import { useAppStore } from '~/store/app'
 import type { Breadcrumb, Folder, PutRequest } from '~/types'
+import { storeToRefs } from 'pinia'
+import { useAppStore } from '~/store/app'
 
 const props = defineProps<{
   urlPath: string

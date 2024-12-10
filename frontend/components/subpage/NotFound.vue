@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRouteQuery } from '@vueuse/router'
 import type { Breadcrumb, Page } from '~/types'
+import { useRouteQuery } from '@vueuse/router'
 
 const props = defineProps<{
   urlPath: string

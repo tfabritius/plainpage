@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import type { Segment } from '~/types/'
 import dompurify from 'dompurify'
 import { marked, type Tokens } from 'marked'
-
-import type { Segment } from '~/types/'
 
 const props = defineProps<{
   segments: Segment[]

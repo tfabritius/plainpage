@@ -1,12 +1,11 @@
 <script setup lang="ts">
+import type { MdEditorGenerator } from '~/types'
 import { markdown } from '@codemirror/lang-markdown'
 import { Compartment, EditorSelection } from '@codemirror/state'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView, highlightActiveLine } from '@codemirror/view'
 import { minimalSetup } from 'codemirror'
 import { Codemirror } from 'vue-codemirror'
-
-import type { MdEditorGenerator } from '~/types'
 
 const props = defineProps<{
   modelValue: string
@@ -119,11 +118,11 @@ function replaceSelection(generator: MdEditorGenerator) {
   const changes = { from: firstRange.from, to: firstRange.to, insert: result.text }
   const selection = result.selection
     ? EditorSelection.create([
-      EditorSelection.range(
-        firstRange.from + result.selection.from,
-        firstRange.from + result.selection.to,
-      ),
-    ])
+        EditorSelection.range(
+          firstRange.from + result.selection.from,
+          firstRange.from + result.selection.to,
+        ),
+      ])
     : undefined
   view.dispatch({
     changes,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import { AccessOp } from '~/types'
 import type { AccessRule, User } from '~/types'
+import { AccessOp } from '~/types'
 
 const props = defineProps<{
   acl: AccessRule[]

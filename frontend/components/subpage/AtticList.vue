@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { GetAtticListResponse } from '~/types'
 import { UseTimeAgo } from '@vueuse/components'
 import { format } from 'date-fns'
 import { timeAgoMessages } from '~/composables/timeAgoMessages'
-import type { GetAtticListResponse } from '~/types'
 
 const props = defineProps<{
   urlPath: string

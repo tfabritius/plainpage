@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import type { GetAppResponse } from '~/types'
+import { defineStore } from 'pinia'
 
 export const useAppStore = defineStore(
   'app',

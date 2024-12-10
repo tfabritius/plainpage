@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import type { GetContentResponse } from '~/types/'
 import { format } from 'date-fns'
 import { FetchError } from 'ofetch'
-
-import type { GetContentResponse } from '~/types/'
 
 const props = defineProps<{
   urlPath: string

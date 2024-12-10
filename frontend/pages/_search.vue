@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRouteQuery } from '@vueuse/router'
 import type { SearchHit } from '~/types/api'
+import { useRouteQuery } from '@vueuse/router'
 
 const { t } = useI18n()
 

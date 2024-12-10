@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
+import type { User } from '~/types'
 import { FetchError } from 'ofetch'
 import { z } from 'zod'
 import { useAuthStore } from '~/store/auth'
-import type { User } from '~/types'
 import { validUsernameRegex } from '~/types'
 
 const { t } = useI18n()

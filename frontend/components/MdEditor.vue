@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { marked } from 'marked'
 import type { MdEditorGenerator, Segment } from '~/types/'
+import { marked } from 'marked'
 
 const props = defineProps<{
   modelValue: string

@@ -1,6 +1,6 @@
+import type { PatchOperation, TokenUserResponse, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
-import type { PatchOperation, TokenUserResponse, User } from '~/types'
 
 const hour = 60 * 60 // in seconds
 const minRemainingTokenValidity = 5 * 30 * 24 * hour // 5 months

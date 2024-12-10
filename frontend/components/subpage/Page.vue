@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
+import type { Breadcrumb, Page } from '~/types'
 import { useRouteQuery } from '@vueuse/router'
 import { storeToRefs } from 'pinia'
-
 import { useAppStore } from '~/store/app'
-import type { Breadcrumb, Page } from '~/types'
 
 const props = defineProps<{
   page: Page

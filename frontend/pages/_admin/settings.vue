@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-
-import { useAppStore } from '~/store/app'
 import type { Config } from '~/types'
+import { storeToRefs } from 'pinia'
+import { useAppStore } from '~/store/app'
 
 definePageMeta({
   middleware: ['require-auth'],

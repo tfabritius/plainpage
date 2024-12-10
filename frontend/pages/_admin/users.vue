@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import { z } from 'zod'
 import type { PatchOperation, User } from '~/types'
+import { z } from 'zod'
 import { validUsernameRegex } from '~/types'
 
 definePageMeta({

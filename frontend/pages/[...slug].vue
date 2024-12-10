@@ -1,9 +1,8 @@
 <script setup lang="ts">
+import type { GetContentResponse } from '~/types/'
 import { FetchError } from 'ofetch'
 import { storeToRefs } from 'pinia'
-
 import { useAuthStore } from '~/store/auth'
-import type { GetContentResponse } from '~/types/'
 
 const { t } = useI18n()
 

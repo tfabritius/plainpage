@@ -18,8 +18,7 @@ export default defineAppConfig({
         color: 'neutral' as any,
       },
       slots: {
-        // eslint-disable-next-line ts/no-explicit-any
-        base: 'cursor-pointer justify-center font-normal text-sm' as any,
+        base: 'cursor-pointer justify-center font-normal text-sm',
       },
       variants: {
         size: {
@@ -56,10 +55,8 @@ export default defineAppConfig({
       variants: {
         active: {
           false: {
-            // eslint-disable-next-line ts/no-explicit-any
-            item: 'data-highlighted:text-[var(--ui-primary)] data-highlighted:before:bg-[var(--ui-primary)]/10' as any,
-            // eslint-disable-next-line ts/no-explicit-any
-            itemLeadingIcon: 'group-data-highlighted:text-[var(--ui-primary)]' as any,
+            item: 'data-highlighted:text-[var(--ui-primary)] data-highlighted:before:bg-[var(--ui-primary)]/10',
+            itemLeadingIcon: 'group-data-highlighted:text-[var(--ui-primary)]',
           },
         },
       },
@@ -74,7 +71,8 @@ export default defineAppConfig({
       compoundVariants: [
         {
           color: 'primary',
-          variant: ['outline', 'subtle'],
+          // eslint-disable-next-line ts/no-explicit-any
+          variant: ['outline', 'subtle'] as any,
           class: 'focus-visible:ring-1',
         },
       ],
@@ -84,8 +82,7 @@ export default defineAppConfig({
       variants: {
         active: {
           true: 'hover:text-[var(--ui-primary)]',
-          // eslint-disable-next-line ts/no-explicit-any
-          false: 'hover:text-[var(--ui-primary)]' as any,
+          false: 'hover:text-[var(--ui-primary)]',
         },
       },
     },

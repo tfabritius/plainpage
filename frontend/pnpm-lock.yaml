@@ -39,8 +39,8 @@ importers:
         specifier: ^0.7.2
         version: 0.7.2(@vue/compiler-sfc@3.5.13)(eslint-plugin-format@0.1.2(eslint@9.16.0(jiti@2.4.1)))(eslint@9.16.0(jiti@2.4.1))(magicast@0.3.5)(rollup@4.24.4)(typescript@5.6.3)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))
       '@nuxt/icon':
-        specifier: ^1.10.0
-        version: 1.10.0(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))
+        specifier: ^1.10.1
+        version: 1.10.1(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))
       '@nuxt/ui':
         specifier: 3.0.0-alpha.10
         version: 3.0.0-alpha.10(@babel/parser@7.26.2)(async-validator@4.2.5)(change-case@5.4.4)(embla-carousel@8.5.1)(encoding@0.1.13)(ioredis@5.4.1)(magicast@0.3.5)(radix-vue@1.9.11(vue@3.5.13(typescript@5.6.3)))(rollup@4.24.4)(typescript@5.6.3)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))
@@ -1033,8 +1033,8 @@ packages:
   '@nuxt/fonts@0.10.3':
     resolution: {integrity: sha512-wLCQ+olKZtClVmMEgjsNNDfcNCmyhIv8eujcWYYoFiv1Csy1ySqjI2+1Kq7wwaJhWl4sU83KQC2lLdiMuEeHCw==}
 
-  '@nuxt/icon@1.10.0':
-    resolution: {integrity: sha512-Mbb6LzOT6IdVKlGUTZykS+igwHDEbhKilyzNVOg7R2HoSzyb36YDzekGSphexRrKZweGOa1m3lGHCKHlwX1tcQ==}
+  '@nuxt/icon@1.10.1':
+    resolution: {integrity: sha512-w0TbE0GWF5eqYS9KlkHyaHd64hFNEU1IkehfnmEtKwCPkOev/zKoZIbY2Zqa1qo+mhRM8nP3DVGNBCkpl9azww==}
 
   '@nuxt/kit@3.14.1592':
     resolution: {integrity: sha512-r9r8bISBBisvfcNgNL3dSIQHSBe0v5YkX5zwNblIC2T0CIEgxEVoM5rq9O5wqgb5OEydsHTtT2hL57vdv6VT2w==}
@@ -6323,7 +6323,7 @@ snapshots:
       - supports-color
       - vite
 
-  '@nuxt/icon@1.10.0(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))':
+  '@nuxt/icon@1.10.1(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))':
     dependencies:
       '@iconify/collections': 1.0.492
       '@iconify/types': 2.0.0
@@ -6424,7 +6424,7 @@ snapshots:
       '@internationalized/number': 3.6.0
       '@nuxt/devtools-kit': 1.6.3(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))
       '@nuxt/fonts': 0.10.3(encoding@0.1.13)(ioredis@5.4.1)(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))
-      '@nuxt/icon': 1.10.0(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))
+      '@nuxt/icon': 1.10.1(magicast@0.3.5)(rollup@4.24.4)(vite@5.4.11(@types/node@22.9.0)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0))(vue@3.5.13(typescript@5.6.3))
       '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@4.24.4)
       '@nuxt/schema': 3.14.1592(magicast@0.3.5)(rollup@4.24.4)
       '@nuxtjs/color-mode': 3.5.2(magicast@0.3.5)(rollup@4.24.4)

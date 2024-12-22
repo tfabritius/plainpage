@@ -27,8 +27,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2
       '@iconify-json/flag':
-        specifier: ^1.2.2
-        version: 1.2.2
+        specifier: ^1.2.3
+        version: 1.2.3
       '@iconify-json/ic':
         specifier: ^1.2.2
         version: 1.2.2
@@ -771,8 +771,8 @@ packages:
   '@iconify-json/ci@1.2.2':
     resolution: {integrity: sha512-RKqJ2nb48Hk2doM1ljZHRrNCiuzlXhji9xtnPm4VwmTcjUDOkkbrQSHyE7JNRducsP6uVNwDz4J3AaWZG1PxTg==}
 
-  '@iconify-json/flag@1.2.2':
-    resolution: {integrity: sha512-bUrrsX4ZUCK0QMbX3G/FSCZROpqCgmo7gdV29fYThop+mvy++OKEQWDRCYBQq7i1YRO0H6w+Gx2eu1Ig9EFwTA==}
+  '@iconify-json/flag@1.2.3':
+    resolution: {integrity: sha512-3gPdINXkDql7iJND6fGXC9pShUpHDp6bGW01hnpXhbmQ40lF54Wn2Zqa2r9GZga3KvBw5eFFO9h/Y4T2OhTW5Q==}
 
   '@iconify-json/ic@1.2.2':
     resolution: {integrity: sha512-QmjwS3lYiOmVWgTCEOTFyGODaR/+689+ajep/VsrCcsUN0Gdle5PmIcibDsdmRyrOsW/E77G41UUijdbjQUofw==}
@@ -5877,7 +5877,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/flag@1.2.2':
+  '@iconify-json/flag@1.2.3':
     dependencies:
       '@iconify/types': 2.0.0
 

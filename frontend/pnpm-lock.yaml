@@ -51,8 +51,8 @@ importers:
         specifier: ^0.9.0
         version: 0.9.0(magicast@0.3.5)(pinia@2.3.0(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(rollup@4.24.4)
       '@vueuse/components':
-        specifier: ^12.1.0
-        version: 12.1.0(typescript@5.6.3)
+        specifier: ^12.2.0
+        version: 12.2.0(typescript@5.6.3)
       '@vueuse/core':
         specifier: ^12.1.0
         version: 12.1.0(typescript@5.6.3)
@@ -1810,8 +1810,8 @@ packages:
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
 
-  '@vueuse/components@12.1.0':
-    resolution: {integrity: sha512-852Ny24ThmkdI7fqLRqnCXz7VybfRU84sp5zDW4GDVANStUtn4DaEmgOo2l3gX995B9/i0KFgQyAW9+y5zrkdA==}
+  '@vueuse/components@12.2.0':
+    resolution: {integrity: sha512-Oc4sXiwb3E5McBBKqtltWYLWpr0t7tLKFyxUpau7PQRLE/u4yCeWvdSGSzCXHmUcNIdpq4JjwOyIOxiqk0jMuQ==}
 
   '@vueuse/core@10.11.1':
     resolution: {integrity: sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==}
@@ -7503,10 +7503,10 @@ snapshots:
 
   '@vue/shared@3.5.13': {}
 
-  '@vueuse/components@12.1.0(typescript@5.6.3)':
+  '@vueuse/components@12.2.0(typescript@5.6.3)':
     dependencies:
-      '@vueuse/core': 12.1.0(typescript@5.6.3)
-      '@vueuse/shared': 12.1.0(typescript@5.6.3)
+      '@vueuse/core': 12.2.0(typescript@5.6.3)
+      '@vueuse/shared': 12.2.0(typescript@5.6.3)
       vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
       - typescript
@@ -10491,7 +10491,7 @@ snapshots:
       '@internationalized/date': 3.6.0
       '@internationalized/number': 3.6.0
       '@tanstack/vue-virtual': 3.10.8(vue@3.5.13(typescript@5.6.3))
-      '@vueuse/core': 12.1.0(typescript@5.6.3)
+      '@vueuse/core': 12.2.0(typescript@5.6.3)
       '@vueuse/shared': 12.2.0(typescript@5.6.3)
       aria-hidden: 1.2.4
       defu: 6.1.4

@@ -17,8 +17,7 @@ function readQuery() {
 }
 
 function updateQuery() {
-  // eslint-disable-next-line ts/no-explicit-any
-  q.value = query.value || (undefined as any)
+  q.value = query.value || undefined
 }
 
 async function onSearch() {

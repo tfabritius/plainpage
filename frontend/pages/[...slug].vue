@@ -9,23 +9,11 @@ const { t } = useI18n()
 const route = useRoute()
 const urlPath = computed(() => route.path.replace(/^\//, ''))
 
-const revQuery = computed(() => {
-  const data = route.query.rev
-  if (data === undefined || data === null) {
-    return data
-  }
-  if (Array.isArray(data)) {
-    return null
-  }
-  return data
+const revQuery = useRouteQuery('rev', undefined, {
+  transform: (data: string | string[] | null | undefined) => Array.isArray(data) ? null : data,
 })
 
-const aclQuery = computed(() => {
-  if (route.query.acl === undefined) {
-    return false
-  }
-  return true
-})
+const aclQuery = useRouteQuery('acl', undefined, { transform: data => data !== undefined })
 
 const auth = useAuthStore()
 const { loggedIn } = storeToRefs(auth)

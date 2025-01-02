@@ -32,9 +32,9 @@ const editablePage = ref(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')
 const editing = computed({
-  get() { return editQuery.value === 'true' && props.allowWrite },
+  get() { return editQuery.value === null && props.allowWrite },
   set(value) {
-    editQuery.value = value ? 'true' : null
+    editQuery.value = value ? null : undefined
   },
 })
 

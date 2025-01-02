@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "golang.go",
+    "vue.volar",
+    "dbaeumer.vscode-eslint",
+    "lokalise.i18n-ally"
+  ]
+}

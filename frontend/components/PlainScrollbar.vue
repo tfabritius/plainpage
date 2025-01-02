@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ScrollAreaCorner, ScrollAreaRoot, ScrollAreaScrollbar, ScrollAreaThumb, ScrollAreaViewport } from 'radix-vue'
+import { ScrollAreaCorner, ScrollAreaRoot, ScrollAreaScrollbar, ScrollAreaThumb, ScrollAreaViewport } from 'reka-ui'
 
 const emit = defineEmits<{
   (e: 'scroll', position: { scrollTop: number }): void

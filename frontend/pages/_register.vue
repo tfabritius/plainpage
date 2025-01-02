@@ -113,9 +113,10 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
           />
         </UFormField>
         <UFormField class="mt-4">
-          <PlainButton
+          <UButton
             type="submit"
             color="primary"
+            variant="solid"
             class="w-full"
             :label="$t('register')"
             :loading="loading"

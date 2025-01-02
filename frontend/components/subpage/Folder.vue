@@ -161,8 +161,8 @@ onKeyStroke('Backspace', (e) => {
           </form>
         </template>
         <template #footer>
-          <PlainButton :label="t('cancel')" @click="editTitelOpen = false" />
-          <PlainButton color="primary" :label="t('ok')" type="submit" form="editTitleForm" />
+          <UButton :label="t('cancel')" @click="editTitelOpen = false" />
+          <UButton color="primary" variant="solid" :label="t('ok')" type="submit" form="editTitleForm" />
         </template>
       </UModal>
     </template>
@@ -170,14 +170,14 @@ onKeyStroke('Backspace', (e) => {
     <template #actions>
       <div>
         <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
-          <PlainButton icon="ci:file-add" :label="$t('create-page')" />
+          <UButton icon="ci:file-add" :label="$t('create-page')" />
         </NewContentModal>
         <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
-          <PlainButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" />
+          <UButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" />
         </NewContentModal>
 
         <UDropdownMenu :items="menuItems">
-          <PlainButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
+          <UButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
         </UDropdownMenu>
       </div>
     </template>

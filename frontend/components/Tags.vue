@@ -74,12 +74,12 @@ function onCancelInput() {
       @keyup.esc.stop="onCancelInput"
     />
 
-    <PlainButton
+    <UButton
       v-if="editable && !inputVisible"
       class="px-2"
       icon="ci:plus"
       :label="$t('add-tag')"
-      size="small"
+      size="xs"
       @click="showInput"
     />
   </div>

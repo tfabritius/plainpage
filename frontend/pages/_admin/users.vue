@@ -125,7 +125,7 @@ async function onDelete(user: User) {
     </template>
 
     <template #actions>
-      <PlainButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
+      <UButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
     </template>
 
     <UModal
@@ -155,8 +155,8 @@ async function onDelete(user: User) {
         </UForm>
       </template>
       <template #footer>
-        <PlainButton :label="$t('cancel')" @click="userFormVisible = false" />
-        <PlainButton color="primary" :label="userFormSelectedUsername ? $t('save') : $t('create')" type="submit" form="userForm" />
+        <UButton :label="$t('cancel')" @click="userFormVisible = false" />
+        <UButton color="primary" variant="solid" :label="userFormSelectedUsername ? $t('save') : $t('create')" type="submit" form="userForm" />
       </template>
     </UModal>
 
@@ -164,8 +164,8 @@ async function onDelete(user: User) {
       :data="data" :columns="columns"
     >
       <template #actions-cell="{ row }">
-        <PlainButton variant="link" icon="ci:edit" @click="onEdit(row.original)" />
-        <PlainButton variant="link" icon="ci:trash-full" color="error" @click="onDelete(row.original)" />
+        <UButton variant="link" icon="ci:edit" @click="onEdit(row.original)" />
+        <UButton variant="link" icon="ci:trash-full" color="error" @click="onDelete(row.original)" />
       </template>
     </UTable>
 

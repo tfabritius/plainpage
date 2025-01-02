@@ -20,7 +20,7 @@ useHead(() => ({ title: t('error') }))
         {{ msg || $t('there-was-an-error') }}
       </div>
 
-      <PlainButton icon="ci:arrows-reload-01" :label="$t('try-again')" @click="onReload()" />
+      <UButton icon="ci:arrows-reload-01" :label="$t('try-again')" @click="onReload()" />
     </div>
   </div>
 </template>

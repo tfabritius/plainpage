@@ -17,9 +17,12 @@ export default defineAppConfig({
       defaultVariants: {
         // eslint-disable-next-line ts/no-explicit-any
         color: 'neutral' as any,
+        // eslint-disable-next-line ts/no-explicit-any
+        variant: 'outline' as any,
       },
       slots: {
         base: 'cursor-pointer justify-center font-normal text-sm',
+        label: 'hidden md:inline', // Don't show text on mobile
       },
       variants: {
         size: {

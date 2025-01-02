@@ -202,16 +202,16 @@ onKeyStroke('s', (e) => {
 
     <template #actions>
       <div v-if="!editing">
-        <PlainButton v-if="allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
+        <UButton v-if="allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
 
         <UDropdownMenu :items="menuItems">
-          <PlainButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
+          <UButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
         </UDropdownMenu>
       </div>
 
       <div v-if="editing">
-        <PlainButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-        <PlainButton class="ml-3" color="success" icon="ci:save" :label="$t('save')" @click="onSavePage" />
+        <UButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+        <UButton class="ml-3" color="success" variant="solid" icon="ci:save" :label="$t('save')" @click="onSavePage" />
       </div>
     </template>
 

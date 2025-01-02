@@ -111,8 +111,8 @@ const navTo = navigateTo
 
     <template #actions>
       <div v-if="editing">
-        <PlainButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-        <PlainButton icon="ci:save" :label="$t('save')" color="success" class="ml-3" @click="onSavePage" />
+        <UButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+        <UButton icon="ci:save" :label="$t('save')" color="success" variant="solid" class="ml-3" @click="onSavePage" />
       </div>
     </template>
 
@@ -123,11 +123,11 @@ const navTo = navigateTo
       </div>
 
       <div v-if="allowCreate">
-        <PlainButton icon="ci:file-add" :label="$t('create-page')" @click="createThisPage" />
-        <PlainButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" @click="createThisFolder" />
+        <UButton icon="ci:file-add" :label="$t('create-page')" @click="createThisPage" />
+        <UButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" @click="createThisFolder" />
       </div>
 
-      <PlainButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navTo('/')" />
+      <UButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navTo('/')" />
     </div>
 
     <PageEditor v-else v-model="editablePage" />

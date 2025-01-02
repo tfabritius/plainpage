@@ -126,8 +126,8 @@ async function onOpenChanged(open: boolean) {
       </UForm>
     </template>
     <template #footer>
-      <PlainButton :label="$t('cancel')" @click="open = false" />
-      <PlainButton color="primary" :label="$t('ok')" type="submit" form="newContentForm" />
+      <UButton :label="$t('cancel')" @click="open = false" />
+      <UButton color="primary" variant="solid" :label="$t('ok')" type="submit" form="newContentForm" />
     </template>
   </UModal>
 </template>

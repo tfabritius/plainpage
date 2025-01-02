@@ -65,14 +65,14 @@ async function submit() {
           />
         </UFormField>
         <UFormField class="mt-4">
-          <PlainButton
+          <UButton
             color="primary"
+            variant="solid"
             class="w-full"
             :label="$t('sign-in')"
             :loading="loading"
             @click="submit"
           />
-          <i class="" />
         </UFormField>
       </form>
 

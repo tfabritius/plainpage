@@ -238,7 +238,7 @@ defineExpose({ getAcl })
       <UCheckbox v-model="row.original.admin" :disabled="['anonymous', 'all', 'admin'].includes(row.original.subject)" />
     </template>
     <template #actions-cell="{ row }">
-      <PlainButton
+      <UButton
         v-if="!['anonymous', 'all', 'admin'].includes(row.original.subject)"
         variant="link"
         color="error"
@@ -255,6 +255,6 @@ defineExpose({ getAcl })
         <UIcon v-else-if="newUser === null" class="text-red-500" name="ci:close-circle" />
       </template>
     </UInput>
-    <PlainButton :disabled="!newUser" :label="$t('add')" class="ml-2" @click="onAddRule" />
+    <UButton :disabled="!newUser" :label="$t('add')" class="ml-2" @click="onAddRule" />
   </div>
 </template>

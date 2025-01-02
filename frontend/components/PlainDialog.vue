@@ -50,8 +50,8 @@ defineExpose({ confirm, prompt })
       </template>
 
       <template #footer>
-        <PlainButton :label="parameters.cancelButtonText || t('cancel')" @click="confirmDialog(false)" />
-        <PlainButton :color="parameters.confirmButtonColor || 'primary'" :label="parameters.confirmButtonText || t('ok')" @click="confirmDialog(true)" />
+        <UButton :label="parameters.cancelButtonText || t('cancel')" @click="confirmDialog(false)" />
+        <UButton :color="parameters.confirmButtonColor || 'primary'" variant="solid" :label="parameters.confirmButtonText || t('ok')" @click="confirmDialog(true)" />
       </template>
     </UModal>
   </Teleport>

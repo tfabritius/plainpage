@@ -159,7 +159,7 @@ const menuItems = computed(() => {
         :items="menuItems"
         size="lg"
       >
-        <PlainButton icon="ci:hamburger" variant="link" :label="t('menu')" />
+        <UButton icon="ci:hamburger" variant="link" :label="t('menu')" />
       </UDropdownMenu>
     </span>
   </div>

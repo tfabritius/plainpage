@@ -57,10 +57,17 @@ function onCancelInput() {
       v-for="tag in modelValue"
       :key="tag"
       variant="outline"
-      :closable="editable"
-      @close="handleClose(tag)"
     >
       {{ tag }}
+      <UButton
+        v-if="editable"
+        icon="ci:close-md"
+        size="xs"
+        color="primary"
+        variant="link"
+        :ui="{ base: 'p-0' }"
+        @click="handleClose(tag)"
+      />
     </UBadge>
 
     <UInput

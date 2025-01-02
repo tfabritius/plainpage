@@ -52,12 +52,11 @@ function onCancelInput() {
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex gap-1">
     <UBadge
       v-for="tag in modelValue"
       :key="tag"
       variant="outline"
-      class="mr-1"
       :closable="editable"
       @close="handleClose(tag)"
     >
@@ -68,8 +67,8 @@ function onCancelInput() {
       v-if="inputVisible"
       ref="InputRef"
       v-model="inputValue"
-      class="max-w-20 inline"
-      size="sm"
+      class="max-w-20 inline leading-4"
+      size="xs"
       @keyup.enter="onInputConfirm"
       @blur="onInputConfirm"
       @keyup.esc.stop="onCancelInput"
@@ -77,6 +76,7 @@ function onCancelInput() {
 
     <PlainButton
       v-if="editable && !inputVisible"
+      class="px-2"
       icon="ci:plus"
       :label="$t('add-tag')"
       size="small"

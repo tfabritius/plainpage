@@ -201,18 +201,14 @@ onKeyStroke('s', (e) => {
     </template>
 
     <template #actions>
-      <div v-if="!editing">
-        <UButton v-if="allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
+      <UButton v-if="!editing && allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
 
-        <UDropdownMenu :items="menuItems">
-          <UButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
-        </UDropdownMenu>
-      </div>
+      <UDropdownMenu v-if="!editing" :items="menuItems">
+        <UButton icon="ci:more-vertical" :label="$t('more')" />
+      </UDropdownMenu>
 
-      <div v-if="editing">
-        <UButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-        <UButton class="ml-3" color="success" variant="solid" icon="ci:save" :label="$t('save')" @click="onSavePage" />
-      </div>
+      <UButton v-if="editing" icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+      <UButton v-if="editing" color="success" variant="solid" icon="ci:save" :label="$t('save')" @click="onSavePage" />
     </template>
 
     <PageView

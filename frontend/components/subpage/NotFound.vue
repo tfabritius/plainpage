@@ -109,11 +109,9 @@ const navTo = navigateTo
       <span class="italic">{{ $t('not-found') }}</span>
     </template>
 
-    <template #actions>
-      <div v-if="editing">
-        <UButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-        <UButton icon="ci:save" :label="$t('save')" color="success" variant="solid" class="ml-3" @click="onSavePage" />
-      </div>
+    <template v-if="editing" #actions>
+      <UButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+      <UButton icon="ci:save" :label="$t('save')" color="success" variant="solid" @click="onSavePage" />
     </template>
 
     <div v-if="!editing" class="text-center">

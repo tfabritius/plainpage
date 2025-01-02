@@ -71,6 +71,7 @@ async function onDelete() {
     <template #actions>
       <UButton color="success" variant="solid" icon="ci:save" :label="$t('save')" @click="onSave" />
     </template>
+
     <UForm
       :schema="formSchema"
       :state="formState"

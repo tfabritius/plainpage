@@ -168,18 +168,16 @@ onKeyStroke('Backspace', (e) => {
     </template>
 
     <template #actions>
-      <div>
-        <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
-          <UButton icon="ci:file-add" :label="$t('create-page')" />
-        </NewContentModal>
-        <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
-          <UButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" />
-        </NewContentModal>
+      <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
+        <UButton icon="ci:file-add" :label="$t('create-page')" />
+      </NewContentModal>
+      <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
+        <UButton icon="ci:folder-add" :label="$t('create-folder')" />
+      </NewContentModal>
 
-        <UDropdownMenu :items="menuItems">
-          <UButton icon="ci:more-vertical" :label="$t('more')" class="ml-3" />
-        </UDropdownMenu>
-      </div>
+      <UDropdownMenu :items="menuItems">
+        <UButton icon="ci:more-vertical" :label="$t('more')" />
+      </UDropdownMenu>
     </template>
 
     <div v-if="subfolders.length > 0">

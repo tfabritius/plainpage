@@ -64,7 +64,7 @@ const breadcrumbItems = computed(() => {
             </div>
           </div>
 
-          <div class="flex items-center">
+          <div class="flex items-center gap-3">
             <slot name="actions" />
           </div>
         </div>

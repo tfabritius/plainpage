@@ -48,7 +48,7 @@ async function onSave() {
 
     <template #actions>
       <UButton icon="ci:skip-back" :label="$t('back-to-content')" @click="onGoBack" />
-      <UButton icon="ci:save" :label="$t('save')" color="success" variant="solid" class="ml-3" @click="onSave" />
+      <UButton icon="ci:save" :label="$t('save')" color="success" variant="solid" @click="onSave" />
     </template>
 
     <USwitch

@@ -3,6 +3,7 @@ export default defineAppConfig({
     colors: {
       // eslint-disable-next-line ts/no-explicit-any
       primary: 'plainpage' as any,
+      warning: 'orange',
     },
 
     icons: {

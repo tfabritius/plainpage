@@ -62,7 +62,7 @@ const navTo = navigateTo
     </template>
 
     <template #actions>
-      <UButton
+      <ReactiveButton
         v-if="!data.notFound"
         icon="ic:baseline-update"
         :label="$t('current-version')"
@@ -80,7 +80,7 @@ const navTo = navigateTo
           {{ $t('revision-doesnt-exist') }}
         </div>
 
-        <UButton
+        <ReactiveButton
           icon="ic:baseline-update"
           :label="$t('current-version')"
           @click="navTo({ query: { rev: undefined } })"

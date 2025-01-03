@@ -22,18 +22,6 @@ export default defineAppConfig({
       },
       slots: {
         base: 'cursor-pointer justify-center font-normal text-sm',
-        label: 'hidden md:inline', // Don't show text on mobile
-      },
-      variants: {
-        size: {
-          md: {
-            // height of icon only: 14px
-            //   + 8 px padding top/bottom = 30px
-            // height of icon + text: 20px
-            //   + 5 px padding top/bottom = 30px
-            base: 'px-4 py-[8px] md:py-[5px]',
-          },
-        },
       },
       compoundVariants: [
         {

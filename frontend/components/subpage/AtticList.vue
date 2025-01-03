@@ -35,7 +35,7 @@ const navTo = navigateTo
     </template>
 
     <template #actions>
-      <UButton
+      <ReactiveButton
         icon="ic:baseline-update"
         :label="$t('current-version')"
         @click="navTo({ query: { rev: undefined } })"

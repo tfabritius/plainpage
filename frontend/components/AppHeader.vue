@@ -159,7 +159,7 @@ const menuItems = computed(() => {
         :items="menuItems"
         size="lg"
       >
-        <UButton icon="ci:hamburger" variant="link" :label="t('menu')" />
+        <ReactiveButton icon="ci:hamburger" variant="link" :label="t('menu')" />
       </UDropdownMenu>
     </span>
   </div>

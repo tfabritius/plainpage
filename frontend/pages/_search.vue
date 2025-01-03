@@ -54,7 +54,7 @@ watch(q, () => {
 
     <form class="flex" @submit.prevent="onSearch">
       <UInput v-model="query" :placeholder="t('search')" class="w-full" />
-      <UButton color="primary" variant="solid" icon="ci:search" class="ml-2" :loading="loading" :label="$t('search')" type="submit" />
+      <ReactiveButton color="primary" icon="ci:search" class="ml-2" :loading="loading" :label="$t('search')" type="submit" />
     </form>
 
     <div v-if="results !== undefined">

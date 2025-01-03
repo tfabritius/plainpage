@@ -169,14 +169,14 @@ onKeyStroke('Backspace', (e) => {
 
     <template #actions>
       <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
-        <UButton icon="ci:file-add" :label="$t('create-page')" />
+        <ReactiveButton icon="ci:file-add" :label="$t('create-page')" />
       </NewContentModal>
       <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
-        <UButton icon="ci:folder-add" :label="$t('create-folder')" />
+        <ReactiveButton icon="ci:folder-add" :label="$t('create-folder')" />
       </NewContentModal>
 
       <UDropdownMenu :items="menuItems">
-        <UButton icon="ci:more-vertical" :label="$t('more')" />
+        <ReactiveButton icon="ci:more-vertical" :label="$t('more')" />
       </UDropdownMenu>
     </template>
 

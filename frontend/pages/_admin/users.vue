@@ -125,7 +125,7 @@ async function onDelete(user: User) {
     </template>
 
     <template #actions>
-      <UButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
+      <ReactiveButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
     </template>
 
     <UModal

@@ -69,7 +69,7 @@ async function onDelete() {
     </template>
 
     <template #actions>
-      <UButton color="success" variant="solid" icon="ci:save" :label="$t('save')" @click="onSave" />
+      <ReactiveButton color="success" icon="ci:save" :label="$t('save')" @click="onSave" />
     </template>
 
     <UForm
@@ -90,7 +90,7 @@ async function onDelete() {
       </UFormField>
     </UForm>
 
-    <UButton color="warning" variant="solid" :label="$t('delete-my-account')" class="mt-8" @click="onDelete" />
+    <UButton color="warning" icon="ci:trash-full" :label="$t('delete-my-account')" class="mt-8" @click="onDelete" />
 
     <PlainDialog ref="plainDialog" />
   </Layout>

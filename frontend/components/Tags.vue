@@ -81,8 +81,9 @@ function onCancelInput() {
       @keyup.esc.stop="onCancelInput"
     />
 
-    <UButton
+    <ReactiveButton
       v-if="editable && !inputVisible"
+      color="primary"
       class="px-2"
       icon="ci:plus"
       :label="$t('add-tag')"

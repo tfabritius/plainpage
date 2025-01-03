@@ -110,8 +110,8 @@ const navTo = navigateTo
     </template>
 
     <template v-if="editing" #actions>
-      <UButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-      <UButton icon="ci:save" :label="$t('save')" color="success" variant="solid" @click="onSavePage" />
+      <ReactiveButton icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
+      <ReactiveButton icon="ci:save" :label="$t('save')" color="success" @click="onSavePage" />
     </template>
 
     <div v-if="!editing" class="text-center">
@@ -121,11 +121,11 @@ const navTo = navigateTo
       </div>
 
       <div v-if="allowCreate">
-        <UButton icon="ci:file-add" :label="$t('create-page')" @click="createThisPage" />
-        <UButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" @click="createThisFolder" />
+        <ReactiveButton icon="ci:file-add" :label="$t('create-page')" @click="createThisPage" />
+        <ReactiveButton icon="ci:folder-add" :label="$t('create-folder')" class="ml-3" @click="createThisFolder" />
       </div>
 
-      <UButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navTo('/')" />
+      <ReactiveButton v-else icon="ic:outline-home" :label="$t('back-home')" @click="navTo('/')" />
     </div>
 
     <PageEditor v-else v-model="editablePage" />

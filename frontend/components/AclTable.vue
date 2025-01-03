@@ -31,7 +31,7 @@ const columns: TableColumn<TableRow>[] = [
   { header: t('delete'), accessorKey: 'delete' },
   { header: t('register'), accessorKey: 'register' },
   { header: t('acl.admin'), accessorKey: 'admin' },
-  { header: 'TODO', id: 'actions' },
+  { header: '', id: 'actions' },
 ]
 
 const columnVisibility = ref({

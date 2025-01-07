@@ -44,7 +44,7 @@ async function submit() {
   if (props.type === 'page') {
     await navigateTo({
       path: newUrl,
-      query: { edit: 'true' },
+      query: { edit: null },
       state: { title: formState.title },
     })
   } else {

@@ -60,8 +60,8 @@ importers:
         specifier: ^12.3.0
         version: 12.3.0(magicast@0.3.5)(nuxt@3.15.1(@parcel/watcher@2.5.0)(@types/node@22.9.0)(db0@0.2.1)(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.1)(lightningcss@1.28.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.4)(sass@1.80.4)(terser@5.36.0)(typescript@5.6.3)(vite@6.0.7(@types/node@22.9.0)(jiti@2.4.2)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0)(yaml@2.6.1))(vue-tsc@2.1.10(typescript@5.6.3))(yaml@2.6.1))(rollup@4.24.4)(typescript@5.6.3)
       '@vueuse/router':
-        specifier: ^12.3.0
-        version: 12.3.0(typescript@5.6.3)(vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)))
+        specifier: ^12.4.0
+        version: 12.4.0(typescript@5.6.3)(vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)))
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.2.3)
@@ -1893,8 +1893,8 @@ packages:
     peerDependencies:
       nuxt: ^3.0.0
 
-  '@vueuse/router@12.3.0':
-    resolution: {integrity: sha512-1DaH4SAkoNaEHHO2QedOksGZ+96e12wFxxT2hSJ1uWaghZJAjjS2xNKvl0hQdsFDZQ2iakLoAuIcuR5FHuoCCA==}
+  '@vueuse/router@12.4.0':
+    resolution: {integrity: sha512-NXa7kuIeC/BR4B1FPfqOA9LDhbTNBiF5KSprnJCZ3Mw4/ZLzyq7GDIlgJsjcqEtRmgQjJFVRQdAX0yWvIs1ygQ==}
     peerDependencies:
       vue-router: '>=4.0.0-rc.1'
 
@@ -1909,6 +1909,9 @@ packages:
 
   '@vueuse/shared@12.3.0':
     resolution: {integrity: sha512-X3YD35GUeW0d5Gajcwv9jdLAJTV2Jdb/Ll6Ii2JIYcKLYZqv5wxyLeKtiQkqWmHg3v0J0ZWjDUMVOw2E7RCXfA==}
+
+  '@vueuse/shared@12.4.0':
+    resolution: {integrity: sha512-9yLgbHVIF12OSCojnjTIoZL1+UA10+O4E1aD6Hpfo/DKVm5o3SZIwz6CupqGy3+IcKI8d6Jnl26EQj/YucnW0Q==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -7729,9 +7732,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@vueuse/router@12.3.0(typescript@5.6.3)(vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)))':
+  '@vueuse/router@12.4.0(typescript@5.6.3)(vue-router@4.5.0(vue@3.5.13(typescript@5.6.3)))':
     dependencies:
-      '@vueuse/shared': 12.3.0(typescript@5.6.3)
+      '@vueuse/shared': 12.4.0(typescript@5.6.3)
       vue: 3.5.13(typescript@5.6.3)
       vue-router: 4.5.0(vue@3.5.13(typescript@5.6.3))
     transitivePeerDependencies:
@@ -7757,6 +7760,12 @@ snapshots:
       - typescript
 
   '@vueuse/shared@12.3.0(typescript@5.6.3)':
+    dependencies:
+      vue: 3.5.13(typescript@5.6.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@vueuse/shared@12.4.0(typescript@5.6.3)':
     dependencies:
       vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:

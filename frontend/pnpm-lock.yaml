@@ -54,8 +54,8 @@ importers:
         specifier: ^12.4.0
         version: 12.4.0(typescript@5.6.3)
       '@vueuse/core':
-        specifier: ^12.3.0
-        version: 12.3.0(typescript@5.6.3)
+        specifier: ^12.4.0
+        version: 12.4.0(typescript@5.6.3)
       '@vueuse/nuxt':
         specifier: ^12.3.0
         version: 12.3.0(magicast@0.3.5)(nuxt@3.15.1(@parcel/watcher@2.5.0)(@types/node@22.9.0)(db0@0.2.1)(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.1)(lightningcss@1.28.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.24.4)(sass@1.80.4)(terser@5.36.0)(typescript@5.6.3)(vite@6.0.7(@types/node@22.9.0)(jiti@2.4.2)(lightningcss@1.28.1)(sass@1.80.4)(terser@5.36.0)(yaml@2.6.1))(vue-tsc@2.1.10(typescript@5.6.3))(yaml@2.6.1))(rollup@4.24.4)(typescript@5.6.3)
@@ -6683,7 +6683,7 @@ snapshots:
       '@tanstack/vue-table': 8.20.5(vue@3.5.13(typescript@5.6.3))
       '@types/color': 4.2.0
       '@unhead/vue': 1.11.14(vue@3.5.13(typescript@5.6.3))
-      '@vueuse/core': 12.3.0(typescript@5.6.3)
+      '@vueuse/core': 12.4.0(typescript@5.6.3)
       '@vueuse/integrations': 12.0.0(async-validator@4.2.5)(change-case@5.4.4)(fuse.js@7.0.0)(typescript@5.6.3)
       color: 4.2.3
       consola: 3.2.3
@@ -6710,7 +6710,7 @@ snapshots:
       tinyglobby: 0.2.10
       typescript: 5.6.3
       unplugin: 1.16.0
-      unplugin-auto-import: 0.18.6(@nuxt/kit@3.14.1592(magicast@0.3.5)(rollup@4.24.4))(@vueuse/core@12.3.0(typescript@5.6.3))(rollup@4.24.4)
+      unplugin-auto-import: 0.18.6(@nuxt/kit@3.14.1592(magicast@0.3.5)(rollup@4.24.4))(@vueuse/core@12.4.0(typescript@5.6.3))(rollup@4.24.4)
       unplugin-vue-components: 0.27.5(@babel/parser@7.26.2)(@nuxt/kit@3.14.1592(magicast@0.3.5)(rollup@4.24.4))(rollup@4.24.4)(vue@3.5.13(typescript@5.6.3))
       vaul-vue: 0.2.0(radix-vue@1.9.11(vue@3.5.13(typescript@5.6.3)))(vue@3.5.13(typescript@5.6.3))
     transitivePeerDependencies:
@@ -10687,8 +10687,8 @@ snapshots:
       '@internationalized/date': 3.6.0
       '@internationalized/number': 3.6.0
       '@tanstack/vue-virtual': 3.10.8(vue@3.5.13(typescript@5.6.3))
-      '@vueuse/core': 12.3.0(typescript@5.6.3)
-      '@vueuse/shared': 12.3.0(typescript@5.6.3)
+      '@vueuse/core': 12.4.0(typescript@5.6.3)
+      '@vueuse/shared': 12.4.0(typescript@5.6.3)
       aria-hidden: 1.2.4
       defu: 6.1.4
       ohash: 1.1.4
@@ -10705,7 +10705,7 @@ snapshots:
       '@internationalized/date': 3.6.0
       '@internationalized/number': 3.6.0
       '@tanstack/vue-virtual': 3.10.8(vue@3.5.13(typescript@5.6.3))
-      '@vueuse/core': 12.3.0(typescript@5.6.3)
+      '@vueuse/core': 12.4.0(typescript@5.6.3)
       '@vueuse/shared': 12.2.0(typescript@5.6.3)
       aria-hidden: 1.2.4
       defu: 6.1.4
@@ -11223,7 +11223,7 @@ snapshots:
 
   universalify@2.0.1: {}
 
-  unplugin-auto-import@0.18.6(@nuxt/kit@3.14.1592(magicast@0.3.5)(rollup@4.24.4))(@vueuse/core@12.3.0(typescript@5.6.3))(rollup@4.24.4):
+  unplugin-auto-import@0.18.6(@nuxt/kit@3.14.1592(magicast@0.3.5)(rollup@4.24.4))(@vueuse/core@12.4.0(typescript@5.6.3))(rollup@4.24.4):
     dependencies:
       '@antfu/utils': 0.7.10
       '@rollup/pluginutils': 5.1.3(rollup@4.24.4)
@@ -11235,7 +11235,7 @@ snapshots:
       unplugin: 1.16.0
     optionalDependencies:
       '@nuxt/kit': 3.14.1592(magicast@0.3.5)(rollup@4.24.4)
-      '@vueuse/core': 12.3.0(typescript@5.6.3)
+      '@vueuse/core': 12.4.0(typescript@5.6.3)
     transitivePeerDependencies:
       - rollup
 

@@ -9,7 +9,7 @@ const {
   confirm: confirmDialog,
 } = useConfirmDialog()
 
-const parameters = ref< {
+const parameters = ref<{
   message: string
   confirmButtonText?: string
   confirmButtonColor?: 'success' | 'warning' | 'error'

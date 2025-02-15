@@ -51,8 +51,8 @@ importers:
         specifier: ^0.9.0
         version: 0.9.0(magicast@0.3.5)(pinia@2.3.1(typescript@5.6.3)(vue@3.5.13(typescript@5.6.3)))(rollup@4.34.6)
       '@vueuse/components':
-        specifier: ^12.5.0
-        version: 12.5.0(typescript@5.6.3)
+        specifier: ^12.7.0
+        version: 12.7.0(typescript@5.6.3)
       '@vueuse/core':
         specifier: ^12.5.0
         version: 12.5.0(typescript@5.6.3)
@@ -1635,14 +1635,17 @@ packages:
   '@vue/shared@3.5.13':
     resolution: {integrity: sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==}
 
-  '@vueuse/components@12.5.0':
-    resolution: {integrity: sha512-aLgEW8bidRZ4qkVOIl958NAev+XKYTtbfsIj5ObjiDwvBDqxmGVCwMQvWHUQN37tb8JSkRF22gTUbXNt0iSwLQ==}
+  '@vueuse/components@12.7.0':
+    resolution: {integrity: sha512-LbaKPOx9sTPRxI8ymJt3VCm2CifmC432yaXxCGbjkuKIh2jyNlXvE7sGrLm7kbC7WkBJnUXzm3K/cI1pIE8ueQ==}
 
   '@vueuse/core@10.11.1':
     resolution: {integrity: sha512-guoy26JQktXPcz+0n3GukWIy/JDNKti9v6VEMu6kV2sYBsWuGiTU8OWdg+ADfUbHg3/3DlqySDe7JmdHrktiww==}
 
   '@vueuse/core@12.5.0':
     resolution: {integrity: sha512-GVyH1iYqNANwcahAx8JBm6awaNgvR/SwZ1fjr10b8l1HIgDp82ngNbfzJUgOgWEoxjL+URAggnlilAEXwCOZtg==}
+
+  '@vueuse/core@12.7.0':
+    resolution: {integrity: sha512-jtK5B7YjZXmkGNHjviyGO4s3ZtEhbzSgrbX+s5o+Lr8i2nYqNyHuPVOeTdM1/hZ5Tkxg/KktAuAVDDiHMraMVA==}
 
   '@vueuse/integrations@12.5.0':
     resolution: {integrity: sha512-HYLt8M6mjUfcoUOzyBcX2RjpfapIwHPBmQJtTmXOQW845Y/Osu9VuTJ5kPvnmWJ6IUa05WpblfOwZ+P0G4iZsQ==}
@@ -1691,6 +1694,9 @@ packages:
   '@vueuse/metadata@12.5.0':
     resolution: {integrity: sha512-Ui7Lo2a7AxrMAXRF+fAp9QsXuwTeeZ8fIB9wsLHqzq9MQk+2gMYE2IGJW48VMJ8ecvCB3z3GsGLKLbSasQ5Qlg==}
 
+  '@vueuse/metadata@12.7.0':
+    resolution: {integrity: sha512-4VvTH9mrjXqFN5LYa5YfqHVRI6j7R00Vy4995Rw7PQxyCL3z0Lli86iN4UemWqixxEvYfRjG+hF9wL8oLOn+3g==}
+
   '@vueuse/nuxt@12.5.0':
     resolution: {integrity: sha512-daqSOlXv5ilAiT5GlRBtfqdkYjeMO9P6n50OpbEVm9hXmfXmZoXK3YMND8l5n5KcscD4pnD66IrYPqqOW5eH1Q==}
     peerDependencies:
@@ -1706,6 +1712,9 @@ packages:
 
   '@vueuse/shared@12.5.0':
     resolution: {integrity: sha512-vMpcL1lStUU6O+kdj6YdHDixh0odjPAUM15uJ9f7MY781jcYkIwFA4iv2EfoIPO6vBmvutI1HxxAwmf0cx5ISQ==}
+
+  '@vueuse/shared@12.7.0':
+    resolution: {integrity: sha512-coLlUw2HHKsm7rPN6WqHJQr18WymN4wkA/3ThFaJ4v4gWGWAQQGK+MJxLuJTBs4mojQiazlVWAKNJNpUWGRkNw==}
 
   abbrev@3.0.0:
     resolution: {integrity: sha512-+/kfrslGQ7TNV2ecmQwMJj/B65g5KVq1/L3SGVZ3tCYGqlzFuFCGBZJtMP99wH3NpEUyAjn0zPdPUg0D+DwrOA==}
@@ -3518,6 +3527,11 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
+  nanoid@5.1.0:
+    resolution: {integrity: sha512-zDAl/llz8Ue/EblwSYwdxGBYfj46IM1dhjVi8dyp9LQffoIGxJEAHj2oeZ4uNcgycSRcQ83CnfcZqEJzVDLcDw==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   nanotar@0.2.0:
     resolution: {integrity: sha512-9ca1h0Xjvo9bEkE4UOxgAzLV0jHKe6LMaxo37ND2DAhhAtd0j8pR1Wxz+/goMrZO8AEZTWCmyaOsFI/W5AdpCQ==}
 
@@ -4001,8 +4015,8 @@ packages:
     resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
     engines: {node: '>=6.0.0'}
 
-  prettier@3.5.0:
-    resolution: {integrity: sha512-quyMrVt6svPS7CjQ9gKb3GLEX/rl3BCL2oa/QkNcXv4YNVBC9olt3s+H7ukto06q7B1Qz46PbrKLO34PR6vXcA==}
+  prettier@3.5.1:
+    resolution: {integrity: sha512-hPpFQvHwL3Qv5AdRvBFMhnKo4tYxp0ReXiPn2bxkiohEX6mBeBwEpBSQTkD458RaaDKQMYSp4hX4UtfUTA5wDw==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -7217,10 +7231,10 @@ snapshots:
 
   '@vue/shared@3.5.13': {}
 
-  '@vueuse/components@12.5.0(typescript@5.6.3)':
+  '@vueuse/components@12.7.0(typescript@5.6.3)':
     dependencies:
-      '@vueuse/core': 12.5.0(typescript@5.6.3)
-      '@vueuse/shared': 12.5.0(typescript@5.6.3)
+      '@vueuse/core': 12.7.0(typescript@5.6.3)
+      '@vueuse/shared': 12.7.0(typescript@5.6.3)
       vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
       - typescript
@@ -7244,6 +7258,15 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
+  '@vueuse/core@12.7.0(typescript@5.6.3)':
+    dependencies:
+      '@types/web-bluetooth': 0.0.20
+      '@vueuse/metadata': 12.7.0
+      '@vueuse/shared': 12.7.0(typescript@5.6.3)
+      vue: 3.5.13(typescript@5.6.3)
+    transitivePeerDependencies:
+      - typescript
+
   '@vueuse/integrations@12.5.0(async-validator@4.2.5)(change-case@5.4.4)(fuse.js@7.1.0)(typescript@5.6.3)':
     dependencies:
       '@vueuse/core': 12.5.0(typescript@5.6.3)
@@ -7259,6 +7282,8 @@ snapshots:
   '@vueuse/metadata@10.11.1': {}
 
   '@vueuse/metadata@12.5.0': {}
+
+  '@vueuse/metadata@12.7.0': {}
 
   '@vueuse/nuxt@12.5.0(magicast@0.3.5)(nuxt@3.15.4(@parcel/watcher@2.5.1)(@types/node@22.13.1)(db0@0.2.3)(encoding@0.1.13)(eslint@9.20.0(jiti@2.4.2))(ioredis@5.5.0)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.34.6)(sass@1.80.4)(terser@5.38.1)(typescript@5.6.3)(vite@6.1.0(@types/node@22.13.1)(jiti@2.4.2)(lightningcss@1.29.1)(sass@1.80.4)(terser@5.38.1)(yaml@2.7.0))(vue-tsc@2.1.10(typescript@5.6.3))(yaml@2.7.0))(typescript@5.6.3)':
     dependencies:
@@ -7289,6 +7314,12 @@ snapshots:
       - vue
 
   '@vueuse/shared@12.5.0(typescript@5.6.3)':
+    dependencies:
+      vue: 3.5.13(typescript@5.6.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@vueuse/shared@12.7.0(typescript@5.6.3)':
     dependencies:
       vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
@@ -8021,7 +8052,7 @@ snapshots:
       eslint: 9.20.0(jiti@2.4.2)
       eslint-formatting-reporter: 0.0.0(eslint@9.20.0(jiti@2.4.2))
       eslint-parser-plain: 0.1.1
-      prettier: 3.5.0
+      prettier: 3.5.1
       synckit: 0.9.2
     optional: true
 
@@ -9313,6 +9344,8 @@ snapshots:
 
   nanoid@5.0.9: {}
 
+  nanoid@5.1.0: {}
+
   nanotar@0.2.0: {}
 
   natural-compare@1.4.0: {}
@@ -9971,7 +10004,7 @@ snapshots:
       fast-diff: 1.3.0
     optional: true
 
-  prettier@3.5.0:
+  prettier@3.5.1:
     optional: true
 
   pretty-bytes@6.1.1: {}
@@ -10003,7 +10036,7 @@ snapshots:
       aria-hidden: 1.2.4
       defu: 6.1.4
       fast-deep-equal: 3.1.3
-      nanoid: 5.0.9
+      nanoid: 5.1.0
       vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -10091,7 +10124,7 @@ snapshots:
       '@internationalized/number': 3.6.0
       '@tanstack/vue-virtual': 3.13.0(vue@3.5.13(typescript@5.6.3))
       '@vueuse/core': 12.5.0(typescript@5.6.3)
-      '@vueuse/shared': 12.5.0(typescript@5.6.3)
+      '@vueuse/shared': 12.7.0(typescript@5.6.3)
       aria-hidden: 1.2.4
       defu: 6.1.4
       ohash: 1.1.4

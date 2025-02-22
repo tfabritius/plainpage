@@ -1,6 +1,6 @@
 module github.com/tfabritius/plainpage
 
-go 1.22
+go 1.24
 
 require (
 	github.com/blevesearch/bleve/v2 v2.4.4

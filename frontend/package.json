@@ -33,7 +33,7 @@
     "@vueuse/components": "^12.8.2",
     "@vueuse/core": "^12.8.2",
     "@vueuse/nuxt": "^12.7.0",
-    "@vueuse/router": "^12.7.0",
+    "@vueuse/router": "^12.8.2",
     "codemirror": "^6.0.1",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.4",

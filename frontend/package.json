@@ -27,7 +27,7 @@
     "@iconify-json/lucide": "^1.2.28",
     "@nuxt/eslint": "^1.2.0",
     "@nuxt/icon": "^1.10.3",
-    "@nuxt/ui": "3.0.0-beta.2",
+    "@nuxt/ui": "3.0.0-beta.3",
     "@nuxtjs/i18n": "9.3.0",
     "@pinia/nuxt": "^0.10.1",
     "@vueuse/components": "^12.7.0",

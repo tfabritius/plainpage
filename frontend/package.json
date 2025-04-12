@@ -30,7 +30,7 @@
     "@nuxt/ui": "3.0.2",
     "@nuxtjs/i18n": "9.5.3",
     "@pinia/nuxt": "^0.10.1",
-    "@vueuse/components": "^13.0.0",
+    "@vueuse/components": "^13.1.0",
     "@vueuse/core": "^13.1.0",
     "@vueuse/nuxt": "^13.1.0",
     "@vueuse/router": "^13.1.0",

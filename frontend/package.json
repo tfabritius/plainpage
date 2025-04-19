@@ -48,7 +48,7 @@
     "typescript": "^5.8.3",
     "vue-codemirror": "^6.1.1",
     "vue-tsc": "^2.2.2",
-    "zod": "^3.24.2"
+    "zod": "^3.24.3"
   },
   "pnpm": {
     "peerDependencyRules": {

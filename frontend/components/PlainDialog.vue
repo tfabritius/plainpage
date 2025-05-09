@@ -43,7 +43,7 @@ defineExpose({ confirm, prompt })
       :open="isRevealed"
       :close="false"
       :dismissible="false"
-      @update:open="v => v || confirmDialog(false)"
+      @update:open="(v: Boolean) => v || confirmDialog(false)"
     >
       <template #body>
         <p>{{ parameters.message }}</p>

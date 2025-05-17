@@ -39,7 +39,7 @@
     "dompurify": "^3.2.5",
     "eslint": "^9.26.0",
     "marked": "^15.0.11",
-    "nuxt": "^3.17.2",
+    "nuxt": "^3.17.3",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",
     "reka-ui": "2.2.1",

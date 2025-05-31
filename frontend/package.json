@@ -22,7 +22,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.36.8",
     "@iconify-json/ci": "^1.2.2",
-    "@iconify-json/flag": "^1.2.5",
+    "@iconify-json/flag": "^1.2.6",
     "@iconify-json/ic": "^1.2.2",
     "@iconify-json/lucide": "^1.2.41",
     "@nuxt/eslint": "^1.4.1",

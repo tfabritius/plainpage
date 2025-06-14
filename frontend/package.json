@@ -20,7 +20,7 @@
     "@codemirror/lang-markdown": "^6.3.3",
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.37.1",
+    "@codemirror/view": "^6.37.2",
     "@iconify-json/ci": "^1.2.2",
     "@iconify-json/flag": "^1.2.6",
     "@iconify-json/ic": "^1.2.2",

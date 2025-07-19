@@ -38,7 +38,7 @@
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.6",
     "eslint": "^9.31.0",
-    "marked": "^16.0.0",
+    "marked": "^16.1.1",
     "nuxt": "^3.17.5",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.4.1",

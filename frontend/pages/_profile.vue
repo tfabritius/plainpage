@@ -21,7 +21,7 @@ const formSchema = z.object({
 })
   .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
 
-  type FormSchema = z.output<typeof formSchema>
+type FormSchema = z.output<typeof formSchema>
 const formState = reactive<FormSchema>({
   displayName: auth.user?.displayName || '',
   password: '',

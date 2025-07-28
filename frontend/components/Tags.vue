@@ -3,7 +3,7 @@ import { nextTick, ref } from 'vue'
 
 const props = withDefaults(defineProps<{
   modelValue: string[] | null
-  editable: boolean
+  editable?: boolean
 }>(), { editable: false })
 
 const emit = defineEmits<{

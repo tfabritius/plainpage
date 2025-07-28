@@ -42,7 +42,7 @@
     "nuxt": "^3.17.5",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.4.1",
-    "reka-ui": "2.3.2",
+    "reka-ui": "2.4.0",
     "slugify": "^1.6.6",
     "tailwindcss": "4.1.11",
     "typescript": "^5.8.3",

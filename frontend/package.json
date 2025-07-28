@@ -37,7 +37,7 @@
     "codemirror": "^6.0.2",
     "date-fns": "^4.1.0",
     "dompurify": "^3.2.6",
-    "eslint": "^9.31.0",
+    "eslint": "^9.32.0",
     "marked": "^16.1.1",
     "nuxt": "^3.17.5",
     "pinia": "^3.0.3",

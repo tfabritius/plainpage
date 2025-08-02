@@ -84,5 +84,7 @@ async function submit() {
         {{ $t('_login.link-to-register') }}
       </ULink>
     </div>
+
+    <AppFooter />
   </div>
 </template>

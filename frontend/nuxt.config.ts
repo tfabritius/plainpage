@@ -54,16 +54,6 @@ export default defineNuxtConfig({
     strict: true,
   },
 
-  vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: 'modern',
-        },
-      },
-    },
-  },
-
   nitro: {
     devProxy: {
       '/_api': {

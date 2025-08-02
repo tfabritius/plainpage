@@ -15,6 +15,9 @@
     "lint": "eslint .",
     "lintfix": "eslint . --fix"
   },
+  "dependencies": {
+    "vue": "^3.5.18"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^5.1.0",
     "@codemirror/lang-markdown": "^6.3.4",

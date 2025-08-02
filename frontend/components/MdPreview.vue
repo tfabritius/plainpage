@@ -52,7 +52,7 @@ function updatePositionsOfPreviewSegments() {
 
 function positionToSegmentIdx(pos: number) {
   for (let i = 0; i < segmentPositions.value.length; i++) {
-    if (segmentPositions.value[i].top + segmentPositions.value[i].height >= pos) {
+    if (segmentPositions.value[i]!.top + segmentPositions.value[i]!.height >= pos) {
       return i
     }
   }
@@ -81,7 +81,7 @@ const previewScrollbar = useTemplateRef('previewScrollbar')
 const scrollTimeoutId = ref<number>()
 
 function scrollToSegmentIdx(idx: number) {
-  const scrollTo = segmentPositions.value[idx].top
+  const scrollTo = segmentPositions.value[idx]?.top
   if (scrollTo !== undefined) {
     window.clearTimeout(scrollTimeoutId.value)
     ignoreScrollEvent.value = true

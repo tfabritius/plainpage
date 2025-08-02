@@ -95,7 +95,7 @@ function onEditorScroll({ firstVisibleLineNo }: { firstVisibleLineNo: number }) 
 }
 
 function onPreviewScroll({ firstVisibleSegmentIdx }: { firstVisibleSegmentIdx: number }) {
-  const segment = segments.value[firstVisibleSegmentIdx]
+  const segment = segments.value[firstVisibleSegmentIdx]!
   codeEditor.value?.scrollToLineNo(segment.lineStart)
 }
 

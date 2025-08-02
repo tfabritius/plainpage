@@ -13,7 +13,7 @@ const loading = ref(false)
 const results = ref<SearchHit[]>()
 
 function readQuery() {
-  query.value = Array.isArray(q.value) ? q.value[0] : (q.value ?? '')
+  query.value = Array.isArray(q.value) ? (q.value[0] ?? '') : (q.value ?? '')
 }
 
 function updateQuery() {

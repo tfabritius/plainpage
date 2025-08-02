@@ -84,7 +84,7 @@ export const useAuthStore = defineStore(
         return 0
       }
 
-      const jsonStr = window.atob(token.value.split('.')[1])
+      const jsonStr = window.atob(token.value.split('.')[1] ?? '')
 
       const payload = JSON.parse(jsonStr) as unknown
       if (typeof payload === 'object'

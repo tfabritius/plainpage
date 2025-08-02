@@ -89,7 +89,7 @@ function replaceLine(generator: MdEditorGenerator) {
     return
   }
 
-  const cursorPosition = view.state.selection.ranges[0].head
+  const cursorPosition = view.state.selection.ranges[0]?.head ?? 0
   const lineBlock = view.lineBlockAt(cursorPosition)
   const lineText = view.state.doc.toString().substring(lineBlock.from, lineBlock.to)
 
@@ -111,16 +111,16 @@ function replaceSelection(generator: MdEditorGenerator) {
   }
 
   const firstRange = view.state.selection.ranges[0]
-  const selectedText = view.state.doc.toString().substring(firstRange.from, firstRange.to)
+  const selectedText = view.state.doc.toString().substring(firstRange?.from ?? 0, firstRange?.to)
 
   const result = generator(selectedText)
 
-  const changes = { from: firstRange.from, to: firstRange.to, insert: result.text }
+  const changes = { from: firstRange?.from ?? 0, to: firstRange?.to ?? 0, insert: result.text }
   const selection = result.selection
     ? EditorSelection.create([
         EditorSelection.range(
-          firstRange.from + result.selection.from,
-          firstRange.from + result.selection.to,
+          firstRange?.from ?? 0 + result.selection.from,
+          firstRange?.from ?? 0 + result.selection.to,
         ),
       ])
     : undefined

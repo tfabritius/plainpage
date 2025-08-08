@@ -52,8 +52,4 @@ useHead(() => ({ titleTemplate: `%s | ${appTitle.value}` }))
   --color-plainpage-900: #00262e;
   --color-plainpage-950: #001519;
 }
-
-:root {
-  --ui-radius: var(--radius-sm);
-}
 </style>

@@ -3,7 +3,7 @@ module github.com/tfabritius/plainpage
 go 1.24
 
 require (
-	github.com/blevesearch/bleve/v2 v2.5.2
+	github.com/blevesearch/bleve/v2 v2.5.3
 	github.com/go-chi/chi/v5 v5.2.2
 	github.com/go-chi/cors v1.2.2
 	github.com/go-chi/render v1.0.3
@@ -19,7 +19,7 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/bits-and-blooms/bitset v1.22.0 // indirect
 	github.com/blevesearch/bleve_index_api v1.2.8 // indirect
-	github.com/blevesearch/geo v0.2.3 // indirect
+	github.com/blevesearch/geo v0.2.4 // indirect
 	github.com/blevesearch/go-faiss v1.0.25 // indirect
 	github.com/blevesearch/go-porterstemmer v1.0.3 // indirect
 	github.com/blevesearch/gtreap v0.1.1 // indirect

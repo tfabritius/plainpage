@@ -44,7 +44,7 @@
     "marked": "^16.1.1",
     "nuxt": "^4.0.3",
     "pinia": "^3.0.3",
-    "pinia-plugin-persistedstate": "^4.4.1",
+    "pinia-plugin-persistedstate": "^4.5.0",
     "reka-ui": "2.4.1",
     "slugify": "^1.6.6",
     "tailwindcss": "4.1.11",

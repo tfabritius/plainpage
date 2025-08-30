@@ -55,8 +55,8 @@ importers:
         specifier: ^0.11.2
         version: 0.11.2(magicast@0.3.5)(pinia@3.0.3(typescript@5.9.2)(vue@3.5.18(typescript@5.9.2)))
       '@vueuse/components':
-        specifier: ^13.7.0
-        version: 13.7.0(vue@3.5.18(typescript@5.9.2))
+        specifier: ^13.8.0
+        version: 13.8.0(vue@3.5.18(typescript@5.9.2))
       '@vueuse/core':
         specifier: ^13.6.0
         version: 13.6.0(vue@3.5.18(typescript@5.9.2))
@@ -2762,8 +2762,8 @@ packages:
   '@vue/shared@3.5.19':
     resolution: {integrity: sha512-IhXCOn08wgKrLQxRFKKlSacWg4Goi1BolrdEeLYn6tgHjJNXVrWJ5nzoxZqNwl5p88aLlQ8LOaoMa3AYvaKJ/Q==}
 
-  '@vueuse/components@13.7.0':
-    resolution: {integrity: sha512-7kxKz1Uh9XSivRg1RJzmcnpjBii4nMaCt1BOkxsVz/Ot5krIugujyHQNrFVx2igKuObY3x6CJGTrWlb8303SDg==}
+  '@vueuse/components@13.8.0':
+    resolution: {integrity: sha512-lAunbZhYdQB/eVQVJqTKTfPnyZUYgd5wgWDl6HymnM1jF1RT/lI/a2oLZNBu49Yr1cY2Eq/7jNvuZz/dMa1EIw==}
     peerDependencies:
       vue: ^3.5.0
 
@@ -9696,10 +9696,10 @@ snapshots:
 
   '@vue/shared@3.5.19': {}
 
-  '@vueuse/components@13.7.0(vue@3.5.18(typescript@5.9.2))':
+  '@vueuse/components@13.8.0(vue@3.5.18(typescript@5.9.2))':
     dependencies:
-      '@vueuse/core': 13.7.0(vue@3.5.18(typescript@5.9.2))
-      '@vueuse/shared': 13.7.0(vue@3.5.18(typescript@5.9.2))
+      '@vueuse/core': 13.8.0(vue@3.5.18(typescript@5.9.2))
+      '@vueuse/shared': 13.8.0(vue@3.5.18(typescript@5.9.2))
       vue: 3.5.18(typescript@5.9.2)
 
   '@vueuse/core@10.11.1(vue@3.5.18(typescript@5.9.2))':

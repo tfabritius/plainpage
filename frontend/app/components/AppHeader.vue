@@ -35,6 +35,8 @@ const { appTitle, allowAdmin } = storeToRefs(app)
 
 const route = useRoute()
 
+const toast = useToast()
+
 const searchQuery = ref('')
 async function onSearch() {
   await navigateTo({ path: '/_search', query: { q: searchQuery.value } })
@@ -127,7 +129,10 @@ const menuItems = computed(() => {
       {
         icon: 'ic:round-log-out',
         label: t('sign-out'),
-        onSelect: () => auth.logout(),
+        onSelect: () => {
+          toast.add({ description: t('signed-out'), color: 'success' })
+          auth.logout()
+        },
       },
     )
   }

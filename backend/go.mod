@@ -1,6 +1,6 @@
 module github.com/tfabritius/plainpage
 
-go 1.24
+go 1.24.0
 
 require (
 	github.com/blevesearch/bleve/v2 v2.5.3
@@ -10,7 +10,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/crypto v0.41.0
+	golang.org/x/crypto v0.42.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -42,5 +42,5 @@ require (
 	github.com/mschoch/smat v0.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	go.etcd.io/bbolt v1.4.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 )

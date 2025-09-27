@@ -44,7 +44,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
   } catch (e) {
     if (e instanceof FetchError && e.statusCode === 409) {
       existingUsername.value = formState.username
-      form.value?.validate()
+      form.value?.validate({})
     } else {
       toast.add({ description: String(e), color: 'error' })
     }

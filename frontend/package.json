@@ -48,7 +48,7 @@
     "reka-ui": "2.5.0",
     "slugify": "^1.6.6",
     "tailwindcss": "4.1.13",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vue-codemirror": "^6.1.1",
     "vue-tsc": "^3.0.7",
     "zod": "^4.1.11"

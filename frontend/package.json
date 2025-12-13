@@ -28,7 +28,7 @@
     "@iconify-json/flag": "^1.2.10",
     "@iconify-json/ic": "^1.2.4",
     "@iconify-json/lucide": "^1.2.80",
-    "@nuxt/eslint": "^1.11.0",
+    "@nuxt/eslint": "^1.12.1",
     "@nuxt/icon": "^2.1.0",
     "@nuxt/ui": "4.2.1",
     "@nuxtjs/i18n": "10.2.1",

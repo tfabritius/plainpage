@@ -172,8 +172,20 @@ func (s *UserService) VerifyCredentials(username, password string) (*model.User,
 		return nil, err
 	}
 
+	// Verify the provided password against the stored hash
 	if !s.verifyPassword(user, password) {
 		return nil, nil
+	}
+
+	// Hash plain passwords
+	if strings.HasPrefix(user.PasswordHash, "plain:") {
+		// Re-hash with argon2 and persist
+		if err := s.SetPasswordHash(&user, password); err != nil {
+			return nil, err
+		}
+		if err := s.Save(user); err != nil {
+			return nil, err
+		}
 	}
 
 	return &user, nil

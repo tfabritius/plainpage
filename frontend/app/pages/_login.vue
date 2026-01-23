@@ -23,13 +23,18 @@ async function submit() {
   loading.value = true
 
   try {
-    const success = await auth.login(loginFormData.value)
+    const loginResponse = await auth.login(loginFormData.value)
 
-    if (success) {
+    if (loginResponse === true) {
       const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
       await navigateTo(returnTo)
     } else {
-      toast.add({ description: t('invalid-credentials'), color: 'error' })
+      if (loginResponse.statusCode === 401) {
+        toast.add({ description: t('invalid-credentials'), color: 'error' })
+      } else if (loginResponse.statusCode === 429) {
+        toast.add({ description: t('too-many-login-requests', [loginResponse.retryAfter]), color: 'error' })
+      }
+
       loading.value = false
     }
   } catch (err) {

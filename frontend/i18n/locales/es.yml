@@ -48,6 +48,7 @@ folders: Carpetas
 home: Inicio
 inherit-permissions: Heredar permisos de la carpeta principal
 invalid-credentials: Credenciales no válidas
+too-many-login-requests: Demasiados intentos de inicio de sesión. Por favor espera {0}s.
 invalid-folder-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 language: Idioma

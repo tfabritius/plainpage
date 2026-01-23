@@ -1,6 +1,7 @@
 package test
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -348,4 +349,59 @@ func (s *UsersTestSuite) TestDeleteUser() {
 		res := s.api("DELETE", "/auth/users/does-not-exist", nil, s.adminToken)
 		r.Equal(404, res.Code)
 	}
+}
+
+func (s *UsersTestSuite) TestLoginRateLimit() {
+	r := s.Require()
+
+	username := "testLoginRateLimit"
+	displayName := "Test User"
+	password := "myPassword"
+	headers := map[string]string{"X-Forwarded-For": "127.0.0.2"}
+
+	_, err := s.app.Users.Create(username, password, displayName)
+	r.NoError(err)
+
+	nRequestLimit := 5
+
+	// Limiter does not count successful logins.
+	for i := 0; i < nRequestLimit+1; i++ {
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: password},
+			headers)
+		r.Equal(200, res.Code)
+	}
+
+	// First wrong attempts should be 401.
+	for i := 0; i < nRequestLimit; i++ {
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: "wrong"},
+			headers)
+		r.Equal(401, res.Code)
+	}
+
+	// The next wrong attempt should be rate-limited with 429 and Retry-After header + JSON.
+	{
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: "wrong"},
+			headers)
+		r.Equal(429, res.Code)
+
+		retryAfter := res.Header().Get("Retry-After")
+		r.NotEmpty(retryAfter)
+		retryAfterInt, err := strconv.Atoi(retryAfter)
+		r.NoError(err)
+		r.Greater(retryAfterInt, 0)
+	}
+
+	// A correct login should still be blocked.
+	{
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: password},
+			headers)
+		r.Equal(429, res.Code)
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
 }

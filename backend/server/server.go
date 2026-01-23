@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
+
+	"golang.org/x/time/rate"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,11 +18,12 @@ import (
 )
 
 type App struct {
-	Frontend http.FileSystem
-	Storage  model.Storage
-	Content  *service.ContentService
-	Users    *service.UserService
-	Token    service.TokenService
+	Frontend     http.FileSystem
+	Storage      model.Storage
+	Content      *service.ContentService
+	Users        *service.UserService
+	Token        service.TokenService
+	LoginLimiter *LoginLimiter
 }
 
 func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
@@ -40,13 +44,15 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 	contentService := service.NewContentService(store)
 	userService := service.NewUserService(store)
 	tokenService := service.NewTokenService(cfg.JwtSecret)
+	loginLimiter := NewLoginLimiter(5, rate.Every(30*time.Second), 30*time.Minute)
 
 	return App{
-		Frontend: staticFrontendFiles,
-		Storage:  store,
-		Content:  contentService,
-		Users:    userService,
-		Token:    tokenService,
+		Frontend:     staticFrontendFiles,
+		Storage:      store,
+		Content:      contentService,
+		Users:        userService,
+		Token:        tokenService,
+		LoginLimiter: loginLimiter,
 	}
 }
 
@@ -126,7 +132,8 @@ func (app App) GetHandler() http.Handler {
 				r.With(app.RequireAuth).
 					Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
-				r.Post("/login", app.login)
+				r.With(app.LoginLimiter.Middleware(clientIPFromRequest)).
+					Post("/login", app.login)
 				r.With(app.RequireAuth).
 					Post("/refresh", app.refreshToken)
 

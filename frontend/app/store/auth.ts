@@ -5,6 +5,13 @@ import { defineStore } from 'pinia'
 const hour = 60 * 60 // in seconds
 const minRemainingTokenValidity = 5 * 30 * 24 * hour // 5 months
 
+export type LoginError = {
+  statusCode: 401
+} | {
+  statusCode: 429
+  retryAfter: string
+}
+
 export const useAuthStore = defineStore(
   'auth',
   () => {
@@ -12,7 +19,7 @@ export const useAuthStore = defineStore(
     const token = ref('')
     const loggedIn = computed(() => token.value !== '')
 
-    async function login(credentials: { username: string, password: string }): Promise<boolean> {
+    async function login(credentials: { username: string, password: string }): Promise<true | LoginError> {
       token.value = ''
       user.value = undefined
 
@@ -23,7 +30,14 @@ export const useAuthStore = defineStore(
         user.value = response.user
       } catch (err) {
         if (err instanceof FetchError && err.statusCode === 401) {
-          return false
+          return { statusCode: 401 }
+        }
+        if (err instanceof FetchError && err.statusCode === 429) {
+          const retryAfter = err.response?.headers.get('Retry-After') ?? '1'
+          return {
+            statusCode: 429,
+            retryAfter,
+          }
         }
         throw err
       }

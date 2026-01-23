@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net"
 	"net/http"
 
 	"github.com/tfabritius/plainpage/model"
@@ -119,4 +120,15 @@ func (app App) isAdmin(userID string) bool {
 		panic(err)
 	}
 	return true
+}
+
+func clientIPFromRequest(r *http.Request) string {
+	ip := r.RemoteAddr
+
+	// remove port if present
+	if host, _, err := net.SplitHostPort(ip); err == nil {
+		ip = host
+	}
+
+	return ip
 }

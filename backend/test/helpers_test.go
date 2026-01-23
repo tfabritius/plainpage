@@ -97,6 +97,16 @@ func (s *AppTestSuite) setupInitialApp() {
 }
 
 func (s *AppTestSuite) api(method, target string, body any, token *string) *httptest.ResponseRecorder {
+	headers := map[string]string{}
+
+	if token != nil {
+		headers["Authorization"] = "Bearer " + *token
+	}
+
+	return s.apiWithHeaders(method, target, body, headers)
+}
+
+func (s *AppTestSuite) apiWithHeaders(method, target string, body any, headers map[string]string) *httptest.ResponseRecorder {
 	var bodyReader io.Reader
 	if body != nil {
 		bodyBytes, err := json.Marshal(body)
@@ -110,8 +120,9 @@ func (s *AppTestSuite) api(method, target string, body any, token *string) *http
 	}
 
 	req := httptest.NewRequest(method, "/_api"+target, bodyReader)
-	if token != nil {
-		req.Header.Add("Authorization", "Bearer "+*token)
+
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	res := httptest.NewRecorder()

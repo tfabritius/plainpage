@@ -211,6 +211,11 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user == nil {
+		// Record failure (consume token) and return 401.
+		if app.LoginLimiter != nil {
+			ip := clientIPFromRequest(r)
+			app.LoginLimiter.OnFailure(ip)
+		}
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}

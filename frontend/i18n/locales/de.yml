@@ -48,6 +48,7 @@ folders: Ordner
 home: Start
 inherit-permissions: Berechtigungen vom übergeordneten Ordner erben
 invalid-credentials: Ungültige Zugangsdaten
+too-many-login-requests: Zu viele Anmeldeversuche. Bitte warte {0}s.
 invalid-folder-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
 invalid-page-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
 language: Sprache

@@ -48,6 +48,7 @@ folders: Folders
 home: Home
 inherit-permissions: Inherit permissions from parent folder
 invalid-credentials: Invalid credentials
+too-many-login-requests: Too many sign in attempts. Please wait {0}s.
 invalid-folder-name: 'Invalid name (allowed: [a-z0-9_-])'
 invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
 language: Language

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/tfabritius/plainpage/libs/argon2"
 	"github.com/tfabritius/plainpage/libs/utils"
@@ -14,27 +15,34 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewUserService(store model.Storage) UserService {
+func NewUserService(store model.Storage) *UserService {
 	s := UserService{
 		storage: store,
 	}
 
 	// Initialize users.yml
 	if !s.storage.Exists("users.yml") {
-		err := s.saveAll([]model.User{})
+		err := s.saveAllUnlocked([]model.User{})
 		if err != nil {
 			log.Fatalln("Could not create users.yml:", err)
 		}
 	}
 
-	return s
+	return &s
 }
 
 type UserService struct {
 	storage model.Storage
+	mu      sync.RWMutex
 }
 
 func (s *UserService) ReadAll() ([]model.User, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.readAllUnlocked()
+}
+
+func (s *UserService) readAllUnlocked() ([]model.User, error) {
 	bytes, err := s.storage.ReadFile("users.yml")
 	if err != nil {
 		return nil, fmt.Errorf("could not read users.yml: %w", err)
@@ -49,7 +57,7 @@ func (s *UserService) ReadAll() ([]model.User, error) {
 	return users, nil
 }
 
-func (s *UserService) saveAll(users []model.User) error {
+func (s *UserService) saveAllUnlocked(users []model.User) error {
 	bytes, err := yaml.Marshal(&users)
 	if err != nil {
 		return fmt.Errorf("failed to marshal: %w", err)
@@ -96,8 +104,10 @@ func (*UserService) verifyPassword(user model.User, password string) bool {
 }
 
 func (s *UserService) Create(username, password, displayName string) (model.User, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
-	users, err := s.ReadAll()
+	users, err := s.readAllUnlocked()
 	if err != nil {
 		return model.User{}, err
 	}
@@ -126,7 +136,7 @@ func (s *UserService) Create(username, password, displayName string) (model.User
 
 	users = append(users, user)
 
-	err = s.saveAll(users)
+	err = s.saveAllUnlocked(users)
 	if err != nil {
 		return model.User{}, err
 	}
@@ -202,7 +212,10 @@ func (*UserService) filterById(users []model.User, id string) *model.User {
 }
 
 func (s *UserService) Save(user model.User) error {
-	users, err := s.ReadAll()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	users, err := s.readAllUnlocked()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
 	}
@@ -222,7 +235,7 @@ func (s *UserService) Save(user model.User) error {
 	existingUser.DisplayName = user.DisplayName
 	existingUser.PasswordHash = user.PasswordHash
 
-	if err := s.saveAll(users); err != nil {
+	if err := s.saveAllUnlocked(users); err != nil {
 		return fmt.Errorf("could not save users: %w", err)
 	}
 
@@ -230,7 +243,10 @@ func (s *UserService) Save(user model.User) error {
 }
 
 func (s *UserService) DeleteByUsername(username string) error {
-	users, err := s.ReadAll()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	users, err := s.readAllUnlocked()
 	if err != nil {
 		return fmt.Errorf("could not read users: %w", err)
 	}
@@ -249,7 +265,7 @@ func (s *UserService) DeleteByUsername(username string) error {
 		return model.ErrNotFound
 	}
 
-	if err := s.saveAll(users); err != nil {
+	if err := s.saveAllUnlocked(users); err != nil {
 		return fmt.Errorf("could not save users: %w", err)
 	}
 

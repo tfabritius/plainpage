@@ -18,7 +18,7 @@ type App struct {
 	Frontend http.FileSystem
 	Storage  model.Storage
 	Content  *service.ContentService
-	Users    service.UserService
+	Users    *service.UserService
 	Token    service.TokenService
 }
 

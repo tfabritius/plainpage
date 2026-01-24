@@ -36,18 +36,18 @@ func NewLoginLimiter(burst int, rateLimit rate.Limit, ttl time.Duration) *LoginL
 func (l *LoginLimiter) Allow(key string) (bool, int) {
 	limiter := l.getLimiter(key)
 
-	// Reserve to inspect delay, then cancel to avoid consumption
-	r := limiter.Reserve()
-	if !r.OK() {
-		return false, 1
+	// Check available tokens without consuming any (Tokens() is a read-only operation)
+	if limiter.Tokens() >= 1 {
+		return true, 0
 	}
+
+	// Not enough tokens - calculate wait time using Reserve+Cancel
+	r := limiter.Reserve()
 	delay := r.Delay()
 	r.Cancel()
 
-	if delay <= 0 {
-		return true, 0
-	}
-	return false, int(delay.Seconds()) + 1
+	retryAfter := int(delay.Seconds()) + 1
+	return false, retryAfter
 }
 
 // OnFailure records a failed login attempt (consumes a token).

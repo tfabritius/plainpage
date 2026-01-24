@@ -6,7 +6,7 @@ import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
 import { useAuthStore } from '~/store/auth'
 
-const { t, locale, setLocaleCookie } = useI18n()
+const { t, locale, setLocale } = useI18n()
 
 type Locale = typeof locale.value
 
@@ -60,10 +60,7 @@ const menuItems = computed(() => {
     icon: l.icon,
     type: 'checkbox',
     checked: locale.value === l.code,
-    onSelect: () => {
-      locale.value = l.code
-      setLocaleCookie(l.code)
-    },
+    onSelect: () => { setLocale(l.code) },
   }))
 
   if (auth.loggedIn) {

@@ -54,7 +54,11 @@ func (s *TokenService) validateToken(tokenString string) (string, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims["id"].(string), nil
+		id, ok := claims["id"].(string)
+		if !ok {
+			return "", errors.New("invalid token: missing or invalid id claim")
+		}
+		return id, nil
 	} else {
 		return "", errors.New("invalid token")
 	}

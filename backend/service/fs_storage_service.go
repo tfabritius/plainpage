@@ -39,7 +39,14 @@ func NewFsStorage(dataDir string) model.Storage {
 func (fss *fsStorage) Exists(fsPath string) bool {
 	fsPath = filepath.Join(fss.DataDir, fsPath)
 	_, err := os.Stat(fsPath)
-	return !errors.Is(err, os.ErrNotExist)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			// Log unexpected errors
+			log.Printf("Warning: unexpected error checking existence of %s: %v", fsPath, err)
+		}
+		return false
+	}
+	return true
 }
 
 func (fss *fsStorage) ReadFile(fsPath string) ([]byte, error) {

@@ -1082,11 +1082,12 @@ func (s *ContentTestSuite) TestSearch() {
 
 				r.NotEmpty(hit.Fragments[tc.name])
 				r.Len(hit.Fragments[tc.name], 1)
-				if tc.name == "content" {
+				switch tc.name {
+				case "content":
 					r.Equal("<mark>Content</mark>", hit.Fragments[tc.name][0])
-				} else if tc.name == "meta.title" {
+				case "meta.title":
 					r.Equal("<mark>Title</mark>", hit.Fragments[tc.name][0])
-				} else if tc.name == "meta.tags" {
+				case "meta.tags":
 					r.Equal("<mark>tag</mark>", hit.Fragments[tc.name][0])
 				}
 			}

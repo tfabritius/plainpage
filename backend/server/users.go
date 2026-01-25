@@ -53,7 +53,8 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 		userID := ctxutil.UserID(r.Context())
 
 		if err := app.Users.CheckAppPermissions(userID, model.AccessOpRegister); err != nil {
-			if e, ok := err.(*service.AccessDeniedError); ok {
+			var e *service.AccessDeniedError
+			if errors.As(err, &e) {
 				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
 				return
 			}
@@ -99,20 +100,21 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 	isAdmin := app.isAdmin(userID)
 
 	user, err := app.Users.GetByUsername(username)
-	if err != nil {
-		if errors.Is(err, model.ErrNotFound) {
-			if isAdmin {
-				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-				return
-			}
-		} else {
-			panic(err)
-		}
+	userNotFound := errors.Is(err, model.ErrNotFound)
+	if err != nil && !userNotFound {
+		panic(err)
 	}
 
-	if !isAdmin && user.ID != userID {
-		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	if isAdmin && userNotFound {
+		// Admins can modify any user - if it exists
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
+	} else if !isAdmin {
+		// Non-admins can only modify themselves
+		if userNotFound || user.ID != userID {
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
 	}
 
 	// Poor man's implementation of RFC 6902
@@ -139,18 +141,19 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		if operation.Path == "/username" {
+		switch operation.Path {
+		case "/username":
 			if err := app.Users.SetUsername(&user, value); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
-		} else if operation.Path == "/displayName" {
+		case "/displayName":
 			user.DisplayName = value
-		} else if operation.Path == "/password" {
+		case "/password":
 			if err := app.Users.SetPasswordHash(&user, value); err != nil {
 				panic(err)
 			}
-		} else {
+		default:
 			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
 			return
 		}
@@ -170,20 +173,21 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	isAdmin := app.isAdmin(userID)
 
 	user, err := app.Users.GetByUsername(username)
-	if err != nil {
-		if errors.Is(err, model.ErrNotFound) {
-			if isAdmin {
-				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-				return
-			}
-		} else {
-			panic(err)
-		}
+	userNotFound := errors.Is(err, model.ErrNotFound)
+	if err != nil && !userNotFound {
+		panic(err)
 	}
 
-	if !isAdmin && user.ID != userID {
-		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+	if isAdmin && userNotFound {
+		// Admins can delete any user - if it exists
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
+	} else if !isAdmin {
+		// Non-admins can only delete themselves
+		if userNotFound || user.ID != userID {
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
 	}
 
 	err = app.Users.DeleteByUsername(username)

@@ -103,6 +103,10 @@ func (*ContentService) createIndexMapping() *mapping.IndexMappingImpl {
 }
 
 func (s *ContentService) indexFolder(urlPath string, idx *bleve.Index) error {
+	if idx == nil {
+		panic("index pointer is nil")
+	}
+
 	folder, err := s.ReadFolder(urlPath)
 	if err != nil {
 		return err
@@ -595,6 +599,11 @@ func (s *ContentService) MovePage(sourcePath, destinationPath string) error {
 	// Validate source exists
 	if !s.IsPage(sourcePath) {
 		return model.ErrNotFound
+	}
+
+	// Validate destination parent folder exists
+	if !s.IsFolder(path.Dir(destinationPath)) {
+		return model.ErrParentFolderNotFound
 	}
 
 	// Validate destination doesn't already exist

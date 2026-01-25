@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"net"
 	"net/http"
 
@@ -96,7 +97,8 @@ func (app App) RequireContentPermission(op model.AccessOp, next http.Handler) ht
 		acl := app.Content.GetEffectivePermissions(meta, metas)
 
 		if err := app.Users.CheckContentPermissions(acl, userID, op); err != nil {
-			if e, ok := err.(*service.AccessDeniedError); ok {
+			var e *service.AccessDeniedError
+			if errors.As(err, &e) {
 				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)
 				return
 			}
@@ -113,7 +115,8 @@ func (app App) isAdmin(userID string) bool {
 	err := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin)
 
 	if err != nil {
-		if _, ok := err.(*service.AccessDeniedError); ok {
+		var accessDeniedErr *service.AccessDeniedError
+		if errors.As(err, &accessDeniedErr) {
 			return false
 		}
 

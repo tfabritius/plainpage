@@ -69,7 +69,7 @@ func main() {
 	// it won't block the graceful shutdown handling below
 	go func() {
 		log.Println("Listening on port " + port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalln(err)
 		}
 	}()

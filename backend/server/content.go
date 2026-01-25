@@ -15,12 +15,12 @@ import (
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
-/**
- * Checks URL is a valid URL for a page or folder. Valid URL consist of parts separated by /.
- * Each part may only contain letters, digits, dash and underscore, but must not start with underscore.
- */
+// Pre-compiled regex for URL validation
+var urlRegex = regexp.MustCompile("^[a-z0-9-][a-z0-9_-]*(/[a-z0-9-][a-z0-9_-]*)*$")
+
+// isValidUrl checks if URL is a valid URL for a page or folder. Valid URL consist of parts separated by /.
+// Each part may only contain letters, digits, dash and underscore, but must not start with underscore.
 func isValidUrl(urlPath string) bool {
-	urlRegex := regexp.MustCompile("^[a-z0-9-][a-z0-9_-]*(/[a-z0-9-][a-z0-9_-]*)*$")
 	return urlPath == "" || urlRegex.MatchString(urlPath)
 }
 
@@ -272,7 +272,8 @@ func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, user
 	srcAcl := app.Content.GetEffectivePermissions(sourceParentMeta, srcAncestorMetas)
 
 	if err := app.Users.CheckContentPermissions(srcAcl, userID, model.AccessOpDelete); err != nil {
-		if e, ok := err.(*service.AccessDeniedError); ok {
+		var e *service.AccessDeniedError
+		if errors.As(err, &e) {
 			http.Error(w, "no delete permission on source folder", e.StatusCode)
 			return err
 		}
@@ -285,7 +286,6 @@ func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, user
 		destinationParent = ""
 	}
 
-	destinationParentMeta := model.ContentMeta{}
 	if !app.Content.IsFolder(destinationParent) {
 		http.Error(w, "destination parent folder does not exist", http.StatusBadRequest)
 		return errors.New("destination parent folder does not exist")
@@ -294,16 +294,16 @@ func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, user
 	if err != nil {
 		panic(err)
 	}
-	destinationParentMeta = destFolder.Meta
 
 	destAncestorMetas, err := app.Content.ReadAncestorsMeta(destinationParent)
 	if err != nil {
 		panic(err)
 	}
-	destAcl := app.Content.GetEffectivePermissions(destinationParentMeta, destAncestorMetas)
+	destAcl := app.Content.GetEffectivePermissions(destFolder.Meta, destAncestorMetas)
 
 	if err := app.Users.CheckContentPermissions(destAcl, userID, model.AccessOpWrite); err != nil {
-		if e, ok := err.(*service.AccessDeniedError); ok {
+		var e *service.AccessDeniedError
+		if errors.As(err, &e) {
 			http.Error(w, "no write permission on destination folder", e.StatusCode)
 			return err
 		}
@@ -492,7 +492,8 @@ func (app App) searchContent(w http.ResponseWriter, r *http.Request) {
 	for _, r := range results {
 
 		if err := app.Users.CheckContentPermissions(r.EffectiveACL, userID, model.AccessOpRead); err != nil {
-			if _, ok := err.(*service.AccessDeniedError); ok {
+			var e *service.AccessDeniedError
+			if errors.As(err, &e) {
 				// Skip this result
 				continue
 			}

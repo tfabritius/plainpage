@@ -385,7 +385,9 @@ func (*UserService) isUsernameUnique(users []model.User, username string) bool {
 	return true
 }
 
+// Pre-compiled regex for username validation
+var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_\.-]{3,20}$`)
+
 func (*UserService) isValidUsername(username string) bool {
-	regex := regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_\.-]{3,20}$`)
-	return regex.MatchString(username)
+	return usernameRegex.MatchString(username)
 }

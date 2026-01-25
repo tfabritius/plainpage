@@ -10,7 +10,10 @@ func GetVersion() string {
 }
 
 func GetRevision() string {
-	info, _ := debug.ReadBuildInfo()
+	info, ok := debug.ReadBuildInfo()
+	if !ok || info == nil {
+		return ""
+	}
 
 	for _, kv := range info.Settings {
 		if kv.Key == "vcs.revision" {

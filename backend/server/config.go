@@ -69,7 +69,8 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if operation.Path == "/appTitle" {
+		switch operation.Path {
+		case "/appTitle":
 			var value string
 			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
@@ -78,7 +79,7 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 
 			cfg.AppTitle = value
 
-		} else if operation.Path == "/acl" {
+		case "/acl":
 			var value []model.AccessRule
 
 			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
@@ -88,7 +89,7 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 
 			cfg.ACL = value
 
-		} else {
+		default:
 			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
 			return
 		}

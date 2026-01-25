@@ -18,6 +18,7 @@ func ServeFileContents(fileName string, fileSystem http.FileSystem) http.Handler
 			}
 			panic(err)
 		}
+		defer file.Close()
 
 		// Retrieve FileInfo
 		fi, err := file.Stat()

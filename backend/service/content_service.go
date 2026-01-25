@@ -136,6 +136,35 @@ func (s *ContentService) indexFolder(urlPath string, idx *bleve.Index) error {
 	return nil
 }
 
+// removeFolderFromIndex deletes index entries for a folder and all its contents
+func (s *ContentService) removeFolderFromIndex(urlPath string) error {
+	folder, err := s.ReadFolder(urlPath)
+	if err != nil {
+		return fmt.Errorf("could not read folder %s: %w", urlPath, err)
+	}
+
+	for _, entry := range folder.Content {
+		if entry.IsFolder {
+			if err := s.removeFolderFromIndex(entry.Url); err != nil {
+				return err
+			}
+		} else {
+			if err := s.index.Delete(entry.Url); err != nil {
+				log.Printf("[INDEX] Could not delete page %s: %v", entry.Url, err)
+			}
+		}
+	}
+
+	// Delete the folder itself (if not root)
+	if urlPath != "" {
+		if err := s.index.Delete(urlPath); err != nil {
+			log.Printf("[INDEX] Could not delete folder %s: %v", urlPath, err)
+		}
+	}
+
+	return nil
+}
+
 func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
 	query := bleve.NewMatchQuery(q)
 
@@ -383,6 +412,7 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 	}
 
 	folder := model.Folder{
+		Url:     urlPath,
 		Content: folderEntries,
 		Meta:    fm,
 	}
@@ -558,4 +588,110 @@ func (s *ContentService) ListAttic(urlPath string) ([]model.AtticEntry, error) {
 	})
 
 	return atticEntries, nil
+}
+
+// MovePage moves a page from sourcePath to destinationPath, including all attic entries.
+func (s *ContentService) MovePage(sourcePath, destinationPath string) error {
+	// Validate source exists
+	if !s.IsPage(sourcePath) {
+		return model.ErrNotFound
+	}
+
+	// Validate destination doesn't already exist
+	if s.IsPage(destinationPath) || s.IsFolder(destinationPath) {
+		return model.ErrDestinationExists
+	}
+
+	// Move the page file
+	srcFsPath := filepath.Join("pages", sourcePath+".md")
+	destFsPath := filepath.Join("pages", destinationPath+".md")
+	if err := s.storage.Rename(srcFsPath, destFsPath); err != nil {
+		return fmt.Errorf("could not move page file: %w", err)
+	}
+
+	// Move all attic entries for this page
+	if err := s.moveAtticEntries(sourcePath, destinationPath); err != nil {
+		return fmt.Errorf("could not move attic entries: %w", err)
+	}
+
+	// Update search index: delete old, add new
+	if err := s.index.Delete(sourcePath); err != nil {
+		log.Println("[INDEX] Could not delete old page "+sourcePath+":", err)
+	}
+	page, err := s.ReadPage(destinationPath, nil)
+	if err != nil {
+		return fmt.Errorf("could not read moved page: %w", err)
+	}
+	if err := s.index.Index(destinationPath, page); err != nil {
+		log.Println("[INDEX] Could not index new page "+destinationPath+":", err)
+	}
+
+	return nil
+}
+
+// MoveFolder moves a folder from sourcePath to destinationPath, including all content and attic entries.
+func (s *ContentService) MoveFolder(sourcePath, destinationPath string) error {
+	// Validate source exists
+	if !s.IsFolder(sourcePath) {
+		return model.ErrNotFound
+	}
+
+	// Cannot move root folder
+	if sourcePath == "" {
+		return model.ErrCannotMoveRoot
+	}
+
+	// Validate destination doesn't already exist
+	if s.IsPage(destinationPath) || s.IsFolder(destinationPath) {
+		return model.ErrDestinationExists
+	}
+
+	// Delete index entries before moving
+	if err := s.removeFolderFromIndex(sourcePath); err != nil {
+		return fmt.Errorf("could not remove folder from index: %w", err)
+	}
+
+	// Move the folder directory
+	srcFsPath := filepath.Join("pages", sourcePath)
+	destFsPath := filepath.Join("pages", destinationPath)
+	if err := s.storage.Rename(srcFsPath, destFsPath); err != nil {
+		return fmt.Errorf("could not move folder: %w", err)
+	}
+
+	// Move the attic folder (if it exists)
+	srcAtticPath := filepath.Join("attic", sourcePath)
+	destAtticPath := filepath.Join("attic", destinationPath)
+	if s.storage.Exists(srcAtticPath) {
+		if err := s.storage.Rename(srcAtticPath, destAtticPath); err != nil {
+			return fmt.Errorf("could not move attic folder: %w", err)
+		}
+	}
+
+	// Index the new folder and all its contents
+	if err := s.indexFolder(destinationPath, &s.index); err != nil {
+		log.Println("[INDEX] Could not index new folder:", err)
+	}
+
+	return nil
+}
+
+// moveAtticEntries moves all attic entries for a page from oldPath to newPath.
+func (s *ContentService) moveAtticEntries(oldPath, newPath string) error {
+	atticEntries, err := s.ListAttic(oldPath)
+	if err != nil {
+		// If attic directory doesn't exist, that's fine - no entries to move
+		return nil
+	}
+
+	for _, entry := range atticEntries {
+		revStr := strconv.FormatInt(entry.Revision, 10)
+		oldAtticPath := filepath.Join("attic", oldPath+"."+revStr+".md")
+		newAtticPath := filepath.Join("attic", newPath+"."+revStr+".md")
+
+		if err := s.storage.Rename(oldAtticPath, newAtticPath); err != nil {
+			return fmt.Errorf("could not move attic entry %d: %w", entry.Revision, err)
+		}
+	}
+
+	return nil
 }

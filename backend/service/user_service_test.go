@@ -2,8 +2,8 @@ package service
 
 import (
 	"io/fs"
-	"testing"
 	"strings"
+	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tfabritius/plainpage/model"
@@ -61,6 +61,10 @@ func (m *mockStorage) DeleteEmptyDirectory(fsPath string) error {
 }
 
 func (m *mockStorage) DeleteDirectory(fsPath string) error {
+	panic("not supported")
+}
+
+func (m *mockStorage) Rename(oldPath, newPath string) error {
 	panic("not supported")
 }
 

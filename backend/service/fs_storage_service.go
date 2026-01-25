@@ -111,6 +111,21 @@ func (fss *fsStorage) DeleteDirectory(fsPath string) error {
 	return os.RemoveAll(fsPath)
 }
 
+func (fss *fsStorage) Rename(oldPath, newPath string) error {
+	oldPath = filepath.Join(fss.DataDir, oldPath)
+	newPath = filepath.Join(fss.DataDir, newPath)
+
+	// Ensure parent directory of destination exists
+	if err := os.MkdirAll(filepath.Dir(newPath), 0700); err != nil {
+		return fmt.Errorf("could not create destination directory: %w", err)
+	}
+
+	if err := os.Rename(oldPath, newPath); err != nil {
+		return fmt.Errorf("could not rename: %w", err)
+	}
+	return nil
+}
+
 func (fss *fsStorage) createDir(file string) error {
 	dir := filepath.Dir(file)
 

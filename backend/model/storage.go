@@ -15,6 +15,7 @@ type Storage interface {
 	ReadDirectory(fsPath string) ([]fs.FileInfo, error)
 	DeleteEmptyDirectory(fsPath string) error
 	DeleteDirectory(fsPath string) error
+	Rename(oldPath, newPath string) error
 
 	ReadConfig() (Config, error)
 	WriteConfig(config Config) error

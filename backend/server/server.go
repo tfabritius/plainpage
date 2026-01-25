@@ -104,7 +104,7 @@ func (app App) GetHandler() http.Handler {
 						http.HandlerFunc(app.putContent),
 					).ServeHTTP)
 				r.Patch("/*",
-					app.RequireContentPermission(model.AccessOpAdmin,
+					app.RequireContentPermission(model.AccessOpWrite,
 						http.HandlerFunc(app.patchContent),
 					).ServeHTTP)
 				r.Delete("/*",

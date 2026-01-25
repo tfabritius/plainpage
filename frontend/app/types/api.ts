@@ -54,6 +54,7 @@ export interface Page {
 }
 
 export interface Folder {
+  url: string
   content: FolderEntry[]
   meta: ContentMeta
 }

@@ -11,6 +11,7 @@ func (Page) BleveType() string {
 }
 
 type Folder struct {
+	Url     string        `json:"url"`
 	Content []FolderEntry `json:"content"`
 	Meta    ContentMeta   `json:"meta"`
 }

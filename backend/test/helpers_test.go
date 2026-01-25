@@ -147,3 +147,12 @@ func acl2json(acl []model.AccessRule) *json.RawMessage {
 	jsonRawMsg := json.RawMessage(bytes)
 	return &jsonRawMsg
 }
+
+func str2json(s string) *json.RawMessage {
+	bytes, err := json.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+	jsonRawMsg := json.RawMessage(bytes)
+	return &jsonRawMsg
+}

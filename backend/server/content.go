@@ -122,6 +122,7 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 
 func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.PathValue("*")
+	userID := ctxutil.UserID(r.Context())
 
 	page := ctxutil.Page(r.Context())
 	folder := ctxutil.Folder(r.Context())
@@ -145,39 +146,81 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Track url changes
+	var newUrl *string
+
 	for _, operation := range operations {
 		if operation.Op != "replace" {
 			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
 			return
 		}
 
-		var acl []model.AccessRule
-		if operation.Value != nil {
-			err := json.Unmarshal([]byte(*operation.Value), &acl)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+		// Detect url change
+		if (isFolder && operation.Path == "/folder/url") || (!isFolder && operation.Path == "/page/url") {
+			if operation.Value == nil {
+				http.Error(w, "url value is required", http.StatusBadRequest)
 				return
 			}
+			var urlValue string
+			if err := json.Unmarshal([]byte(*operation.Value), &urlValue); err != nil {
+				http.Error(w, "invalid url value: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+			newUrl = &urlValue
+			continue
 		}
 
-		if isFolder && operation.Path == "/folder/meta/acl" {
-			if operation.Value == nil {
-				folder.Meta.ACL = nil
-			} else {
-				folder.Meta.ACL = &acl
+		// Handle ACL changes - requires admin permission
+		if (isFolder && operation.Path == "/folder/meta/acl") || (!isFolder && operation.Path == "/page/meta/acl") {
+			// ACL changes require admin permission
+			if userID == "" {
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+				return
 			}
-		} else if !isFolder && operation.Path == "/page/meta/acl" {
-			if operation.Value == nil {
-				page.Meta.ACL = nil
-			} else {
-				page.Meta.ACL = &acl
+			if !app.isAdmin(userID) {
+				http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+				return
 			}
-		} else {
-			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
-			return
+
+			var acl []model.AccessRule
+			if operation.Value != nil {
+				err := json.Unmarshal([]byte(*operation.Value), &acl)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+			}
+
+			if isFolder {
+				if operation.Value == nil {
+					folder.Meta.ACL = nil
+				} else {
+					folder.Meta.ACL = &acl
+				}
+			} else {
+				if operation.Value == nil {
+					page.Meta.ACL = nil
+				} else {
+					page.Meta.ACL = &acl
+				}
+			}
+			continue
 		}
+
+		http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
+		return
 	}
 
+	// Apply url change if requested
+	if newUrl != nil {
+		err := app.moveContent(w, urlPath, *newUrl, userID, isFolder)
+		if err != nil {
+			return // Error already written to response
+		}
+		urlPath = *newUrl
+	}
+
+	// Save metadata changes (ACL, etc.)
 	var err error
 	if isFolder {
 		err = app.Content.SaveFolder(urlPath, folder.Meta)
@@ -190,6 +233,109 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// moveContent handles moving/renaming a page or folder.
+// Returns the new urlPath and any error.
+// If an error occurs, the HTTP response is already written and the returned error is non-nil.
+func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, userID string, isFolder bool) error {
+	// Validate url format
+	if !isValidUrl(destinationPath) {
+		http.Error(w, "invalid url format", http.StatusBadRequest)
+		return errors.New("invalid url format")
+	}
+
+	// Check if actually moving
+	if destinationPath == urlPath {
+		return nil
+	}
+
+	// Check delete permission on source parent folder (moving removes from source)
+	sourceParent := path.Dir(urlPath)
+	if sourceParent == "." {
+		sourceParent = ""
+	}
+
+	sourceParentMeta := model.ContentMeta{}
+	if app.Content.IsFolder(sourceParent) {
+		srcFolder, err := app.Content.ReadFolder(sourceParent)
+		if err != nil {
+			panic(err)
+		}
+		sourceParentMeta = srcFolder.Meta
+	}
+
+	srcAncestorMetas, err := app.Content.ReadAncestorsMeta(sourceParent)
+	if err != nil {
+		panic(err)
+	}
+	srcAcl := app.Content.GetEffectivePermissions(sourceParentMeta, srcAncestorMetas)
+
+	if err := app.Users.CheckContentPermissions(srcAcl, userID, model.AccessOpDelete); err != nil {
+		if e, ok := err.(*service.AccessDeniedError); ok {
+			http.Error(w, "no delete permission on source folder", e.StatusCode)
+			return err
+		}
+		panic(err)
+	}
+
+	// Check write permission on destination parent folder
+	destinationParent := path.Dir(destinationPath)
+	if destinationParent == "." {
+		destinationParent = ""
+	}
+
+	destinationParentMeta := model.ContentMeta{}
+	if !app.Content.IsFolder(destinationParent) {
+		http.Error(w, "destination parent folder does not exist", http.StatusBadRequest)
+		return errors.New("destination parent folder does not exist")
+	}
+	destFolder, err := app.Content.ReadFolder(destinationParent)
+	if err != nil {
+		panic(err)
+	}
+	destinationParentMeta = destFolder.Meta
+
+	destAncestorMetas, err := app.Content.ReadAncestorsMeta(destinationParent)
+	if err != nil {
+		panic(err)
+	}
+	destAcl := app.Content.GetEffectivePermissions(destinationParentMeta, destAncestorMetas)
+
+	if err := app.Users.CheckContentPermissions(destAcl, userID, model.AccessOpWrite); err != nil {
+		if e, ok := err.(*service.AccessDeniedError); ok {
+			http.Error(w, "no write permission on destination folder", e.StatusCode)
+			return err
+		}
+		panic(err)
+	}
+
+	// Perform the move
+	var moveErr error
+	if isFolder {
+		moveErr = app.Content.MoveFolder(urlPath, destinationPath)
+	} else {
+		moveErr = app.Content.MovePage(urlPath, destinationPath)
+	}
+
+	if moveErr != nil {
+		if errors.Is(moveErr, model.ErrNotFound) {
+			http.Error(w, moveErr.Error(), http.StatusNotFound)
+			return moveErr
+		} else if errors.Is(moveErr, model.ErrParentFolderNotFound) {
+			http.Error(w, moveErr.Error(), http.StatusBadRequest)
+			return moveErr
+		} else if errors.Is(moveErr, model.ErrDestinationExists) {
+			http.Error(w, moveErr.Error(), http.StatusBadRequest)
+			return moveErr
+		} else if errors.Is(moveErr, model.ErrCannotMoveRoot) {
+			http.Error(w, moveErr.Error(), http.StatusBadRequest)
+			return moveErr
+		}
+		panic(moveErr)
+	}
+
+	return nil
 }
 
 func (app App) putContent(w http.ResponseWriter, r *http.Request) {

@@ -1129,3 +1129,426 @@ func (s *ContentTestSuite) TestSearchFolder() {
 		})
 	}
 }
+
+func (s *ContentTestSuite) TestMovePage() {
+	tests := []struct {
+		name         string
+		token        *string
+		srcUrl       string
+		destUrl      string
+		responseCode int
+	}{
+		// Move within root (rename)
+		{"admin:rename", s.adminToken, "page", "renamed-page", 200},
+		{"user:rename", s.userToken, "page", "renamed-page", 200},
+		{"anonymous:rename", nil, "page", "renamed-page", 401},
+
+		// Move from root to public folder
+		{"admin:toPublic", s.adminToken, "page", "public/page", 200},
+		{"user:toPublic", s.userToken, "page", "public/page", 200},
+		{"anonymous:toPublic", nil, "page", "public/page", 401}, // anonymous can't delete from root
+
+		// Move from root to admin-only folder (need write on dest)
+		{"admin:toAdminOnly", s.adminToken, "page", "admin-only/page", 200},
+		{"user:toAdminOnly", s.userToken, "page", "admin-only/page", 403},
+		{"anonymous:toAdminOnly", nil, "page", "admin-only/page", 401},
+
+		// Move from admin-only to root (need write+delete on source, write on dest)
+		{"admin:fromAdminOnly", s.adminToken, "admin-only/page", "page", 200},
+		{"user:fromAdminOnly", s.userToken, "admin-only/page", "page", 403},
+		{"anonymous:fromAdminOnly", nil, "admin-only/page", "page", 401},
+
+		// Move from public to published
+		{"admin:publicToPublished", s.adminToken, "public/page", "published/page", 200},
+		{"user:publicToPublished", s.userToken, "public/page", "published/page", 200},
+		{"anonymous:publicToPublished", nil, "public/page", "published/page", 401},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Prepare: create source page
+			r.NoError(s.app.Content.SavePage(tc.srcUrl, "Content", model.ContentMeta{Title: "Title"}))
+
+			// Test
+			res := s.api("PATCH", "/pages/"+tc.srcUrl,
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/page/url", Value: str2json(tc.destUrl)},
+				},
+				tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			if tc.responseCode == 200 {
+				// Source should not exist
+				r.False(s.app.Content.IsPage(tc.srcUrl))
+				// Destination should exist with same content
+				r.True(s.app.Content.IsPage(tc.destUrl))
+				page, err := s.app.Content.ReadPage(tc.destUrl, nil)
+				r.NoError(err)
+				r.Equal("Content", page.Content)
+				r.Equal("Title", page.Meta.Title)
+				// Cleanup
+				r.NoError(s.app.Content.DeletePage(tc.destUrl))
+			} else {
+				// Source should still exist
+				r.True(s.app.Content.IsPage(tc.srcUrl))
+				// Destination should not exist
+				r.False(s.app.Content.IsPage(tc.destUrl))
+				// Cleanup
+				r.NoError(s.app.Content.DeletePage(tc.srcUrl))
+			}
+		})
+	}
+}
+
+func (s *ContentTestSuite) TestMovePageErrors() {
+	r := s.Require()
+
+	// Prepare
+	r.NoError(s.app.Content.SavePage("page1", "Content1", model.ContentMeta{Title: "Page1"}))
+	r.NoError(s.app.Content.SavePage("page2", "Content2", model.ContentMeta{Title: "Page2"}))
+	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
+
+	// Invalid destination URL
+	{
+		res := s.api("PATCH", "/pages/page1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/page/url", Value: str2json("invalid!")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsPage("page1"))
+	}
+
+	// Destination already exists (page)
+	{
+		res := s.api("PATCH", "/pages/page1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/page/url", Value: str2json("page2")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsPage("page1"))
+		r.True(s.app.Content.IsPage("page2"))
+	}
+
+	// Destination already exists (folder)
+	{
+		res := s.api("PATCH", "/pages/page1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/page/url", Value: str2json("folder")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsPage("page1"))
+		r.True(s.app.Content.IsFolder("folder"))
+	}
+
+	// Destination parent folder doesn't exist
+	{
+		res := s.api("PATCH", "/pages/page1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/page/url", Value: str2json("nonexistent/page")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsPage("page1"))
+	}
+
+	// Move to same location (no-op, should succeed)
+	{
+		res := s.api("PATCH", "/pages/page1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/page/url", Value: str2json("page1")},
+			},
+			s.adminToken)
+		r.Equal(200, res.Code)
+		r.True(s.app.Content.IsPage("page1"))
+	}
+}
+
+func (s *ContentTestSuite) TestMovePageWithAttic() {
+	r := s.Require()
+
+	// Create page with multiple revisions
+	r.NoError(s.app.Content.SavePage("page", "Content v1", model.ContentMeta{Title: "Title"}))
+	time.Sleep(1050 * time.Millisecond) // Only one revision per second possible
+	r.NoError(s.app.Content.SavePage("page", "Content v2", model.ContentMeta{Title: "Title"}))
+
+	// Verify attic has 2 entries
+	atticEntries, err := s.app.Content.ListAttic("page")
+	r.NoError(err)
+	r.Len(atticEntries, 2)
+	rev1 := atticEntries[0].Revision
+
+	// Move page
+	res := s.api("PATCH", "/pages/page",
+		[]model.PatchOperation{
+			{Op: "replace", Path: "/page/url", Value: str2json("moved-page")},
+		},
+		s.adminToken)
+	r.Equal(200, res.Code)
+
+	// Verify page moved
+	r.False(s.app.Content.IsPage("page"))
+	r.True(s.app.Content.IsPage("moved-page"))
+
+	// Verify attic entries moved
+	oldAtticEntries, _ := s.app.Content.ListAttic("page")
+	r.Len(oldAtticEntries, 0)
+
+	newAtticEntries, err := s.app.Content.ListAttic("moved-page")
+	r.NoError(err)
+	r.Len(newAtticEntries, 2)
+
+	// Verify old revision content is accessible at new location
+	oldPage, err := s.app.Content.ReadPage("moved-page", &rev1)
+	r.NoError(err)
+	r.Equal("Content v1", oldPage.Content)
+}
+
+func (s *ContentTestSuite) TestMoveFolder() {
+	tests := []struct {
+		name         string
+		token        *string
+		srcUrl       string
+		destUrl      string
+		responseCode int
+	}{
+		// Move within root (rename)
+		{"admin:rename", s.adminToken, "folder", "renamed-folder", 200},
+		{"user:rename", s.userToken, "folder", "renamed-folder", 200},
+		{"anonymous:rename", nil, "folder", "renamed-folder", 401},
+
+		// Move from root to public folder
+		{"admin:toPublic", s.adminToken, "folder", "public/folder", 200},
+		{"user:toPublic", s.userToken, "folder", "public/folder", 200},
+		{"anonymous:toPublic", nil, "folder", "public/folder", 401}, // anonymous can't delete from root
+
+		// Move from root to admin-only folder
+		{"admin:toAdminOnly", s.adminToken, "folder", "admin-only/folder", 200},
+		{"user:toAdminOnly", s.userToken, "folder", "admin-only/folder", 403},
+		{"anonymous:toAdminOnly", nil, "folder", "admin-only/folder", 401},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Prepare: create source folder
+			r.NoError(s.app.Content.CreateFolder(tc.srcUrl, model.ContentMeta{Title: "Folder"}))
+
+			// Test
+			res := s.api("PATCH", "/pages/"+tc.srcUrl,
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/folder/url", Value: str2json(tc.destUrl)},
+				},
+				tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			if tc.responseCode == 200 {
+				// Source should not exist
+				r.False(s.app.Content.IsFolder(tc.srcUrl))
+				// Destination should exist
+				r.True(s.app.Content.IsFolder(tc.destUrl))
+				folder, err := s.app.Content.ReadFolder(tc.destUrl)
+				r.NoError(err)
+				r.Equal("Folder", folder.Meta.Title)
+				// Cleanup
+				r.NoError(s.app.Content.DeleteEmptyFolder(tc.destUrl))
+			} else {
+				// Source should still exist
+				r.True(s.app.Content.IsFolder(tc.srcUrl))
+				// Destination should not exist
+				r.False(s.app.Content.IsFolder(tc.destUrl))
+				// Cleanup
+				r.NoError(s.app.Content.DeleteEmptyFolder(tc.srcUrl))
+			}
+		})
+	}
+}
+
+func (s *ContentTestSuite) TestMoveFolderErrors() {
+	r := s.Require()
+
+	// Prepare
+	r.NoError(s.app.Content.CreateFolder("folder1", model.ContentMeta{Title: "Folder1"}))
+	r.NoError(s.app.Content.CreateFolder("folder2", model.ContentMeta{Title: "Folder2"}))
+	r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Page"}))
+
+	// Invalid destination URL
+	{
+		res := s.api("PATCH", "/pages/folder1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/folder/url", Value: str2json("invalid!")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsFolder("folder1"))
+	}
+
+	// Destination already exists (folder)
+	{
+		res := s.api("PATCH", "/pages/folder1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/folder/url", Value: str2json("folder2")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsFolder("folder1"))
+		r.True(s.app.Content.IsFolder("folder2"))
+	}
+
+	// Destination already exists (page)
+	{
+		res := s.api("PATCH", "/pages/folder1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/folder/url", Value: str2json("page")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsFolder("folder1"))
+		r.True(s.app.Content.IsPage("page"))
+	}
+
+	// Destination parent folder doesn't exist
+	{
+		res := s.api("PATCH", "/pages/folder1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/folder/url", Value: str2json("nonexistent/folder")},
+			},
+			s.adminToken)
+		r.Equal(400, res.Code)
+		r.True(s.app.Content.IsFolder("folder1"))
+	}
+
+	// Move to same location (no-op, should succeed)
+	{
+		res := s.api("PATCH", "/pages/folder1",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/folder/url", Value: str2json("folder1")},
+			},
+			s.adminToken)
+		r.Equal(200, res.Code)
+		r.True(s.app.Content.IsFolder("folder1"))
+	}
+}
+
+func (s *ContentTestSuite) TestMoveFolderWithContent() {
+	r := s.Require()
+
+	// Create folder with nested content
+	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
+	r.NoError(s.app.Content.SavePage("folder/page1", "Content1", model.ContentMeta{Title: "Page1"}))
+	r.NoError(s.app.Content.SavePage("folder/page2", "Content2", model.ContentMeta{Title: "Page2"}))
+	r.NoError(s.app.Content.CreateFolder("folder/subfolder", model.ContentMeta{Title: "Subfolder"}))
+	r.NoError(s.app.Content.SavePage("folder/subfolder/page3", "Content3", model.ContentMeta{Title: "Page3"}))
+
+	// Move folder
+	res := s.api("PATCH", "/pages/folder",
+		[]model.PatchOperation{
+			{Op: "replace", Path: "/folder/url", Value: str2json("moved-folder")},
+		},
+		s.adminToken)
+	r.Equal(200, res.Code)
+
+	// Verify old paths don't exist
+	r.False(s.app.Content.IsFolder("folder"))
+	r.False(s.app.Content.IsPage("folder/page1"))
+	r.False(s.app.Content.IsPage("folder/page2"))
+	r.False(s.app.Content.IsFolder("folder/subfolder"))
+	r.False(s.app.Content.IsPage("folder/subfolder/page3"))
+
+	// Verify new paths exist with correct content
+	r.True(s.app.Content.IsFolder("moved-folder"))
+
+	page1, err := s.app.Content.ReadPage("moved-folder/page1", nil)
+	r.NoError(err)
+	r.Equal("Content1", page1.Content)
+	r.Equal("Page1", page1.Meta.Title)
+
+	page2, err := s.app.Content.ReadPage("moved-folder/page2", nil)
+	r.NoError(err)
+	r.Equal("Content2", page2.Content)
+
+	r.True(s.app.Content.IsFolder("moved-folder/subfolder"))
+
+	page3, err := s.app.Content.ReadPage("moved-folder/subfolder/page3", nil)
+	r.NoError(err)
+	r.Equal("Content3", page3.Content)
+}
+
+func (s *ContentTestSuite) TestMoveFolderWithAttic() {
+	r := s.Require()
+
+	// Create folder with pages that have attic entries
+	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
+	r.NoError(s.app.Content.SavePage("folder/page", "Content v1", model.ContentMeta{Title: "Page"}))
+	time.Sleep(1050 * time.Millisecond)
+	r.NoError(s.app.Content.SavePage("folder/page", "Content v2", model.ContentMeta{Title: "Page"}))
+
+	// Verify attic has entries
+	atticEntries, err := s.app.Content.ListAttic("folder/page")
+	r.NoError(err)
+	r.Len(atticEntries, 2)
+	rev1 := atticEntries[0].Revision
+
+	// Move folder
+	res := s.api("PATCH", "/pages/folder",
+		[]model.PatchOperation{
+			{Op: "replace", Path: "/folder/url", Value: str2json("moved-folder")},
+		},
+		s.adminToken)
+	r.Equal(200, res.Code)
+
+	// Verify old attic doesn't exist
+	oldAttic, _ := s.app.Content.ListAttic("folder/page")
+	r.Len(oldAttic, 0)
+
+	// Verify new attic exists with entries
+	newAttic, err := s.app.Content.ListAttic("moved-folder/page")
+	r.NoError(err)
+	r.Len(newAttic, 2)
+
+	// Verify old revision is accessible
+	oldPage, err := s.app.Content.ReadPage("moved-folder/page", &rev1)
+	r.NoError(err)
+	r.Equal("Content v1", oldPage.Content)
+}
+
+func (s *ContentTestSuite) TestMoveFolderSearchIndex() {
+	r := s.Require()
+
+	// Create folder with a page
+	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "UniqueFolder"}))
+	r.NoError(s.app.Content.SavePage("folder/page", "UniqueContent", model.ContentMeta{Title: "UniquePage"}))
+
+	// Verify search finds the page
+	results, err := s.app.Content.Search("UniquePage")
+	r.NoError(err)
+	r.Len(results, 1)
+	r.Equal("folder/page", results[0].Url)
+
+	// Move folder
+	res := s.api("PATCH", "/pages/folder",
+		[]model.PatchOperation{
+			{Op: "replace", Path: "/folder/url", Value: str2json("moved-folder")},
+		},
+		s.adminToken)
+	r.Equal(200, res.Code)
+
+	// Verify search finds page at new location
+	results, err = s.app.Content.Search("UniquePage")
+	r.NoError(err)
+	r.Len(results, 1)
+	r.Equal("moved-folder/page", results[0].Url)
+
+	// Verify search finds folder at new location
+	results, err = s.app.Content.Search("UniqueFolder")
+	r.NoError(err)
+	r.Len(results, 1)
+	r.Equal("moved-folder", results[0].Url)
+}

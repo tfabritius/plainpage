@@ -311,11 +311,11 @@ func (s *UserService) CheckAppPermissions(
 }
 
 func (s *UserService) CheckContentPermissions(
-	acl *[]model.AccessRule,
+	acl []model.AccessRule,
 	userID string,
 	op model.AccessOp,
 ) error {
-	return s.checkPermissions(*acl, userID, op, false)
+	return s.checkPermissions(acl, userID, op, false)
 }
 
 func (s *UserService) checkPermissions(acl []model.AccessRule, userID string, op model.AccessOp, aclIsApp bool) error {

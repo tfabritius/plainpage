@@ -89,6 +89,6 @@ type SearchHit struct {
 	Url          string              `json:"url"`
 	Meta         ContentMeta         `json:"meta"`
 	Fragments    map[string][]string `json:"fragments"`
-	EffectiveACL *[]AccessRule       `json:"-"`
+	EffectiveACL []AccessRule        `json:"-"`
 	IsFolder     bool                `json:"isFolder"`
 }

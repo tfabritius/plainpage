@@ -537,18 +537,21 @@ func (s *ContentService) addFolderMetaFromParent(urlPath string, metas []model.C
 	return s.addFolderMetaFromParent(parentUrl, metas)
 }
 
-func (s *ContentService) GetEffectivePermissions(meta model.ContentMeta, ancestorsMetas []model.ContentMetaWithURL) *[]model.AccessRule {
+// GetEffectivePermissions returns the effective ACL for content by checking the content's own ACL
+// and falling back to ancestor ACLs. Returns an empty slice if no ACL is found (should never
+// occur in reality).
+func (s *ContentService) GetEffectivePermissions(meta model.ContentMeta, ancestorsMetas []model.ContentMetaWithURL) []model.AccessRule {
 	if meta.ACL != nil {
-		return meta.ACL
+		return *meta.ACL
 	}
 
 	for i := range ancestorsMetas {
 		if ancestorsMetas[i].ACL != nil {
-			return ancestorsMetas[i].ACL
+			return *ancestorsMetas[i].ACL
 		}
 	}
 
-	return nil
+	return []model.AccessRule{}
 }
 
 func (s *ContentService) ListAttic(urlPath string) ([]model.AtticEntry, error) {

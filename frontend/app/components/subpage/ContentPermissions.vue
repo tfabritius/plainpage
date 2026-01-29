@@ -41,14 +41,14 @@ async function onSave() {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <UIcon v-if="isFolder" name="ci:folder" class="mr-1" />
+      <UIcon v-if="isFolder" name="tabler:folder" class="mr-1" />
       <span v-if="title">{{ title }}</span>
       <span v-else class="italic">{{ $t('untitled') }}</span>
     </template>
 
     <template #actions>
-      <ReactiveButton icon="ci:skip-back" :label="$t('back-to-content')" @click="onGoBack" />
-      <ReactiveButton icon="ci:save" :label="$t('save')" color="success" @click="onSave" />
+      <ReactiveButton icon="tabler:arrow-back-up" :label="$t('back-to-content')" @click="onGoBack" />
+      <ReactiveButton icon="tabler:device-floppy" :label="$t('save')" color="success" @click="onSave" />
     </template>
 
     <USwitch

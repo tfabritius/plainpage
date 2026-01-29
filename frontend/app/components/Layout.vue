@@ -12,7 +12,7 @@ const route = useRoute()
 const breadcrumbItems = computed(() => {
   const items: BreadcrumbItem[] = []
 
-  items.push({ icon: 'ic:outline-home', class: 'text-[var(--ui-text-muted)]', to: '/' })
+  items.push({ icon: 'tabler:home', class: 'text-[var(--ui-text-muted)]', to: '/' })
 
   props.breadcrumbs?.forEach((crumb, idx) => {
     if (idx !== (props.breadcrumbs?.length ?? 1) - 1) {

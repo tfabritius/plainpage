@@ -108,7 +108,7 @@ async function onOpenChanged(open: boolean) {
 
         <UCollapsible v-model:open="expanded">
           <span class="cursor-pointer text-xs">
-            <UIcon name="ci:chevron-right" :class="expanded && 'rotate-90 transform'" />
+            <UIcon name="tabler:chevron-right" :class="expanded && 'rotate-90 transform'" />
             {{ $t('more') }}
           </span>
           <template #content>

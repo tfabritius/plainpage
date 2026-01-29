@@ -36,7 +36,7 @@ const navTo = navigateTo
 
     <template #actions>
       <ReactiveButton
-        icon="ic:baseline-update"
+        icon="tabler:arrow-back-up"
         :label="$t('current-version')"
         @click="navTo({ query: { rev: undefined } })"
       />
@@ -49,7 +49,7 @@ const navTo = navigateTo
           ({{ timeAgo }})
         </UseTimeAgo>
         <span v-if="idx === 0">
-          <UIcon class="ml-2 align-middle" name="ci:show" />
+          <UIcon class="ml-2 align-middle" name="tabler:eye" />
           <span class="align-middle">
             ({{ $t('current-version') }})
           </span>

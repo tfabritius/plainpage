@@ -172,7 +172,7 @@ const menuItems = computed(() => {
   const items: DropdownMenuItem[] = []
 
   items.push({
-    icon: 'ci:arrows-reload-01',
+    icon: 'tabler:refresh',
     label: t('reload'),
     onSelect: async () => {
       await props.onReload()
@@ -181,7 +181,7 @@ const menuItems = computed(() => {
   })
 
   items.push({
-    icon: 'ic:baseline-restore',
+    icon: 'tabler:restore',
     label: t('revisions'),
     onSelect: async () => {
       await navigateTo({ query: { rev: null } })
@@ -190,13 +190,13 @@ const menuItems = computed(() => {
 
   if (props.allowWrite && props.allowDelete) {
     items.push({
-      icon: 'ci:edit-pencil-line-01',
+      icon: 'tabler:pencil',
       label: t('rename'),
       onSelect: openRenameModal,
     })
 
     items.push({
-      icon: 'ic:outline-drive-file-move',
+      icon: 'tabler:folder-symlink',
       label: t('move'),
       onSelect: () => { moveModalOpen.value = true },
     })
@@ -205,7 +205,7 @@ const menuItems = computed(() => {
   if (allowAdmin.value) {
     items.push(
       {
-        icon: 'ci:shield',
+        icon: 'tabler:lock',
         label: t('permissions'),
         onSelect: async () => {
           await navigateTo({ query: { acl: null } })
@@ -217,7 +217,7 @@ const menuItems = computed(() => {
   if (props.allowDelete) {
     items.push(
       {
-        icon: 'ci:trash-full',
+        icon: 'tabler:trash',
         label: t('delete'),
         onSelect: onDeletePage,
       },
@@ -277,14 +277,14 @@ onKeyStroke('s', (e) => {
     </template>
 
     <template #actions>
-      <ReactiveButton v-if="!editing && allowWrite" icon="ci:edit" :label="$t('edit')" @click="onEditPage" />
+      <ReactiveButton v-if="!editing && allowWrite" icon="tabler:edit" :label="$t('edit')" @click="onEditPage" />
 
       <UDropdownMenu v-if="!editing" :items="menuItems">
-        <ReactiveButton icon="ci:more-vertical" :label="$t('more')" />
+        <ReactiveButton icon="tabler:dots-vertical" :label="$t('more')" />
       </UDropdownMenu>
 
-      <ReactiveButton v-if="editing" icon="ci:close-md" :label="$t('cancel')" @click="onCancelEdit" />
-      <ReactiveButton v-if="editing" color="success" icon="ci:save" :label="$t('save')" @click="onSavePage" />
+      <ReactiveButton v-if="editing" icon="tabler:x" :label="$t('cancel')" @click="onCancelEdit" />
+      <ReactiveButton v-if="editing" color="success" icon="tabler:device-floppy" :label="$t('save')" @click="onSavePage" />
     </template>
 
     <PageView

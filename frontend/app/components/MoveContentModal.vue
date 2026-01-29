@@ -79,7 +79,7 @@ const pickerBreadcrumbItems = computed(() => {
   // Root folder item
   const isAtRoot = currentFolderPath.value === ''
   items.push({
-    icon: 'ic:outline-home',
+    icon: 'tabler:home',
     class: isAtRoot ? 'text-[var(--ui-text-muted)] pointer-events-none' : 'cursor-pointer',
     onClick: isAtRoot ? undefined : () => loadFolder(''),
   })
@@ -200,7 +200,7 @@ watch(open, (isOpen) => {
 
         <!-- Loading state -->
         <div v-if="loading" class="flex items-center justify-center py-8">
-          <UIcon name="ci:arrows-reload-01" class="animate-spin text-2xl" />
+          <UIcon name="tabler:loader-2" class="animate-spin text-2xl" />
         </div>
 
         <!-- Error state -->
@@ -217,7 +217,7 @@ watch(open, (isOpen) => {
             class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-left border-b dark:border-gray-700 cursor-pointer"
             @click="navigateToFolder(parentFolderPath)"
           >
-            <UIcon name="ci:folder-upload" class="text-lg flex-shrink-0" />
+            <UIcon name="tabler:folder-up" class="text-lg flex-shrink-0" />
             <span>..</span>
           </button>
 
@@ -238,9 +238,9 @@ watch(open, (isOpen) => {
             :disabled="folder.url === props.currentPath"
             @click="navigateToFolder(folder.url)"
           >
-            <UIcon name="ci:folder" class="text-lg flex-shrink-0" />
+            <UIcon name="tabler:folder" class="text-lg flex-shrink-0" />
             <span class="truncate">{{ folder.title || folder.name }}</span>
-            <UIcon name="ci:chevron-right" class="ml-auto text-gray-400 flex-shrink-0" />
+            <UIcon name="tabler:chevron-right" class="ml-auto text-gray-400 flex-shrink-0" />
           </button>
         </div>
 
@@ -254,15 +254,15 @@ watch(open, (isOpen) => {
 
         <!-- Warning messages -->
         <div v-if="isSameLocation" class="text-amber-600 dark:text-amber-400 text-sm flex items-center gap-2">
-          <UIcon name="ci:info" />
+          <UIcon name="tabler:info-circle" />
           {{ $t('cannot-move-to-same-location') }}
         </div>
         <div v-else-if="isMovingIntoSelf" class="text-amber-600 dark:text-amber-400 text-sm flex items-center gap-2">
-          <UIcon name="ci:info" />
+          <UIcon name="tabler:info-circle" />
           {{ $t('cannot-move-folder-into-itself') }}
         </div>
         <div v-else-if="!allowWriteInCurrentFolder" class="text-amber-600 dark:text-amber-400 text-sm flex items-center gap-2">
-          <UIcon name="ci:info" />
+          <UIcon name="tabler:info-circle" />
           {{ $t('no-write-permission') }}
         </div>
       </div>

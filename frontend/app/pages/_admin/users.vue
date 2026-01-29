@@ -125,7 +125,7 @@ async function onDelete(user: User) {
     </template>
 
     <template #actions>
-      <ReactiveButton icon="ci:user-add" :label="$t('create-user')" @click="onCreate" />
+      <ReactiveButton icon="tabler:user-plus" :label="$t('create-user')" @click="onCreate" />
     </template>
 
     <UModal
@@ -164,8 +164,8 @@ async function onDelete(user: User) {
       :data="data" :columns="columns"
     >
       <template #actions-cell="{ row }">
-        <UButton variant="link" icon="ci:edit" @click="onEdit(row.original)" />
-        <UButton variant="link" icon="ci:trash-full" color="error" @click="onDelete(row.original)" />
+        <UButton variant="link" icon="tabler:edit" @click="onEdit(row.original)" />
+        <UButton variant="link" icon="tabler:trash" color="error" @click="onDelete(row.original)" />
       </template>
     </UTable>
 

@@ -9,7 +9,7 @@ useHead(() => ({ title: t('access-denied') }))
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <UIcon name="ci:stop-sign" size="5em" />
+      <UIcon name="tabler:hand-stop" size="5em" />
       <div class="m-2">
         {{ $t('access-denied') }}
       </div>

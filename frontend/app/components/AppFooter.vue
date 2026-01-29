@@ -12,7 +12,7 @@ const { version } = storeToRefs(app)
       to="https://github.com/tfabritius/plainpage"
       class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 inline-flex items-center gap-1"
     >
-      <UIcon name="lucide:github" class="size-4" />
+      <UIcon name="tabler:brand-github" class="size-4" />
       <span>PlainPage</span>
     </ULink>
 

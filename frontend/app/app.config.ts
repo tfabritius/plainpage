@@ -7,10 +7,10 @@ export default defineAppConfig({
     },
 
     icons: {
-      close: 'ci:close-md',
-      check: 'ci:check',
-      chevronRight: 'ci:chevron-right-md',
-      loading: 'ci:arrows-reload-01',
+      close: 'tabler:x',
+      check: 'tabler:check',
+      chevronRight: 'tabler:chevron-right',
+      loading: 'tabler:loader-2',
     },
 
     button: {

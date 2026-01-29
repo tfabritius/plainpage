@@ -49,7 +49,7 @@ async function submit() {
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <UIcon name="ci:user-circle" size="5em" class="mb-3" />
+      <UIcon name="tabler:user-circle" size="5em" class="mb-3" />
 
       <form class="w-52" @submit.prevent @keypress.enter="submit">
         <UFormField>

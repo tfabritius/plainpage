@@ -14,13 +14,13 @@ useHead(() => ({ title: t('error') }))
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <UIcon name="ci:cloud-off" size="5em" />
+      <UIcon name="tabler:network-off" size="5em" />
 
       <div class="m-2">
         {{ msg || $t('there-was-an-error') }}
       </div>
 
-      <ReactiveButton icon="ci:arrows-reload-01" :label="$t('try-again')" @click="onReload()" />
+      <ReactiveButton icon="tabler:refresh" :label="$t('try-again')" @click="onReload()" />
     </div>
   </div>
 </template>

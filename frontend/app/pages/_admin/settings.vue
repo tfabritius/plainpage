@@ -52,7 +52,7 @@ async function onSave() {
     </template>
 
     <template #actions>
-      <ReactiveButton color="success" icon="ci:save" :label="$t('save')" type="submit" form="settingsForm" />
+      <ReactiveButton color="success" icon="tabler:device-floppy" :label="$t('save')" type="submit" form="settingsForm" />
     </template>
 
     <UForm

@@ -67,7 +67,7 @@ const menuItems = computed(() => {
     items.push(
       {
         type: 'label',
-        icon: 'ci:user',
+        icon: 'tabler:user',
         label: auth.user?.displayName,
       },
       { type: 'separator' },
@@ -75,7 +75,7 @@ const menuItems = computed(() => {
   } else if (route.path !== '/_login') {
     items.push(
       {
-        icon: 'ic:round-log-in',
+        icon: 'tabler:login-2',
         label: t('sign-in'),
         to: `/_login?returnTo=${route.query.returnTo || route.fullPath}`,
       },
@@ -85,7 +85,7 @@ const menuItems = computed(() => {
   if (auth.loggedIn) {
     items.push(
       {
-        icon: 'ci:user-circle',
+        icon: 'tabler:user-circle',
         label: t('profile'),
         to: '/_profile',
       },
@@ -95,12 +95,12 @@ const menuItems = computed(() => {
   if (allowAdmin.value) {
     items.push(
       {
-        icon: 'ci:users',
+        icon: 'tabler:users',
         label: t('users'),
         to: '/_admin/users',
       },
       {
-        icon: 'ci:settings',
+        icon: 'tabler:settings',
         label: t('configuration'),
         to: '/_admin/settings',
       },
@@ -109,12 +109,12 @@ const menuItems = computed(() => {
 
   items.push(
     {
-      icon: 'lucide:languages',
+      icon: 'tabler:language',
       label: t('language'),
       children: localeItems,
     },
     {
-      icon: isDark.value ? 'ci:sun' : 'ci:moon',
+      icon: isDark.value ? 'tabler:sun' : 'tabler:moon',
       label: isDark.value ? t('dark-mode-off') : t('dark-mode-on'),
       onSelect: () => toggleDark(),
     },
@@ -124,7 +124,7 @@ const menuItems = computed(() => {
     items.push(
       { type: 'separator' },
       {
-        icon: 'ic:round-log-out',
+        icon: 'tabler:logout',
         label: t('sign-out'),
         onSelect: () => {
           toast.add({ description: t('signed-out'), color: 'success' })
@@ -141,7 +141,8 @@ const menuItems = computed(() => {
 <template>
   <div class="flex justify-between">
     <ULink to="/" :active="false" class="text-xl font-light flex items-center whitespace-nowrap">
-      <UIcon name="ci:file-blank" />
+      <!-- favicon -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="w-[1em] h-[1em]"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 3H8.2c-1.12 0-1.68 0-2.108.218a1.999 1.999 0 0 0-.874.874C5 4.52 5 5.08 5 6.2v11.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h7.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.986.218-2.104V9m-6-6c.286.003.466.014.639.055c.204.05.399.13.578.24c.202.124.375.297.72.643l3.126 3.125c.346.346.518.518.642.72c.11.18.19.374.24.578c.04.173.051.354.054.639M13 3v2.8c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h2.802m0 0H19" /></svg>
       <span>{{ appTitle }}</span>
     </ULink>
 
@@ -151,7 +152,7 @@ const menuItems = computed(() => {
         :placeholder="$t('search')"
         class="max-w-40 mx-1"
         size="xs"
-        trailing-icon="ci:search"
+        trailing-icon="tabler:search"
         @keypress.enter="onSearch"
         @keydown="onKeyPressInSearch"
       />
@@ -161,7 +162,7 @@ const menuItems = computed(() => {
         :items="menuItems"
         size="lg"
       >
-        <ReactiveButton icon="ci:hamburger" variant="link" :label="t('menu')" />
+        <ReactiveButton icon="tabler:menu-2" variant="link" :label="t('menu')" />
       </UDropdownMenu>
     </span>
   </div>

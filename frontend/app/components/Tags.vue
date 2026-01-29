@@ -59,7 +59,7 @@ function onCancelInput() {
       {{ tag }}
       <UButton
         v-if="editable"
-        icon="ci:close-md"
+        icon="tabler:x"
         size="xs"
         color="primary"
         variant="link"
@@ -83,7 +83,7 @@ function onCancelInput() {
       v-if="editable && !inputVisible"
       color="primary"
       class="px-2"
-      icon="ci:plus"
+      icon="tabler:plus"
       :label="$t('add-tag')"
       size="xs"
       @click="showInput"

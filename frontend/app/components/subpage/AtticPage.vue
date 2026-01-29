@@ -57,14 +57,14 @@ const navTo = navigateTo
     </template>
 
     <template v-if="!data?.notFound" #subtitle>
-      <UIcon name="ci:clock" class="mr-1" />
+      <UIcon name="tabler:clock" class="mr-1" />
       {{ format(revDate, 'yyyy-MM-dd HH:mm') }}
     </template>
 
     <template #actions>
       <ReactiveButton
         v-if="!data.notFound"
-        icon="ic:baseline-update"
+        icon="tabler:arrow-back-up"
         :label="$t('current-version')"
         @click="navTo({ query: { rev: undefined } })"
       />
@@ -81,7 +81,7 @@ const navTo = navigateTo
         </div>
 
         <ReactiveButton
-          icon="ic:baseline-update"
+          icon="tabler:arrow-back-up"
           :label="$t('current-version')"
           @click="navTo({ query: { rev: undefined } })"
         />

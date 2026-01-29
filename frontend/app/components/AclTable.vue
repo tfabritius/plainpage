@@ -238,7 +238,7 @@ defineExpose({ getAcl })
         v-if="!['anonymous', 'all', 'admin'].includes(row.original.subject)"
         variant="link"
         color="error"
-        icon="ci:trash-full"
+        icon="tabler:trash"
         @click="onRemoveRule(row.original.subject)"
       />
     </template>
@@ -247,8 +247,8 @@ defineExpose({ getAcl })
   <div class="flex mt-2">
     <UInput v-model="newUserName" class="max-w-50" :placeholder="$t('username')">
       <template #trailing>
-        <UIcon v-if="newUser" class="text-green-500" name="ci:circle-check" />
-        <UIcon v-else-if="newUser === null" class="text-red-500" name="ci:close-circle" />
+        <UIcon v-if="newUser" class="text-green-500" name="tabler:circle-check" />
+        <UIcon v-else-if="newUser === null" class="text-red-500" name="tabler:circle-x" />
       </template>
     </UInput>
     <UButton :disabled="!newUser" :label="$t('add')" class="ml-2" @click="onAddRule" />

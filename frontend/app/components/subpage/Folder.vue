@@ -156,7 +156,7 @@ const menuItems = computed(() => {
 
   items.push(
     {
-      icon: 'ci:arrows-reload-01',
+      icon: 'tabler:refresh',
       label: t('reload'),
       onSelect: async () => {
         await props.onReload()
@@ -167,7 +167,7 @@ const menuItems = computed(() => {
 
   if (props.urlPath !== '' && props.allowWrite) {
     items.push({
-      icon: 'ci:edit-pencil-line-01',
+      icon: 'tabler:pencil',
       label: t('edit-folder'),
       onSelect: openEditFolderModal,
     })
@@ -175,7 +175,7 @@ const menuItems = computed(() => {
 
   if (props.urlPath !== '' && props.allowWrite && props.allowDelete) {
     items.push({
-      icon: 'ic:outline-drive-file-move',
+      icon: 'tabler:folder-symlink',
       label: t('move'),
       onSelect: () => { moveModalOpen.value = true },
     })
@@ -184,7 +184,7 @@ const menuItems = computed(() => {
   if (allowAdmin.value) {
     items.push(
       {
-        icon: 'ci:shield',
+        icon: 'tabler:lock',
         label: t('permissions'),
         onSelect: async () => {
           await navigateTo({ query: { acl: null } })
@@ -196,7 +196,7 @@ const menuItems = computed(() => {
   if (props.urlPath !== '' && props.allowDelete) {
     items.push(
       {
-        icon: 'ci:trash-full',
+        icon: 'tabler:trash',
         label: t('delete'),
         onSelect: onDeleteFolder,
       },
@@ -217,7 +217,7 @@ onKeyStroke('Backspace', (e) => {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <UIcon name="ci:folder" class="mr-1" />
+      <UIcon name="tabler:folder" class="mr-1" />
       {{ pageTitle }}
     </template>
 
@@ -228,20 +228,20 @@ onKeyStroke('Backspace', (e) => {
         color="neutral"
         @click="openEditFolderModal"
       >
-        <UIcon name="ci:edit" size="1.5em" />
+        <UIcon name="tabler:edit" size="1.5em" />
       </UButton>
     </template>
 
     <template #actions>
       <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
-        <ReactiveButton icon="ci:file-add" :label="$t('create-page')" />
+        <ReactiveButton icon="tabler:file-plus" :label="$t('create-page')" />
       </NewContentModal>
       <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
-        <ReactiveButton icon="ci:folder-add" :label="$t('create-folder')" />
+        <ReactiveButton icon="tabler:folder-plus" :label="$t('create-folder')" />
       </NewContentModal>
 
       <UDropdownMenu :items="menuItems">
-        <ReactiveButton icon="ci:more-vertical" :label="$t('more')" />
+        <ReactiveButton icon="tabler:dots-vertical" :label="$t('more')" />
       </UDropdownMenu>
     </template>
 
@@ -256,7 +256,7 @@ onKeyStroke('Backspace', (e) => {
       >
         <template #item="{ item }">
           <ULink :to="`/${item.url}`">
-            <UIcon name="ci:folder" class="align-middle" /> <span class="align-middle">{{ item.title || item.name }}</span>
+            <UIcon name="tabler:folder" class="align-middle" /> <span class="align-middle">{{ item.title || item.name }}</span>
           </ULink>
         </template>
       </MultiColumnList>

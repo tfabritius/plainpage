@@ -54,7 +54,7 @@ watch(q, () => {
 
     <form class="flex" @submit.prevent="onSearch">
       <UInput v-model="query" :placeholder="t('search')" class="w-full" />
-      <ReactiveButton color="primary" icon="ci:search" class="ml-2" :loading="loading" :label="$t('search')" type="submit" />
+      <ReactiveButton color="primary" icon="tabler:search" class="ml-2" :loading="loading" :label="$t('search')" type="submit" />
     </form>
 
     <div v-if="results !== undefined">
@@ -66,7 +66,7 @@ watch(q, () => {
         <div v-for="(result, i) in results" :key="i" class="mb-4">
           <ULink :to="`/${result.url}`">
             <span class="text-xl flex items-center">
-              <UIcon :name="result.isFolder ? 'ci:folder' : 'ci:file-blank'" class="mr-1" />
+              <UIcon :name="result.isFolder ? 'tabler:folder' : 'tabler:file'" class="mr-1" />
               <span v-if="'meta.title' in result.fragments" v-html="result.fragments['meta.title'][0]" />
               <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
             </span>

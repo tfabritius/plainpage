@@ -221,7 +221,7 @@ onKeyStroke('Backspace', (e) => {
       {{ pageTitle }}
     </template>
 
-    <template #title:suffix>
+    <template v-if="urlPath !== ''" #title:suffix>
       <UButton
         class="opacity-0 group-hover:opacity-100 duration-100"
         variant="link"

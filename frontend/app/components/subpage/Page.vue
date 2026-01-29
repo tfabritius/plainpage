@@ -13,6 +13,9 @@ const props = defineProps<{
   onReload: () => void
 }>()
 
+// Regex for valid page names (matches backend validation)
+const validUrlPartRegex = /^[a-z0-9-][a-z0-9_-]*$/
+
 const { t } = useI18n()
 const toast = useToast()
 
@@ -37,6 +40,60 @@ const editing = computed({
     editQuery.value = value ? null : undefined
   },
 })
+
+// Rename functionality
+const renameModalOpen = ref(false)
+const newPageName = ref('')
+const currentPageName = computed(() => {
+  const urlParts = props.page.url.split('/')
+  return urlParts[urlParts.length - 1] || ''
+})
+const parentPath = computed(() => {
+  const urlParts = props.page.url.split('/')
+  urlParts.pop()
+  return urlParts.join('/')
+})
+
+function openRenameModal() {
+  newPageName.value = currentPageName.value
+  renameModalOpen.value = true
+}
+
+const isValidPageName = computed(() => validUrlPartRegex.test(newPageName.value))
+
+async function onRenamePage() {
+  if (!isValidPageName.value) {
+    return
+  }
+
+  const newUrl = parentPath.value ? `${parentPath.value}/${newPageName.value}` : newPageName.value
+
+  if (newUrl === props.page.url) {
+    renameModalOpen.value = false
+    return
+  }
+
+  try {
+    await apiFetch(`/pages/${props.page.url}`, {
+      method: 'PATCH',
+      body: [{ op: 'replace', path: '/page/url', value: newUrl }],
+    })
+
+    renameModalOpen.value = false
+
+    toast.add({
+      description: t('page-renamed'),
+      color: 'success',
+    })
+
+    await navigateTo(`/${newUrl}`)
+  } catch (err) {
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
+  }
+}
 
 watch(editing, (editing) => {
   if (editing) {
@@ -126,6 +183,14 @@ const menuItems = computed(() => {
     },
   })
 
+  if (props.allowWrite && props.allowDelete) {
+    items.push({
+      icon: 'ci:edit-pencil-line-01',
+      label: t('rename'),
+      onSelect: openRenameModal,
+    })
+  }
+
   if (allowAdmin.value) {
     items.push(
       {
@@ -167,21 +232,21 @@ async function onCancelEdit() {
 }
 
 onKeyStroke('e', (e) => {
-  if (!editing.value && props.allowWrite) {
+  if (!editing.value && props.allowWrite && !renameModalOpen.value) {
     e.preventDefault()
     onEditPage()
   }
 })
 
 onKeyStroke('Backspace', (e) => {
-  if (!editing.value && props.allowDelete && e.ctrlKey) {
+  if (!editing.value && props.allowDelete && e.ctrlKey && !renameModalOpen.value) {
     e.preventDefault()
     onDeletePage()
   }
 })
 
 onKeyStroke('s', (e) => {
-  if (editing.value && e.ctrlKey) {
+  if (editing.value && e.ctrlKey && !renameModalOpen.value) {
     e.preventDefault()
     onSavePage()
   }
@@ -222,5 +287,36 @@ onKeyStroke('s', (e) => {
     />
 
     <PlainDialog ref="plainDialog" />
+
+    <!-- Rename Modal -->
+    <UModal v-model:open="renameModalOpen">
+      <template #title>
+        {{ $t('rename-page') }}
+      </template>
+      <template #body>
+        <form id="renamePageForm" @submit.prevent="onRenamePage">
+          <UInput
+            v-model="newPageName"
+            class="w-full"
+            autofocus
+            :status="newPageName && !isValidPageName ? 'error' : undefined"
+          />
+          <p v-if="newPageName && !isValidPageName" class="text-sm text-red-500 mt-1">
+            {{ $t('invalid-page-name') }}
+          </p>
+        </form>
+      </template>
+      <template #footer>
+        <UButton :label="$t('cancel')" @click="renameModalOpen = false" />
+        <UButton
+          color="primary"
+          variant="solid"
+          :label="$t('ok')"
+          type="submit"
+          form="renamePageForm"
+          :disabled="!isValidPageName"
+        />
+      </template>
+    </UModal>
   </Layout>
 </template>

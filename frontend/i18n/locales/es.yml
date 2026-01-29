@@ -62,6 +62,7 @@ page-deleted: Página eliminada
 page-name: Nombre de la página
 page-name-required: Por favor ingrese el nombre de la página
 page-reloaded: Página recargada
+page-renamed: Página renombrada
 page-title: Título de la página
 pages: Paginas
 password: Contraseña
@@ -75,6 +76,8 @@ read: Leer
 register: Registro
 register-account: Registrar cuenta
 reload: Recargar
+rename: Renombrar
+rename-page: Renombrar página
 revision-doesnt-exist: ¡Esta revisión no existe!
 revisions: Revisiones
 save: Guardar

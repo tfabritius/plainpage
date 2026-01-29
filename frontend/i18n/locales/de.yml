@@ -62,6 +62,7 @@ page-deleted: Seite gelöscht
 page-name: Name der Seite
 page-name-required: Bitte Name der Seite eingeben
 page-reloaded: Seite neu geladen
+page-renamed: Seite umbenannt
 page-title: Titel der Seite
 pages: Seiten
 password: Passwort
@@ -75,6 +76,8 @@ read: Lesen
 register: Konto anlegen
 register-account: Konto anlegen
 reload: Neu laden
+rename: Umbenennen
+rename-page: Seite umbenennen
 revision-doesnt-exist: Diese Überarbeitung existiert nicht!
 revisions: Überarbeitungen
 save: Speichern

@@ -62,6 +62,7 @@ page-deleted: Page deleted
 page-name: Page name
 page-name-required: Please enter page name
 page-reloaded: Page reloaded
+page-renamed: Page renamed
 page-title: Page title
 pages: Pages
 password: Password
@@ -75,6 +76,8 @@ read: Read
 register: Register
 register-account: Register account
 reload: Reload
+rename: Rename
+rename-page: Rename page
 revision-doesnt-exist: This revision doesn't exist!
 revisions: Revisions
 save: Save

@@ -36,11 +36,12 @@ discard-changes-to-this-page: ¿Quieres descartar los cambios de esta página?
 display-name: Nombre para mostrar
 displayname-required: Ingrese el nombre para mostrar
 edit: Editar
+edit-folder: Editar carpeta
 edit-user: Editar usuario
 error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
-folder-name: Nombre de lar carpeta
+folder-name: Nombre de la carpeta
 folder-name-required: Por favor ingrese el nombre de la carpeta
 folder-reloaded: Carpeta recargada
 folder-title: Título de la carpeta

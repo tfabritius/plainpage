@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Breadcrumb, Folder, PutRequest } from '~/types'
+import type { Breadcrumb, Folder, PatchOperation } from '~/types'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
 
@@ -12,6 +12,9 @@ const props = defineProps<{
   allowDelete: boolean
   onReload: () => void
 }>()
+
+// Regex for valid folder names (matches backend validation)
+const validUrlPartRegex = /^[a-z0-9-][a-z0-9_-]*$/
 
 const subfolders = computed(() => props.folder.content.filter(e => e.isFolder))
 const pages = computed(() => props.folder.content.filter(e => !e.isFolder))
@@ -31,21 +34,71 @@ const pageTitle = computed(() => {
 
 useHead(() => ({ title: pageTitle.value }))
 
-const editTitelOpen = ref(false)
+const editFolderOpen = ref(false)
 const editableTitle = ref('')
-async function saveEditedTitle() {
-  try {
-    const body = {
-      folder: {
-        url: props.folder.url,
-        meta: { title: editableTitle.value, tags: null },
-        content: [],
-      },
-    } satisfies PutRequest
-    await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body })
+const editableName = ref('')
 
-    editTitelOpen.value = false
-    props.onReload()
+// Computed properties for folder name/path manipulation
+const currentFolderName = computed(() => {
+  const urlParts = props.urlPath.split('/')
+  return urlParts[urlParts.length - 1] || ''
+})
+const parentPath = computed(() => {
+  const urlParts = props.urlPath.split('/')
+  urlParts.pop()
+  return urlParts.join('/')
+})
+const isValidFolderName = computed(() => validUrlPartRegex.test(editableName.value))
+
+function openEditFolderModal() {
+  editableTitle.value = props.folder.meta.title
+  editableName.value = currentFolderName.value
+  editFolderOpen.value = true
+}
+
+async function saveEditedFolder() {
+  // Validate folder name if we're renaming (non-root folder)
+  if (props.urlPath !== '' && !isValidFolderName.value) {
+    return
+  }
+
+  try {
+    const newUrl = parentPath.value ? `${parentPath.value}/${editableName.value}` : editableName.value
+    const nameChanged = props.urlPath !== '' && newUrl !== props.urlPath
+    const titleChanged = editableTitle.value !== props.folder.meta.title
+
+    // Build patch operations
+    const operations: PatchOperation[] = []
+
+    if (nameChanged) {
+      operations.push({ op: 'replace', path: '/folder/url', value: newUrl })
+    }
+
+    if (titleChanged) {
+      operations.push({ op: 'replace', path: '/folder/meta/title', value: editableTitle.value })
+    }
+
+    // Only make request if there are changes
+    if (operations.length > 0) {
+      await apiFetch(`/pages/${props.urlPath}`, {
+        method: 'PATCH',
+        body: operations,
+      })
+
+      toast.add({
+        description: t('saved'),
+        color: 'success',
+      })
+    }
+
+    editFolderOpen.value = false
+
+    // Navigate to new URL if folder was renamed, otherwise just reload
+    if (nameChanged) {
+      await navigateTo(`/${newUrl}`)
+    } else if (titleChanged) {
+      props.onReload()
+    }
   } catch (err) {
     toast.add({
       description: String(err),
@@ -108,6 +161,14 @@ const menuItems = computed(() => {
     },
   )
 
+  if (props.urlPath !== '' && props.allowWrite) {
+    items.push({
+      icon: 'ci:edit-pencil-line-01',
+      label: t('edit-folder'),
+      onSelect: openEditFolderModal,
+    })
+  }
+
   if (allowAdmin.value) {
     items.push(
       {
@@ -134,7 +195,7 @@ const menuItems = computed(() => {
 })
 
 onKeyStroke('Backspace', (e) => {
-  if (props.urlPath !== '' && props.allowDelete && e.ctrlKey) {
+  if (props.urlPath !== '' && props.allowDelete && e.ctrlKey && !editFolderOpen.value) {
     e.preventDefault()
     onDeleteFolder()
   }
@@ -148,29 +209,15 @@ onKeyStroke('Backspace', (e) => {
       {{ pageTitle }}
     </template>
 
-    <template v-if="urlPath !== ''" #title:suffix>
-      <UModal v-model:open="editTitelOpen">
-        <UButton
-          class="opacity-0 group-hover:opacity-100 duration-100"
-          variant="link"
-          color="neutral"
-          @click="editableTitle = props.folder.meta.title"
-        >
-          <UIcon name="ci:edit" size="1.5em" />
-        </UButton>
-        <template #title>
-          {{ t('folder-title') }}
-        </template>
-        <template #body>
-          <form id="editTitleForm" @submit.prevent="saveEditedTitle">
-            <UInput v-model="editableTitle" class="w-full" autofocus />
-          </form>
-        </template>
-        <template #footer>
-          <UButton :label="t('cancel')" @click="editTitelOpen = false" />
-          <UButton color="primary" variant="solid" :label="t('ok')" type="submit" form="editTitleForm" />
-        </template>
-      </UModal>
+    <template #title:suffix>
+      <UButton
+        class="opacity-0 group-hover:opacity-100 duration-100"
+        variant="link"
+        color="neutral"
+        @click="openEditFolderModal"
+      >
+        <UIcon name="ci:edit" size="1.5em" />
+      </UButton>
     </template>
 
     <template #actions>
@@ -221,5 +268,42 @@ onKeyStroke('Backspace', (e) => {
     </div>
 
     <PlainDialog ref="plainDialog" />
+
+    <!-- Edit Folder Modal -->
+    <UModal v-model:open="editFolderOpen">
+      <template #title>
+        {{ $t('edit-folder') }}
+      </template>
+      <template #body>
+        <form id="editFolderForm" class="space-y-4" @submit.prevent="saveEditedFolder">
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('folder-title') }}</label>
+            <UInput v-model="editableTitle" class="w-full" autofocus />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">{{ $t('folder-name') }}</label>
+            <UInput
+              v-model="editableName"
+              class="w-full"
+              :status="editableName && !isValidFolderName ? 'error' : undefined"
+            />
+            <p v-if="editableName && !isValidFolderName" class="text-sm text-red-500 mt-1">
+              {{ $t('invalid-folder-name') }}
+            </p>
+          </div>
+        </form>
+      </template>
+      <template #footer>
+        <UButton :label="$t('cancel')" @click="editFolderOpen = false" />
+        <UButton
+          color="primary"
+          variant="solid"
+          :label="$t('ok')"
+          type="submit"
+          form="editFolderForm"
+          :disabled="!isValidFolderName"
+        />
+      </template>
+    </UModal>
   </Layout>
 </template>

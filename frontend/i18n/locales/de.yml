@@ -36,6 +36,7 @@ discard-changes-to-this-page: Änderungen an dieser Seite verwerfen?
 display-name: Anzeigename
 displayname-required: Bitte Anzeigename eingeben
 edit: Bearbeiten
+edit-folder: Ordner bearbeiten
 edit-user: Benutzer bearbeiten
 error: Fehler
 folder-created: Ordner angelegt

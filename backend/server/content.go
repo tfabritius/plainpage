@@ -148,6 +148,8 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 
 	// Track url changes
 	var newUrl *string
+	// Track metadata changes (ACL, etc.)
+	metadataChanged := false
 
 	for _, operation := range operations {
 		if operation.Op != "replace" {
@@ -204,6 +206,7 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 					page.Meta.ACL = &acl
 				}
 			}
+			metadataChanged = true
 			continue
 		}
 
@@ -220,16 +223,18 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 		urlPath = *newUrl
 	}
 
-	// Save metadata changes (ACL, etc.)
-	var err error
-	if isFolder {
-		err = app.Content.SaveFolder(urlPath, folder.Meta)
-	} else {
-		err = app.Content.SavePage(urlPath, page.Content, page.Meta)
-	}
+	// Save metadata changes (ACL, etc.) only if changed
+	if metadataChanged {
+		var err error
+		if isFolder {
+			err = app.Content.SaveFolder(urlPath, folder.Meta)
+		} else {
+			err = app.Content.SavePage(urlPath, page.Content, page.Meta)
+		}
 
-	if err != nil {
-		panic(err)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)

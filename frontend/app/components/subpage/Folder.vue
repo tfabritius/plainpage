@@ -35,7 +35,13 @@ const editTitelOpen = ref(false)
 const editableTitle = ref('')
 async function saveEditedTitle() {
   try {
-    const body = { folder: { meta: { title: editableTitle.value, tags: null }, content: [] } } satisfies PutRequest
+    const body = {
+      folder: {
+        url: props.folder.url,
+        meta: { title: editableTitle.value, tags: null },
+        content: [],
+      },
+    } satisfies PutRequest
     await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body })
 
     editTitelOpen.value = false

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { MdEditorGenerator, Segment } from '~/types/'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { marked } from 'marked'
 
 const props = defineProps<{
@@ -123,7 +124,9 @@ function createWrapUnwrapGenerator(enclosingStart: string, enclosingEnd: string)
   return generator
 }
 
-const showPreview = ref(true)
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMdOrLarger = breakpoints.greaterOrEqual('md')
+const showPreview = ref(isMdOrLarger.value)
 const showFullscreen = ref(false)
 
 interface ToolbarAction {

@@ -55,11 +55,22 @@ invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
 language: Language
 menu: Menu
 more: More
+move: Move
+move-folder: Move folder
+move-here: Move here
+move-page: Move page
 new-password: New password
 not-found: Not found
 ok: OK
 old-revisions-of: Old revisions of
+cannot-move-folder-into-itself: Cannot move folder into itself
+cannot-move-to-same-location: Cannot move to same location
+destination: Destination
+folder-moved: Folder moved
+no-subfolders: No subfolders
+no-write-permission: No write permission for this folder
 page-deleted: Page deleted
+page-moved: Page moved
 page-name: Page name
 page-name-required: Please enter page name
 page-reloaded: Page reloaded
@@ -78,6 +89,7 @@ register: Register
 register-account: Register account
 reload: Reload
 rename: Rename
+select-destination-folder: Select the destination folder
 rename-page: Rename page
 revision-doesnt-exist: This revision doesn't exist!
 revisions: Revisions

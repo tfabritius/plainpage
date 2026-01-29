@@ -43,6 +43,13 @@ const editing = computed({
 
 // Rename functionality
 const renameModalOpen = ref(false)
+
+// Move functionality
+const moveModalOpen = ref(false)
+async function onPageMoved(newPath: string) {
+  await navigateTo(`/${newPath}`)
+}
+
 const newPageName = ref('')
 const currentPageName = computed(() => {
   const urlParts = props.page.url.split('/')
@@ -189,6 +196,12 @@ const menuItems = computed(() => {
       label: t('rename'),
       onSelect: openRenameModal,
     })
+
+    items.push({
+      icon: 'ic:outline-drive-file-move',
+      label: t('move'),
+      onSelect: () => { moveModalOpen.value = true },
+    })
   }
 
   if (allowAdmin.value) {
@@ -287,6 +300,14 @@ onKeyStroke('s', (e) => {
     />
 
     <PlainDialog ref="plainDialog" />
+
+    <!-- Move Modal -->
+    <MoveContentModal
+      v-model:open="moveModalOpen"
+      :current-path="page.url"
+      :is-folder="false"
+      @moved="onPageMoved"
+    />
 
     <!-- Rename Modal -->
     <UModal v-model:open="renameModalOpen">

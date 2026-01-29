@@ -56,6 +56,12 @@ function openEditFolderModal() {
   editFolderOpen.value = true
 }
 
+// Move functionality
+const moveModalOpen = ref(false)
+async function onFolderMoved(newPath: string) {
+  await navigateTo(`/${newPath}`)
+}
+
 async function saveEditedFolder() {
   // Validate folder name if we're renaming (non-root folder)
   if (props.urlPath !== '' && !isValidFolderName.value) {
@@ -169,6 +175,14 @@ const menuItems = computed(() => {
     })
   }
 
+  if (props.urlPath !== '' && props.allowWrite && props.allowDelete) {
+    items.push({
+      icon: 'ic:outline-drive-file-move',
+      label: t('move'),
+      onSelect: () => { moveModalOpen.value = true },
+    })
+  }
+
   if (allowAdmin.value) {
     items.push(
       {
@@ -268,6 +282,14 @@ onKeyStroke('Backspace', (e) => {
     </div>
 
     <PlainDialog ref="plainDialog" />
+
+    <!-- Move Modal -->
+    <MoveContentModal
+      v-model:open="moveModalOpen"
+      :current-path="urlPath"
+      :is-folder="true"
+      @moved="onFolderMoved"
+    />
 
     <!-- Edit Folder Modal -->
     <UModal v-model:open="editFolderOpen">

@@ -55,11 +55,22 @@ invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 language: Idioma
 menu: Menú
 more: Más
+move: Mover
+move-folder: Mover carpeta
+move-here: Mover aquí
+move-page: Mover página
 new-password: Nueva contraseña
 not-found: Extraviado
 ok: Acceptar
 old-revisions-of: Revisiones antiguas de
+cannot-move-folder-into-itself: No se puede mover una carpeta dentro de sí misma
+cannot-move-to-same-location: No se puede mover al mismo lugar
+destination: Destino
+folder-moved: Carpeta movida
+no-subfolders: Sin subcarpetas
+no-write-permission: Sin permiso de escritura para esta carpeta
 page-deleted: Página eliminada
+page-moved: Página movida
 page-name: Nombre de la página
 page-name-required: Por favor ingrese el nombre de la página
 page-reloaded: Página recargada
@@ -78,6 +89,7 @@ register: Registro
 register-account: Registrar cuenta
 reload: Recargar
 rename: Renombrar
+select-destination-folder: Seleccionar carpeta de destino
 rename-page: Renombrar página
 revision-doesnt-exist: ¡Esta revisión no existe!
 revisions: Revisiones

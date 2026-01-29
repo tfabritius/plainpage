@@ -34,7 +34,7 @@ async function confirm(message: string, params: {
   return data
 }
 
-defineExpose({ confirm, prompt })
+defineExpose({ confirm })
 </script>
 
 <template>

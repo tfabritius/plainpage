@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue'
-
 const props = withDefaults(defineProps<{
   modelValue: string[] | null
   editable?: boolean

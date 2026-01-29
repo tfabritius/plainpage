@@ -119,8 +119,8 @@ function replaceSelection(generator: MdEditorGenerator) {
   const selection = result.selection
     ? EditorSelection.create([
         EditorSelection.range(
-          firstRange?.from ?? 0 + result.selection.from,
-          firstRange?.from ?? 0 + result.selection.to,
+          (firstRange?.from ?? 0) + result.selection.from,
+          (firstRange?.from ?? 0) + result.selection.to,
         ),
       ])
     : undefined

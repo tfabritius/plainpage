@@ -126,85 +126,65 @@ function createWrapUnwrapGenerator(enclosingStart: string, enclosingEnd: string)
 const showPreview = ref(true)
 const showFullscreen = ref(false)
 
+interface ToolbarAction {
+  type: 'selection' | 'line'
+  start: string
+  end: string
+}
+
+const toolbarActions: Record<string, ToolbarAction> = {
+  // Selection-based formatting
+  bold: { type: 'selection', start: '**', end: '**' },
+  italic: { type: 'selection', start: '*', end: '*' },
+  underline: { type: 'selection', start: '_', end: '_' },
+  strikethrough: { type: 'selection', start: '~~', end: '~~' },
+  superscript: { type: 'selection', start: '<sup>', end: '</sup>' },
+  subscript: { type: 'selection', start: '<sub>', end: '</sub>' },
+  link: { type: 'selection', start: '[', end: ']()' },
+  'code-inline': { type: 'selection', start: '`', end: '`' },
+
+  // Line-based formatting
+  'heading-1': { type: 'line', start: '# ', end: '' },
+  'heading-2': { type: 'line', start: '## ', end: '' },
+  'heading-3': { type: 'line', start: '### ', end: '' },
+  'heading-4': { type: 'line', start: '#### ', end: '' },
+  'heading-5': { type: 'line', start: '##### ', end: '' },
+  'heading-6': { type: 'line', start: '###### ', end: '' },
+  'list-unordered': { type: 'line', start: '- ', end: '' },
+  'list-ordered': { type: 'line', start: '1. ', end: '' },
+  checkbox: { type: 'line', start: '- [ ] ', end: '' },
+  quote: { type: 'line', start: '> ', end: '' },
+  'code-block': { type: 'line', start: '```\n', end: '\n```' },
+  table: { type: 'line', start: '|   |   |\n|---|---|\n|   |   |\n|   |   |\n', end: '' },
+}
+
 function onToolbarClick(action: string) {
+  // Handle toggle actions (they don't need editor)
+  if (action === 'fullscreen') {
+    showFullscreen.value = !showFullscreen.value
+    return
+  }
+  if (action === 'preview') {
+    showPreview.value = !showPreview.value
+    return
+  }
+
   const editor = codeEditor.value
   if (!editor) {
     return
   }
 
-  switch (action) {
-    case 'bold':
-      editor.replaceSelection(createWrapUnwrapGenerator('**', '**'))
-      break
-    case 'italic':
-      editor.replaceSelection(createWrapUnwrapGenerator('*', '*'))
-      break
-    case 'underline':
-      editor.replaceSelection(createWrapUnwrapGenerator('_', '_'))
-      break
-    case 'strikethrough':
-      editor.replaceSelection(createWrapUnwrapGenerator('~~', '~~'))
-      break
-    case 'superscript':
-      editor.replaceSelection(createWrapUnwrapGenerator('<sup>', '</sup>'))
-      break
-    case 'subscript':
-      editor.replaceSelection(createWrapUnwrapGenerator('<sub>', '</sub>'))
-      break
+  const config = toolbarActions[action]
+  if (!config) {
+    throw new Error(`Unknown toolbar action: ${action}`)
+  }
 
-    case 'heading-1':
-      editor.replaceLine(createWrapUnwrapGenerator('# ', ''))
-      break
-    case 'heading-2':
-      editor.replaceLine(createWrapUnwrapGenerator('## ', ''))
-      break
-    case 'heading-3':
-      editor.replaceLine(createWrapUnwrapGenerator('### ', ''))
-      break
-    case 'heading-4':
-      editor.replaceLine(createWrapUnwrapGenerator('#### ', ''))
-      break
-    case 'heading-5':
-      editor.replaceLine(createWrapUnwrapGenerator('##### ', ''))
-      break
-    case 'heading-6':
-      editor.replaceLine(createWrapUnwrapGenerator('###### ', ''))
-      break
-    case 'list-unordered':
-      editor.replaceLine(createWrapUnwrapGenerator('- ', ''))
-      break
-    case 'list-ordered':
-      editor.replaceLine(createWrapUnwrapGenerator('1. ', ''))
-      break
-    case 'checkbox':
-      editor.replaceLine(createWrapUnwrapGenerator('- [ ] ', ''))
-      break
-    case 'quote':
-      editor.replaceLine(createWrapUnwrapGenerator('> ', ''))
-      break
+  const generator = createWrapUnwrapGenerator(config.start, config.end)
 
-    case 'link':
-      editor.replaceSelection(createWrapUnwrapGenerator('[', ']()'))
-      break
-    case 'code-inline':
-      editor.replaceSelection(createWrapUnwrapGenerator('`', '`'))
-      break
-    case 'code-block':
-      editor.replaceLine(createWrapUnwrapGenerator('```\n', '\n```'))
-      break
-    case 'table':
-      editor.replaceLine(createWrapUnwrapGenerator('|   |   |\n' + '|---|---|\n' + '|   |   |\n' + '|   |   |\n', ''))
-      break
-
-    case 'fullscreen':
-      showFullscreen.value = !showFullscreen.value
-      break
-    case 'preview':
-      showPreview.value = !showPreview.value
-      break
-
-    default:
-      throw new Error(`Unknown toolbar action: ${action}`)
+  if (config.type === 'selection') {
+    editor.replaceSelection(generator)
+  } else {
+    editor.replaceLine(generator)
   }
 }
 

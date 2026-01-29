@@ -59,8 +59,6 @@ const pageTitle = computed(() => {
   }
   return t('not-found')
 })
-
-const _deepClone = deepClone
 </script>
 
 <template>
@@ -87,7 +85,7 @@ const _deepClone = deepClone
       v-else-if="folder && aclQuery"
       :is-folder="true"
       :url-path="urlPath"
-      :meta="_deepClone(folder.meta)"
+      :meta="deepClone(folder.meta)"
       :title="urlPath === '' ? $t('home') : data?.breadcrumbs.slice(-1)[0]?.name"
       :breadcrumbs="data?.breadcrumbs ?? []"
       @refresh="refresh"
@@ -105,7 +103,7 @@ const _deepClone = deepClone
       v-else-if="page && aclQuery"
       :is-folder="false"
       :url-path="urlPath"
-      :meta="_deepClone(page.meta)"
+      :meta="deepClone(page.meta)"
       :title="page.meta.title"
       :breadcrumbs="data?.breadcrumbs ?? []"
       @refresh="refresh"

@@ -1786,7 +1786,7 @@ func (s *ContentTestSuite) TestNonexistentContentPermissions() {
 		// Invalid URL
 		{"admin:invalidURL", s.adminToken, "public/_invalid", 404, false, false},
 		{"user:invalidURL", s.userToken, "public/_invalid", 404, false, false},
-		{"anonymous:invalidURL", nil, "public/_invalid", 401, false, false},
+		{"anonymous:invalidURL", nil, "public/_invalid", 404, false, false},
 
 		// Parent exists but user can't write
 		{"admin:adminOnly", s.adminToken, "admin-only/nonexistent", 404, true, false},

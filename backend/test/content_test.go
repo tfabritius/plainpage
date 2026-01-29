@@ -772,6 +772,66 @@ func (s *ContentTestSuite) TestUpdatePageACL() {
 	}
 }
 
+// TestUpdatePageTitle tests updating the page's title using PATCH operation
+func (s *ContentTestSuite) TestUpdatePageTitle() {
+	tests := []struct {
+		name         string
+		token        *string
+		url          string
+		responseCode int
+	}{
+		// root
+		{"admin:root", s.adminToken, "page", 200},
+		{"user:root", s.userToken, "page", 200},
+		{"anonymous:root", nil, "page", 401},
+		// admin-only
+		{"admin:adminOnly", s.adminToken, "admin-only/page", 200},
+		{"user:adminOnly", s.userToken, "admin-only/page", 403},
+		{"anonymous:adminOnly", nil, "admin-only/page", 401},
+		// read-only
+		{"admin:readOnly", s.adminToken, "read-only/page", 200},
+		{"user:readOnly", s.userToken, "read-only/page", 403},
+		{"anonymous:readOnly", nil, "read-only/page", 401},
+		// published
+		{"admin:published", s.adminToken, "published/page", 200},
+		{"user:published", s.userToken, "published/page", 200},
+		{"anonymous:published", nil, "published/page", 401},
+		// public
+		{"admin:public", s.adminToken, "public/page", 200},
+		{"user:public", s.userToken, "public/page", 200},
+		{"anonymous:public", nil, "public/page", 200},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Prepare
+			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Old Title"}))
+
+			// Test
+			res := s.api("PATCH", "/pages/"+tc.url,
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/page/meta/title", Value: str2json("New Title")},
+				},
+				tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			page, err := s.app.Content.ReadPage(tc.url, nil)
+			r.NoError(err)
+			if tc.responseCode == 200 {
+				r.Equal("New Title", page.Meta.Title)
+			} else {
+				r.Equal("Old Title", page.Meta.Title)
+			}
+
+			// Cleanup
+			r.NoError(s.app.Content.DeletePage(tc.url))
+		})
+	}
+}
+
 func (s *ContentTestSuite) TestUpdateFolder() {
 	tests := []struct {
 		name         string
@@ -905,6 +965,120 @@ func (s *ContentTestSuite) TestUpdateFolderACL() {
 			// Cleanup
 			r.NoError(s.app.Content.DeleteEmptyFolder(tc.url))
 		})
+	}
+}
+
+func (s *ContentTestSuite) TestUpdateFolderTitle() {
+	tests := []struct {
+		name         string
+		token        *string
+		url          string
+		responseCode int
+	}{
+		// root
+		{"admin:root", s.adminToken, "folder", 200},
+		{"user:root", s.userToken, "folder", 200},
+		{"anonymous:root", nil, "folder", 401},
+		// admin-only
+		{"admin:adminOnly", s.adminToken, "admin-only/folder", 200},
+		{"user:adminOnly", s.userToken, "admin-only/folder", 403},
+		{"anonymous:adminOnly", nil, "admin-only/folder", 401},
+		// read-only
+		{"admin:readOnly", s.adminToken, "read-only/folder", 200},
+		{"user:readOnly", s.userToken, "read-only/folder", 403},
+		{"anonymous:readOnly", nil, "read-only/folder", 401},
+		// published
+		{"admin:published", s.adminToken, "published/folder", 200},
+		{"user:published", s.userToken, "published/folder", 200},
+		{"anonymous:published", nil, "published/folder", 401},
+		// public
+		{"admin:public", s.adminToken, "public/folder", 200},
+		{"user:public", s.userToken, "public/folder", 200},
+		{"anonymous:public", nil, "public/folder", 200},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Prepare
+			r.NoError(s.app.Content.CreateFolder(tc.url, model.ContentMeta{Title: "Old Title"}))
+
+			// Test
+			res := s.api("PATCH", "/pages/"+tc.url,
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/folder/meta/title", Value: str2json("New Title")},
+				},
+				tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			folder, err := s.app.Content.ReadFolder(tc.url)
+			r.NoError(err)
+			if tc.responseCode == 200 {
+				r.Equal("New Title", folder.Meta.Title)
+			} else {
+				r.Equal("Old Title", folder.Meta.Title)
+			}
+
+			// Cleanup
+			r.NoError(s.app.Content.DeleteEmptyFolder(tc.url))
+		})
+	}
+}
+
+func (s *ContentTestSuite) TestCombinedPatchOperations() {
+	r := s.Require()
+
+	// Test combining title change and rename for folder
+	{
+		r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Old Title"}))
+
+		res := s.api("PATCH", "/pages/folder",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/folder/url", Value: str2json("renamed-folder")},
+				{Op: "replace", Path: "/folder/meta/title", Value: str2json("New Title")},
+			},
+			s.adminToken)
+		r.Equal(200, res.Code)
+
+		// Old folder should not exist
+		r.False(s.app.Content.IsFolder("folder"))
+
+		// New folder should exist with new title
+		r.True(s.app.Content.IsFolder("renamed-folder"))
+		folder, err := s.app.Content.ReadFolder("renamed-folder")
+		r.NoError(err)
+		r.Equal("New Title", folder.Meta.Title)
+
+		// Cleanup
+		r.NoError(s.app.Content.DeleteEmptyFolder("renamed-folder"))
+	}
+
+	// Test combining title change and rename for page
+	{
+		r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Old Title"}))
+
+		res := s.api("PATCH", "/pages/page",
+			[]model.PatchOperation{
+				{Op: "replace", Path: "/page/url", Value: str2json("renamed-page")},
+				{Op: "replace", Path: "/page/meta/title", Value: str2json("New Title")},
+			},
+			s.adminToken)
+		r.Equal(200, res.Code)
+
+		// Old page should not exist
+		r.False(s.app.Content.IsPage("page"))
+
+		// New page should exist with new title and same content
+		r.True(s.app.Content.IsPage("renamed-page"))
+		page, err := s.app.Content.ReadPage("renamed-page", nil)
+		r.NoError(err)
+		r.Equal("New Title", page.Meta.Title)
+		r.Equal("Content", page.Content)
+
+		// Cleanup
+		r.NoError(s.app.Content.DeletePage("renamed-page"))
 	}
 }
 

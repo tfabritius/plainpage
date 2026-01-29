@@ -148,7 +148,7 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 
 	// Track url changes
 	var newUrl *string
-	// Track metadata changes (ACL, etc.)
+	// Track metadata changes (ACL, title, etc.)
 	metadataChanged := false
 
 	for _, operation := range operations {
@@ -169,6 +169,25 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			newUrl = &urlValue
+			continue
+		}
+
+		// Handle title changes
+		if (isFolder && operation.Path == "/folder/meta/title") || (!isFolder && operation.Path == "/page/meta/title") {
+			var title string
+			if operation.Value != nil {
+				if err := json.Unmarshal([]byte(*operation.Value), &title); err != nil {
+					http.Error(w, "invalid title value: "+err.Error(), http.StatusBadRequest)
+					return
+				}
+			}
+
+			if isFolder {
+				folder.Meta.Title = title
+			} else {
+				page.Meta.Title = title
+			}
+			metadataChanged = true
 			continue
 		}
 

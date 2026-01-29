@@ -68,10 +68,18 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 
 	response := model.GetContentResponse{}
 
-	parentAcl := app.Content.GetEffectivePermissions(model.ContentMeta{ACL: nil}, metas)
+	// Get the content's own metadata for permission calculation
+	var contentMeta model.ContentMeta
+	if page != nil {
+		contentMeta = page.Meta
+	} else if folder != nil {
+		contentMeta = folder.Meta
+	}
 
-	response.AllowWrite = app.Users.CheckContentPermissions(parentAcl, userID, model.AccessOpWrite) == nil
-	response.AllowDelete = app.Users.CheckContentPermissions(parentAcl, userID, model.AccessOpDelete) == nil
+	effectiveAcl := app.Content.GetEffectivePermissions(contentMeta, metas)
+
+	response.AllowWrite = app.Users.CheckContentPermissions(effectiveAcl, userID, model.AccessOpWrite) == nil
+	response.AllowDelete = app.Users.CheckContentPermissions(effectiveAcl, userID, model.AccessOpDelete) == nil
 
 	response.Breadcrumbs = app.getBreadcrumbs(urlPath, page, folder, metas)
 
@@ -98,6 +106,8 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 	} else {
 		// Not found
 		w.WriteHeader(http.StatusNotFound)
+
+		response.AllowDelete = false
 
 		if !isValidUrl(urlPath) {
 			response.AllowWrite = false

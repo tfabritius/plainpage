@@ -1694,6 +1694,141 @@ func (s *ContentTestSuite) TestMoveFolderWithAttic() {
 	r.Equal("Content v1", oldPage.Content)
 }
 
+// TestAllowWriteWithPageACL verifies that when a page has its own ACL granting write permission,
+// the AllowWrite field in the response is true, even if the parent folder denies write access.
+// This tests that effective permissions are calculated from the page's own ACL, not just the parent's.
+func (s *ContentTestSuite) TestAllowWriteWithPageACL() {
+	r := s.Require()
+
+	// Create a page in admin-only folder (which denies write to normal users)
+	url := "admin-only/page-with-acl"
+	acl := []model.AccessRule{
+		{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite}},
+	}
+	r.NoError(s.app.Content.SavePage(url, "Content", model.ContentMeta{Title: "Page with ACL", ACL: &acl}))
+
+	// Test: Admin should have write and delete access
+	{
+		res := s.api("GET", "/pages/"+url, nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Page)
+		r.True(body.AllowWrite, "Admin should have write access")
+		r.True(body.AllowDelete, "Admin should have delete access")
+	}
+
+	// Test: Normal user should have only write access (due to page's ACL granting "all")
+	{
+		res := s.api("GET", "/pages/"+url, nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Page)
+		r.True(body.AllowWrite, "User should have write access")
+		r.False(body.AllowDelete, "User should not have delete access")
+	}
+
+	// Cleanup
+	r.NoError(s.app.Content.DeletePage(url))
+}
+
+// TestAllowWriteWithFolderACL verifies that when a folder has its own ACL granting write permission,
+// the AllowWrite field in the response is true, even if the parent folder denies write access.
+func (s *ContentTestSuite) TestAllowWriteWithFolderACL() {
+	r := s.Require()
+
+	// Create a folder in admin-only folder with its own ACL
+	url := "admin-only/folder-with-acl"
+	acl := []model.AccessRule{
+		{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite}},
+	}
+	r.NoError(s.app.Content.CreateFolder(url, model.ContentMeta{Title: "Folder with ACL", ACL: &acl}))
+
+	// Test: Admin should have write access
+	{
+		res := s.api("GET", "/pages/"+url, nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.True(body.AllowWrite, "Admin should have write access")
+		r.True(body.AllowDelete, "Admin should have delete access")
+	}
+
+	// Test: Normal user should have write access (due to folder's ACL granting "all")
+	{
+		res := s.api("GET", "/pages/"+url, nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.True(body.AllowWrite, "User should have write access")
+		r.False(body.AllowDelete, "User should not have delete access")
+	}
+
+	// Cleanup
+	r.NoError(s.app.Content.DeleteEmptyFolder(url))
+}
+
+// TestNonexistentContentPermissions tests that AllowWrite and AllowDelete are correctly
+// determined by the parent's ACL when accessing non-existent content.
+func (s *ContentTestSuite) TestNonexistentContentPermissions() {
+	tests := []struct {
+		name         string
+		token        *string
+		url          string
+		responseCode int
+		allowWrite   bool
+		allowDelete  bool
+	}{
+		// Parent doesn't exist
+		{"admin:parentNotExist", s.adminToken, "nonexistent-parent/page", 404, false, false},
+		{"user:parentNotExist", s.userToken, "nonexistent-parent/page", 404, false, false},
+		{"anonymous:parentNotExist", nil, "nonexistent-parent/page", 401, false, false},
+
+		// Invalid URL
+		{"admin:invalidURL", s.adminToken, "public/_invalid", 404, false, false},
+		{"user:invalidURL", s.userToken, "public/_invalid", 404, false, false},
+		{"anonymous:invalidURL", nil, "public/_invalid", 401, false, false},
+
+		// Parent exists but user can't write
+		{"admin:adminOnly", s.adminToken, "admin-only/nonexistent", 404, true, false},
+		{"user:adminOnly", s.userToken, "admin-only/nonexistent", 403, false, false},
+		{"anonymous:adminOnly", nil, "admin-only/nonexistent", 401, false, false},
+
+		// Parent exists but user can only read
+		{"admin:readOnly", s.adminToken, "read-only/nonexistent", 404, true, false},
+		{"user:readOnly", s.userToken, "read-only/nonexistent", 404, false, false},
+		{"anonymous:readOnly", nil, "read-only/nonexistent", 401, false, false},
+
+		// Parent exists and allows write/delete for all
+		{"admin:public", s.adminToken, "public/nonexistent", 404, true, false},
+		{"user:public", s.userToken, "public/nonexistent", 404, true, false},
+		{"anonymous:public", nil, "public/nonexistent", 404, true, false},
+
+		// Parent exists, users can write/delete
+		{"admin:published", s.adminToken, "published/nonexistent", 404, true, false},
+		{"user:published", s.userToken, "published/nonexistent", 404, true, false},
+		{"anonymous:published", nil, "published/nonexistent", 404, false, false},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("GET", "/pages/"+tc.url, nil, tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			// Only check AllowWrite/AllowDelete for 404 responses (non-existent content)
+			if tc.responseCode == 404 {
+				body, _ := jsonbody[model.GetContentResponse](res)
+				r.Nil(body.Page, "Page should be nil for non-existent content")
+				r.Nil(body.Folder, "Folder should be nil for non-existent content")
+				r.Equal(tc.allowWrite, body.AllowWrite, "AllowWrite mismatch")
+				r.Equal(tc.allowDelete, body.AllowDelete, "AllowDelete mismatch")
+			}
+		})
+	}
+}
+
 func (s *ContentTestSuite) TestMoveFolderSearchIndex() {
 	r := s.Require()
 

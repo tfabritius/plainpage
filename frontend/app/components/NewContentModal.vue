@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import slugify from 'slugify'
 import { z } from 'zod'
+import { validUrlPartRegex } from '~/types/api'
 
 const props = defineProps<{
   type: 'page' | 'folder'
@@ -17,7 +18,7 @@ const formSchema = z.object({
   title: z.string(),
   name: z.string()
     .min(1, props.type === 'page' ? t('page-name-required') : t('folder-name-required'))
-    .regex(/^[a-z0-9-][a-z0-9_-]*$/, props.type === 'page' ? t('invalid-page-name') : t('invalid-folder-name')),
+    .regex(validUrlPartRegex, props.type === 'page' ? t('invalid-page-name') : t('invalid-folder-name')),
 })
 type FormSchema = z.output<typeof formSchema>
 

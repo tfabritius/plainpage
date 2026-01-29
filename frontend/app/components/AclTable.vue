@@ -10,11 +10,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-
-function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
-  return Object.keys(obj).filter(k => Number.isNaN(+k)) as K[]
-}
-
 type Ops = keyof typeof AccessOp
 
 type TableRow = {
@@ -44,13 +39,14 @@ const columnVisibility = ref({
 
 function mapAPI2Table(acl: AccessRule[]): TableRow[] {
   const table = acl.map((rule) => {
-    const row = {
+    const row: TableRow = {
       subject: rule.subject,
       user: rule.user,
-    } as TableRow
-
-    for (const op of enumKeys(AccessOp)) {
-      row[op] = rule.ops?.includes(AccessOp[op]) ?? false
+      read: rule.ops?.includes(AccessOp.read) ?? false,
+      write: rule.ops?.includes(AccessOp.write) ?? false,
+      delete: rule.ops?.includes(AccessOp.delete) ?? false,
+      register: rule.ops?.includes(AccessOp.register) ?? false,
+      admin: rule.ops?.includes(AccessOp.admin) ?? false,
     }
 
     return row
@@ -118,9 +114,9 @@ function mapTable2API(table: ReturnType<typeof mapAPI2Table>): AccessRule[] {
     .map((row) => {
       const ops = []
 
-      for (const op of enumKeys(AccessOp)) {
+      for (const op of Object.values(AccessOp)) {
         if (row[op]) {
-          ops.push(AccessOp[op])
+          ops.push(op)
         }
       }
 

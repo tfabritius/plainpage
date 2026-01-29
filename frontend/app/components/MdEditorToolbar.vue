@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const _props = defineProps<{
+defineProps<{
   showPreview: boolean
   showFullscreen: boolean
 }>()

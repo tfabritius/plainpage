@@ -2,7 +2,7 @@
 import type { BreadcrumbItem } from '@nuxt/ui'
 import type { Breadcrumb } from '~/types'
 
-const _props = defineProps<{
+const props = defineProps<{
   breadcrumbs?: Breadcrumb[]
   useFullHeight?: boolean
 }>()
@@ -14,8 +14,8 @@ const breadcrumbItems = computed(() => {
 
   items.push({ icon: 'ic:outline-home', class: 'text-[var(--ui-text-muted)]', to: '/' })
 
-  _props.breadcrumbs?.forEach((crumb, idx) => {
-    if (idx !== (_props.breadcrumbs?.length ?? 1) - 1) {
+  props.breadcrumbs?.forEach((crumb, idx) => {
+    if (idx !== (props.breadcrumbs?.length ?? 1) - 1) {
       items.push({ label: crumb.title || crumb.name, to: { path: `/${crumb.url}` } })
     } else {
       items.push({ label: crumb.title || crumb.name, to: { path: `/${crumb.url}` }, class: 'text-[var(--ui-text-muted)]' })

@@ -111,3 +111,7 @@ export interface SearchHit {
 // corresponding to service/user_service.go
 
 export const validUsernameRegex = /^[a-z0-9][a-z0-9_\\.-]{3,20}$/i
+
+// correspongin to server/content.go
+
+export const validUrlPartRegex = /^[a-z0-9-][a-z0-9_-]*$/

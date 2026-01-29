@@ -3,6 +3,7 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 import type { Breadcrumb, Folder, PatchOperation } from '~/types'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
+import { validUrlPartRegex } from '~/types/api'
 
 const props = defineProps<{
   urlPath: string
@@ -12,9 +13,6 @@ const props = defineProps<{
   allowDelete: boolean
   onReload: () => void
 }>()
-
-// Regex for valid folder names (matches backend validation)
-const validUrlPartRegex = /^[a-z0-9-][a-z0-9_-]*$/
 
 const subfolders = computed(() => props.folder.content.filter(e => e.isFolder))
 const pages = computed(() => props.folder.content.filter(e => !e.isFolder))

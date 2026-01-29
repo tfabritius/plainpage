@@ -11,8 +11,8 @@ export interface GetAppResponse {
   setupMode: boolean
   allowRegister: boolean
   allowAdmin: boolean
-  version: string
-  gitSha: string
+  version?: string
+  gitSha?: string
 }
 
 export interface PutRequest {

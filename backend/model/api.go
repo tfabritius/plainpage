@@ -28,8 +28,8 @@ type GetAppResponse struct {
 	SetupMode     bool   `json:"setupMode"`
 	AllowRegister bool   `json:"allowRegister"`
 	AllowAdmin    bool   `json:"allowAdmin"`
-	Version       string `json:"version"`
-	GitSha        string `json:"gitSha"`
+	Version       string `json:"version,omitempty"`
+	GitSha        string `json:"gitSha,omitempty"`
 }
 
 type PutRequest struct {

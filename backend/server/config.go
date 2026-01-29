@@ -26,8 +26,12 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 		SetupMode:     cfg.SetupMode,
 		AllowRegister: allowRegister,
 		AllowAdmin:    allowAdmin,
-		GitSha:        build.GetRevision(),
-		Version:       build.GetVersion(),
+	}
+
+	// Only expose version info to logged-in users
+	if userID != "" {
+		response.GitSha = build.GetRevision()
+		response.Version = build.GetVersion()
 	}
 
 	render.JSON(w, r, response)

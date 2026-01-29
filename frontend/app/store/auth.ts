@@ -1,6 +1,7 @@
 import type { PatchOperation, TokenUserResponse, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
+import { useAppStore } from './app'
 
 const hour = 60 * 60 // in seconds
 const minRemainingTokenValidity = 5 * 30 * 24 * hour // 5 months
@@ -28,6 +29,10 @@ export const useAuthStore = defineStore(
 
         token.value = response.token
         user.value = response.user
+
+        // Reload app data to get version info now that user is logged in
+        const appStore = useAppStore()
+        await appStore.refresh()
       } catch (err) {
         if (err instanceof FetchError && err.statusCode === 401) {
           return { statusCode: 401 }
@@ -59,6 +64,10 @@ export const useAuthStore = defineStore(
     async function logout() {
       token.value = ''
       user.value = undefined
+
+      // Reload app data to remove version info now that user is logged out
+      const appStore = useAppStore()
+      await appStore.refresh()
 
       // Run middlewares of current page again
       const router = useRouter()

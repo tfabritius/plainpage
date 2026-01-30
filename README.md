@@ -1,8 +1,27 @@
 # ![Logo](frontend/public/favicon.svg) PlainPage
 
-PlainPage, a self-hosted app that embodies simplicity, ease of use, and privacy. PlainPage offers a plain and simplistic user experience while providing essential wiki-like functionality. It adheres to the 😘 KISS principle, focusing on delivering a straightforward and efficient user experience without unnecessary complexities.
+[![Release](https://img.shields.io/github/v/release/tfabritius/plainpage)](https://github.com/tfabritius/plainpage/releases/latest)
+
+PlainPage is a self-hosted wiki app that embodies simplicity, ease of use, and privacy. It offers a plain and simplistic user experience while providing essential wiki-like functionality. It adheres to the 😘 KISS principle, focusing on delivering a straightforward and efficient user experience without unnecessary complexities.
 
 Powered by Go, Vue/Nuxt. Made with 💖
+
+## Table of Contents
+
+- [Key Features](#key-features)
+- [Installation and Setup](#installation-and-setup)
+  - [Quick Start](#quick-start)
+  - [Production Setup](#production-setup)
+  - [Configuration](#configuration)
+- [Usage](#usage)
+  - [Pages and Folders](#pages-and-folders)
+  - [Access Rights](#access-rights)
+  - [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Security](#security)
+- [Contributing](#contributing)
+  - [Development Setup](#development-setup)
+  - [Building from Source](#building-from-source)
+  - [Running Tests](#running-tests)
 
 ## Key Features
 
@@ -27,44 +46,77 @@ Powered by Go, Vue/Nuxt. Made with 💖
 - Not optimized for access by machines, e.g., search engines
 - Concurrent/conflicting edits are not prevented
 
-## Installation and setup
+## Installation and Setup
 
-### Get Started
+### Quick Start
 
-To start using PlainPage, self-host the app in your preferred environment. The process is quick and hassle-free, allowing you to jump right into creating, organizing, and managing your content.
+Trying out PlainPage is as simple as it can be:
 
-Trying it out is as simple as it can be:
+**Option 1: Download Binary**
 
 1. Download the [latest release](https://github.com/tfabritius/plainpage/releases/latest),
 2. Run the PlainPage executable, and
-3. Browse to <http://localhost:8080/>.
+3. Browse to <http://localhost:8080/>
 
-Or just run the docker image 🔋:
+**Option 2: Docker**
 
 ```bash
 docker run --rm -p 8080:8080 ghcr.io/tfabritius/plainpage
 ```
 
-⚠️ Be aware, this setup is not production ready.
+⚠️ **Warning:** This quick start setup is not production ready. Data will not be persisted.
 
-### Get ready for productive use
+### Production Setup
 
-#### Persist data
+#### Using Docker Compose (Recommended)
 
-Make sure to persist your data by mounting a volume or local folder to the container's `/data` directory:
-```bash
-docker run -p 8080:8080 -v /path/on/host:/data ghcr.io/tfabritius/plainpage
+Create a `docker-compose.yml` file:
+
+```yaml
+services:
+  plainpage:
+    image: ghcr.io/tfabritius/plainpage:latest
+    container_name: plainpage
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
 ```
 
-_As usual: Backup your data!_
+Start the service:
 
-#### Reverse proxy
+```bash
+docker compose up -d
+```
 
-When running in production you typically want to run a reverse proxy in front of PlainPage that provides encryption via TLS/SSL. Popular choices are: Caddy, Traeffic, Nginx, Apache, ...
+#### Using Docker Run
+
+Make sure to persist your data by mounting a volume or local folder to the container's `/data` directory:
+
+```bash
+docker run -d \
+  --name plainpage \
+  --restart unless-stopped \
+  -p 8080:8080 \
+  -v /path/on/host:/data \
+  ghcr.io/tfabritius/plainpage
+```
+
+#### Reverse Proxy
+
+When running in production you typically want to run a reverse proxy in front of PlainPage that provides encryption via TLS/SSL. Popular choices are:
+
+- [Caddy](https://caddyserver.com/)
+- [Traefik](https://traefik.io/)
+- [Nginx](https://nginx.org/)
+- [Apache](https://httpd.apache.org/)
+
+💡 **Tip:** As usual, backup your data regularly!
 
 ### Configuration
 
-PlainPage executable has very few configration settings with sensible default values that can be configured by environment variables (or a `.env` file):
+PlainPage executable has very few configuration settings with sensible default values that can be configured by environment variables (or a `.env` file):
 
 ```ini
 # Directory to store data, defaults to `data` directory next to executable
@@ -76,100 +128,172 @@ PORT=8080
 
 All other settings can be done via the UI or by editing the `config.yml` file in the data directory:
 
-- `appTitle` is the title of the app. Use it to customize your installation of PlainPage.
+```yaml
+# Title of the app - customize your installation
+appTitle: "My app"
 
-- `acl` contains the access rules that apply independent from access rules of individual pages and folders.
+# Access rules independent from individual pages/folders
+acl: []
 
-- `jwtSecret` is a the secret that is used to sign and verify JWT tokens. It is generated automatically. Keep it safe! For security reasons it's neither exposed nor can be changed via UI.
+# Secret for signing JWT tokens (auto-generated, keep it safe!)
+jwtSecret: "..."
 
-- `setupMode` enables anonymous user registration and user will be granted admin rights. Will be disabled after first registration.
+# Enables anonymous registration with admin rights (auto-disabled after first registration)
+setupMode: false
+```
 
-## Pages and folders
+⚠️ **Security Note:** The `jwtSecret` is used to sign and verify JWT tokens. It is generated automatically. Keep it safe! For security reasons it's neither exposed nor can be changed via UI.
 
-PlainPage stores your information on pages. Pages are organized into folders, that can be nested.
+## Usage
 
-Pages are written in Markdown syntax.
+### Pages and Folders
 
-## Access rights
+PlainPage stores your information on pages. Pages are organized into folders that can be nested.
+
+Pages are written in Markdown syntax with support for:
+
+- Headings, paragraphs, and text formatting
+- Lists (ordered and unordered)
+- Links and images
+- Code blocks with syntax highlighting
+- Tables
+
+### Access Rights
 
 Access rights can be modified by administrators.
 
-### Access rights for pages and folders
+#### Access Rights for Pages and Folders
 
-PlainPage's permission system is powerful and yet easy to use. If you don't adjust it, all registered users will be able to access and edit all content.
+PlainPage's permission system is powerful yet easy to use. If you don't adjust it, all registered users will be able to access and edit all content.
 
-Permissions can be defined for both pages and folders. By default, permissions for pages and folders are inherited from parent folder.
+Permissions can be defined for both pages and folders. By default, permissions for pages and folders are inherited from the parent folder.
 
-- A page `/folder/page` will inherit its access rigts from the folder `/folder`, unless explicit permissions are defined for this page.
+- A page `/folder/page` will inherit its access rights from the folder `/folder`, unless explicit permissions are defined for this page.
 - The folder `/folder` will itself inherit its permissions from the parent folder `/`, unless permissions are defined for `/folder`.
 - The home folder `/` cannot inherit permissions.
 
-Permissions can be granted to individual users, but also to all registered users and users, that are not logged in ("anonymous" users).
+Permissions can be granted to:
+- Individual users
+- All registered users
+- Anonymous users (not logged in)
 
-Permissions are controlled finegrained for different operations:
+Permissions are controlled with fine-grained operations:
 
-- *Read* allows users to access pages and folder
-- *Write* allows users to change pages and folders (e.g. create new pages or folders within a folder)
-- *Delete* allows users to delete pages and folders completely (e.g. deleting a page instead of just editing it)
+| Permission | Description                                                        |
+| ---------- | ------------------------------------------------------------------ |
+| *Read*     | Allows users to access pages and folders                           |
+| *Write*    | Allows users to change pages and folders (e.g., create new ones)   |
+| *Delete*   | Allows users to delete pages and folders completely                |
 
-That allows you to restrict certain content of PlainPage to some users and/or expose certain content.
+This allows you to restrict certain content to specific users and/or expose certain content publicly.
 
-### Access rights beyond pages and folders
+#### Access Rights Beyond Pages and Folders
 
-Besides pages and folders PlainPage allows you to grant additional permissions:
+Besides pages and folders, PlainPage allows you to grant additional permissions:
 
-- The *Register* privilege allows to create new users in PlainPage. This way you can control whether new users (so far anonymous users without an account) can create their own account and whether existing users can create additional user accounts. By default, only administrator can register new users.
+- **Register** – Allows creating new users in PlainPage. This way you can control whether new users can create their own account and whether existing users can create additional user accounts. By default, only administrators can register new users.
 
-- The *Admin* privilege grants a user special rights, e.g. to change the permissions. Users with this privilege are automatically granted all other possible permissions on all content.
+- **Admin** – Grants special rights, e.g., to change permissions. Users with this privilege are automatically granted all other possible permissions on all content.
 
-## Keyboard shortcuts
+### Keyboard Shortcuts
 
-- `e`: Edit page
-- `Ctrl+s`: Save page (when editing)
-- `Esc`: Cancel edit (when editing), close full screen mode
-- `Ctrl+Backsapce`: Delete current page/folder
+| Shortcut           | Action                                          |
+| ------------------ | ----------------------------------------------- |
+| `e`                | Edit page                                       |
+| `Ctrl+S`           | Save page (when editing)                        |
+| `Esc`              | Cancel edit / close full screen mode            |
+| `Ctrl+Backspace`   | Delete current page/folder                      |
 
-## Contribute
+## Security
 
-🤩 You're welcome to contribute to PlainPage.
+PlainPage takes security seriously:
 
-### Running for development
+- **Password Storage** – User passwords are hashed using [Argon2](https://en.wikipedia.org/wiki/Argon2), the winner of the Password Hashing Competition.
+- **Authentication** – JWT (JSON Web Tokens) are used for session management.
+- **No Tracking** – No analytics, telemetry, or external requests are made.
+
+### Security Best Practices
+
+1. Always run PlainPage behind a reverse proxy with TLS/SSL in production
+2. Keep the `jwtSecret` in `config.yml` secure and backed up
+3. Use strong passwords for user accounts
+4. Regularly backup your data directory
+5. Keep PlainPage updated to the latest version
+
+## Contributing
+
+🤩 You're welcome to contribute to PlainPage!
+
+### Development Setup
 
 During development, there are two processes running:
 
-1. Nuxt frontend
+**1. Nuxt Frontend**
 
-    ```bash
-    cd frontend
-    pnpm run dev
-    ```
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
 
-2. Go backend
+**2. Go Backend**
 
-    ```bash
-    cd backend
-    go run .
-    ```
+```bash
+cd backend
+go run .
+```
 
 Browse to [http://localhost:3000](http://localhost:3000). Nuxt will proxy requests to the backend.
 
-### Build executable
+### Building from Source
 
-In production the static frontend files are served together with the backend:
+In production, the static frontend files are served together with the backend:
 
-1. Generate static frontend files
+**1. Generate static frontend files**
 
-    ```bash
-    cd frontend
-    pnpm run generate
-    ```
+```bash
+cd frontend
+pnpm install
+pnpm generate
+```
 
-2. Serve frontend from Go backend process
+**2. Build Go backend (with embedded frontend)**
 
-    ```bash
-    cd backend
-    go generate ./...
-    go build .
-    ```
+```bash
+cd backend
+go generate ./...
+go build .
+```
 
-Browse to [http://localhost:8080](http://localhost:8080).
+The resulting binary can be found in the `backend` directory. Browse to [http://localhost:8080](http://localhost:8080).
+
+### Running Tests
+
+**Backend Tests**
+
+```bash
+cd backend
+go test ./...
+```
+
+**Frontend Linting and Typechecking**
+
+```bash
+cd frontend
+pnpm lint
+pnpm typecheck
+```
+
+### Contributing Guidelines
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests to ensure everything works
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+---
+
+If you find PlainPage useful, please consider giving it a ⭐ on GitHub!

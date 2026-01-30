@@ -74,21 +74,28 @@ export const useAuthStore = defineStore(
       await router.replace({ path: router.currentRoute.value.fullPath, force: true })
     }
 
-    async function updateMe(newMe: { displayName: string, password: string }) {
+    async function updateMe(newMe: { displayName: string }) {
       if (!user.value) {
         throw new Error('not logged in')
       }
       const ops: PatchOperation[] = [
         { op: 'replace', path: '/displayName', value: newMe.displayName },
       ]
-      if (newMe.password) {
-        ops.push({ op: 'replace', path: '/password', value: newMe.password })
-      }
       await apiFetch(`/auth/users/${user.value.username}`, {
         method: 'PATCH',
         body: ops,
       })
       user.value.displayName = newMe.displayName
+    }
+
+    async function changePassword(currentPassword: string, newPassword: string) {
+      if (!user.value) {
+        throw new Error('not logged in')
+      }
+      await apiFetch(`/auth/users/_me/password`, {
+        method: 'POST',
+        body: { currentPassword, newPassword },
+      })
     }
 
     async function deleteMe() {
@@ -137,7 +144,7 @@ export const useAuthStore = defineStore(
       }
     })
 
-    return { login, logout, loggedIn, user, token, updateMe, deleteMe }
+    return { login, logout, loggedIn, user, token, updateMe, changePassword, deleteMe }
   },
   {
     persist: true,

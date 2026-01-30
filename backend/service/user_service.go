@@ -183,22 +183,33 @@ func (s *UserService) VerifyCredentials(username, password string) (*model.User,
 	}
 
 	// Verify the provided password against the stored hash
-	if !s.verifyPassword(user, password) {
+	valid, err := s.VerifyPassword(&user, password)
+	if err != nil {
+		return nil, err
+	}
+	if !valid {
 		return nil, nil
+	}
+
+	return &user, nil
+}
+
+func (s *UserService) VerifyPassword(user *model.User, password string) (bool, error) {
+	if !s.verifyPassword(*user, password) {
+		return false, nil
 	}
 
 	// Hash plain passwords
 	if strings.HasPrefix(user.PasswordHash, "plain:") {
 		// Re-hash with argon2 and persist
-		if err := s.SetPasswordHash(&user, password); err != nil {
-			return nil, err
+		if err := s.SetPasswordHash(user, password); err != nil {
+			return true, err
 		}
-		if err := s.Save(user); err != nil {
-			return nil, err
+		if err := s.Save(*user); err != nil {
+			return true, err
 		}
 	}
-
-	return &user, nil
+	return true, nil
 }
 
 func (*UserService) filterById(users []model.User, id string) *model.User {

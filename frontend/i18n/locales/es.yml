@@ -5,6 +5,7 @@ _search:
   results: Resultados
 access-denied: Acceso denegado
 account-deleted: Cuenta borrada
+admin-current-password: Su contraseña actual de administrador
 acl:
   admin: Administración
   subject: Sujeto
@@ -22,6 +23,8 @@ back-home: Volver al inicio
 back-to-content: Volver al contenido
 cancel: Cancelar
 configuration: Configuración
+current-password: Contraseña actual
+current-password-required: Por favor ingrese la contraseña actual
 create: Crear
 create-folder: Crear carpeta
 create-page: Crear página
@@ -47,6 +50,7 @@ folder-reloaded: Carpeta recargada
 folder-title: Título de la carpeta
 folders: Carpetas
 home: Inicio
+incorrect-password: Contraseña incorrecta
 inherit-permissions: Heredar permisos de la carpeta principal
 invalid-credentials: Credenciales no válidas
 too-many-login-requests: Demasiados intentos de inicio de sesión. Por favor espera {0}s.

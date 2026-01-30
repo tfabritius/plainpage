@@ -5,6 +5,7 @@ _search:
   results: Ergebnisse
 access-denied: Zugriff verweigert
 account-deleted: Konto gelöscht
+admin-current-password: Dein aktuelles Administrator-Passwort
 acl:
   admin: Administration
   subject: Person
@@ -22,6 +23,8 @@ back-home: Zurück zum Start
 back-to-content: Zurück zum Inhalt
 cancel: Abbrechen
 configuration: Konfiguration
+current-password: Aktuelles Passwort
+current-password-required: Bitte aktuelles Passwort eingeben
 create: Anlegen
 create-folder: Ordner anlegen
 create-page: Seite anlegen
@@ -47,6 +50,7 @@ folder-reloaded: Ordner neu geladen
 folder-title: Titel des Ordners
 folders: Ordner
 home: Start
+incorrect-password: Falsches Passwort
 inherit-permissions: Berechtigungen vom übergeordneten Ordner erben
 invalid-credentials: Ungültige Zugangsdaten
 too-many-login-requests: Zu viele Anmeldeversuche. Bitte warte {0}s.

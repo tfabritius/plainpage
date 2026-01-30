@@ -55,6 +55,11 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+}
+
 type TokenUserResponse struct {
 	Token string `json:"token"`
 	User  User   `json:"user"`

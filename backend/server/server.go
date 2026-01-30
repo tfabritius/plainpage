@@ -131,6 +131,8 @@ func (app App) GetHandler() http.Handler {
 				r.With(app.RequireAuth).
 					Patch("/users/{username:[a-zA-Z0-9_-]+}", app.patchUser)
 				r.With(app.RequireAuth).
+					Post("/users/{username:[a-zA-Z0-9_-]+}/password", app.changePassword)
+				r.With(app.RequireAuth).
 					Delete("/users/{username:[a-zA-Z0-9_-]+}", app.deleteUser)
 
 				r.With(app.LoginLimiter.Middleware(clientIPFromRequest)).

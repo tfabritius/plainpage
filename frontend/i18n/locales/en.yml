@@ -5,6 +5,7 @@ _search:
   results: Results
 access-denied: Access denied
 account-deleted: Account deleted
+admin-current-password: Your current admin password
 acl:
   admin: Administration
   subject: Subject
@@ -22,6 +23,8 @@ back-home: Back home
 back-to-content: Back to content
 cancel: Cancel
 configuration: Configuration
+current-password: Current password
+current-password-required: Please enter current password
 create: Create
 create-folder: Create folder
 create-page: Create page
@@ -47,6 +50,7 @@ folder-reloaded: Folder reloaded
 folder-title: Folder title
 folders: Folders
 home: Home
+incorrect-password: Incorrect password
 inherit-permissions: Inherit permissions from parent folder
 invalid-credentials: Invalid credentials
 too-many-login-requests: Too many sign in attempts. Please wait {0}s.

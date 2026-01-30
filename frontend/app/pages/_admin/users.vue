@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { PatchOperation, User } from '~/types'
+import type { ChangePasswordRequest, PatchOperation, User } from '~/types'
 import { z } from 'zod'
 import { validUsernameRegex } from '~/types'
 
@@ -30,6 +30,10 @@ const userFormSchema = z.object({
     .max(20, t('username-length'))
     .regex(validUsernameRegex, t('username-invalid')),
   displayName: z.string().min(1, t('displayname-required')),
+  adminCurrentPassword: z.string().refine(
+    password => !userFormSelectedUsername.value || password.length > 0,
+    t('current-password-required'),
+  ),
   password: z.string().refine(password => userFormSelectedUsername.value || password.length > 0, t('password-required')),
   passwordConfirm: z.string(),
 })
@@ -37,12 +41,13 @@ const userFormSchema = z.object({
 
 type UserFormSchema = z.output<typeof userFormSchema>
 const userFormState = reactive<UserFormSchema>(
-  { displayName: '', username: '', password: '', passwordConfirm: '' },
+  { displayName: '', username: '', adminCurrentPassword: '', password: '', passwordConfirm: '' },
 )
 
 async function onCreate() {
   userFormState.displayName = ''
   userFormState.username = ''
+  userFormState.adminCurrentPassword = ''
   userFormState.password = ''
   userFormState.passwordConfirm = ''
   userFormSelectedUsername.value = ''
@@ -53,6 +58,7 @@ async function onCreate() {
 async function onEdit(user: User) {
   userFormState.displayName = user.displayName
   userFormState.username = user.username
+  userFormState.adminCurrentPassword = ''
   userFormState.password = ''
   userFormState.passwordConfirm = ''
   userFormSelectedUsername.value = user.username
@@ -67,17 +73,28 @@ async function onSubmit() {
 
   try {
     if (userFormSelectedUsername.value) {
+      // Update user details (username and displayName)
       const ops: PatchOperation[] = [
         { op: 'replace', path: '/username', value: userFormState.username },
         { op: 'replace', path: '/displayName', value: userFormState.displayName },
       ]
-      if (userFormState.password) {
-        ops.push({ op: 'replace', path: '/password', value: userFormState.password })
-      }
       await apiFetch(`/auth/users/${userFormSelectedUsername.value}`, {
         method: 'PATCH',
         body: ops,
       })
+
+      // Change password if provided
+      if (userFormState.password) {
+        const passwordRequest: ChangePasswordRequest = {
+          currentPassword: userFormState.adminCurrentPassword,
+          newPassword: userFormState.password,
+        }
+        await apiFetch(`/auth/users/${userFormState.username}/password`, {
+          method: 'POST',
+          body: passwordRequest,
+        })
+      }
+
       toast.add({ description: t('user-updated'), color: 'success' })
     } else {
       await apiFetch('/auth/users', { method: 'POST', body: userFormState })
@@ -145,6 +162,9 @@ async function onDelete(user: User) {
           </UFormField>
           <UFormField :label="$t('display-name')" name="displayName">
             <UInput v-model="userFormState.displayName" autocomplete="off" class="w-full" />
+          </UFormField>
+          <UFormField v-if="userFormSelectedUsername" :label="$t('admin-current-password')" name="adminCurrentPassword">
+            <UInput v-model="userFormState.adminCurrentPassword" type="password" autocomplete="off" class="w-full" />
           </UFormField>
           <UFormField :label="$t('password')" name="password">
             <UInput v-model="userFormState.password" type="password" autocomplete="off" class="w-full" />

@@ -45,6 +45,11 @@ export interface TokenUserResponse {
   user: User
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
+
 // Types corresponding to model/service.go
 
 export interface Page {

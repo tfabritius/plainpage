@@ -149,10 +149,6 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 			}
 		case "/displayName":
 			user.DisplayName = value
-		case "/password":
-			if err := app.Users.SetPasswordHash(&user, value); err != nil {
-				panic(err)
-			}
 		default:
 			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
 			return
@@ -260,4 +256,66 @@ func (app App) refreshToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, response)
+}
+
+func (app App) changePassword(w http.ResponseWriter, r *http.Request) {
+	userID := ctxutil.UserID(r.Context())
+	username := r.PathValue("username")
+
+	// Parse request body
+	var body model.ChangePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Get the logged-in user for password verification
+	loggedInUser, err := app.Users.GetById(userID)
+	if err != nil {
+		panic(err)
+	}
+
+	// Verify current password against the LOGGED-IN user's password
+	valid, err := app.Users.VerifyPassword(&loggedInUser, body.CurrentPassword)
+	if err != nil {
+		panic(err)
+	}
+	if !valid {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
+	}
+
+	// Authorization check
+	if username != loggedInUser.Username && !app.isAdmin(userID) {
+		// Non-admins can only change their own password
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
+	}
+
+	// Get target user
+	var targetUser model.User
+	if username == loggedInUser.Username {
+		// Optimize for the common case where users change their own password
+		targetUser = loggedInUser
+	} else {
+		var err error
+		targetUser, err = app.Users.GetByUsername(username)
+		if err != nil {
+			if errors.Is(err, model.ErrNotFound) {
+				http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+				return
+			}
+			panic(err)
+		}
+	}
+
+	// Set new password for target user and save
+	if err := app.Users.SetPasswordHash(&targetUser, body.NewPassword); err != nil {
+		panic(err)
+	}
+	if err := app.Users.Save(targetUser); err != nil {
+		panic(err)
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { FetchError } from 'ofetch'
 import { z } from 'zod'
 
 import { useAuthStore } from '~/store/auth'
@@ -16,21 +17,38 @@ const auth = useAuthStore()
 
 const formSchema = z.object({
   displayName: z.string().min(1, t('displayname-required')),
+  currentPassword: z.string(),
   password: z.string(),
   passwordConfirm: z.string(),
 })
   .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
+  .refine(({ password, currentPassword }) => !password || currentPassword, { message: t('current-password-required'), path: ['currentPassword'] })
 
 type FormSchema = z.output<typeof formSchema>
 const formState = reactive<FormSchema>({
   displayName: auth.user?.displayName || '',
+  currentPassword: '',
   password: '',
   passwordConfirm: '',
 })
 
 async function onSave() {
   try {
-    await auth.updateMe(formState)
+    await auth.updateMe({ displayName: formState.displayName })
+
+    if (formState.password && formState.currentPassword) {
+      try {
+        await auth.changePassword(formState.currentPassword, formState.password)
+      } catch (err) {
+        if (err instanceof FetchError && err.statusCode === 403) {
+          toast.add({ description: t('incorrect-password'), color: 'error' })
+          return
+        }
+        throw err
+      }
+    }
+
+    formState.currentPassword = ''
     formState.password = ''
     formState.passwordConfirm = ''
     toast.add({ description: t('saved'), color: 'success' })
@@ -81,6 +99,9 @@ async function onDelete() {
       </UFormField>
       <UFormField :label="$t('display-name')" name="displayName" class="mt-4">
         <UInput v-model="formState.displayName" autocomplete="off" class="w-full" />
+      </UFormField>
+      <UFormField :label="$t('current-password')" name="currentPassword" class="mt-4">
+        <UInput v-model="formState.currentPassword" type="password" autocomplete="off" class="w-full" />
       </UFormField>
       <UFormField :label="$t('new-password')" name="password" class="mt-4">
         <UInput v-model="formState.password" type="password" autocomplete="off" class="w-full" />

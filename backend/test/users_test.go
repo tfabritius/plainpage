@@ -351,6 +351,131 @@ func (s *UsersTestSuite) TestDeleteUser() {
 	}
 }
 
+func (s *UsersTestSuite) TestChangePassword() {
+	r := s.Require()
+
+	username := "testChangePassword"
+	displayName := "Test User"
+	password := "myPassword"
+	newPassword := "myNewPassword"
+
+	user, err := s.app.Users.Create(username, password, displayName)
+	r.NoError(err)
+	token, err := s.app.Token.GenerateToken(user)
+	r.NoError(err)
+
+	// Unauthenticated request fails
+	{
+		res := s.api("POST", "/auth/users/"+username+"/password",
+			model.ChangePasswordRequest{CurrentPassword: password, NewPassword: newPassword},
+			nil)
+		r.Equal(401, res.Code)
+	}
+
+	// User cannot change password with wrong current password
+	{
+		res := s.api("POST", "/auth/users/"+username+"/password",
+			model.ChangePasswordRequest{CurrentPassword: "wrongPassword", NewPassword: newPassword},
+			&token)
+		r.Equal(403, res.Code)
+	}
+
+	// User can change own password with correct current password
+	{
+		res := s.api("POST", "/auth/users/"+username+"/password",
+			model.ChangePasswordRequest{CurrentPassword: password, NewPassword: newPassword},
+			&token)
+		r.Equal(200, res.Code)
+
+		// Verify new password works
+		res = s.api("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: newPassword},
+			nil)
+		r.Equal(200, res.Code)
+
+		// Verify old password no longer works
+		res = s.api("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: password},
+			nil)
+		r.Equal(401, res.Code)
+	}
+
+	// Non-admin cannot change another user's password even with correct own password
+	{
+		// Create another user
+		otherUsername := "testChgPwdOther"
+		otherPassword := "otherPassword"
+		otherUser, err := s.app.Users.Create(otherUsername, otherPassword, "Other User")
+		r.NoError(err)
+		otherToken, err := s.app.Token.GenerateToken(otherUser)
+		r.NoError(err)
+
+		res := s.api("POST", "/auth/users/"+username+"/password",
+			model.ChangePasswordRequest{CurrentPassword: otherPassword, NewPassword: "someNewPassword"},
+			&otherToken)
+		r.Equal(403, res.Code)
+
+		// Cleanup
+		r.NoError(s.app.Users.DeleteByUsername(otherUsername))
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
+}
+
+func (s *UsersTestSuite) TestChangePasswordAsAdmin() {
+	r := s.Require()
+
+	targetUsername := "testChgPwdTarget"
+	targetDisplayName := "Target User"
+	targetPassword := "targetPassword"
+	newTargetPassword := "newTargetPassword"
+	adminPassword := "secret" // Admin password from setupInitialApp
+
+	// Create target user
+	_, err := s.app.Users.Create(targetUsername, targetPassword, targetDisplayName)
+	r.NoError(err)
+
+	// Admin cannot change another user's password with wrong admin password
+	{
+		res := s.api("POST", "/auth/users/"+targetUsername+"/password",
+			model.ChangePasswordRequest{CurrentPassword: "wrongAdminPassword", NewPassword: newTargetPassword},
+			s.adminToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Admin can change another user's password with correct admin password
+	{
+		res := s.api("POST", "/auth/users/"+targetUsername+"/password",
+			model.ChangePasswordRequest{CurrentPassword: adminPassword, NewPassword: newTargetPassword},
+			s.adminToken)
+		r.Equal(200, res.Code)
+
+		// Verify target user can login with new password
+		res = s.api("POST", "/auth/login",
+			model.LoginRequest{Username: targetUsername, Password: newTargetPassword},
+			nil)
+		r.Equal(200, res.Code)
+
+		// Verify old password no longer works
+		res = s.api("POST", "/auth/login",
+			model.LoginRequest{Username: targetUsername, Password: targetPassword},
+			nil)
+		r.Equal(401, res.Code)
+	}
+
+	// Admin cannot change nonexistent user's password
+	{
+		res := s.api("POST", "/auth/users/nonexistent/password",
+			model.ChangePasswordRequest{CurrentPassword: adminPassword, NewPassword: newTargetPassword},
+			s.adminToken)
+		r.Equal(404, res.Code)
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(targetUsername))
+}
+
 func (s *UsersTestSuite) TestLoginRateLimit() {
 	r := s.Require()
 

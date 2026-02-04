@@ -414,10 +414,26 @@ func (app App) changePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Revoke all refresh tokens for the target user (security measure)
-	if err := app.RefreshToken.DeleteAllForUser(targetUser.ID); err != nil {
-		// Log error but don't fail the request
-		// The password change itself succeeded
-		log.Printf("[background] could not revoke refresh tokens for user %s: %v", targetUser.ID, err)
+	// But keep the current session if user is changing their own password
+	var currentRefreshToken string
+	if cookie, err := r.Cookie(refreshTokenCookieName); err == nil {
+		currentRefreshToken = cookie.Value
+	}
+
+	if currentRefreshToken != "" && targetUser.ID == userID {
+		// User changing their own password - keep current session
+		if err := app.RefreshToken.DeleteAllForUserExcept(targetUser.ID, currentRefreshToken); err != nil {
+			// Log error but don't fail the request
+			// The password change itself succeeded
+			log.Printf("[background] could not revoke refresh tokens for user %s: %v", targetUser.ID, err)
+		}
+	} else {
+		// Admin changing someone else's password - revoke all sessions
+		if err := app.RefreshToken.DeleteAllForUser(targetUser.ID); err != nil {
+			// Log error but don't fail the request
+			// The password change itself succeeded
+			log.Printf("[background] could not revoke refresh tokens for user %s: %v", targetUser.ID, err)
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)

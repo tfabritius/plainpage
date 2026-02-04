@@ -261,6 +261,11 @@ func (s *RefreshTokenService) Delete(tokenID string) error {
 
 // DeleteAllForUser removes all refresh tokens for a specific user
 func (s *RefreshTokenService) DeleteAllForUser(userID string) error {
+	return s.DeleteAllForUserExcept(userID, "")
+}
+
+// DeleteAllForUserExcept removes all refresh tokens for a specific user except the specified token
+func (s *RefreshTokenService) DeleteAllForUserExcept(userID, excludeTokenID string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -269,10 +274,10 @@ func (s *RefreshTokenService) DeleteAllForUser(userID string) error {
 		return err
 	}
 
-	// Find and delete all tokens for the user
+	// Find and delete all tokens for the user (except excluded one)
 	newIndex := make([]RefreshTokenIndexEntry, 0, len(index))
 	for _, entry := range index {
-		if entry.UserID == userID {
+		if entry.UserID == userID && entry.ID != excludeTokenID {
 			// Delete token file (ignore errors for individual files)
 			if err := s.deleteTokenData(entry.ID); err != nil {
 				return fmt.Errorf("could not delete all tokens: %w", err)

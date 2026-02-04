@@ -53,7 +53,13 @@ func main() {
 
 	frontend := getStaticFrontend()
 
-	handler := server.NewApp(frontend, store).GetHandler()
+	app := server.NewApp(frontend, store)
+
+	// Start background token cleanup scheduler
+	cleanupCtx, cleanupCancel := context.WithCancel(context.Background())
+	app.RefreshToken.StartCleanupScheduler(cleanupCtx, 24*time.Hour)
+
+	handler := app.GetHandler()
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -79,6 +85,9 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Received signal to stop, shutting down server...")
+
+	// Stop background tasks
+	cleanupCancel()
 
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling

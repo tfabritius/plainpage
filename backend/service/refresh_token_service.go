@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -340,4 +341,32 @@ func (s *RefreshTokenService) CleanupExpired() error {
 	}
 
 	return s.saveIndexUnlocked(newIndex)
+}
+
+// StartCleanupScheduler starts a background goroutine that periodically cleans up expired tokens
+func (s *RefreshTokenService) StartCleanupScheduler(ctx context.Context, interval time.Duration) {
+	// Run cleanup immediately at startup
+	if err := s.CleanupExpired(); err != nil {
+		log.Printf("[background] Token cleanup error: %v", err)
+	} else {
+		log.Println("[background] Expired tokens cleaned up")
+	}
+
+	ticker := time.NewTicker(interval)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				ticker.Stop()
+				log.Println("[background] Token cleanup scheduler stopped")
+				return
+			case <-ticker.C:
+				if err := s.CleanupExpired(); err != nil {
+					log.Printf("[background] Token cleanup error: %v", err)
+				} else {
+					log.Println("[background] Expired tokens cleaned up")
+				}
+			}
+		}
+	}()
 }

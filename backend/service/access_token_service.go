@@ -8,27 +8,28 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
-const tokenValidityDuration = 6 * 30 * 24 * time.Hour // 6 months
+const accessTokenValidity = 15 * time.Minute // 15 minutes
 
-func NewTokenService(jwtSecret string) TokenService {
-	return TokenService{
+func NewAccessTokenService(jwtSecret string) AccessTokenService {
+	return AccessTokenService{
 		jwtSecret: jwtSecret,
 	}
 }
 
-type TokenService struct {
+type AccessTokenService struct {
 	jwtSecret string
 }
 
-func (s *TokenService) GenerateToken(user model.User) (string, error) {
-	claims := jwt.MapClaims{}
-	claims["id"] = user.ID
-
-	claims["exp"] = time.Now().Add(tokenValidityDuration).Unix()
+func (s *AccessTokenService) Create(userID string) (string, error) {
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"sub": userID,
+		"iat": now.Unix(),
+		"exp": now.Add(accessTokenValidity).Unix(),
+	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -40,7 +41,7 @@ func (s *TokenService) GenerateToken(user model.User) (string, error) {
 	return signedTokenString, nil
 }
 
-func (s *TokenService) validateToken(tokenString string) (string, error) {
+func (s *AccessTokenService) validate(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -54,17 +55,16 @@ func (s *TokenService) validateToken(tokenString string) (string, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		id, ok := claims["id"].(string)
-		if !ok {
-			return "", errors.New("invalid token: missing or invalid id claim")
+		if sub, ok := claims["sub"].(string); ok {
+			return sub, nil
 		}
-		return id, nil
-	} else {
-		return "", errors.New("invalid token")
+		return "", errors.New("invalid token: missing or invalid sub claim")
 	}
+
+	return "", errors.New("invalid token")
 }
 
-func (s *TokenService) Token2ContextMiddleware(next http.Handler) http.Handler {
+func (s *AccessTokenService) Token2ContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := r.Header.Get("Authorization")
 
@@ -79,7 +79,7 @@ func (s *TokenService) Token2ContextMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		id, err := s.validateToken(bearerToken[1])
+		id, err := s.validate(bearerToken[1])
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return

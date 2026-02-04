@@ -40,8 +40,13 @@ export interface PatchOperation {
   from?: string
 }
 
-export interface TokenUserResponse {
-  token: string
+export interface LoginResponse {
+  accessToken: string
+  user: User
+}
+
+export interface RefreshResponse {
+  accessToken: string
   user: User
 }
 

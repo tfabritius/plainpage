@@ -1,10 +1,8 @@
-import type { PatchOperation, TokenUserResponse, User } from '~/types'
+import type { LoginResponse, PatchOperation, RefreshResponse, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
+import { apiRawFetch } from '~/composables/apiFetch'
 import { useAppStore } from './app'
-
-const hour = 60 * 60 // in seconds
-const minRemainingTokenValidity = 5 * 30 * 24 * hour // 5 months
 
 export type LoginError = {
   statusCode: 401
@@ -17,17 +15,21 @@ export const useAuthStore = defineStore(
   'auth',
   () => {
     const user = ref<User>()
-    const token = ref('')
-    const loggedIn = computed(() => token.value !== '')
+    const accessToken = ref('')
+    const loggedIn = computed(() => accessToken.value !== '')
 
     async function login(credentials: { username: string, password: string }): Promise<true | LoginError> {
-      token.value = ''
+      accessToken.value = ''
       user.value = undefined
 
       try {
-        const response = await apiFetch<TokenUserResponse>('/auth/login', { body: credentials, method: 'POST' })
+        const response = await apiFetch<LoginResponse>('/auth/login', {
+          body: credentials,
+          method: 'POST',
+          credentials: 'include', // Include cookies for refresh token
+        })
 
-        token.value = response.token
+        accessToken.value = response.accessToken
         user.value = response.user
 
         // Reload app data to get version info now that user is logged in
@@ -50,19 +52,48 @@ export const useAuthStore = defineStore(
       return true
     }
 
-    async function renewToken() {
-      if (!loggedIn.value) {
-        throw new Error('not logged in')
+    // Track if we're currently refreshing to prevent multiple refresh calls
+    let refreshPromise: Promise<void> | null = null
+
+    async function refreshAccessToken(): Promise<boolean> {
+      // If already refreshing, wait for that to complete
+      if (refreshPromise) {
+        await refreshPromise
+        return loggedIn.value
       }
 
-      const response = await apiFetch<TokenUserResponse>('/auth/refresh', { method: 'POST' })
+      refreshPromise = (async () => {
+        try {
+          const response = await apiRawFetch<RefreshResponse>('/auth/refresh', {
+            method: 'POST',
+          })
 
-      token.value = response.token
-      user.value = response.user
+          accessToken.value = response.accessToken
+          user.value = response.user
+        } catch {
+          // Refresh failed, clear auth state
+          accessToken.value = ''
+          user.value = undefined
+        } finally {
+          refreshPromise = null
+        }
+      })()
+
+      await refreshPromise
+      return loggedIn.value
     }
 
     async function logout() {
-      token.value = ''
+      // Call logout API to revoke refresh token
+      try {
+        await apiRawFetch('/auth/logout', {
+          method: 'POST',
+        })
+      } catch {
+        // Ignore errors during logout
+      }
+
+      accessToken.value = ''
       user.value = undefined
 
       // Reload app data to remove version info now that user is logged out
@@ -106,47 +137,22 @@ export const useAuthStore = defineStore(
       await logout()
     }
 
-    /**
-     * Parses token and returns expiration time or 0 if token is not set
-     */
-    const tokenExpiration = computed(() => {
-      if (!token.value) {
-        return 0
-      }
-
-      const jsonStr = window.atob(token.value.split('.')[1] ?? '')
-
-      const payload = JSON.parse(jsonStr) as unknown
-      if (typeof payload === 'object'
-        && payload !== null
-        && 'exp' in payload
-        && typeof payload.exp === 'number'
-      ) {
-        return payload.exp
-      }
-      throw new Error('invalid token payload format')
-    })
-
-    // Interval limits the changes to 1/min,
-    // limiting the frequency of refreshing the token
-    const now = useTimestamp({ interval: 60 * 1000 })
-
-    const tokenRemainingSeconds = computed(() => {
-      return Math.max(0, tokenExpiration.value - Math.floor(now.value / 1000))
-    })
-
-    /**
-     * Watches token expiration and renews it if needed
-     */
-    watch(tokenRemainingSeconds, async (time) => {
-      if (loggedIn.value && time < minRemainingTokenValidity) {
-        await renewToken()
-      }
-    })
-
-    return { login, logout, loggedIn, user, token, updateMe, changePassword, deleteMe }
+    return {
+      login,
+      logout,
+      loggedIn,
+      user,
+      accessToken,
+      updateMe,
+      changePassword,
+      deleteMe,
+      refreshAccessToken,
+    }
   },
   {
-    persist: true,
+    persist: {
+      // Only persist accessToken and user
+      pick: ['accessToken', 'user'],
+    },
   },
 )

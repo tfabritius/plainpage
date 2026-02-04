@@ -22,7 +22,8 @@ type App struct {
 	Storage      model.Storage
 	Content      *service.ContentService
 	Users        *service.UserService
-	Token        service.TokenService
+	AccessToken  service.AccessTokenService
+	RefreshToken *service.RefreshTokenService
 	LoginLimiter *LoginLimiter
 }
 
@@ -43,7 +44,8 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 
 	contentService := service.NewContentService(store)
 	userService := service.NewUserService(store)
-	tokenService := service.NewTokenService(cfg.JwtSecret)
+	accessTokenService := service.NewAccessTokenService(cfg.JwtSecret)
+	refreshTokenService := service.NewRefreshTokenService(store)
 	loginLimiter := NewLoginLimiter(5, rate.Every(30*time.Second), 30*time.Minute)
 
 	return App{
@@ -51,7 +53,8 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 		Storage:      store,
 		Content:      contentService,
 		Users:        userService,
-		Token:        tokenService,
+		AccessToken:  accessTokenService,
+		RefreshToken: refreshTokenService,
 		LoginLimiter: loginLimiter,
 	}
 }
@@ -87,7 +90,7 @@ func (app App) GetHandler() http.Handler {
 	}))
 
 	r.
-		With(app.Token.Token2ContextMiddleware).
+		With(app.AccessToken.Token2ContextMiddleware).
 		Route("/_api", func(r chi.Router) {
 			r.Get("/app", app.exposeConfig)
 
@@ -137,9 +140,8 @@ func (app App) GetHandler() http.Handler {
 
 				r.With(app.LoginLimiter.Middleware(clientIPFromRequest)).
 					Post("/login", app.login)
-				r.With(app.RequireAuth).
-					Post("/refresh", app.refreshToken)
-
+				r.Post("/refresh", app.refreshToken)
+				r.Post("/logout", app.logout)
 			})
 
 		})

@@ -1,6 +1,7 @@
 package test
 
 import (
+	"net/http"
 	"strconv"
 	"strings"
 	"testing"
@@ -165,19 +166,25 @@ func (s *UsersTestSuite) TestLoginUser() {
 	_, err := s.app.Users.Create(username, password, displayName)
 	r.NoError(err)
 
-	// Valid login returns user details and token
+	// Valid login returns user details, access token, and refresh token cookie
 	{
 		res := s.api("POST", "/auth/login",
 			model.LoginRequest{Username: username, Password: password},
 			nil)
 		r.Equal(200, res.Code)
 
-		body, _ := jsonbody[model.TokenUserResponse](res)
+		body, _ := jsonbody[model.LoginResponse](res)
 		r.Equal(username, body.User.Username)
 		r.Equal(displayName, body.User.DisplayName)
 		r.NotEmpty(body.User.ID)
 		r.Empty(body.User.PasswordHash)
-		r.NotEmpty(body.Token)
+		r.NotEmpty(body.AccessToken)
+
+		// Check that refresh token cookie is set
+		refreshCookie := getRefreshTokenCookie(res)
+		r.NotNil(refreshCookie)
+		r.NotEmpty(refreshCookie.Value)
+		r.True(refreshCookie.HttpOnly)
 	}
 
 	// Wrong password fails
@@ -199,7 +206,7 @@ func (s *UsersTestSuite) TestPatchUser() {
 
 	user, err := s.app.Users.Create(username, password, displayName)
 	r.NoError(err)
-	token, err := s.app.Token.GenerateToken(user)
+	token, err := s.app.AccessToken.Create(user.ID)
 	r.NoError(err)
 
 	// Updating user fails if not logged in
@@ -251,47 +258,112 @@ func (s *UsersTestSuite) TestPatchUser() {
 	}
 }
 
-func (s *UsersTestSuite) TestRenewToken() {
+func (s *UsersTestSuite) TestRefreshToken() {
 	r := s.Require()
 
-	username := "testRenewToken"
+	username := "testRefreshToken"
 	password := "myPassword"
 
 	user, err := s.app.Users.Create(username, password, "Test User")
 	r.NoError(err)
-	token, err := s.app.Token.GenerateToken(user)
+
+	// Create tokens via service layer
+	accessToken, err := s.app.AccessToken.Create(user.ID)
 	r.NoError(err)
 
-	// Renew token
+	refreshTokenID, err := s.app.RefreshToken.Create(user.ID)
+	r.NoError(err)
+	refreshCookie := &http.Cookie{
+		Name:  "refresh_token",
+		Value: refreshTokenID,
+	}
+
+	// Refresh token without cookie fails
+	{
+		res := s.api("POST", "/auth/refresh", nil, nil)
+		r.Equal(401, res.Code)
+	}
+
+	// Refresh token with valid cookie succeeds
 	{
 		time.Sleep(1050 * time.Millisecond) // Tokens should differ
 
-		res := s.api("POST", "/auth/refresh", nil, &token)
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
 		r.Equal(200, res.Code)
-		body, _ := jsonbody[model.TokenUserResponse](res)
-		r.Equal(username, body.User.Username)
-		r.NotEqual(token, body.Token)
 
-		token = body.Token
+		body, _ := jsonbody[model.RefreshResponse](res)
+		r.Equal(username, body.User.Username)
+		r.NotEqual(accessToken, body.AccessToken)
+
+		// New refresh token cookie should be set
+		newRefreshCookie := getRefreshTokenCookie(res)
+		r.NotNil(newRefreshCookie)
+
+		accessToken = body.AccessToken
+		refreshCookie = newRefreshCookie
 	}
 
-	// Delete user with new token
+	// Delete user
 	{
 		err := s.app.Users.DeleteByUsername(username)
 		r.NoError(err)
 	}
 
-	// Token is still valid as JWT cannot be revoked :-(
+	// Access token is still valid as JWT cannot be revoked
 	{
-		res := s.api("GET", "/pages", nil, &token)
+		res := s.api("GET", "/pages", nil, &accessToken)
 		r.Equal(200, res.Code)
 	}
 
-	// Renew fails
+	// Refresh fails because user no longer exists
 	{
-		res := s.api("POST", "/auth/refresh", nil, &token)
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
 		r.Equal(401, res.Code)
 	}
+}
+
+func (s *UsersTestSuite) TestLogout() {
+	r := s.Require()
+
+	username := "testLogout"
+	password := "myPassword"
+
+	user, err := s.app.Users.Create(username, password, "Test User")
+	r.NoError(err)
+
+	// Create refresh token via service layer
+	refreshTokenID, err := s.app.RefreshToken.Create(user.ID)
+	r.NoError(err)
+	refreshCookie := &http.Cookie{
+		Name:  "refresh_token",
+		Value: refreshTokenID,
+	}
+
+	// Refresh token works before logout
+	{
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
+		r.Equal(200, res.Code)
+	}
+
+	// Logout
+	{
+		res := s.apiWithCookie("POST", "/auth/logout", nil, nil, []*http.Cookie{refreshCookie})
+		r.Equal(200, res.Code)
+
+		// Cookie should be cleared
+		clearedCookie := getRefreshTokenCookie(res)
+		r.NotNil(clearedCookie)
+		r.Empty(clearedCookie.Value)
+	}
+
+	// Refresh token no longer works after logout
+	{
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
+		r.Equal(401, res.Code)
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
 }
 
 func (s *UsersTestSuite) TestDeleteUser() {
@@ -304,7 +376,7 @@ func (s *UsersTestSuite) TestDeleteUser() {
 	{
 		user, err := s.app.Users.Create(username, password, "Test User")
 		r.NoError(err)
-		token, err := s.app.Token.GenerateToken(user)
+		token, err := s.app.AccessToken.Create(user.ID)
 		r.NoError(err)
 
 		res := s.api("DELETE", "/auth/users/"+username, nil, &token)
@@ -361,7 +433,7 @@ func (s *UsersTestSuite) TestChangePassword() {
 
 	user, err := s.app.Users.Create(username, password, displayName)
 	r.NoError(err)
-	token, err := s.app.Token.GenerateToken(user)
+	token, err := s.app.AccessToken.Create(user.ID)
 	r.NoError(err)
 
 	// Unauthenticated request fails
@@ -407,7 +479,7 @@ func (s *UsersTestSuite) TestChangePassword() {
 		otherPassword := "otherPassword"
 		otherUser, err := s.app.Users.Create(otherUsername, otherPassword, "Other User")
 		r.NoError(err)
-		otherToken, err := s.app.Token.GenerateToken(otherUser)
+		otherToken, err := s.app.AccessToken.Create(otherUser.ID)
 		r.NoError(err)
 
 		res := s.api("POST", "/auth/users/"+username+"/password",
@@ -417,6 +489,46 @@ func (s *UsersTestSuite) TestChangePassword() {
 
 		// Cleanup
 		r.NoError(s.app.Users.DeleteByUsername(otherUsername))
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
+}
+
+func (s *UsersTestSuite) TestChangePasswordRevokesAllSessions() {
+	r := s.Require()
+
+	username := "testChgPwdRevoke"
+	displayName := "Test User"
+	password := "myPassword"
+	newPassword := "myNewPassword"
+
+	user, err := s.app.Users.Create(username, password, displayName)
+	r.NoError(err)
+
+	// Create tokens via service layer
+	accessToken, err := s.app.AccessToken.Create(user.ID)
+	r.NoError(err)
+
+	refreshTokenID, err := s.app.RefreshToken.Create(user.ID)
+	r.NoError(err)
+	refreshCookie := &http.Cookie{
+		Name:  "refresh_token",
+		Value: refreshTokenID,
+	}
+
+	// Change password
+	{
+		res := s.api("POST", "/auth/users/"+username+"/password",
+			model.ChangePasswordRequest{CurrentPassword: password, NewPassword: newPassword},
+			&accessToken)
+		r.Equal(200, res.Code)
+	}
+
+	// Old refresh token should no longer work
+	{
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
+		r.Equal(401, res.Code)
 	}
 
 	// Cleanup

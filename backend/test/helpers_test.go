@@ -64,7 +64,7 @@ func (s *AppTestSuite) setupInitialApp() {
 		err := s.app.Users.CheckAppPermissions(user.ID, model.AccessOpAdmin)
 		r.NoError(err)
 
-		token, err := s.app.Token.GenerateToken(user)
+		token, err := s.app.AccessToken.Create(user.ID)
 		r.NoError(err)
 
 		s.adminToken = &token
@@ -89,7 +89,7 @@ func (s *AppTestSuite) setupInitialApp() {
 		err := s.app.Users.CheckAppPermissions(user.ID, model.AccessOpAdmin)
 		r.Error(err)
 
-		token, err := s.app.Token.GenerateToken(user)
+		token, err := s.app.AccessToken.Create(user.ID)
 		r.NoError(err)
 
 		s.userToken = &token
@@ -130,6 +130,35 @@ func (s *AppTestSuite) apiWithHeaders(method, target string, body any, headers m
 	return res
 }
 
+// apiWithCookie makes an API request including a cookie
+func (s *AppTestSuite) apiWithCookie(method, target string, body any, token *string, cookies []*http.Cookie) *httptest.ResponseRecorder {
+	var bodyReader io.Reader
+	if body != nil {
+		bodyBytes, err := json.Marshal(body)
+		if err != nil {
+			panic(err)
+		}
+
+		bodyReader = bytes.NewReader(bodyBytes)
+	} else {
+		bodyReader = nil
+	}
+
+	req := httptest.NewRequest(method, "/_api"+target, bodyReader)
+
+	if token != nil {
+		req.Header.Set("Authorization", "Bearer "+*token)
+	}
+
+	for _, cookie := range cookies {
+		req.AddCookie(cookie)
+	}
+
+	res := httptest.NewRecorder()
+	s.handler.ServeHTTP(res, req)
+	return res
+}
+
 func jsonbody[T any](res *httptest.ResponseRecorder) (T, *httptest.ResponseRecorder) {
 	var body T
 	err := json.Unmarshal(res.Body.Bytes(), &body)
@@ -155,4 +184,14 @@ func str2json(s string) *json.RawMessage {
 	}
 	jsonRawMsg := json.RawMessage(bytes)
 	return &jsonRawMsg
+}
+
+// getRefreshTokenCookie extracts the refresh_token cookie from a response
+func getRefreshTokenCookie(res *httptest.ResponseRecorder) *http.Cookie {
+	for _, cookie := range res.Result().Cookies() {
+		if cookie.Name == "refresh_token" {
+			return cookie
+		}
+	}
+	return nil
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
 
@@ -19,10 +18,10 @@ const jwtSecret = "testSecret"
 func TestGenerateToken(t *testing.T) {
 	r := require.New(t)
 
-	tokenService := NewTokenService(jwtSecret)
-	user := model.User{ID: "test-user"}
+	tokenService := NewAccessTokenService(jwtSecret)
+	userID := "test-user"
 
-	tokenString, err := tokenService.GenerateToken(user)
+	tokenString, err := tokenService.Create(userID)
 	r.NoError(err)
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -37,7 +36,7 @@ func TestGenerateToken(t *testing.T) {
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	r.True(ok)
-	r.Equal(user.ID, claims["id"].(string))
+	r.Equal(userID, claims["sub"].(string))
 
 	exp, ok := claims["exp"].(float64)
 	r.True(ok)
@@ -48,13 +47,13 @@ func TestGenerateToken(t *testing.T) {
 func TestToken2ContextMiddleware(t *testing.T) {
 	r := require.New(t)
 
-	tokenService := NewTokenService(jwtSecret)
-	user := model.User{ID: "test-user"}
+	tokenService := NewAccessTokenService(jwtSecret)
+	userID := "test-user"
 
-	tokenString, err := tokenService.GenerateToken(user)
+	tokenString, err := tokenService.Create(userID)
 	r.NoError(err)
 
-	claims := jwt.MapClaims{"id": user.ID, "exp": time.Now().Add(-1 * time.Second).Unix()}
+	claims := jwt.MapClaims{"sub": userID, "exp": time.Now().Add(-1 * time.Second).Unix()}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	expiredTokenString, err := token.SignedString([]byte(jwtSecret))
 	r.NoError(err)
@@ -67,7 +66,7 @@ func TestToken2ContextMiddleware(t *testing.T) {
 
 	checkUserIdHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := ctxutil.UserID(r.Context())
-		assert.Equal(t, user.ID, userID)
+		assert.Equal(t, userID, userID)
 		w.WriteHeader(http.StatusOK)
 	})
 

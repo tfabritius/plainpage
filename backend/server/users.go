@@ -3,13 +3,23 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 	"github.com/tfabritius/plainpage/service/ctxutil"
 )
+
+const (
+	refreshTokenCookieName = "refresh_token"
+	refreshTokenCookiePath = "/_api/auth"
+)
+
+// refreshTokenCookieMaxAge derives the cookie MaxAge from the service's RefreshTokenValidity
+var refreshTokenCookieMaxAge = int(service.RefreshTokenValidity.Seconds())
 
 func (app App) getUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := app.Users.ReadAll()
@@ -220,42 +230,128 @@ func (app App) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := app.Token.GenerateToken(*user)
+	// Generate access token
+	accessToken, err := app.AccessToken.Create(user.ID)
 	if err != nil {
 		panic(err)
 	}
 
-	response := model.TokenUserResponse{
-		Token: token,
-		User:  *user,
+	// Generate refresh token and store it
+	refreshToken, err := app.RefreshToken.Create(user.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	// Set refresh token as httpOnly cookie
+	app.setRefreshTokenCookie(w, r, refreshToken)
+
+	response := model.LoginResponse{
+		AccessToken: accessToken,
+		User:        *user,
 	}
 
 	render.JSON(w, r, response)
 }
 
 func (app App) refreshToken(w http.ResponseWriter, r *http.Request) {
-	id := ctxutil.UserID(r.Context())
+	// Get refresh token from cookie
+	cookie, err := r.Cookie(refreshTokenCookieName)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
 
-	user, err := app.Users.GetById(id)
+	refreshTokenID := cookie.Value
+
+	// Validate refresh token
+	userID, err := app.RefreshToken.Validate(refreshTokenID)
+	if err != nil {
+		// Clear invalid cookie
+		app.clearRefreshTokenCookie(w, r)
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
+	// Get user
+	user, err := app.Users.GetById(userID)
 	if err != nil {
 		if errors.Is(err, model.ErrNotFound) {
+			// User no longer exists, revoke token
+			_ = app.RefreshToken.Delete(refreshTokenID)
+			app.clearRefreshTokenCookie(w, r)
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
 		panic(err)
 	}
 
-	token, err := app.Token.GenerateToken(user)
+	// Update refresh token's lastUsedAt and expiresAt
+	if err := app.RefreshToken.Refresh(refreshTokenID); err != nil {
+		panic(err)
+	}
+
+	// Generate new access token
+	accessToken, err := app.AccessToken.Create(user.ID)
 	if err != nil {
 		panic(err)
 	}
 
-	response := model.TokenUserResponse{
-		Token: token,
-		User:  user,
+	// Refresh the cookie expiration
+	app.setRefreshTokenCookie(w, r, refreshTokenID)
+
+	response := model.RefreshResponse{
+		AccessToken: accessToken,
+		User:        user,
 	}
 
 	render.JSON(w, r, response)
+}
+
+func (app App) logout(w http.ResponseWriter, r *http.Request) {
+	// Get refresh token from cookie
+	cookie, err := r.Cookie(refreshTokenCookieName)
+	if err != nil {
+		// No cookie, nothing to do
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Delete refresh token from storage
+	_ = app.RefreshToken.Delete(cookie.Value)
+
+	// Clear the cookie
+	app.clearRefreshTokenCookie(w, r)
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app App) setRefreshTokenCookie(w http.ResponseWriter, r *http.Request, token string) {
+	secure := r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     refreshTokenCookieName,
+		Value:    token,
+		Path:     refreshTokenCookiePath,
+		MaxAge:   refreshTokenCookieMaxAge,
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
+
+func (app App) clearRefreshTokenCookie(w http.ResponseWriter, r *http.Request) {
+	secure := r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     refreshTokenCookieName,
+		Value:    "",
+		Path:     refreshTokenCookiePath,
+		MaxAge:   -1,
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
+	})
 }
 
 func (app App) changePassword(w http.ResponseWriter, r *http.Request) {
@@ -315,6 +411,13 @@ func (app App) changePassword(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := app.Users.Save(targetUser); err != nil {
 		panic(err)
+	}
+
+	// Revoke all refresh tokens for the target user (security measure)
+	if err := app.RefreshToken.DeleteAllForUser(targetUser.ID); err != nil {
+		// Log error but don't fail the request
+		// The password change itself succeeded
+		log.Printf("[background] could not revoke refresh tokens for user %s: %v", targetUser.ID, err)
 	}
 
 	w.WriteHeader(http.StatusOK)

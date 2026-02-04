@@ -60,7 +60,12 @@ type ChangePasswordRequest struct {
 	NewPassword     string `json:"newPassword"`
 }
 
-type TokenUserResponse struct {
-	Token string `json:"token"`
-	User  User   `json:"user"`
+type LoginResponse struct {
+	AccessToken string `json:"accessToken"`
+	User        User   `json:"user"`
+}
+
+type RefreshResponse struct {
+	AccessToken string `json:"accessToken"`
+	User        User   `json:"user"`
 }

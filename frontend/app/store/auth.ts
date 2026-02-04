@@ -123,7 +123,7 @@ export const useAuthStore = defineStore(
       if (!user.value) {
         throw new Error('not logged in')
       }
-      await apiFetch(`/auth/users/_me/password`, {
+      await apiFetch(`/auth/users/${user.value.username}/password`, {
         method: 'POST',
         body: { currentPassword, newPassword },
       })

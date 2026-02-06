@@ -99,10 +99,6 @@ export const useAuthStore = defineStore(
       // Reload app data to remove version info now that user is logged out
       const appStore = useAppStore()
       await appStore.refresh()
-
-      // Run middlewares of current page again
-      const router = useRouter()
-      await router.replace({ path: router.currentRoute.value.fullPath, force: true })
     }
 
     async function updateMe(newMe: { displayName: string }) {

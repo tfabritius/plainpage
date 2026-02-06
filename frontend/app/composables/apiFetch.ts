@@ -73,12 +73,26 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
     })
   }
 
+  // Helper to retry request as anonymous after clearing auth
+  const retryAsAnonymous = async (): Promise<T> => {
+    authStore.accessToken = ''
+    authStore.user = undefined
+    try {
+      return await makeRequest()
+    } catch (anonymousErr) {
+      // Anonymous request also failed with 401 - redirect to login
+      if (anonymousErr instanceof FetchError && anonymousErr.statusCode === 401) {
+        await redirectToLogin(route)
+      }
+      throw anonymousErr
+    }
+  }
+
   try {
     return await makeRequest()
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 401) {
-      // If we have a refresh token (indicated by being logged in previously),
-      // try to refresh the access token
+      // If we had a token, try to refresh it
       if (authStore.loggedIn || authStore.accessToken) {
         const refreshed = await authStore.refreshAccessToken()
         if (refreshed) {
@@ -87,31 +101,29 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
             return await makeRequest()
           } catch (retryErr) {
             if (retryErr instanceof FetchError && retryErr.statusCode === 401) {
-              // Even after refresh, still unauthorized
-              await handleUnauthorized(authStore, route)
+              // Even after refresh, still unauthorized - retry as anonymous
+              return await retryAsAnonymous()
             }
             throw retryErr
           }
+        } else {
+          // Refresh failed - retry as anonymous
+          return await retryAsAnonymous()
         }
       }
 
-      // No refresh token or refresh failed
-      await handleUnauthorized(authStore, route)
+      // No token from the start + 401 = content requires auth, redirect to login
+      await redirectToLogin(route)
     }
 
     throw err
   }
 }
 
-async function handleUnauthorized(authStore: ReturnType<typeof useAuthStore>, route: ReturnType<typeof useRoute>) {
-  if (authStore.loggedIn || authStore.accessToken) {
-    // Clear the auth state without calling logout API (we're already unauthorized)
-    authStore.accessToken = ''
-    authStore.user = undefined
-  }
-
+async function redirectToLogin(route: ReturnType<typeof useRoute>): Promise<never> {
   if (route.path !== '/_login') {
     await navigateTo({ path: '/_login', query: { returnTo: route.fullPath } })
-    throw new Error('redirected to /_login')
   }
+  // Return a never-resolving promise - navigation is happening, component will unmount
+  return new Promise(() => {})
 }

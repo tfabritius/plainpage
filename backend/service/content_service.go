@@ -266,7 +266,18 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 	return page, nil
 }
 
+// SavePage saves a page and creates a version in the attic.
 func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMeta) error {
+	return s.savePage(urlPath, content, meta, true)
+}
+
+// SavePageWithoutVersion saves a page without creating a version in the attic.
+// Use this for metadata-only changes (e.g., ACL, title) that shouldn't create history entries.
+func (s *ContentService) SavePageWithoutVersion(urlPath, content string, meta model.ContentMeta) error {
+	return s.savePage(urlPath, content, meta, false)
+}
+
+func (s *ContentService) savePage(urlPath, content string, meta model.ContentMeta, createVersion bool) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}
@@ -285,12 +296,14 @@ func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMet
 		return fmt.Errorf("could not write file: %w", err)
 	}
 
-	revision := time.Now().Unix()
-	revStr := strconv.FormatInt(revision, 10)
-	atticFile := filepath.Join("attic", urlPath+"."+revStr+".md")
+	if createVersion {
+		revision := time.Now().Unix()
+		revStr := strconv.FormatInt(revision, 10)
+		atticFile := filepath.Join("attic", urlPath+"."+revStr+".md")
 
-	if err := s.storage.WriteFile(atticFile, []byte(serializedPage)); err != nil {
-		return fmt.Errorf("could not save page to attic: %w", err)
+		if err := s.storage.WriteFile(atticFile, []byte(serializedPage)); err != nil {
+			return fmt.Errorf("could not save page to attic: %w", err)
+		}
 	}
 
 	// Update search index

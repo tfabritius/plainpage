@@ -278,7 +278,8 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 		if isFolder {
 			err = app.Content.SaveFolder(urlPath, folder.Meta)
 		} else {
-			err = app.Content.SavePage(urlPath, page.Content, page.Meta)
+			// Metadata-only changes (ACL, title) should not create a new version
+			err = app.Content.SavePageWithoutVersion(urlPath, page.Content, page.Meta)
 		}
 
 		if err != nil {

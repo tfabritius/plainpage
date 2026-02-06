@@ -94,6 +94,26 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 
 		response.Page = page
 	} else if folder != nil {
+		// Filter folder entries based on read access
+		accessibleContent := []model.FolderEntry{}
+		for _, entry := range folder.Content {
+			// Determine the effective ACL for this entry
+			var entryEffectiveAcl []model.AccessRule
+			if entry.ACL != nil {
+				// Entry has its own ACL
+				entryEffectiveAcl = *entry.ACL
+			} else {
+				// Entry inherits from the folder's effective ACL
+				entryEffectiveAcl = effectiveAcl
+			}
+
+			// Check read permission
+			if err := app.Users.CheckContentPermissions(entryEffectiveAcl, userID, model.AccessOpRead); err == nil {
+				accessibleContent = append(accessibleContent, entry)
+			}
+		}
+		folder.Content = accessibleContent
+
 		if app.isAdmin(userID) {
 			if err := app.Users.EnhanceACLWithUserInfo(folder.Meta.ACL); err != nil {
 				panic(err)

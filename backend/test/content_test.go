@@ -374,7 +374,7 @@ func (s *ContentTestSuite) TestReadFolder() {
 	}{
 		// root
 		{"admin:root", s.adminToken, "", 200, 4, true},
-		{"user:root", s.userToken, "", 200, 4, false},
+		{"user:root", s.userToken, "", 200, 3, false}, // admin-only folder is filtered out
 		{"anonymous:root", nil, "", 401, 0, false},
 		// admin-only
 		{"admin:adminOnly", s.adminToken, "/admin-only", 200, 0, true},
@@ -1861,4 +1861,165 @@ func (s *ContentTestSuite) TestMoveFolderSearchIndex() {
 	r.NoError(err)
 	r.Len(results, 1)
 	r.Equal("moved-folder", results[0].Url)
+}
+
+// TestFolderContentFiltering tests that folder entries (pages and subfolders) are filtered
+// based on the user's read access permissions.
+func (s *ContentTestSuite) TestFolderContentFiltering() {
+	r := s.Require()
+
+	adminOnlyACL := []model.AccessRule{}
+	usersOnlyACL := []model.AccessRule{
+		{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead}},
+	}
+	publicACL := []model.AccessRule{
+		{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}},
+	}
+
+	// === Mixed content with different ACLs ===
+	// Create a public folder with mixed content that has different permissions
+	r.NoError(s.app.Content.CreateFolder("test-folder", model.ContentMeta{Title: "Test Folder", ACL: &publicACL}))
+
+	// Create pages with different ACLs inside the folder
+	r.NoError(s.app.Content.SavePage("test-folder/public-page", "Public content", model.ContentMeta{Title: "Public Page"}))
+	r.NoError(s.app.Content.SavePage("test-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}))
+	r.NoError(s.app.Content.SavePage("test-folder/users-page", "Users content", model.ContentMeta{Title: "Users Page", ACL: &usersOnlyACL}))
+
+	// Create subfolders with different ACLs
+	r.NoError(s.app.Content.CreateFolder("test-folder/public-subfolder", model.ContentMeta{Title: "Public Subfolder"}))
+	r.NoError(s.app.Content.CreateFolder("test-folder/admin-subfolder", model.ContentMeta{Title: "Admin Subfolder", ACL: &adminOnlyACL}))
+
+	// Test: Admin sees all 5 entries
+	{
+		res := s.api("GET", "/pages/test-folder", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 5, "Admin should see all 5 entries")
+
+		names := make([]string, len(body.Folder.Content))
+		for i, entry := range body.Folder.Content {
+			names[i] = entry.Name
+		}
+		r.Contains(names, "public-page")
+		r.Contains(names, "admin-page")
+		r.Contains(names, "users-page")
+		r.Contains(names, "public-subfolder")
+		r.Contains(names, "admin-subfolder")
+	}
+
+	// Test: Regular user sees 3 entries (excludes admin-page and admin-subfolder)
+	{
+		res := s.api("GET", "/pages/test-folder", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 3, "User should see 3 entries")
+
+		names := make([]string, len(body.Folder.Content))
+		for i, entry := range body.Folder.Content {
+			names[i] = entry.Name
+		}
+		r.Contains(names, "public-page")
+		r.Contains(names, "users-page")
+		r.Contains(names, "public-subfolder")
+		r.NotContains(names, "admin-page")
+		r.NotContains(names, "admin-subfolder")
+	}
+
+	// Test: Anonymous user sees 2 entries (only public ones)
+	{
+		res := s.api("GET", "/pages/test-folder", nil, nil)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 2, "Anonymous should see 2 entries")
+
+		names := make([]string, len(body.Folder.Content))
+		for i, entry := range body.Folder.Content {
+			names[i] = entry.Name
+		}
+		r.Contains(names, "public-page")
+		r.Contains(names, "public-subfolder")
+		r.NotContains(names, "admin-page")
+		r.NotContains(names, "users-page")
+		r.NotContains(names, "admin-subfolder")
+	}
+
+	// === Entries with their own ACLs overriding parent ===
+	// Create a folder that allows all users to read the folder listing
+	r.NoError(s.app.Content.CreateFolder("mixed-access-folder", model.ContentMeta{Title: "Mixed Access Folder", ACL: &usersOnlyACL}))
+
+	// Create entries with varying access levels
+	r.NoError(s.app.Content.SavePage("mixed-access-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}))
+	r.NoError(s.app.Content.SavePage("mixed-access-folder/users-page", "Users content", model.ContentMeta{Title: "Users Page"}))
+	anonymousReadACL := []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}}
+	r.NoError(s.app.Content.SavePage("mixed-access-folder/public-page", "Public content", model.ContentMeta{Title: "Public Page", ACL: &anonymousReadACL}))
+	r.NoError(s.app.Content.CreateFolder("mixed-access-folder/admin-subfolder", model.ContentMeta{Title: "Admin Subfolder", ACL: &adminOnlyACL}))
+
+	// Test: Admin sees all 4 entries
+	{
+		res := s.api("GET", "/pages/mixed-access-folder", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 4, "Admin should see all 4 entries")
+	}
+
+	// Test: Regular user sees 2 entries
+	{
+		res := s.api("GET", "/pages/mixed-access-folder", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 2, "User should see 2 entries")
+
+		names := make([]string, len(body.Folder.Content))
+		for i, entry := range body.Folder.Content {
+			names[i] = entry.Name
+		}
+		r.Contains(names, "users-page")
+		r.Contains(names, "public-page")
+		r.NotContains(names, "admin-page")
+		r.NotContains(names, "admin-subfolder")
+	}
+
+	// Test: Anonymous user cannot access this folder (folder requires user)
+	{
+		res := s.api("GET", "/pages/mixed-access-folder", nil, nil)
+		r.Equal(401, res.Code)
+	}
+
+	// === Empty folder result ===
+	// Create a public folder with only admin-only content
+	r.NoError(s.app.Content.CreateFolder("public-folder", model.ContentMeta{Title: "Public Folder", ACL: &publicACL}))
+	r.NoError(s.app.Content.SavePage("public-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}))
+	r.NoError(s.app.Content.CreateFolder("public-folder/admin-subfolder", model.ContentMeta{Title: "Admin Subfolder", ACL: &adminOnlyACL}))
+
+	// Test: Admin sees all entries
+	{
+		res := s.api("GET", "/pages/public-folder", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 2, "Admin should see 2 entries")
+	}
+
+	// Test: Regular user sees empty folder
+	{
+		res := s.api("GET", "/pages/public-folder", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 0, "User should see 0 entries")
+	}
+
+	// Test: Anonymous user sees empty folder
+	{
+		res := s.api("GET", "/pages/public-folder", nil, nil)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Folder)
+		r.Len(body.Folder.Content, 0, "Anonymous should see 0 entries")
+	}
 }

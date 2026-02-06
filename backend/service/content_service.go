@@ -385,6 +385,7 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 				return model.Folder{}, fmt.Errorf("could not read folder %s: %w", e.Url, err)
 			}
 			e.Title = folder.Meta.Title
+			e.ACL = folder.Meta.ACL
 		} else {
 			if !strings.HasPrefix(e.Name, "_") && strings.HasSuffix(e.Name, ".md") {
 				e.Name = strings.TrimSuffix(e.Name, ".md")
@@ -399,6 +400,7 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 			}
 
 			e.Title = page.Meta.Title
+			e.ACL = page.Meta.ACL
 		}
 
 		folderEntries = append(folderEntries, e)

@@ -36,6 +36,8 @@ type FolderEntry struct {
 	Name     string `json:"name"`
 	Title    string `json:"title"`
 	IsFolder bool   `json:"isFolder"`
+
+	ACL *[]AccessRule `json:"-"`
 }
 
 type AtticEntry struct {

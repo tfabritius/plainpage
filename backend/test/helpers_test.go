@@ -25,10 +25,12 @@ func (fs emptyFs) Open(name string) (fs.File, error) {
 
 type AppTestSuite struct {
 	suite.Suite
-	app        server.App
-	handler    http.Handler
-	adminToken *string
-	userToken  *string
+	app         server.App
+	handler     http.Handler
+	adminToken  *string
+	adminUserID string
+	userToken   *string
+	userUserID  string
 }
 
 func (s *AppTestSuite) saveGlobalAcl(adminToken *string, acl []model.AccessRule) {
@@ -68,6 +70,7 @@ func (s *AppTestSuite) setupInitialApp() {
 		r.NoError(err)
 
 		s.adminToken = &token
+		s.adminUserID = user.ID
 	}
 
 	// Setup mode is disabled
@@ -93,6 +96,7 @@ func (s *AppTestSuite) setupInitialApp() {
 		r.NoError(err)
 
 		s.userToken = &token
+		s.userUserID = user.ID
 	}
 }
 

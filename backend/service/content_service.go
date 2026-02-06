@@ -267,23 +267,27 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 }
 
 // SavePage saves a page and creates a version in the attic.
-func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMeta) error {
-	return s.savePage(urlPath, content, meta, true)
+func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMeta, userID string) error {
+	return s.savePage(urlPath, content, meta, userID, true)
 }
 
 // SavePageWithoutVersion saves a page without creating a version in the attic.
 // Use this for metadata-only changes (e.g., ACL, title) that shouldn't create history entries.
-func (s *ContentService) SavePageWithoutVersion(urlPath, content string, meta model.ContentMeta) error {
-	return s.savePage(urlPath, content, meta, false)
+func (s *ContentService) SavePageWithoutVersion(urlPath, content string, meta model.ContentMeta, userID string) error {
+	return s.savePage(urlPath, content, meta, userID, false)
 }
 
-func (s *ContentService) savePage(urlPath, content string, meta model.ContentMeta, createVersion bool) error {
+func (s *ContentService) savePage(urlPath, content string, meta model.ContentMeta, userID string, createVersion bool) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}
 	if s.IsFolder(urlPath) {
 		return model.ErrPageOrFolderExistsAlready
 	}
+
+	// Set modification metadata
+	meta.ModifiedAt = time.Now().UTC()
+	meta.ModifiedBy = userID
 
 	fsPath := filepath.Join("pages", urlPath+".md")
 

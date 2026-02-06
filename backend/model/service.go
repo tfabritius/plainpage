@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Page struct {
 	Url     string      `json:"url"`
 	Content string      `json:"content"`
@@ -21,9 +23,11 @@ func (Folder) BleveType() string {
 }
 
 type ContentMeta struct {
-	Title string        `json:"title" yaml:"title"`
-	Tags  []string      `json:"tags" yaml:"tags"`
-	ACL   *[]AccessRule `json:"acl" yaml:"acl"`
+	Title      string        `json:"title" yaml:"title"`
+	Tags       []string      `json:"tags" yaml:"tags"`
+	ACL        *[]AccessRule `json:"acl" yaml:"acl"`
+	ModifiedAt time.Time     `json:"modifiedAt" yaml:"modifiedAt"`
+	ModifiedBy string        `json:"modifiedBy" yaml:"modifiedBy"`
 }
 
 type ContentMetaWithURL struct {

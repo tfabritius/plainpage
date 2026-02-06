@@ -153,6 +153,20 @@ func (s *ContentTestSuite) TestCreatePage() {
 				r.NoError(err)
 				r.Equal("Title", page.Meta.Title)
 
+				// Verify modification tracking
+				r.False(page.Meta.ModifiedAt.IsZero(), "ModifiedAt should be set")
+				r.WithinDuration(time.Now(), page.Meta.ModifiedAt, 5*time.Second, "ModifiedAt should be recent")
+
+				// Verify ModifiedBy matches the user who made the request
+				switch tc.token {
+				case s.adminToken:
+					r.Equal(s.adminUserID, page.Meta.ModifiedBy, "ModifiedBy should be admin's ID")
+				case s.userToken:
+					r.Equal(s.userUserID, page.Meta.ModifiedBy, "ModifiedBy should be user's ID")
+				default:
+					r.Empty(page.Meta.ModifiedBy, "ModifiedBy should be empty for anonymous")
+				}
+
 				r.NoError(s.app.Content.DeletePage(tc.url))
 			} else {
 				r.False(s.app.Content.IsPage(tc.url))
@@ -163,7 +177,7 @@ func (s *ContentTestSuite) TestCreatePage() {
 
 func (s *ContentTestSuite) TestCreateFolder() {
 	r := s.Require()
-	r.NoError(s.app.Content.SavePage("existingpage", "", model.ContentMeta{}))
+	r.NoError(s.app.Content.SavePage("existingpage", "", model.ContentMeta{}, ""))
 
 	tests := []struct {
 		name         string
@@ -274,7 +288,7 @@ func (s *ContentTestSuite) TestReadPage() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}))
+			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}, ""))
 
 			// Test
 			res := s.api("GET", "/pages/"+tc.url,
@@ -296,7 +310,7 @@ func (s *ContentTestSuite) TestReadPage() {
 
 				// Change ACL
 				acl := []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}}
-				r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title", ACL: &acl}))
+				r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title", ACL: &acl}, ""))
 
 				// Test ACL in output
 				res := s.api("GET", "/pages/"+tc.url,
@@ -475,7 +489,7 @@ func (s *ContentTestSuite) TestDeletePage() {
 		t.Run(tc.name, func(t *testing.T) {
 			r := require.New(t)
 
-			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}))
+			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}, ""))
 
 			res := s.api("DELETE", "/pages/"+tc.url,
 				nil,
@@ -598,7 +612,7 @@ func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
 
 	// Prepare
 	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{}))
-	r.NoError(s.app.Content.SavePage("folder/page", "", model.ContentMeta{}))
+	r.NoError(s.app.Content.SavePage("folder/page", "", model.ContentMeta{}, ""))
 
 	// Test
 	{
@@ -660,6 +674,7 @@ func (s *ContentTestSuite) TestUpdatePage() {
 				tc.url,
 				"Old content",
 				model.ContentMeta{Title: "Old title", Tags: []string{"old tag"}},
+				"",
 			))
 
 			// Test
@@ -682,6 +697,20 @@ func (s *ContentTestSuite) TestUpdatePage() {
 				r.Equal("New title", page.Meta.Title)
 				r.Len(page.Meta.Tags, 1)
 				r.Equal("new tag", page.Meta.Tags[0])
+
+				// Verify modification tracking is updated
+				r.False(page.Meta.ModifiedAt.IsZero(), "ModifiedAt should be set")
+				r.WithinDuration(time.Now(), page.Meta.ModifiedAt, 5*time.Second, "ModifiedAt should be recent")
+
+				// Verify ModifiedBy matches the user who made the request
+				switch tc.token {
+				case s.adminToken:
+					r.Equal(s.adminUserID, page.Meta.ModifiedBy, "ModifiedBy should be admin's ID")
+				case s.userToken:
+					r.Equal(s.userUserID, page.Meta.ModifiedBy, "ModifiedBy should be user's ID")
+				default:
+					r.Empty(page.Meta.ModifiedBy, "ModifiedBy should be empty for anonymous")
+				}
 			} else {
 				r.Equal("Old content", page.Content)
 				r.Equal("Old title", page.Meta.Title)
@@ -735,6 +764,7 @@ func (s *ContentTestSuite) TestUpdatePageACL() {
 			r.NoError(s.app.Content.SavePage(
 				tc.url, "",
 				model.ContentMeta{ACL: nil},
+				"",
 			))
 
 			acl := []model.AccessRule{
@@ -808,7 +838,7 @@ func (s *ContentTestSuite) TestUpdatePageTitle() {
 			r := require.New(t)
 
 			// Prepare
-			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Old Title"}))
+			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Old Title"}, ""))
 
 			// Test
 			res := s.api("PATCH", "/pages/"+tc.url,
@@ -822,6 +852,20 @@ func (s *ContentTestSuite) TestUpdatePageTitle() {
 			r.NoError(err)
 			if tc.responseCode == 200 {
 				r.Equal("New Title", page.Meta.Title)
+
+				// Verify modification tracking is updated (even for metadata-only PATCH)
+				r.False(page.Meta.ModifiedAt.IsZero(), "ModifiedAt should be set")
+				r.WithinDuration(time.Now(), page.Meta.ModifiedAt, 5*time.Second, "ModifiedAt should be recent")
+
+				// Verify ModifiedBy matches the user who made the request
+				switch tc.token {
+				case s.adminToken:
+					r.Equal(s.adminUserID, page.Meta.ModifiedBy, "ModifiedBy should be admin's ID")
+				case s.userToken:
+					r.Equal(s.userUserID, page.Meta.ModifiedBy, "ModifiedBy should be user's ID")
+				default:
+					r.Empty(page.Meta.ModifiedBy, "ModifiedBy should be empty for anonymous")
+				}
 			} else {
 				r.Equal("Old Title", page.Meta.Title)
 			}
@@ -1057,7 +1101,7 @@ func (s *ContentTestSuite) TestCombinedPatchOperations() {
 
 	// Test combining title change and rename for page
 	{
-		r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Old Title"}))
+		r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Old Title"}, ""))
 
 		res := s.api("PATCH", "/pages/page",
 			[]model.PatchOperation{
@@ -1094,6 +1138,7 @@ func (s *ContentTestSuite) TestAtticRevisions() {
 			url,
 			"Old content",
 			model.ContentMeta{Title: "Old title", Tags: []string{"old tag"}},
+			"",
 		))
 		r.NoError(err)
 	}
@@ -1103,6 +1148,7 @@ func (s *ContentTestSuite) TestAtticRevisions() {
 			url,
 			"New content",
 			model.ContentMeta{Title: "New title", Tags: []string{"new tag"}},
+			"",
 		))
 		r.NoError(err)
 	}
@@ -1182,6 +1228,7 @@ func (s *ContentTestSuite) TestSearch() {
 			url,
 			"Content",
 			model.ContentMeta{Title: "Title", Tags: []string{"tag"}},
+			"",
 		)
 		r.NoError(err)
 	}
@@ -1345,7 +1392,7 @@ func (s *ContentTestSuite) TestMovePage() {
 			r := require.New(t)
 
 			// Prepare: create source page
-			r.NoError(s.app.Content.SavePage(tc.srcUrl, "Content", model.ContentMeta{Title: "Title"}))
+			r.NoError(s.app.Content.SavePage(tc.srcUrl, "Content", model.ContentMeta{Title: "Title"}, ""))
 
 			// Test
 			res := s.api("PATCH", "/pages/"+tc.srcUrl,
@@ -1382,8 +1429,8 @@ func (s *ContentTestSuite) TestMovePageErrors() {
 	r := s.Require()
 
 	// Prepare
-	r.NoError(s.app.Content.SavePage("page1", "Content1", model.ContentMeta{Title: "Page1"}))
-	r.NoError(s.app.Content.SavePage("page2", "Content2", model.ContentMeta{Title: "Page2"}))
+	r.NoError(s.app.Content.SavePage("page1", "Content1", model.ContentMeta{Title: "Page1"}, ""))
+	r.NoError(s.app.Content.SavePage("page2", "Content2", model.ContentMeta{Title: "Page2"}, ""))
 	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
 
 	// Invalid destination URL
@@ -1448,9 +1495,9 @@ func (s *ContentTestSuite) TestMovePageWithAttic() {
 	r := s.Require()
 
 	// Create page with multiple revisions
-	r.NoError(s.app.Content.SavePage("page", "Content v1", model.ContentMeta{Title: "Title"}))
+	r.NoError(s.app.Content.SavePage("page", "Content v1", model.ContentMeta{Title: "Title"}, ""))
 	time.Sleep(1050 * time.Millisecond) // Only one revision per second possible
-	r.NoError(s.app.Content.SavePage("page", "Content v2", model.ContentMeta{Title: "Title"}))
+	r.NoError(s.app.Content.SavePage("page", "Content v2", model.ContentMeta{Title: "Title"}, ""))
 
 	// Verify attic has 2 entries
 	atticEntries, err := s.app.Content.ListAttic("page")
@@ -1552,7 +1599,7 @@ func (s *ContentTestSuite) TestMoveFolderErrors() {
 	// Prepare
 	r.NoError(s.app.Content.CreateFolder("folder1", model.ContentMeta{Title: "Folder1"}))
 	r.NoError(s.app.Content.CreateFolder("folder2", model.ContentMeta{Title: "Folder2"}))
-	r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Page"}))
+	r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Page"}, ""))
 
 	// Invalid destination URL
 	{
@@ -1617,10 +1664,10 @@ func (s *ContentTestSuite) TestMoveFolderWithContent() {
 
 	// Create folder with nested content
 	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
-	r.NoError(s.app.Content.SavePage("folder/page1", "Content1", model.ContentMeta{Title: "Page1"}))
-	r.NoError(s.app.Content.SavePage("folder/page2", "Content2", model.ContentMeta{Title: "Page2"}))
+	r.NoError(s.app.Content.SavePage("folder/page1", "Content1", model.ContentMeta{Title: "Page1"}, ""))
+	r.NoError(s.app.Content.SavePage("folder/page2", "Content2", model.ContentMeta{Title: "Page2"}, ""))
 	r.NoError(s.app.Content.CreateFolder("folder/subfolder", model.ContentMeta{Title: "Subfolder"}))
-	r.NoError(s.app.Content.SavePage("folder/subfolder/page3", "Content3", model.ContentMeta{Title: "Page3"}))
+	r.NoError(s.app.Content.SavePage("folder/subfolder/page3", "Content3", model.ContentMeta{Title: "Page3"}, ""))
 
 	// Move folder
 	res := s.api("PATCH", "/pages/folder",
@@ -1661,9 +1708,9 @@ func (s *ContentTestSuite) TestMoveFolderWithAttic() {
 
 	// Create folder with pages that have attic entries
 	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
-	r.NoError(s.app.Content.SavePage("folder/page", "Content v1", model.ContentMeta{Title: "Page"}))
+	r.NoError(s.app.Content.SavePage("folder/page", "Content v1", model.ContentMeta{Title: "Page"}, ""))
 	time.Sleep(1050 * time.Millisecond)
-	r.NoError(s.app.Content.SavePage("folder/page", "Content v2", model.ContentMeta{Title: "Page"}))
+	r.NoError(s.app.Content.SavePage("folder/page", "Content v2", model.ContentMeta{Title: "Page"}, ""))
 
 	// Verify attic has entries
 	atticEntries, err := s.app.Content.ListAttic("folder/page")
@@ -1705,7 +1752,7 @@ func (s *ContentTestSuite) TestAllowWriteWithPageACL() {
 	acl := []model.AccessRule{
 		{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite}},
 	}
-	r.NoError(s.app.Content.SavePage(url, "Content", model.ContentMeta{Title: "Page with ACL", ACL: &acl}))
+	r.NoError(s.app.Content.SavePage(url, "Content", model.ContentMeta{Title: "Page with ACL", ACL: &acl}, ""))
 
 	// Test: Admin should have write and delete access
 	{
@@ -1834,7 +1881,7 @@ func (s *ContentTestSuite) TestMoveFolderSearchIndex() {
 
 	// Create folder with a page
 	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "UniqueFolder"}))
-	r.NoError(s.app.Content.SavePage("folder/page", "UniqueContent", model.ContentMeta{Title: "UniquePage"}))
+	r.NoError(s.app.Content.SavePage("folder/page", "UniqueContent", model.ContentMeta{Title: "UniquePage"}, ""))
 
 	// Verify search finds the page
 	results, err := s.app.Content.Search("UniquePage")
@@ -1881,9 +1928,9 @@ func (s *ContentTestSuite) TestFolderContentFiltering() {
 	r.NoError(s.app.Content.CreateFolder("test-folder", model.ContentMeta{Title: "Test Folder", ACL: &publicACL}))
 
 	// Create pages with different ACLs inside the folder
-	r.NoError(s.app.Content.SavePage("test-folder/public-page", "Public content", model.ContentMeta{Title: "Public Page"}))
-	r.NoError(s.app.Content.SavePage("test-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}))
-	r.NoError(s.app.Content.SavePage("test-folder/users-page", "Users content", model.ContentMeta{Title: "Users Page", ACL: &usersOnlyACL}))
+	r.NoError(s.app.Content.SavePage("test-folder/public-page", "Public content", model.ContentMeta{Title: "Public Page"}, ""))
+	r.NoError(s.app.Content.SavePage("test-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}, ""))
+	r.NoError(s.app.Content.SavePage("test-folder/users-page", "Users content", model.ContentMeta{Title: "Users Page", ACL: &usersOnlyACL}, ""))
 
 	// Create subfolders with different ACLs
 	r.NoError(s.app.Content.CreateFolder("test-folder/public-subfolder", model.ContentMeta{Title: "Public Subfolder"}))
@@ -1951,10 +1998,10 @@ func (s *ContentTestSuite) TestFolderContentFiltering() {
 	r.NoError(s.app.Content.CreateFolder("mixed-access-folder", model.ContentMeta{Title: "Mixed Access Folder", ACL: &usersOnlyACL}))
 
 	// Create entries with varying access levels
-	r.NoError(s.app.Content.SavePage("mixed-access-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}))
-	r.NoError(s.app.Content.SavePage("mixed-access-folder/users-page", "Users content", model.ContentMeta{Title: "Users Page"}))
+	r.NoError(s.app.Content.SavePage("mixed-access-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}, ""))
+	r.NoError(s.app.Content.SavePage("mixed-access-folder/users-page", "Users content", model.ContentMeta{Title: "Users Page"}, ""))
 	anonymousReadACL := []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}}
-	r.NoError(s.app.Content.SavePage("mixed-access-folder/public-page", "Public content", model.ContentMeta{Title: "Public Page", ACL: &anonymousReadACL}))
+	r.NoError(s.app.Content.SavePage("mixed-access-folder/public-page", "Public content", model.ContentMeta{Title: "Public Page", ACL: &anonymousReadACL}, ""))
 	r.NoError(s.app.Content.CreateFolder("mixed-access-folder/admin-subfolder", model.ContentMeta{Title: "Admin Subfolder", ACL: &adminOnlyACL}))
 
 	// Test: Admin sees all 4 entries
@@ -1993,7 +2040,7 @@ func (s *ContentTestSuite) TestFolderContentFiltering() {
 	// === Empty folder result ===
 	// Create a public folder with only admin-only content
 	r.NoError(s.app.Content.CreateFolder("public-folder", model.ContentMeta{Title: "Public Folder", ACL: &publicACL}))
-	r.NoError(s.app.Content.SavePage("public-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}))
+	r.NoError(s.app.Content.SavePage("public-folder/admin-page", "Admin content", model.ContentMeta{Title: "Admin Page", ACL: &adminOnlyACL}, ""))
 	r.NoError(s.app.Content.CreateFolder("public-folder/admin-subfolder", model.ContentMeta{Title: "Admin Subfolder", ACL: &adminOnlyACL}))
 
 	// Test: Admin sees all entries

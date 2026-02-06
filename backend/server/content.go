@@ -279,7 +279,7 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 			err = app.Content.SaveFolder(urlPath, folder.Meta)
 		} else {
 			// Metadata-only changes (ACL, title) should not create a new version
-			err = app.Content.SavePageWithoutVersion(urlPath, page.Content, page.Meta)
+			err = app.Content.SavePageWithoutVersion(urlPath, page.Content, page.Meta, userID)
 		}
 
 		if err != nil {
@@ -396,6 +396,7 @@ func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, user
 func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.PathValue("*")
 
+	userID := ctxutil.UserID(r.Context())
 	page := ctxutil.Page(r.Context())
 	folder := ctxutil.Folder(r.Context())
 
@@ -417,7 +418,7 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 			body.Page.Meta.ACL = page.Meta.ACL
 		}
 
-		err = app.Content.SavePage(urlPath, body.Page.Content, body.Page.Meta)
+		err = app.Content.SavePage(urlPath, body.Page.Content, body.Page.Meta, userID)
 	} else if body.Folder != nil {
 		if folder != nil {
 			// if folder exists already, take over ACL

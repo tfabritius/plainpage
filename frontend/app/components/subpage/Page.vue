@@ -29,13 +29,13 @@ useHead(() => ({ title: pageTitle.value }))
 
 // Modified info - check for non-zero time (Go's zero time starts with year 0001)
 const hasModifiedAt = computed(() => props.page.meta.modifiedAt && !props.page.meta.modifiedAt.startsWith('0001-'))
-const modifiedAt = computed(() => new Date(props.page.meta.modifiedAt))
+const modifiedAt = computed(() => new Date(props.page.meta.modifiedAt ?? ''))
 const modifiedAtTimeAgo = useTimeAgo(modifiedAt, { messages: timeAgoMessages() })
 const modifiedAtFormatted = computed(() => modifiedAt.value.toLocaleString())
 
 const plainDialog = useTemplateRef('plainDialog')
 
-const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [], modifiedAt: '', modifiedByUsername: '', modifiedByDisplayName: '' } }
+const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
 const editablePage = ref(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')

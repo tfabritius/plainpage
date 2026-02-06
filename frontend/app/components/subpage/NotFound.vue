@@ -19,9 +19,6 @@ const emptyPage: Page = {
   meta: {
     title: '',
     tags: [],
-    modifiedAt: '0001-01-01T00:00:00Z',
-    modifiedByUsername: '',
-    modifiedByDisplayName: '',
   },
 }
 const editablePage = ref<Page>(deepClone(emptyPage))

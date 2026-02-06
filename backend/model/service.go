@@ -26,10 +26,10 @@ type ContentMeta struct {
 	Title                 string        `json:"title" yaml:"title"`
 	Tags                  []string      `json:"tags" yaml:"tags"`
 	ACL                   *[]AccessRule `json:"acl" yaml:"acl"`
-	ModifiedAt            time.Time     `json:"modifiedAt" yaml:"modifiedAt"`
-	ModifiedByUserID      string        `json:"-" yaml:"modifiedBy"`            // Stored in YAML, not exposed in API
-	ModifiedByUsername    string        `json:"modifiedByUsername" yaml:"-"`    // Exposed in API, not stored in YAML
-	ModifiedByDisplayName string        `json:"modifiedByDisplayName" yaml:"-"` // Exposed in API, not stored in YAML
+	ModifiedAt            time.Time     `json:"modifiedAt,omitempty" yaml:"modifiedAt"`
+	ModifiedByUserID      string        `json:"-" yaml:"modifiedBy"`                      // Stored in YAML, not exposed in API
+	ModifiedByUsername    string        `json:"modifiedByUsername,omitempty" yaml:"-"`    // Exposed in API, not stored in YAML
+	ModifiedByDisplayName string        `json:"modifiedByDisplayName,omitempty" yaml:"-"` // Exposed in API, not stored in YAML
 }
 
 type ContentMetaWithURL struct {

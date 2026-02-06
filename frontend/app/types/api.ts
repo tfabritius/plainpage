@@ -73,9 +73,9 @@ export interface ContentMeta {
   title: string
   tags: string[] | null
   acl?: AccessRule[] | null
-  modifiedAt: string
-  modifiedByUsername: string
-  modifiedByDisplayName: string
+  modifiedAt?: string
+  modifiedByUsername?: string
+  modifiedByDisplayName?: string
 }
 
 export interface FolderEntry {

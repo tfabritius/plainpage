@@ -92,6 +92,9 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 			page.Meta.ACL = nil // Hide ACL
 		}
 
+		// Populate user info from userId for API response
+		app.populateModifiedByUserInfo(&page.Meta)
+
 		response.Page = page
 	} else if folder != nil {
 		// Filter folder entries based on read access
@@ -121,6 +124,9 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 		} else {
 			folder.Meta.ACL = nil // Hide ACL
 		}
+
+		// Populate user info from userId for API response
+		app.populateModifiedByUserInfo(&folder.Meta)
 
 		response.Folder = folder
 	} else {
@@ -529,6 +535,9 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
+		// Populate user info from userId for API response
+		app.populateModifiedByUserInfo(&page.Meta)
+
 		response := model.GetContentResponse{Page: &page, Breadcrumbs: breadcrumbs}
 		render.JSON(w, r, response)
 	}
@@ -558,6 +567,10 @@ func (app App) searchContent(w http.ResponseWriter, r *http.Request) {
 		}
 
 		r.Meta.ACL = nil // Hide ACL
+
+		// Populate user info from userId for API response
+		app.populateModifiedByUserInfo(&r.Meta)
+
 		accessibleResults = append(accessibleResults, r)
 	}
 

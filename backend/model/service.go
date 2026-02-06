@@ -23,11 +23,13 @@ func (Folder) BleveType() string {
 }
 
 type ContentMeta struct {
-	Title      string        `json:"title" yaml:"title"`
-	Tags       []string      `json:"tags" yaml:"tags"`
-	ACL        *[]AccessRule `json:"acl" yaml:"acl"`
-	ModifiedAt time.Time     `json:"modifiedAt" yaml:"modifiedAt"`
-	ModifiedBy string        `json:"modifiedBy" yaml:"modifiedBy"`
+	Title                 string        `json:"title" yaml:"title"`
+	Tags                  []string      `json:"tags" yaml:"tags"`
+	ACL                   *[]AccessRule `json:"acl" yaml:"acl"`
+	ModifiedAt            time.Time     `json:"modifiedAt" yaml:"modifiedAt"`
+	ModifiedByUserID      string        `json:"-" yaml:"modifiedBy"`            // Stored in YAML, not exposed in API
+	ModifiedByUsername    string        `json:"modifiedByUsername" yaml:"-"`    // Exposed in API, not stored in YAML
+	ModifiedByDisplayName string        `json:"modifiedByDisplayName" yaml:"-"` // Exposed in API, not stored in YAML
 }
 
 type ContentMetaWithURL struct {

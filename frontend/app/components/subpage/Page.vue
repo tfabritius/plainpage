@@ -35,7 +35,7 @@ const modifiedAtFormatted = computed(() => modifiedAt.value.toLocaleString())
 
 const plainDialog = useTemplateRef('plainDialog')
 
-const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [], modifiedAt: '', modifiedBy: '' } }
+const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [], modifiedAt: '', modifiedByUsername: '', modifiedByDisplayName: '' } }
 const editablePage = ref(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')
@@ -286,7 +286,7 @@ onKeyStroke('s', (e) => {
     <template v-if="!editing && hasModifiedAt" #subtitle>
       <span class="text-[var(--ui-text-muted)]/50">
         {{ $t('modified') }} <span :title="modifiedAtFormatted">{{ modifiedAtTimeAgo }}</span> {{ $t('modified-by') }}
-        <span v-if="page.meta.modifiedBy">{{ page.meta.modifiedBy }}</span>
+        <span v-if="page.meta.modifiedByUsername" :title="page.meta.modifiedByUsername">{{ page.meta.modifiedByDisplayName }}</span>
         <span v-else class="italic">{{ $t('anonymous') }}</span>
       </span>
     </template>

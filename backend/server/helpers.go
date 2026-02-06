@@ -135,3 +135,23 @@ func clientIPFromRequest(r *http.Request) string {
 
 	return ip
 }
+
+// populateModifiedByUserInfo populates ModifiedByUsername and ModifiedByDisplayName from ModifiedByUserID
+func (app App) populateModifiedByUserInfo(meta *model.ContentMeta) {
+	if meta.ModifiedByUserID == "" {
+		meta.ModifiedByUsername = ""
+		meta.ModifiedByDisplayName = ""
+		return
+	}
+
+	user, err := app.Users.GetById(meta.ModifiedByUserID)
+	if err != nil {
+		// User not found (possibly deleted), clear the fields
+		meta.ModifiedByUsername = ""
+		meta.ModifiedByDisplayName = ""
+		return
+	}
+
+	meta.ModifiedByUsername = user.Username
+	meta.ModifiedByDisplayName = user.DisplayName
+}

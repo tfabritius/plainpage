@@ -287,7 +287,7 @@ func (s *ContentService) savePage(urlPath, content string, meta model.ContentMet
 
 	// Set modification metadata
 	meta.ModifiedAt = time.Now().UTC()
-	meta.ModifiedBy = userID
+	meta.ModifiedByUserID = userID
 
 	fsPath := filepath.Join("pages", urlPath+".md")
 

@@ -157,14 +157,14 @@ func (s *ContentTestSuite) TestCreatePage() {
 				r.False(page.Meta.ModifiedAt.IsZero(), "ModifiedAt should be set")
 				r.WithinDuration(time.Now(), page.Meta.ModifiedAt, 5*time.Second, "ModifiedAt should be recent")
 
-				// Verify ModifiedBy matches the user who made the request
+				// Verify ModifiedByUserID matches the user who made the request
 				switch tc.token {
 				case s.adminToken:
-					r.Equal(s.adminUserID, page.Meta.ModifiedBy, "ModifiedBy should be admin's ID")
+					r.Equal(s.adminUserID, page.Meta.ModifiedByUserID, "ModifiedByUserID should be admin's ID")
 				case s.userToken:
-					r.Equal(s.userUserID, page.Meta.ModifiedBy, "ModifiedBy should be user's ID")
+					r.Equal(s.userUserID, page.Meta.ModifiedByUserID, "ModifiedByUserID should be user's ID")
 				default:
-					r.Empty(page.Meta.ModifiedBy, "ModifiedBy should be empty for anonymous")
+					r.Empty(page.Meta.ModifiedByUserID, "ModifiedByUserID should be empty for anonymous")
 				}
 
 				r.NoError(s.app.Content.DeletePage(tc.url))
@@ -702,14 +702,14 @@ func (s *ContentTestSuite) TestUpdatePage() {
 				r.False(page.Meta.ModifiedAt.IsZero(), "ModifiedAt should be set")
 				r.WithinDuration(time.Now(), page.Meta.ModifiedAt, 5*time.Second, "ModifiedAt should be recent")
 
-				// Verify ModifiedBy matches the user who made the request
+				// Verify ModifiedByUserID matches the user who made the request
 				switch tc.token {
 				case s.adminToken:
-					r.Equal(s.adminUserID, page.Meta.ModifiedBy, "ModifiedBy should be admin's ID")
+					r.Equal(s.adminUserID, page.Meta.ModifiedByUserID, "ModifiedByUserID should be admin's ID")
 				case s.userToken:
-					r.Equal(s.userUserID, page.Meta.ModifiedBy, "ModifiedBy should be user's ID")
+					r.Equal(s.userUserID, page.Meta.ModifiedByUserID, "ModifiedByUserID should be user's ID")
 				default:
-					r.Empty(page.Meta.ModifiedBy, "ModifiedBy should be empty for anonymous")
+					r.Empty(page.Meta.ModifiedByUserID, "ModifiedByUserID should be empty for anonymous")
 				}
 			} else {
 				r.Equal("Old content", page.Content)
@@ -857,14 +857,14 @@ func (s *ContentTestSuite) TestUpdatePageTitle() {
 				r.False(page.Meta.ModifiedAt.IsZero(), "ModifiedAt should be set")
 				r.WithinDuration(time.Now(), page.Meta.ModifiedAt, 5*time.Second, "ModifiedAt should be recent")
 
-				// Verify ModifiedBy matches the user who made the request
+				// Verify ModifiedByUserID matches the user who made the request
 				switch tc.token {
 				case s.adminToken:
-					r.Equal(s.adminUserID, page.Meta.ModifiedBy, "ModifiedBy should be admin's ID")
+					r.Equal(s.adminUserID, page.Meta.ModifiedByUserID, "ModifiedByUserID should be admin's ID")
 				case s.userToken:
-					r.Equal(s.userUserID, page.Meta.ModifiedBy, "ModifiedBy should be user's ID")
+					r.Equal(s.userUserID, page.Meta.ModifiedByUserID, "ModifiedByUserID should be user's ID")
 				default:
-					r.Empty(page.Meta.ModifiedBy, "ModifiedBy should be empty for anonymous")
+					r.Empty(page.Meta.ModifiedByUserID, "ModifiedByUserID should be empty for anonymous")
 				}
 			} else {
 				r.Equal("Old Title", page.Meta.Title)
@@ -1908,6 +1908,75 @@ func (s *ContentTestSuite) TestMoveFolderSearchIndex() {
 	r.NoError(err)
 	r.Len(results, 1)
 	r.Equal("moved-folder", results[0].Url)
+}
+
+// TestModifiedByReturnsUserInfo tests that the API returns the username and display name (not userId)
+// in the modifiedByUsername and modifiedByDisplayName fields of the response.
+func (s *ContentTestSuite) TestModifiedByReturnsUserInfo() {
+	r := s.Require()
+
+	// Create a page as admin user via API
+	{
+		res := s.api("PUT", "/pages/test-page",
+			model.PutRequest{Page: &model.Page{Content: "Content", Meta: model.ContentMeta{Title: "Test Page"}}},
+			s.adminToken)
+		r.Equal(200, res.Code)
+	}
+
+	// Read the page via API and verify modifiedBy fields contain user info, not userId
+	{
+		res := s.api("GET", "/pages/test-page", nil, s.adminToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Page)
+
+		// The API should return the username "admin" and display name "Administrator"
+		r.Equal("admin", body.Page.Meta.ModifiedByUsername, "API should return username")
+		r.Equal("Administrator", body.Page.Meta.ModifiedByDisplayName, "API should return display name")
+		r.NotEqual(s.adminUserID, body.Page.Meta.ModifiedByUsername, "API should not return internal userId")
+	}
+
+	// Update the page as regular user via API
+	{
+		// First grant write access to users
+		acl := []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}}}
+		res := s.api("PATCH", "/pages/test-page",
+			[]model.PatchOperation{{Op: "replace", Path: "/page/meta/acl", Value: acl2json(acl)}},
+			s.adminToken)
+		r.Equal(200, res.Code)
+
+		// Now update as regular user
+		res = s.api("PUT", "/pages/test-page",
+			model.PutRequest{Page: &model.Page{Content: "Updated content", Meta: model.ContentMeta{Title: "Test Page"}}},
+			s.userToken)
+		r.Equal(200, res.Code)
+	}
+
+	// Read the page via API and verify modifiedBy is now "user" with display name "User"
+	{
+		res := s.api("GET", "/pages/test-page", nil, s.userToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.GetContentResponse](res)
+		r.NotNil(body.Page)
+
+		// The API should return the username "user" and display name "User"
+		r.Equal("user", body.Page.Meta.ModifiedByUsername, "API should return username 'user'")
+		r.Equal("User", body.Page.Meta.ModifiedByDisplayName, "API should return display name 'User'")
+		r.NotEqual(s.userUserID, body.Page.Meta.ModifiedByUsername, "API should not return internal userId")
+	}
+
+	// Verify internal storage still contains userId (not username)
+	{
+		page, err := s.app.Content.ReadPage("test-page", nil)
+		r.NoError(err)
+		r.Equal(s.userUserID, page.Meta.ModifiedByUserID, "Internal storage should contain userId")
+		r.NotEqual("user", page.Meta.ModifiedByUserID, "Internal storage should not contain username")
+	}
+
+	// Cleanup
+	r.NoError(s.app.Content.DeletePage("test-page"))
 }
 
 // TestFolderContentFiltering tests that folder entries (pages and subfolders) are filtered

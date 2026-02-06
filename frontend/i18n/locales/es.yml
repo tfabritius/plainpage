@@ -13,6 +13,7 @@ add: Añadir
 add-tag: Añadir etiqueta
 administrators: Administradores
 all-registered-users: Todos los usuarios registrados
+anonymous: anónimo
 anonymous-users: Usuarios anónimos
 application-title: Titulo de la aplicación
 are-you-sure-to-delete-this-account: ¿Estás seguro de eliminar esta cuenta?
@@ -58,6 +59,8 @@ invalid-folder-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 language: Idioma
 menu: Menú
+modified: Modificado
+modified-by: por
 more: Más
 move: Mover
 move-folder: Mover carpeta

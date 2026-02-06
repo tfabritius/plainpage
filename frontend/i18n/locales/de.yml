@@ -13,6 +13,7 @@ add: Hinzufügen
 add-tag: Tag hinzufügen
 administrators: Administratoren
 all-registered-users: Alle registrierten Benutzer
+anonymous: anonym
 anonymous-users: Anonyme Benutzer
 application-title: Titel der App
 are-you-sure-to-delete-this-account: Bist du sicher, dass du dieses Konto löschen willst?
@@ -58,6 +59,8 @@ invalid-folder-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
 invalid-page-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
 language: Sprache
 menu: Menü
+modified: Geändert
+modified-by: von
 more: Mehr
 move: Verschieben
 move-folder: Ordner verschieben

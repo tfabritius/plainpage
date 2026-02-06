@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { Breadcrumb, Page } from '~/types'
+import { useTimeAgo } from '@vueuse/core'
 import { useRouteQuery } from '@vueuse/router'
 import { storeToRefs } from 'pinia'
 import { useAppStore } from '~/store/app'
@@ -26,9 +27,15 @@ const pageTitle = computed(() => props.page.meta.title || t('untitled'))
 
 useHead(() => ({ title: pageTitle.value }))
 
+// Modified info - check for non-zero time (Go's zero time starts with year 0001)
+const hasModifiedAt = computed(() => props.page.meta.modifiedAt && !props.page.meta.modifiedAt.startsWith('0001-'))
+const modifiedAt = computed(() => new Date(props.page.meta.modifiedAt))
+const modifiedAtTimeAgo = useTimeAgo(modifiedAt, { messages: timeAgoMessages() })
+const modifiedAtFormatted = computed(() => modifiedAt.value.toLocaleString())
+
 const plainDialog = useTemplateRef('plainDialog')
 
-const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
+const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [], modifiedAt: '', modifiedBy: '' } }
 const editablePage = ref(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')
@@ -273,6 +280,14 @@ onKeyStroke('s', (e) => {
       <span v-if="page?.meta.title">{{ pageTitle }}</span>
       <span v-else class="italic">
         {{ pageTitle }}
+      </span>
+    </template>
+
+    <template v-if="!editing && hasModifiedAt" #subtitle>
+      <span class="text-[var(--ui-text-muted)]/50">
+        {{ $t('modified') }} <span :title="modifiedAtFormatted">{{ modifiedAtTimeAgo }}</span> {{ $t('modified-by') }}
+        <span v-if="page.meta.modifiedBy">{{ page.meta.modifiedBy }}</span>
+        <span v-else class="italic">{{ $t('anonymous') }}</span>
       </span>
     </template>
 

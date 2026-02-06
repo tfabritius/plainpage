@@ -13,6 +13,7 @@ add: Add
 add-tag: Add Tag
 administrators: Administrators
 all-registered-users: All registered users
+anonymous: anonymous
 anonymous-users: Anonymous users
 application-title: Application title
 are-you-sure-to-delete-this-account: Are you sure to delete this account?
@@ -58,6 +59,8 @@ invalid-folder-name: 'Invalid name (allowed: [a-z0-9_-])'
 invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
 language: Language
 menu: Menu
+modified: Modified
+modified-by: by
 more: More
 move: Move
 move-folder: Move folder

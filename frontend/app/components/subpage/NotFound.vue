@@ -13,7 +13,7 @@ const emit = defineEmits<{ (e: 'refresh'): void }>()
 const { t } = useI18n()
 const toast = useToast()
 
-const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
+const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [], modifiedAt: '0001-01-01T00:00:00Z', modifiedBy: '' } }
 const editablePage = ref<Page>(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')

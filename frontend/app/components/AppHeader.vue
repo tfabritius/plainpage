@@ -178,7 +178,7 @@ const menuItems = computed(() => {
 
     <!-- Section 2: Search button -->
     <div class="flex-1 flex justify-end items-center min-w-0 mr-1 ml-4">
-      <UTooltip>
+      <UTooltip :kbds="['Ctrl+K', '/']" :text="$t('search')">
         <UButton
           icon="tabler:search"
           variant="link"
@@ -187,14 +187,6 @@ const menuItems = computed(() => {
           :aria-label="$t('search')"
           @click="openSearch"
         />
-        <template #content>
-          <span class="flex items-center gap-1.5">
-            {{ $t('search') }}
-            <UKbd>Ctrl</UKbd><UKbd>K</UKbd>
-            <span class="text-(--ui-text-muted)">{{ $t('or') }}</span>
-            <UKbd>/</UKbd>
-          </span>
-        </template>
       </UTooltip>
     </div>
 

@@ -199,7 +199,8 @@ Besides pages and folders, PlainPage allows you to grant additional permissions:
 
 | Shortcut           | Action                                          |
 | ------------------ | ----------------------------------------------- |
-| `e`                | Edit page                                       |
+| `Ctrl+K`, `/`      | Search                                          |
+| `E`                | Edit page                                       |
 | `Ctrl+S`           | Save page (when editing)                        |
 | `Esc`              | Cancel edit / close full screen mode            |
 | `Ctrl+Backspace`   | Delete current page/folder                      |

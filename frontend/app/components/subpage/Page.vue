@@ -292,14 +292,20 @@ onKeyStroke('s', (e) => {
     </template>
 
     <template #actions>
-      <ReactiveButton v-if="!editing && allowWrite" icon="tabler:edit" :label="$t('edit')" @click="onEditPage" />
+      <UTooltip v-if="!editing && allowWrite" :text="$t('edit')" :kbds="['E']">
+        <ReactiveButton icon="tabler:edit" :label="$t('edit')" @click="onEditPage" />
+      </UTooltip>
 
       <UDropdownMenu v-if="!editing" :items="menuItems">
         <ReactiveButton icon="tabler:dots-vertical" :label="$t('more')" />
       </UDropdownMenu>
 
-      <ReactiveButton v-if="editing" icon="tabler:x" :label="$t('cancel')" @click="onCancelEdit" />
-      <ReactiveButton v-if="editing" color="success" icon="tabler:device-floppy" :label="$t('save')" @click="onSavePage" />
+      <UTooltip v-if="editing" :text="$t('cancel')" :kbds="['Esc']">
+        <ReactiveButton icon="tabler:x" :label="$t('cancel')" @click="onCancelEdit" />
+      </UTooltip>
+      <UTooltip v-if="editing" :text="$t('save')" :kbds="['Ctrl+S']">
+        <ReactiveButton color="success" icon="tabler:device-floppy" :label="$t('save')" @click="onSavePage" />
+      </UTooltip>
     </template>
 
     <PageView

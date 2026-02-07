@@ -1,8 +1,7 @@
 export default defineAppConfig({
   ui: {
     colors: {
-      // eslint-disable-next-line ts/no-explicit-any
-      primary: 'plainpage' as any,
+      primary: 'plainpage',
       warning: 'orange',
     },
 
@@ -15,10 +14,8 @@ export default defineAppConfig({
 
     button: {
       defaultVariants: {
-        // eslint-disable-next-line ts/no-explicit-any
-        color: 'neutral' as any,
-        // eslint-disable-next-line ts/no-explicit-any
-        variant: 'outline' as any,
+        color: 'neutral',
+        variant: 'outline',
       },
       slots: {
         base: 'cursor-pointer justify-center font-normal text-sm rounded-lg',
@@ -42,8 +39,7 @@ export default defineAppConfig({
         },
         {
           size: 'md',
-          // eslint-disable-next-line ts/no-explicit-any
-          variant: 'link' as any,
+          variant: 'link',
           class: 'px-1.5',
         },
       ],
@@ -82,8 +78,7 @@ export default defineAppConfig({
       compoundVariants: [
         {
           color: 'primary',
-          // eslint-disable-next-line ts/no-explicit-any
-          variant: ['outline', 'subtle'] as any,
+          variant: ['outline', 'subtle'],
           class: 'focus-visible:ring-1',
         },
       ],

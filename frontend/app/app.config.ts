@@ -50,8 +50,12 @@ export default defineAppConfig({
     },
 
     card: {
-      slots: {
-        root: 'rounded-2xl shadow-lg',
+      variants: {
+        variant: {
+          elevated: {
+            root: 'bg-default ring ring-default divide-y divide-default rounded-2xl shadow-lg',
+          },
+        },
       },
     },
 

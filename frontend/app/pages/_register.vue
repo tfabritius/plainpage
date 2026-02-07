@@ -69,7 +69,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <UCard class="w-80">
+      <UCard class="w-80" variant="elevated">
         <div class="text-center mb-4">
           <div class="w-16 h-16 rounded-2xl bg-[var(--ui-primary)] mx-auto flex items-center justify-center mb-4 shadow-lg">
             <UIcon name="tabler:user-plus" size="2em" class="text-white" />

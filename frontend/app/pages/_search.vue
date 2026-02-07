@@ -4,6 +4,16 @@ import { useRouteQuery } from '@vueuse/router'
 
 const { t } = useI18n()
 
+// Helper to check if a tag was matched in search (appears in fragments)
+function isMatchedTag(result: SearchHit, tag: string): boolean {
+  const matchedTags = result.fragments['meta.tags']
+  if (!matchedTags) {
+    return false
+  }
+  // Strip HTML tags from fragments to compare with plain tag
+  return matchedTags.some(fragment => fragment.replace(/<[^>]*>/g, '') === tag)
+}
+
 useHead(() => ({ title: t('search') }))
 
 const q = useRouteQuery('q')
@@ -52,45 +62,59 @@ watch(q, () => {
       {{ $t('search') }}
     </template>
 
-    <form class="flex" @submit.prevent="onSearch">
-      <UInput v-model="query" :placeholder="t('search')" class="w-full" />
-      <ReactiveButton color="primary" icon="tabler:search" class="ml-2" :loading="loading" :label="$t('search')" type="submit" />
+    <form class="flex gap-3" @submit.prevent="onSearch">
+      <UInput v-model="query" :placeholder="t('search')" class="w-full" size="lg" />
+      <ReactiveButton color="primary" icon="tabler:search" variant="solid" :loading="loading" :label="$t('search')" type="submit" />
     </form>
 
-    <div v-if="results !== undefined">
+    <div v-if="loading || results !== undefined">
       <h2 class="font-light text-xl my-4">
         {{ $t('_search.results') }}
+        <span v-if="!loading && results && results.length > 0" class="text-sm ml-1">
+          ({{ results.length }})
+        </span>
       </h2>
 
-      <div v-if="results.length > 0">
-        <div v-for="(result, i) in results" :key="i" class="mb-4">
-          <ULink :to="`/${result.url}`">
-            <span class="text-xl flex items-center">
+      <div v-if="loading" class="space-y-4">
+        <UCard v-for="i in 3" :key="i">
+          <USkeleton class="h-7 w-1/3" />
+          <USkeleton class="h-4 w-1/4 mt-2" />
+          <USkeleton class="h-4 w-full mt-4" />
+          <USkeleton class="h-4 w-3/4 mt-1" />
+        </UCard>
+      </div>
+
+      <div v-else-if="results && results.length > 0" class="space-y-4">
+        <NuxtLink v-for="(result, i) in results" :key="i" :to="`/${result.url}`" class="block">
+          <UCard class="cursor-pointer transition-all duration-200 hover:ring-[var(--ui-primary)]/50 hover:bg-[var(--ui-bg-elevated)]/50">
+            <div class="text-xl flex items-center">
               <UIcon :name="result.isFolder ? 'tabler:folder' : 'tabler:file-text'" class="mr-1" />
               <span v-if="'meta.title' in result.fragments" v-html="result.fragments['meta.title'][0]" />
               <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
-            </span>
-            <span class="text-sm font-mono ml-2">
+            </div>
+            <div class="text-sm font-mono text-[var(--ui-text-muted)]">
               <span v-if="'url' in result.fragments" v-html="result.fragments.url[0]" />
               <span v-else>{{ result.url }}</span>
-            </span>
-          </ULink>
-          <br>
+            </div>
 
-          <div v-if="'content' in result.fragments" class="text-gray-400 dark:text-gray-500">
-            <div v-for="(f, ii) in result.fragments.content" :key="ii" v-html="f" />
-          </div>
+            <div v-if="'content' in result.fragments" class="text-[var(--ui-text-muted)] mt-2">
+              <div v-for="(f, ii) in result.fragments.content" :key="ii" v-html="f" />
+            </div>
 
-          <!-- eslint-disable vue/no-v-text-v-html-on-component -->
-          <UBadge
-            v-for="tag in result.fragments['meta.tags']"
-            :key="tag"
-            class="mr-1"
-            v-html="tag"
-          />
-        </div>
+            <div v-if="result.meta.tags?.length" class="flex gap-1 flex-wrap mt-2">
+              <UBadge
+                v-for="tag in result.meta.tags"
+                :key="tag"
+                :variant="isMatchedTag(result, tag) ? 'solid' : 'outline'"
+                :color="isMatchedTag(result, tag) ? 'primary' : undefined"
+              >
+                {{ tag }}
+              </UBadge>
+            </div>
+          </UCard>
+        </NuxtLink>
       </div>
-      <div v-else>
+      <div v-else-if="results && results.length === 0">
         {{ $t('_search.no-results') }}
       </div>
     </div>

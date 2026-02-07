@@ -29,7 +29,7 @@
     "@nuxt/eslint": "^1.13.0",
     "@nuxt/icon": "^2.2.1",
     "@nuxt/ui": "4.4.0",
-    "@nuxtjs/i18n": "10.2.1",
+    "@nuxtjs/i18n": "10.2.3",
     "@pinia/nuxt": "^0.11.3",
     "@vueuse/components": "^14.2.0",
     "@vueuse/core": "^14.2.0",

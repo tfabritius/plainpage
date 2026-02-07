@@ -1,5 +1,7 @@
 _login:
   link-to-register: ¿Nuevo aquí? ¡Regístrate ahora!
+_register:
+  link-to-login: ¿Ya tienes una cuenta? ¡Inicia sesión!
 _search:
   no-results: No hay resultados
   results: Resultados

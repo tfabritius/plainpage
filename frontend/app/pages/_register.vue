@@ -69,60 +69,82 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
     <AppHeader />
 
     <div class="m-auto text-center text-gray-500">
-      <h2 class="font-light text-xl my-4">
-        {{ $t('register-account') }}
-      </h2>
+      <UCard class="w-80">
+        <div class="text-center mb-4">
+          <div class="w-16 h-16 rounded-2xl bg-[var(--ui-primary)] mx-auto flex items-center justify-center mb-4 shadow-lg">
+            <UIcon name="tabler:user-plus" size="2em" class="text-white" />
+          </div>
+          <h1 class="text-xl font-semibold text-slate-700 dark:text-slate-200">
+            {{ $t('register-account') }}
+          </h1>
+        </div>
 
-      <UForm
-        ref="formRef"
-        :schema="formSchema"
-        :state="formState"
-        class="w-50"
-        @submit="submit"
-      >
-        <UFormField name="displayName" class="mt-4">
-          <UInput
-            v-model="formState.displayName"
-            :placeholder="$t('display-name')"
-            autofocus
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField name="username" class="mt-4">
-          <UInput
-            v-model="formState.username"
-            type="text"
-            :placeholder="$t('username')"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField name="password" class="mt-4">
-          <UInput
-            v-model="formState.password"
-            type="password"
-            :placeholder="$t('password')"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField name="passwordConfirm" class="mt-4">
-          <UInput
-            v-model="formState.passwordConfirm"
-            type="password"
-            :placeholder="$t('password-repeat')"
-            class="w-full"
-          />
-        </UFormField>
-        <UFormField class="mt-4">
-          <UButton
-            type="submit"
-            color="primary"
-            variant="solid"
-            class="w-full"
-            :label="$t('register')"
-            :loading="loading"
-          />
-        </UFormField>
-      </UForm>
+        <UForm
+          ref="formRef"
+          :schema="formSchema"
+          :state="formState"
+          @submit="submit"
+        >
+          <UFormField name="displayName">
+            <UInput
+              v-model="formState.displayName"
+              :placeholder="$t('display-name')"
+              autofocus
+              class="w-full"
+              size="lg"
+            />
+          </UFormField>
+          <UFormField name="username" class="mt-4">
+            <UInput
+              v-model="formState.username"
+              type="text"
+              :placeholder="$t('username')"
+              class="w-full"
+              size="lg"
+            />
+          </UFormField>
+          <UFormField name="password" class="mt-4">
+            <UInput
+              v-model="formState.password"
+              type="password"
+              :placeholder="$t('password')"
+              class="w-full"
+              size="lg"
+            />
+          </UFormField>
+          <UFormField name="passwordConfirm" class="mt-4">
+            <UInput
+              v-model="formState.passwordConfirm"
+              type="password"
+              :placeholder="$t('password-repeat')"
+              class="w-full"
+              size="lg"
+            />
+          </UFormField>
+          <UFormField class="mt-4">
+            <UButton
+              type="submit"
+              color="primary"
+              variant="solid"
+              class="w-full"
+              :label="$t('register')"
+              size="lg"
+              :loading="loading"
+            />
+          </UFormField>
+        </UForm>
+
+        <div class="mt-6 pt-4 border-t border-slate-200/80 dark:border-slate-700/50 text-center">
+          <ULink
+            :to="`_login?returnTo=${String(route.query.returnTo || '/')}`"
+            class="text-sm text-slate-500 dark:text-slate-400 hover:text-[var(--ui-primary)]"
+          >
+            {{ $t('_register.link-to-login') }}
+          </ULink>
+        </div>
+      </UCard>
     </div>
+
+    <AppFooter />
   </div>
 </template>

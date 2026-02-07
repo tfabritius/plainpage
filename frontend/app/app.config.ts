@@ -21,7 +21,13 @@ export default defineAppConfig({
         variant: 'outline' as any,
       },
       slots: {
-        base: 'cursor-pointer justify-center font-normal text-sm',
+        base: 'cursor-pointer justify-center font-normal text-sm rounded-lg',
+      },
+      variants: {
+        variant: {
+          solid: 'shadow-sm',
+          outline: 'shadow-sm',
+        },
       },
       compoundVariants: [
         {
@@ -43,6 +49,12 @@ export default defineAppConfig({
       ],
     },
 
+    card: {
+      slots: {
+        root: 'rounded-2xl shadow-lg',
+      },
+    },
+
     dropdownMenu: {
       variants: {
         active: {
@@ -60,6 +72,9 @@ export default defineAppConfig({
     },
 
     input: {
+      slots: {
+        base: 'rounded-lg shadow-sm',
+      },
       compoundVariants: [
         {
           color: 'primary',

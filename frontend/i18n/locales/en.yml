@@ -1,5 +1,7 @@
 _login:
   link-to-register: New Here? Register now!
+_register:
+  link-to-login: Already have an account? Sign in!
 _search:
   no-results: No results
   results: Results

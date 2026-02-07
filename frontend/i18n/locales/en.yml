@@ -70,6 +70,7 @@ new-password: New password
 not-found: Not found
 ok: OK
 old-revisions-of: Old revisions of
+or: or
 cannot-move-folder-into-itself: Cannot move folder into itself
 cannot-move-to-same-location: Cannot move to same location
 destination: Destination

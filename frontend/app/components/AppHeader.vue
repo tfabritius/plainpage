@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useDark, useToggle } from '@vueuse/core'
+import { onKeyStroke, useDark, useToggle } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 
 import { useAppStore } from '~/store/app'
@@ -38,18 +38,45 @@ const route = useRoute()
 const toast = useToast()
 
 const searchQuery = ref('')
-const searchFocused = ref(false)
+const searchOpen = ref(false)
+const searchInputRef = ref<HTMLInputElement>()
 
 async function onSearch() {
   await navigateTo({ path: '/_search', query: { q: searchQuery.value } })
   searchQuery.value = ''
+  searchOpen.value = false
 }
 
-async function onKeyPressInSearch(e: Event) {
-  // Prevent keyboard shortcuts being fired if focus is in input field
-  e.stopPropagation()
-  e.stopImmediatePropagation()
+function openSearch() {
+  searchOpen.value = true
 }
+
+function onSearchModalOpen() {
+  // Focus the input when the modal is fully open
+  nextTick(() => {
+    searchInputRef.value?.focus()
+  })
+}
+
+function onSearchModalClose() {
+  searchQuery.value = ''
+}
+
+// Global keyboard shortcuts to open search (Ctrl+K, Cmd+K, /)
+onKeyStroke('k', (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault()
+    openSearch()
+  }
+})
+
+onKeyStroke('/', (e) => {
+  const target = e.target as HTMLElement
+  if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA' && !target.isContentEditable) {
+    e.preventDefault()
+    openSearch()
+  }
+})
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
@@ -149,21 +176,52 @@ const menuItems = computed(() => {
       <span>{{ appTitle }}</span>
     </ULink>
 
-    <!-- Section 2: Middle box with search (flexible, grows/shrinks) -->
-    <div class="flex-1 flex justify-end min-w-0 mr-1 ml-4">
-      <UInput
-        v-model="searchQuery"
-        :placeholder="$t('search')"
-        :class="searchFocused ? 'w-full' : 'w-40'"
-        class="min-w-0 transition-[width] duration-200 ease-in-out"
-        size="xs"
-        trailing-icon="tabler:search"
-        @focus="searchFocused = true"
-        @blur="searchFocused = false"
-        @keypress.enter="onSearch"
-        @keydown="onKeyPressInSearch"
-      />
+    <!-- Section 2: Search button -->
+    <div class="flex-1 flex justify-end items-center min-w-0 mr-1 ml-4">
+      <UTooltip>
+        <UButton
+          icon="tabler:search"
+          variant="link"
+          color="neutral"
+          size="xs"
+          :aria-label="$t('search')"
+          @click="openSearch"
+        />
+        <template #content>
+          <span class="flex items-center gap-1.5">
+            {{ $t('search') }}
+            <UKbd>Ctrl</UKbd><UKbd>K</UKbd>
+            <span class="text-(--ui-text-muted)">{{ $t('or') }}</span>
+            <UKbd>/</UKbd>
+          </span>
+        </template>
+      </UTooltip>
     </div>
+
+    <!-- Search Modal -->
+    <UModal
+      v-model:open="searchOpen"
+      :ui="{ content: 'sm:max-w-xl sm:top-24' }"
+      @after:enter="onSearchModalOpen"
+      @after:leave="onSearchModalClose"
+    >
+      <template #content>
+        <div class="flex items-center gap-2 p-3">
+          <UIcon name="tabler:search" class="w-5 h-5 text-(--ui-text-muted) flex-shrink-0" />
+          <input
+            ref="searchInputRef"
+            v-model="searchQuery"
+            type="text"
+            :placeholder="$t('search')"
+            class="flex-1 bg-transparent border-none outline-none text-base text-(--ui-text) placeholder:text-(--ui-text-muted)"
+            @keypress.enter="onSearch"
+          >
+          <UKbd class="hidden sm:flex">
+            Esc
+          </UKbd>
+        </div>
+      </template>
+    </UModal>
 
     <!-- Section 3: Menu (fixed, no shrink) -->
     <UDropdownMenu

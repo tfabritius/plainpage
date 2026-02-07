@@ -273,7 +273,7 @@ onKeyStroke('Backspace', (e) => {
       >
         <template #item="{ item }">
           <ULink :to="`/${item.url}`">
-            {{ item.title || item.name }}
+            <UIcon name="tabler:file-text" class="align-middle" /> <span class="align-middle">{{ item.title || item.name }}</span>
           </ULink>
         </template>
       </MultiColumnList>

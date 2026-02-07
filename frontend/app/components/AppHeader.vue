@@ -178,7 +178,7 @@ const menuItems = computed(() => {
 
     <!-- Section 2: Search button -->
     <div class="flex-1 flex justify-end items-center min-w-0 mr-1 ml-4">
-      <UTooltip :kbds="['Ctrl+K', '/']" :text="$t('search')">
+      <UTooltip :kbds="['/']" :text="$t('search')">
         <UButton
           icon="tabler:search"
           variant="link"

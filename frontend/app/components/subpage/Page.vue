@@ -303,7 +303,7 @@ onKeyStroke('s', (e) => {
       <UTooltip v-if="editing" :text="$t('cancel')" :kbds="['Esc']">
         <ReactiveButton icon="tabler:x" :label="$t('cancel')" @click="onCancelEdit" />
       </UTooltip>
-      <UTooltip v-if="editing" :text="$t('save')" :kbds="['Ctrl+S']">
+      <UTooltip v-if="editing" :text="$t('save')" :kbds="['meta', 'S']">
         <ReactiveButton color="success" icon="tabler:device-floppy" :label="$t('save')" @click="onSavePage" />
       </UTooltip>
     </template>

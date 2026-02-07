@@ -195,7 +195,6 @@ watch(open, (isOpen) => {
         <!-- Breadcrumbs -->
         <UBreadcrumb
           :items="pickerBreadcrumbItems"
-          :ui="{ link: 'hover:text-[var(--ui-primary)]' }"
         />
 
         <!-- Loading state -->

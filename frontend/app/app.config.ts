@@ -90,17 +90,18 @@ export default defineAppConfig({
     },
 
     link: {
-      variants: {
-        active: {
-          true: 'hover:text-[var(--ui-primary)]',
-          false: 'hover:text-[var(--ui-primary)]',
-        },
-      },
+      base: 'hover:!text-[var(--ui-primary)]',
     },
 
     modal: {
       slots: {
         footer: 'justify-end',
+      },
+    },
+
+    breadcrumb: {
+      slots: {
+        link: 'hover:!text-[var(--ui-primary)]',
       },
     },
 

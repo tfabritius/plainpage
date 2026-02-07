@@ -10,7 +10,7 @@ const { version } = storeToRefs(app)
   <div class="py-2 text-sm text-gray-400 dark:text-gray-500 flex items-center justify-center">
     <ULink
       to="https://github.com/tfabritius/plainpage"
-      class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400 inline-flex items-center gap-1"
+      class="text-gray-400 dark:text-gray-600 inline-flex items-center gap-1"
     >
       <UIcon name="tabler:brand-github" class="size-4" />
       <span>PlainPage</span>

@@ -44,7 +44,6 @@ const breadcrumbItems = computed(() => {
         <div v-if="breadcrumbs">
           <UBreadcrumb
             :items="breadcrumbItems"
-            :ui="{ link: 'hover:text-[var(--ui-primary)]' }"
           />
         </div>
 

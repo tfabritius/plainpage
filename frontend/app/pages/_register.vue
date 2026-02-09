@@ -40,7 +40,7 @@ const loading = ref(false)
 async function submit(_event: FormSubmitEvent<FormSchema>) {
   loading.value = true
   try {
-    await apiFetch<User>('/auth/users', { method: 'POST', body: formState })
+    await apiRawFetch<User>('/auth/users', { method: 'POST', body: formState })
   } catch (e) {
     if (e instanceof FetchError && e.statusCode === 409) {
       existingUsername.value = formState.username

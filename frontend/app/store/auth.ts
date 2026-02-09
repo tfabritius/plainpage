@@ -23,7 +23,7 @@ export const useAuthStore = defineStore(
       user.value = undefined
 
       try {
-        const response = await apiFetch<LoginResponse>('/auth/login', {
+        const response = await apiRawFetch<LoginResponse>('/auth/login', {
           body: credentials,
           method: 'POST',
           credentials: 'include', // Include cookies for refresh token

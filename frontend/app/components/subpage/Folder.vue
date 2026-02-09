@@ -217,7 +217,7 @@ onKeyStroke('Backspace', (e) => {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <UIcon name="tabler:folder" class="mr-1" />
+      <UIcon name="tabler:folder" class="mr-2" />
       {{ pageTitle }}
     </template>
 
@@ -246,7 +246,7 @@ onKeyStroke('Backspace', (e) => {
     </template>
 
     <div v-if="subfolders.length > 0">
-      <h2 class="font-light text-xl my-4">
+      <h2 class="font-light text-lg my-4">
         {{ $t('folders') }}
       </h2>
       <MultiColumnList
@@ -255,15 +255,15 @@ onKeyStroke('Backspace', (e) => {
         :group-if-more-than="10"
       >
         <template #item="{ item }">
-          <ULink :to="`/${item.url}`">
-            <UIcon name="tabler:folder" class="align-middle" /> <span class="align-middle">{{ item.title || item.name }}</span>
+          <ULink :to="`/${item.url}`" class="inline-flex items-center gap-1">
+            <UIcon name="tabler:folder" /> <span>{{ item.title || item.name }}</span>
           </ULink>
         </template>
       </MultiColumnList>
     </div>
 
     <div v-if="pages.length > 0">
-      <h2 class="font-light text-xl my-4">
+      <h2 class="font-light text-lg my-4">
         {{ $t('pages') }}
       </h2>
       <MultiColumnList
@@ -272,8 +272,8 @@ onKeyStroke('Backspace', (e) => {
         :group-if-more-than="10"
       >
         <template #item="{ item }">
-          <ULink :to="`/${item.url}`">
-            <UIcon name="tabler:file-text" class="align-middle" /> <span class="align-middle">{{ item.title || item.name }}</span>
+          <ULink :to="`/${item.url}`" class="inline-flex items-center gap-1">
+            <UIcon name="tabler:file-text" /> <span>{{ item.title || item.name }}</span>
           </ULink>
         </template>
       </MultiColumnList>

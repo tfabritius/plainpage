@@ -43,26 +43,22 @@ const groupedItems = computed<ItemGroup[]>(() => {
 
 <template>
   <div v-if="groupedItems.length > 0 " class="columns-1 md:columns-2 lg:columns-3">
-    <span v-for="(group, i) of groupedItems" :key="i">
-      <span class="font-semibold">
+    <div v-for="(group, i) of groupedItems" :key="i" class="mb-4 break-inside-avoid">
+      <span class="font-semibold text-sm">
         {{ group.header }}
       </span>
-      <ul class="pl-1 mt-0 mb-2 list-none">
+      <ul class="mt-0 mb-2 list-none space-y-0.5">
         <li v-for="(item, idx) of group.items" :key="idx">
           <slot name="item" :item="item" />
         </li>
       </ul>
-    </span>
+    </div>
   </div>
   <div v-else>
-    <ul class="pl-0 list-none">
+    <ul class="pl-0 list-none space-y-1">
       <li v-for="(item, idx) of sortedItems" :key="idx">
         <slot name="item" :item="item" />
       </li>
     </ul>
   </div>
 </template>
-
-<style scoped>
-
-</style>

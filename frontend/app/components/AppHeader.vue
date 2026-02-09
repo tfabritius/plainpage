@@ -168,7 +168,7 @@ const menuItems = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center py-1">
     <!-- Section 1: Title (fixed, no shrink) -->
     <ULink to="/" :active="false" class="text-xl font-light flex items-center whitespace-nowrap flex-shrink-0">
       <!-- favicon -->
@@ -217,11 +217,11 @@ const menuItems = computed(() => {
 
     <!-- Section 3: Menu (fixed, no shrink) -->
     <UDropdownMenu
-      class="flex-shrink-0 m-1"
+      class="flex-shrink-0"
       :items="menuItems"
       size="lg"
     >
-      <ReactiveButton icon="tabler:menu-2" variant="link" :label="t('menu')" />
+      <ReactiveButton icon="tabler:menu-2" variant="link" :aria-label="t('menu')" label="" />
     </UDropdownMenu>
   </div>
 </template>

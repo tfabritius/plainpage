@@ -195,7 +195,7 @@ const containerClasses = computed(() => {
   if (showFullscreen.value) {
     return 'fixed inset-0 z-50 flex flex-col bg-white dark:bg-black h-full'
   }
-  return 'border border-gray-300 border-solid'
+  return 'border border-gray-300 border-solid rounded-lg shadow-sm'
 })
 
 onKeyStroke('Escape', async (_e) => {

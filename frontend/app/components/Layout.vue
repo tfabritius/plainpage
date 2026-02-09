@@ -37,7 +37,7 @@ const breadcrumbItems = computed(() => {
     <AppHeader />
 
     <div
-      class="border rounded border-gray-300 border-solid flex flex-col min-h-0"
+      class="border rounded-xl border-gray-300 border-solid shadow-sm flex flex-col min-h-0"
       :class="{ grow: useFullHeight }"
     >
       <div class="p-5 border-b border-b-gray-300 border-b-solid">
@@ -51,7 +51,7 @@ const breadcrumbItems = computed(() => {
           <div>
             <span class="group flex items-top">
               <ULink :to="route.path" :active="false">
-                <h1 class="my-0 py-3 text-3xl font-light flex items-center">
+                <h1 class="my-0 py-2 text-2xl md:text-3xl font-light flex items-center">
                   <slot name="title" />
                 </h1>
               </ULink>
@@ -63,7 +63,7 @@ const breadcrumbItems = computed(() => {
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 md:gap-3">
             <slot name="actions" />
           </div>
         </div>

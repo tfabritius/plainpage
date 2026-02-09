@@ -41,7 +41,7 @@ async function onSave() {
 <template>
   <Layout :breadcrumbs="breadcrumbs">
     <template #title>
-      <UIcon v-if="isFolder" name="tabler:folder" class="mr-1" />
+      <UIcon v-if="isFolder" name="tabler:folder" class="mr-2" />
       <span v-if="title">{{ title }}</span>
       <span v-else class="italic">{{ $t('untitled') }}</span>
     </template>

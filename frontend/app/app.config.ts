@@ -90,6 +90,7 @@ export default defineAppConfig({
 
     modal: {
       slots: {
+        content: 'bg-default ',
         footer: 'justify-end',
       },
     },
@@ -103,6 +104,12 @@ export default defineAppConfig({
     table: {
       slots: {
         tr: 'hover:bg-[var(--ui-bg-elevated)]/50',
+      },
+    },
+
+    toast: {
+      slots: {
+        root: 'rounded-xl',
       },
     },
   },

@@ -11,14 +11,14 @@ const emit = defineEmits<{
 
 <template>
   <div class="flex justify-between p-1">
-    <div>
+    <div class="flex items-center gap-0.5 flex-wrap">
       <MdToolbarButton icon="tabler:bold" @click="emit('click', 'bold')" />
       <MdToolbarButton icon="tabler:italic" @click="emit('click', 'italic')" />
       <MdToolbarButton icon="tabler:underline" @click="emit('click', 'underline')" />
       <MdToolbarButton icon="tabler:strikethrough" @click="emit('click', 'strikethrough')" />
       <MdToolbarButton icon="tabler:superscript" @click="emit('click', 'superscript')" />
       <MdToolbarButton icon="tabler:subscript" @click="emit('click', 'subscript')" />
-      <span class="text-[var(--ui-text)]/30 mx-1 align-top">|</span>
+      <span class="text-[var(--ui-text)]/30 mx-1">|</span>
 
       <UPopover
         mode="hover"
@@ -26,12 +26,14 @@ const emit = defineEmits<{
       >
         <MdToolbarButton icon="tabler:heading" />
         <template #content>
-          <MdToolbarButton icon="tabler:h-1" style="font-size:initial" @click="emit('click', 'heading-1')" />
-          <MdToolbarButton icon="tabler:h-2" style="font-size:initial" @click="emit('click', 'heading-2')" />
-          <MdToolbarButton icon="tabler:h-3" style="font-size:initial" @click="emit('click', 'heading-3')" />
-          <MdToolbarButton icon="tabler:h-4" style="font-size:initial" @click="emit('click', 'heading-4')" />
-          <MdToolbarButton icon="tabler:h-5" style="font-size:initial" @click="emit('click', 'heading-5')" />
-          <MdToolbarButton icon="tabler:h-6" style="font-size:initial" @click="emit('click', 'heading-6')" />
+          <div class="flex gap-0.5 p-1">
+            <MdToolbarButton icon="tabler:h-1" style="font-size:initial" @click="emit('click', 'heading-1')" />
+            <MdToolbarButton icon="tabler:h-2" style="font-size:initial" @click="emit('click', 'heading-2')" />
+            <MdToolbarButton icon="tabler:h-3" style="font-size:initial" @click="emit('click', 'heading-3')" />
+            <MdToolbarButton icon="tabler:h-4" style="font-size:initial" @click="emit('click', 'heading-4')" />
+            <MdToolbarButton icon="tabler:h-5" style="font-size:initial" @click="emit('click', 'heading-5')" />
+            <MdToolbarButton icon="tabler:h-6" style="font-size:initial" @click="emit('click', 'heading-6')" />
+          </div>
         </template>
       </UPopover>
 
@@ -40,13 +42,13 @@ const emit = defineEmits<{
       <MdToolbarButton icon="tabler:checkbox" @click="emit('click', 'checkbox')" />
       <MdToolbarButton icon="tabler:quote" @click="emit('click', 'quote')" />
 
-      <span class="text-[var(--ui-text)]/30 mx-1 align-top">|</span>
+      <span class="text-[var(--ui-text)]/30 mx-1">|</span>
       <MdToolbarButton icon="tabler:link" @click="emit('click', 'link')" />
       <MdToolbarButton icon="tabler:code" @click="emit('click', 'code-inline')" />
       <MdToolbarButton icon="tabler:braces" @click="emit('click', 'code-block')" />
       <MdToolbarButton icon="tabler:table" @click="emit('click', 'table')" />
     </div>
-    <div>
+    <div class="flex items-center gap-0.5">
       <MdToolbarButton
         :icon="showFullscreen ? 'tabler:minimize' : 'tabler:maximize'"
         @click="emit('click', 'fullscreen')"

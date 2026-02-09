@@ -86,7 +86,7 @@ const pageTitle = computed(() => {
       :is-folder="true"
       :url-path="urlPath"
       :meta="deepClone(folder.meta)"
-      :title="urlPath === '' ? $t('home') : data?.breadcrumbs.slice(-1)[0]?.name"
+      :title="urlPath === '' ? $t('home') : (folder.meta.title || data?.breadcrumbs.slice(-1)[0]?.name)"
       :breadcrumbs="data?.breadcrumbs ?? []"
       @refresh="refresh"
     />

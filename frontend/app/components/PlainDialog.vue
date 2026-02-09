@@ -9,6 +9,16 @@ const {
   confirm: confirmDialog,
 } = useConfirmDialog()
 
+const messageRef = useTemplateRef('message')
+
+// Focus the message element to prevent buttons from receiving initial focus
+watch(isRevealed, async (revealed) => {
+  if (revealed) {
+    await nextTick()
+    messageRef.value?.focus()
+  }
+})
+
 const parameters = ref<{
   message: string
   confirmButtonText?: string
@@ -46,7 +56,9 @@ defineExpose({ confirm })
       @update:open="(v: Boolean) => v || confirmDialog(false)"
     >
       <template #body>
-        <p>{{ parameters.message }}</p>
+        <p ref="message" tabindex="-1" class="outline-none">
+          {{ parameters.message }}
+        </p>
       </template>
 
       <template #footer>

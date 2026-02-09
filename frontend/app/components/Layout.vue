@@ -37,10 +37,10 @@ const breadcrumbItems = computed(() => {
     <AppHeader />
 
     <div
-      class="border rounded-xl border-gray-300 border-solid shadow-sm flex flex-col min-h-0"
+      class="border rounded-xl border-default shadow-sm flex flex-col min-h-0"
       :class="{ grow: useFullHeight }"
     >
-      <div class="p-5 border-b border-b-gray-300 border-b-solid">
+      <div class="p-5 border-b border-b-default">
         <div v-if="breadcrumbs">
           <UBreadcrumb
             :items="breadcrumbItems"

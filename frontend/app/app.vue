@@ -52,4 +52,16 @@ useHead(() => ({ titleTemplate: `%s | ${appTitle.value}` }))
   --color-plainpage-900: #00262e;
   --color-plainpage-950: #001519;
 }
+
+:root {
+  --ui-bg: var(--ui-color-neutral-50);
+  --ui-bg-muted: var(--ui-color-neutral-100);
+  --ui-bg-accented: var(--ui-color-neutral-200);
+}
+
+:root.dark {
+  --ui-bg: var(--ui-color-neutral-900);
+  --ui-bg-muted: var(--ui-color-neutral-800);
+  --ui-bg-accented: var(--ui-color-neutral-700);
+}
 </style>

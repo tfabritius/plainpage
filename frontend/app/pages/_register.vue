@@ -134,7 +134,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
           </UFormField>
         </UForm>
 
-        <div class="mt-6 pt-4 border-t border-slate-200/80 dark:border-slate-700/50 text-center">
+        <div class="mt-6 pt-4 border-t border-default text-center">
           <ULink
             :to="`_login?returnTo=${String(route.query.returnTo || '/')}`"
             class="text-sm text-slate-500 dark:text-slate-400 hover:text-[var(--ui-primary)]"

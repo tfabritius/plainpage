@@ -195,7 +195,7 @@ const containerClasses = computed(() => {
   if (showFullscreen.value) {
     return 'fixed inset-0 z-50 flex flex-col bg-white dark:bg-black h-full'
   }
-  return 'border border-gray-300 border-solid rounded-lg shadow-sm'
+  return 'border border-default rounded-lg shadow-sm'
 })
 
 onKeyStroke('Escape', async (_e) => {
@@ -214,7 +214,7 @@ onKeyStroke('Escape', async (_e) => {
   >
     <MdEditorToolbar
       :show-fullscreen="showFullscreen"
-      class="border-b border-b-gray-300 border-b-solid "
+      class="border-b border-b-default"
       :show-preview="showPreview"
       @click="onToolbarClick"
     />
@@ -229,7 +229,7 @@ onKeyStroke('Escape', async (_e) => {
         />
       </div>
       <div
-        class="w-1/2 overflow-auto border-l border-l-gray-300 border-l-solid"
+        class="w-1/2 overflow-auto border-l border-l-default"
         :class="showPreview ? 'w-1/2' : 'hidden'"
       >
         <MdPreview

@@ -208,12 +208,12 @@ watch(open, (isOpen) => {
         </div>
 
         <!-- Folder list -->
-        <div v-else class="border rounded-md dark:border-gray-700 max-h-64 overflow-y-auto">
+        <div v-else class="border rounded-md border-default max-h-64 overflow-y-auto">
           <!-- Parent folder entry (go up) -->
           <button
             v-if="parentFolderPath !== null"
             type="button"
-            class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-left border-b dark:border-gray-700 cursor-pointer"
+            class="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--ui-bg-accented)] text-left border-b border-default cursor-pointer"
             @click="navigateToFolder(parentFolderPath)"
           >
             <UIcon name="tabler:folder-up" class="text-lg flex-shrink-0" />
@@ -230,7 +230,7 @@ watch(open, (isOpen) => {
             v-for="folder in subfolders"
             :key="folder.url"
             type="button"
-            class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 text-left border-b last:border-b-0 dark:border-gray-700 cursor-pointer"
+            class="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--ui-bg-accented)] text-left border-b last:border-b-0 border-default cursor-pointer"
             :class="{
               'opacity-50': folder.url === props.currentPath,
             }"

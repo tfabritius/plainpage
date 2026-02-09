@@ -94,7 +94,7 @@ async function submit() {
 
         <div
           v-if="allowRegister"
-          class="mt-6 pt-4 border-t border-slate-200/80 dark:border-slate-700/50 text-center"
+          class="mt-6 pt-4 border-t border-default text-center"
         >
           <ULink
             :to="`_register?returnTo=${String(route.query.returnTo || '/')}`"

@@ -9,6 +9,17 @@ const {
   confirm: confirmDialog,
 } = useConfirmDialog()
 
+interface ConfirmOptions {
+  title?: string
+  confirmButtonText?: string
+  confirmButtonColor?: 'success' | 'warning' | 'error'
+  cancelButtonText?: string
+}
+
+interface ConfirmState extends ConfirmOptions {
+  message: string
+}
+
 const messageRef = useTemplateRef('message')
 
 // Focus the message element to prevent buttons from receiving initial focus
@@ -19,21 +30,12 @@ watch(isRevealed, async (revealed) => {
   }
 })
 
-const parameters = ref<{
-  message: string
-  confirmButtonText?: string
-  confirmButtonColor?: 'success' | 'warning' | 'error'
-  cancelButtonText?: string
-}>({ message: '' })
+const parameters = ref<ConfirmState>({ message: '' })
 
-async function confirm(message: string, params: {
-  confirmButtonText?: string
-  confirmButtonColor?: 'success' | 'warning' | 'error'
-  cancelButtonText?: string
-} = {}): Promise<boolean> {
+async function confirm(message: string, options: ConfirmOptions = {}): Promise<boolean> {
   parameters.value = {
     message,
-    ...params,
+    ...options,
   }
 
   const { data, isCanceled } = await reveal()
@@ -55,10 +57,14 @@ defineExpose({ confirm })
       :dismissible="true"
       @update:open="(v: Boolean) => v || confirmDialog(false)"
     >
-      <template #body>
-        <p ref="message" tabindex="-1" class="outline-none">
+      <template #title>
+        {{ parameters.title || t('confirm') }}
+      </template>
+
+      <template #description>
+        <span ref="message" tabindex="-1" class="outline-none">
           {{ parameters.message }}
-        </p>
+        </span>
       </template>
 
       <template #footer>

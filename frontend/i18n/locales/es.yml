@@ -25,6 +25,7 @@ are-you-sure-to-delete-user: ¿Está seguro de eliminar el usuario "{0}"?
 back-home: Volver al inicio
 back-to-content: Volver al contenido
 cancel: Cancelar
+confirm: Confirmar
 configuration: Configuración
 current-password: Contraseña actual
 current-password-required: Por favor ingrese la contraseña actual
@@ -37,7 +38,11 @@ dark-mode-off: Luz apagada
 dark-mode-on: Luz encendida
 define-custom-permissions: Definir permisos propios
 delete: Borrar
+delete-folder: Borrar carpeta
 delete-my-account: Borrar mi cuenta
+delete-page: Borrar página
+delete-user: Borrar usuario
+discard-changes: Descartar cambios
 discard-changes-to-this-page: ¿Quieres descartar los cambios de esta página?
 display-name: Nombre para mostrar
 displayname-required: Ingrese el nombre para mostrar

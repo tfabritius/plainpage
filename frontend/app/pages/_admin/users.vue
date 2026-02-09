@@ -113,6 +113,7 @@ async function onDelete(user: User) {
   if (!await plainDialog.value?.confirm(
     t('are-you-sure-to-delete-user', [user.username]),
     {
+      title: t('delete-user'),
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },

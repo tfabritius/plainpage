@@ -148,6 +148,7 @@ async function onDeletePage() {
   if (!await plainDialog.value?.confirm(
     t('are-you-sure-to-delete-this-page'),
     {
+      title: t('delete-page'),
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },
@@ -239,6 +240,7 @@ async function onCancelEdit() {
     if (!await plainDialog.value?.confirm(
       t('discard-changes-to-this-page'),
       {
+        title: t('discard-changes'),
         confirmButtonColor: 'warning',
       },
     )) {

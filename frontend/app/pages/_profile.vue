@@ -63,9 +63,9 @@ async function onDelete() {
   if (!await plainDialog.value?.confirm(
     t('are-you-sure-to-delete-this-account'),
     {
+      title: t('delete-my-account'),
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
-      cancelButtonText: t('cancel'),
     },
   )) {
     return

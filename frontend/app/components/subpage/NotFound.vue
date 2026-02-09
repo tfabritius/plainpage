@@ -81,6 +81,7 @@ async function onCancelEdit() {
     if (!await plainDialog.value?.confirm(
       t('discard-changes-to-this-page'),
       {
+        title: t('discard-changes'),
         confirmButtonColor: 'warning',
       },
     )) {

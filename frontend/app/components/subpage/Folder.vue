@@ -124,6 +124,7 @@ async function onDeleteFolder() {
   if (!await plainDialog.value?.confirm(
     t('are-you-sure-to-delete-this-folder'),
     {
+      title: t('delete-folder'),
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },

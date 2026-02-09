@@ -25,6 +25,7 @@ are-you-sure-to-delete-user: Are you sure to delete user "{0}"?
 back-home: Back home
 back-to-content: Back to content
 cancel: Cancel
+confirm: Confirm
 configuration: Configuration
 current-password: Current password
 current-password-required: Please enter current password
@@ -37,7 +38,11 @@ dark-mode-off: Light on
 dark-mode-on: Light off
 define-custom-permissions: Define custom permissions
 delete: Delete
+delete-folder: Delete folder
 delete-my-account: Delete my account
+delete-page: Delete page
+delete-user: Delete user
+discard-changes: Discard changes
 discard-changes-to-this-page: Discard changes to this page?
 display-name: Display name
 displayname-required: Please enter display name

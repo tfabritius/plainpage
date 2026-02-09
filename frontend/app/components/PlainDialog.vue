@@ -42,7 +42,7 @@ defineExpose({ confirm })
     <UModal
       :open="isRevealed"
       :close="false"
-      :dismissible="false"
+      :dismissible="true"
       @update:open="(v: Boolean) => v || confirmDialog(false)"
     >
       <template #body>

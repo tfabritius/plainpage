@@ -68,8 +68,8 @@ async function onDeleteConfirm() {
 
   try {
     await auth.deleteMe(deletePasswordInput.value)
-    deleteExpanded.value = false
     toast.add({ description: t('account-deleted'), color: 'success' })
+    await navigateTo('/')
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 403) {
       toast.add({ description: t('incorrect-password'), color: 'error' })

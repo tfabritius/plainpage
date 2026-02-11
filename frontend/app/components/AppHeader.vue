@@ -155,9 +155,17 @@ const menuItems = computed(() => {
       {
         icon: 'tabler:logout',
         label: t('sign-out'),
-        onSelect: () => {
+        onSelect: async () => {
+          await auth.logout()
           toast.add({ description: t('signed-out'), color: 'success' })
-          auth.logout()
+
+          // Redirect to home if current page requires authentication
+          const currentRoute = route.matched[route.matched.length - 1]
+          const middleware = currentRoute?.meta?.middleware
+          const requiresAuth = Array.isArray(middleware) && middleware.includes('require-auth')
+          if (requiresAuth) {
+            await navigateTo('/')
+          }
         },
       },
     )

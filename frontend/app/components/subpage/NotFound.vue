@@ -22,6 +22,7 @@ const emptyPage: Page = {
   },
 }
 const editablePage = ref<Page>(deepClone(emptyPage))
+const saving = ref(false)
 
 const editQuery = useRouteQuery('edit')
 const editing = computed({
@@ -30,6 +31,8 @@ const editing = computed({
     editQuery.value = value ? null : undefined
   },
 })
+
+const showEditor = computed(() => editing.value || saving.value)
 
 useHead(() => ({ title: t('not-found') }))
 
@@ -59,6 +62,10 @@ async function createThisFolder() {
 async function onSavePage() {
   try {
     await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: editablePage.value } })
+
+    // Set saving=true first to keep editor visible, then set editing=false and refresh
+    // The editor stays visible while saving
+    saving.value = true
     editing.value = false
 
     toast.add({
@@ -111,7 +118,7 @@ const navTo = navigateTo
 <template>
   <Layout
     :breadcrumbs="breadcrumbs"
-    :use-full-height="editing"
+    :use-full-height="showEditor"
   >
     <template #title>
       <span class="italic">{{ $t('not-found') }}</span>
@@ -122,7 +129,7 @@ const navTo = navigateTo
       <ReactiveButton icon="tabler:device-floppy" :label="$t('save')" color="success" @click="onSavePage" />
     </template>
 
-    <div v-if="!editing" class="text-center">
+    <div v-if="!showEditor" class="text-center">
       <span class="text-3xl">😟</span>
       <div class="font-medium m-4">
         {{ $t('this-page-doesnt-exist') }}

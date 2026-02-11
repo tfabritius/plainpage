@@ -25,6 +25,7 @@ are-you-sure-to-delete-user: Are you sure to delete user "{0}"?
 back-home: Back home
 back-to-content: Back to content
 cancel: Cancel
+change-password: Change password
 confirm: Confirm
 configuration: Configuration
 current-password: Current password
@@ -76,6 +77,7 @@ move-folder: Move folder
 move-here: Move here
 move-page: Move page
 new-password: New password
+new-password-required: Please enter new password
 not-found: Not found
 ok: OK
 old-revisions-of: Old revisions of
@@ -97,6 +99,7 @@ pages: Pages
 password: Password
 password-repeat: Repeat password
 password-repeat-not-equal: Passwords don't match
+password-changed: Password changed
 password-repeat-required: Please confirm password
 password-required: Please enter password
 permissions: Permissions

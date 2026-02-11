@@ -25,6 +25,7 @@ are-you-sure-to-delete-user: ¿Está seguro de eliminar el usuario "{0}"?
 back-home: Volver al inicio
 back-to-content: Volver al contenido
 cancel: Cancelar
+change-password: Cambiar contraseña
 confirm: Confirmar
 configuration: Configuración
 current-password: Contraseña actual
@@ -76,6 +77,7 @@ move-folder: Mover carpeta
 move-here: Mover aquí
 move-page: Mover página
 new-password: Nueva contraseña
+new-password-required: Por favor ingrese la nueva contraseña
 not-found: Extraviado
 ok: Acceptar
 old-revisions-of: Revisiones antiguas de
@@ -96,6 +98,7 @@ page-title: Título de la página
 pages: Paginas
 password: Contraseña
 password-repeat: Repita la contraseña
+password-changed: Contraseña cambiada
 password-repeat-not-equal: Las contraseñas no coinciden
 password-repeat-required: Por favor confirme la contraseña
 password-required: Por favor, ingrese contraseña

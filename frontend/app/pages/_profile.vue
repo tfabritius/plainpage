@@ -15,46 +15,67 @@ useHead({ title: t('profile') })
 
 const auth = useAuthStore()
 
-const formSchema = z.object({
+const profileSchema = z.object({
   displayName: z.string().min(1, t('displayname-required')),
-  currentPassword: z.string(),
-  password: z.string(),
+})
+
+type ProfileSchema = z.output<typeof profileSchema>
+const profileState = reactive<ProfileSchema>({
+  displayName: auth.user?.displayName || '',
+})
+
+async function onSaveProfile() {
+  try {
+    await auth.updateMe({ displayName: profileState.displayName })
+    toast.add({ description: t('saved'), color: 'success' })
+  } catch (err) {
+    toast.add({ description: String(err), color: 'error' })
+  }
+}
+
+const passwordExpanded = ref(false)
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, t('current-password-required')),
+  password: z.string().min(1, t('new-password-required')),
   passwordConfirm: z.string(),
 })
   .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
-  .refine(({ password, currentPassword }) => !password || currentPassword, { message: t('current-password-required'), path: ['currentPassword'] })
 
-type FormSchema = z.output<typeof formSchema>
-const formState = reactive<FormSchema>({
-  displayName: auth.user?.displayName || '',
+type PasswordSchema = z.output<typeof passwordSchema>
+const passwordState = reactive<PasswordSchema>({
   currentPassword: '',
   password: '',
   passwordConfirm: '',
 })
 
-async function onSave() {
+async function onSavePassword() {
+  // Validate password confirmation before submitting
+  const result = passwordSchema.safeParse(passwordState)
+  if (!result.success) {
+    return
+  }
+
   try {
-    await auth.updateMe({ displayName: formState.displayName })
-
-    if (formState.password && formState.currentPassword) {
-      try {
-        await auth.changePassword(formState.currentPassword, formState.password)
-      } catch (err) {
-        if (err instanceof FetchError && err.statusCode === 403) {
-          toast.add({ description: t('incorrect-password'), color: 'error' })
-          return
-        }
-        throw err
-      }
-    }
-
-    formState.currentPassword = ''
-    formState.password = ''
-    formState.passwordConfirm = ''
-    toast.add({ description: t('saved'), color: 'success' })
+    await auth.changePassword(passwordState.currentPassword, passwordState.password)
+    passwordState.currentPassword = ''
+    passwordState.password = ''
+    passwordState.passwordConfirm = ''
+    passwordExpanded.value = false
+    toast.add({ description: t('password-changed'), color: 'success' })
   } catch (err) {
+    if (err instanceof FetchError && err.statusCode === 403) {
+      toast.add({ description: t('incorrect-password'), color: 'error' })
+      return
+    }
     toast.add({ description: String(err), color: 'error' })
   }
+}
+
+function onCancelPassword() {
+  passwordExpanded.value = false
+  passwordState.currentPassword = ''
+  passwordState.password = ''
+  passwordState.passwordConfirm = ''
 }
 
 const deleteExpanded = ref(false)
@@ -92,31 +113,48 @@ function onDeleteCancel() {
     </template>
 
     <template #actions>
-      <ReactiveButton color="success" icon="tabler:device-floppy" :label="$t('save')" @click="onSave" />
+      <ReactiveButton color="success" icon="tabler:device-floppy" :label="$t('save')" @click="onSaveProfile" />
     </template>
 
     <UForm
-      :schema="formSchema"
-      :state="formState"
+      :schema="profileSchema"
+      :state="profileState"
     >
       <UFormField :label="$t('username')">
         <UInput :model-value="auth.user?.username" :disabled="true" class="w-full" />
       </UFormField>
       <UFormField :label="$t('display-name')" name="displayName" class="mt-4">
-        <UInput v-model="formState.displayName" autocomplete="off" class="w-full" />
-      </UFormField>
-      <UFormField :label="$t('current-password')" name="currentPassword" class="mt-4">
-        <UInput v-model="formState.currentPassword" type="password" autocomplete="off" class="w-full" />
-      </UFormField>
-      <UFormField :label="$t('new-password')" name="password" class="mt-4">
-        <UInput v-model="formState.password" type="password" autocomplete="off" class="w-full" />
-      </UFormField>
-      <UFormField :label="$t('password-repeat')" name="passwordConfirm" class="mt-4">
-        <UInput v-model="formState.passwordConfirm" type="password" autocomplete="off" class="w-full" />
+        <UInput v-model="profileState.displayName" autocomplete="off" class="w-full" />
       </UFormField>
     </UForm>
 
-    <UCollapsible v-model:open="deleteExpanded" class="mt-8">
+    <UCollapsible v-model:open="passwordExpanded" class="mt-8">
+      <UButton color="neutral" icon="tabler:key" :label="$t('change-password')" />
+
+      <template #content>
+        <UForm
+          :schema="passwordSchema"
+          :state="passwordState"
+          class="mt-4 p-4 border border-default rounded-lg"
+        >
+          <UFormField :label="$t('current-password')" name="currentPassword">
+            <UInput v-model="passwordState.currentPassword" type="password" autocomplete="off" class="w-full" />
+          </UFormField>
+          <UFormField :label="$t('new-password')" name="password" class="mt-4">
+            <UInput v-model="passwordState.password" type="password" autocomplete="off" class="w-full" />
+          </UFormField>
+          <UFormField :label="$t('password-repeat')" name="passwordConfirm" class="mt-4">
+            <UInput v-model="passwordState.passwordConfirm" type="password" autocomplete="off" class="w-full" />
+          </UFormField>
+          <div class="mt-4 flex gap-2">
+            <UButton :label="$t('cancel')" @click="onCancelPassword" />
+            <UButton color="success" variant="solid" :label="$t('save')" @click="onSavePassword" />
+          </div>
+        </UForm>
+      </template>
+    </UCollapsible>
+
+    <UCollapsible v-model:open="deleteExpanded" class="mt-4">
       <UButton color="warning" icon="tabler:trash" :label="$t('delete-my-account')" />
 
       <template #content>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfirmDialog } from '@vueuse/core'
+import { onKeyStroke, useConfirmDialog } from '@vueuse/core'
 
 const { t } = useI18n()
 
@@ -31,6 +31,16 @@ watch(isRevealed, async (revealed) => {
 })
 
 const parameters = ref<ConfirmState>({ message: '' })
+
+onKeyStroke('Enter', (e) => {
+  if (!isRevealed.value) {
+    return
+  }
+  if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLInputElement) {
+    return
+  }
+  confirmDialog(true)
+})
 
 async function confirm(message: string, options: ConfirmOptions = {}): Promise<boolean> {
   parameters.value = {

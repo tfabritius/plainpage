@@ -23,6 +23,14 @@ func (fs emptyFs) Open(name string) (fs.File, error) {
 	return nil, errors.New("empty fs doesn't contain any files")
 }
 
+// Test user credentials
+const (
+	TestAdminUsername = "admin"
+	TestAdminPassword = "secret"
+	TestUserUsername  = "user"
+	TestUserPassword  = "secret"
+)
+
 type AppTestSuite struct {
 	suite.Suite
 	app         server.App
@@ -57,7 +65,7 @@ func (s *AppTestSuite) setupInitialApp() {
 	// Register first user that will become admin automatically
 	{
 		res := s.api("POST", "/auth/users",
-			model.PostUserRequest{Username: "admin", DisplayName: "Administrator", Password: "secret"},
+			model.PostUserRequest{Username: TestAdminUsername, DisplayName: "Administrator", Password: TestAdminPassword},
 			nil)
 		r.Equal(200, res.Code)
 
@@ -83,7 +91,7 @@ func (s *AppTestSuite) setupInitialApp() {
 	// Register another user that will not become admin automatically
 	{
 		res := s.api("POST", "/auth/users",
-			model.PostUserRequest{Username: "user", DisplayName: "User", Password: "secret"},
+			model.PostUserRequest{Username: TestUserUsername, DisplayName: "User", Password: TestUserPassword},
 			s.adminToken)
 		r.Equal(200, res.Code)
 

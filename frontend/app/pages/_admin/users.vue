@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { ChangePasswordRequest, PatchOperation, User } from '~/types'
+import type { ChangePasswordRequest, DeleteUserRequest, PatchOperation, User } from '~/types'
+import { FetchError } from 'ofetch'
 import { z } from 'zod'
 import { validUsernameRegex } from '~/types'
 
@@ -107,25 +108,40 @@ async function onSubmit() {
   }
 }
 
-const plainDialog = useTemplateRef('plainDialog')
+const deleteModalOpen = ref(false)
+const deletePasswordInput = ref('')
+const deleteTargetUser = ref<User | null>(null)
 
-async function onDelete(user: User) {
-  if (!await plainDialog.value?.confirm(
-    t('are-you-sure-to-delete-user', [user.username]),
-    {
-      title: t('delete-user'),
-      confirmButtonText: t('delete'),
-      confirmButtonColor: 'warning',
-    },
-  )) {
+function onDeleteClick(user: User) {
+  deletePasswordInput.value = ''
+  deleteTargetUser.value = user
+  deleteModalOpen.value = true
+}
+
+async function onDeleteConfirm() {
+  if (!deleteTargetUser.value) {
     return
   }
 
+  if (!deletePasswordInput.value) {
+    toast.add({ description: t('current-password-required'), color: 'error' })
+    return
+  }
+
+  const request: DeleteUserRequest = { password: deletePasswordInput.value }
   try {
-    await apiFetch(`/auth/users/${user.username}`, { method: 'DELETE' })
+    await apiFetch(`/auth/users/${deleteTargetUser.value.username}/delete`, {
+      method: 'POST',
+      body: request,
+    })
+    deleteModalOpen.value = false
     toast.add({ description: t('user-deleted'), color: 'success' })
     refresh()
   } catch (err) {
+    if (err instanceof FetchError && err.statusCode === 403) {
+      toast.add({ description: t('incorrect-password'), color: 'error' })
+      return
+    }
     toast.add({ description: String(err), color: 'error' })
   }
 }
@@ -186,10 +202,23 @@ async function onDelete(user: User) {
     >
       <template #actions-cell="{ row }">
         <UButton variant="link" icon="tabler:edit" @click="onEdit(row.original)" />
-        <UButton variant="link" icon="tabler:trash" color="error" @click="onDelete(row.original)" />
+        <UButton variant="link" icon="tabler:trash" color="error" @click="onDeleteClick(row.original)" />
       </template>
     </UTable>
 
-    <PlainDialog ref="plainDialog" />
+    <UModal v-model:open="deleteModalOpen" :title="$t('delete-user')">
+      <template #body>
+        <p class="mb-4">
+          {{ $t('are-you-sure-to-delete-user', [deleteTargetUser?.username]) }}
+        </p>
+        <UFormField :label="$t('admin-current-password')">
+          <UInput v-model="deletePasswordInput" type="password" autocomplete="off" class="w-full" />
+        </UFormField>
+      </template>
+      <template #footer>
+        <UButton :label="$t('cancel')" @click="deleteModalOpen = false" />
+        <UButton color="warning" variant="solid" :label="$t('delete')" @click="onDeleteConfirm" />
+      </template>
+    </UModal>
   </Layout>
 </template>

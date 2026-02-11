@@ -1,4 +1,4 @@
-import type { LoginResponse, PatchOperation, RefreshResponse, User } from '~/types'
+import type { DeleteUserRequest, LoginResponse, PatchOperation, RefreshResponse, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
 import { apiRawFetch } from '~/composables/apiFetch'
@@ -125,11 +125,15 @@ export const useAuthStore = defineStore(
       })
     }
 
-    async function deleteMe() {
+    async function deleteMe(password: string) {
       if (!user.value) {
         throw new Error('not logged in')
       }
-      await apiFetch(`/auth/users/${user.value.username}`, { method: 'DELETE' })
+      const request: DeleteUserRequest = { password }
+      await apiFetch(`/auth/users/${user.value.username}/delete`, {
+        method: 'POST',
+        body: request,
+      })
       await logout()
     }
 

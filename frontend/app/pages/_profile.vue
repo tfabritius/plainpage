@@ -57,26 +57,31 @@ async function onSave() {
   }
 }
 
-const plainDialog = useTemplateRef('plainDialog')
+const deleteExpanded = ref(false)
+const deletePasswordInput = ref('')
 
-async function onDelete() {
-  if (!await plainDialog.value?.confirm(
-    t('are-you-sure-to-delete-this-account'),
-    {
-      title: t('delete-my-account'),
-      confirmButtonText: t('delete'),
-      confirmButtonColor: 'warning',
-    },
-  )) {
+async function onDeleteConfirm() {
+  if (!deletePasswordInput.value) {
+    toast.add({ description: t('current-password-required'), color: 'error' })
     return
   }
 
   try {
-    await auth.deleteMe()
+    await auth.deleteMe(deletePasswordInput.value)
+    deleteExpanded.value = false
     toast.add({ description: t('account-deleted'), color: 'success' })
   } catch (err) {
+    if (err instanceof FetchError && err.statusCode === 403) {
+      toast.add({ description: t('incorrect-password'), color: 'error' })
+      return
+    }
     toast.add({ description: String(err), color: 'error' })
   }
+}
+
+function onDeleteCancel() {
+  deleteExpanded.value = false
+  deletePasswordInput.value = ''
 }
 </script>
 
@@ -111,8 +116,23 @@ async function onDelete() {
       </UFormField>
     </UForm>
 
-    <UButton color="warning" icon="tabler:trash" :label="$t('delete-my-account')" class="mt-8" @click="onDelete" />
+    <UCollapsible v-model:open="deleteExpanded" class="mt-8">
+      <UButton color="warning" icon="tabler:trash" :label="$t('delete-my-account')" />
 
-    <PlainDialog ref="plainDialog" />
+      <template #content>
+        <div class="mt-4 p-4 border border-warning-500 rounded-lg">
+          <p class="mb-4">
+            {{ $t('are-you-sure-to-delete-this-account') }}
+          </p>
+          <UFormField :label="$t('current-password')">
+            <UInput v-model="deletePasswordInput" type="password" autocomplete="off" class="w-full" />
+          </UFormField>
+          <div class="mt-4 flex gap-2">
+            <UButton :label="$t('cancel')" @click="onDeleteCancel" />
+            <UButton color="warning" variant="solid" :label="$t('delete')" @click="onDeleteConfirm" />
+          </div>
+        </div>
+      </template>
+    </UCollapsible>
   </Layout>
 </template>

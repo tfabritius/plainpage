@@ -55,6 +55,10 @@ export interface ChangePasswordRequest {
   newPassword: string
 }
 
+export interface DeleteUserRequest {
+  password: string
+}
+
 // Types corresponding to model/service.go
 
 export interface Page {

@@ -372,18 +372,40 @@ func (s *UsersTestSuite) TestDeleteUser() {
 	username := "testDeleteUser"
 	password := "myPassword"
 
-	// User deletes itself
+	// User deletes itself with correct password
 	{
 		user, err := s.app.Users.Create(username, password, "Test User")
 		r.NoError(err)
 		token, err := s.app.AccessToken.Create(user.ID)
 		r.NoError(err)
 
-		res := s.api("DELETE", "/auth/users/"+username, nil, &token)
+		res := s.api("POST", "/auth/users/"+username+"/delete",
+			model.DeleteUserRequest{Password: password},
+			&token)
 		r.Equal(200, res.Code)
 
 		_, err = s.app.Users.GetByUsername(username)
 		r.ErrorIs(err, model.ErrNotFound)
+	}
+
+	// User cannot delete itself with wrong password
+	{
+		user, err := s.app.Users.Create(username, password, "Test User")
+		r.NoError(err)
+		token, err := s.app.AccessToken.Create(user.ID)
+		r.NoError(err)
+
+		res := s.api("POST", "/auth/users/"+username+"/delete",
+			model.DeleteUserRequest{Password: "wrongPassword"},
+			&token)
+		r.Equal(403, res.Code)
+
+		// User should still exist
+		_, err = s.app.Users.GetByUsername(username)
+		r.NoError(err)
+
+		// Cleanup
+		r.NoError(s.app.Users.DeleteByUsername(username))
 	}
 
 	_, err := s.app.Users.Create(username, password, "Test User")
@@ -391,19 +413,37 @@ func (s *UsersTestSuite) TestDeleteUser() {
 
 	// User cannot delete other user
 	{
-		res := s.api("DELETE", "/auth/users/"+username, nil, s.userToken)
+		res := s.api("POST", "/auth/users/"+username+"/delete",
+			model.DeleteUserRequest{Password: TestUserPassword},
+			s.userToken)
 		r.Equal(403, res.Code)
 	}
 
 	// Anonymous cannot delete user
 	{
-		res := s.api("DELETE", "/auth/users/"+username, nil, nil)
+		res := s.api("POST", "/auth/users/"+username+"/delete",
+			model.DeleteUserRequest{Password: password},
+			nil)
 		r.Equal(401, res.Code)
 	}
 
-	// Admin can delete other user
+	// Admin cannot delete user with wrong admin password
 	{
-		res := s.api("DELETE", "/auth/users/"+username, nil, s.adminToken)
+		res := s.api("POST", "/auth/users/"+username+"/delete",
+			model.DeleteUserRequest{Password: "wrongAdminPassword"},
+			s.adminToken)
+		r.Equal(403, res.Code)
+
+		// User should still exist
+		_, err := s.app.Users.GetByUsername(username)
+		r.NoError(err)
+	}
+
+	// Admin can delete other user with correct admin password
+	{
+		res := s.api("POST", "/auth/users/"+username+"/delete",
+			model.DeleteUserRequest{Password: TestAdminPassword},
+			s.adminToken)
 		r.Equal(200, res.Code)
 
 		_, err := s.app.Users.GetByUsername(username)
@@ -412,13 +452,17 @@ func (s *UsersTestSuite) TestDeleteUser() {
 
 	// Deleting nonexistent user as user fails
 	{
-		res := s.api("DELETE", "/auth/users/does-not-exist", nil, s.userToken)
+		res := s.api("POST", "/auth/users/does-not-exist/delete",
+			model.DeleteUserRequest{Password: TestUserPassword},
+			s.userToken)
 		r.Equal(403, res.Code)
 	}
 
 	// Deleting nonexistent user as admin fails
 	{
-		res := s.api("DELETE", "/auth/users/does-not-exist", nil, s.adminToken)
+		res := s.api("POST", "/auth/users/does-not-exist/delete",
+			model.DeleteUserRequest{Password: TestAdminPassword},
+			s.adminToken)
 		r.Equal(404, res.Code)
 	}
 }
@@ -542,7 +586,6 @@ func (s *UsersTestSuite) TestChangePasswordAsAdmin() {
 	targetDisplayName := "Target User"
 	targetPassword := "targetPassword"
 	newTargetPassword := "newTargetPassword"
-	adminPassword := "secret" // Admin password from setupInitialApp
 
 	// Create target user
 	_, err := s.app.Users.Create(targetUsername, targetPassword, targetDisplayName)
@@ -559,7 +602,7 @@ func (s *UsersTestSuite) TestChangePasswordAsAdmin() {
 	// Admin can change another user's password with correct admin password
 	{
 		res := s.api("POST", "/auth/users/"+targetUsername+"/password",
-			model.ChangePasswordRequest{CurrentPassword: adminPassword, NewPassword: newTargetPassword},
+			model.ChangePasswordRequest{CurrentPassword: TestAdminPassword, NewPassword: newTargetPassword},
 			s.adminToken)
 		r.Equal(200, res.Code)
 
@@ -579,7 +622,7 @@ func (s *UsersTestSuite) TestChangePasswordAsAdmin() {
 	// Admin cannot change nonexistent user's password
 	{
 		res := s.api("POST", "/auth/users/nonexistent/password",
-			model.ChangePasswordRequest{CurrentPassword: adminPassword, NewPassword: newTargetPassword},
+			model.ChangePasswordRequest{CurrentPassword: TestAdminPassword, NewPassword: newTargetPassword},
 			s.adminToken)
 		r.Equal(404, res.Code)
 	}

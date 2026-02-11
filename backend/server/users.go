@@ -176,6 +176,29 @@ func (app App) deleteUser(w http.ResponseWriter, r *http.Request) {
 	username := r.PathValue("username")
 	userID := ctxutil.UserID(r.Context())
 
+	// Parse request body for password
+	var body model.DeleteUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Get the logged-in user for password verification
+	loggedInUser, err := app.Users.GetById(userID)
+	if err != nil {
+		panic(err)
+	}
+
+	// Verify password against the logged-in user's password
+	valid, err := app.Users.VerifyPassword(&loggedInUser, body.Password)
+	if err != nil {
+		panic(err)
+	}
+	if !valid {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return
+	}
+
 	isAdmin := app.isAdmin(userID)
 
 	user, err := app.Users.GetByUsername(username)

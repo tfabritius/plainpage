@@ -60,6 +60,10 @@ type ChangePasswordRequest struct {
 	NewPassword     string `json:"newPassword"`
 }
 
+type DeleteUserRequest struct {
+	Password string `json:"password"`
+}
+
 type LoginResponse struct {
 	AccessToken string `json:"accessToken"`
 	User        User   `json:"user"`

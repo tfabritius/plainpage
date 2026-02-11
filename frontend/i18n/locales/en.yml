@@ -31,7 +31,9 @@ current-password: Current password
 current-password-required: Please enter current password
 create: Create
 create-folder: Create folder
+create-folder-description: Enter details to create a new folder
 create-page: Create page
+create-page-description: Enter details to create a new page
 create-user: Create user
 current-version: Current version
 dark-mode-off: Light on

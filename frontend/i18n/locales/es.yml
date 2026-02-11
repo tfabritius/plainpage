@@ -31,7 +31,9 @@ current-password: Contraseña actual
 current-password-required: Por favor ingrese la contraseña actual
 create: Crear
 create-folder: Crear carpeta
+create-folder-description: Ingrese los detalles para crear una nueva carpeta
 create-page: Crear página
+create-page-description: Ingrese los detalles para crear una nueva página
 create-user: Crear usuario
 current-version: Versión actual
 dark-mode-off: Luz apagada

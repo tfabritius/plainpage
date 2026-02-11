@@ -85,6 +85,9 @@ async function onOpenChanged(open: boolean) {
   >
     <slot />
     <template #title />
+    <template #description>
+      {{ props.type === 'page' ? $t('create-page-description') : $t('create-folder-description') }}
+    </template>
     <template #body>
       <UForm
         id="newContentForm"

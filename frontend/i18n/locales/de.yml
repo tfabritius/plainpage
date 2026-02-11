@@ -31,7 +31,9 @@ current-password: Aktuelles Passwort
 current-password-required: Bitte aktuelles Passwort eingeben
 create: Anlegen
 create-folder: Ordner anlegen
+create-folder-description: Details eingeben, um einen neuen Ordner zu erstellen
 create-page: Seite anlegen
+create-page-description: Details eingeben, um eine neue Seite zu erstellen
 create-user: Benutzer anlegen
 current-version: Aktuelle Version
 dark-mode-off: Licht an

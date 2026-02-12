@@ -1,4 +1,4 @@
-import type { Tokens } from 'marked'
+import type { Token, Tokens } from 'marked'
 import dompurify from 'dompurify'
 import { marked } from 'marked'
 import slugify from 'slugify'
@@ -14,9 +14,10 @@ export interface MarkdownResult {
   toc: TocItem[]
 }
 
-interface HeadingRendererOptions {
+interface MarkdownRendererOptions {
   collectToc?: boolean
   addAnchorLinks?: boolean
+  externalLinksNewTab?: boolean
 }
 
 /**
@@ -25,9 +26,9 @@ interface HeadingRendererOptions {
 function createMarkdownRenderer(
   toc: TocItem[],
   slugCounter: Map<string, number>,
-  options: HeadingRendererOptions = {},
+  options: MarkdownRendererOptions = {},
 ) {
-  const { collectToc = true, addAnchorLinks = false } = options
+  const { collectToc = true, addAnchorLinks = false, externalLinksNewTab = false } = options
   const renderer = new marked.Renderer()
 
   // Custom heading renderer that adds IDs and optionally collects TOC
@@ -64,6 +65,12 @@ function createMarkdownRenderer(
     return `<${tag}>${text}</${tag}>`
   }
 
+  // Custom link renderer for external links
+  if (externalLinksNewTab) {
+    renderer.link = ({ href, title, text }: Tokens.Link) =>
+      `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
+  }
+
   return renderer
 }
 
@@ -87,7 +94,7 @@ configureDomPurify()
  */
 export async function parseMarkdown(
   markdown: string,
-  options: HeadingRendererOptions = {},
+  options: MarkdownRendererOptions = {},
 ): Promise<MarkdownResult> {
   const toc: TocItem[] = []
   const slugCounter = new Map<string, number>()
@@ -106,11 +113,30 @@ export async function parseMarkdown(
 }
 
 /**
+ * Parses markdown segments and returns HTML wrapped in segment divs
+ * Used by the editor preview for scroll sync
+ */
+export function parseMarkdownSegments(
+  segments: { idx: number, tokens: Token[] }[],
+  options: MarkdownRendererOptions = {},
+): string {
+  const toc: TocItem[] = []
+  const slugCounter = new Map<string, number>()
+  const renderer = createMarkdownRenderer(toc, slugCounter, options)
+
+  return segments.map((segment) => {
+    const content = marked.parser(segment.tokens, { gfm: true, renderer })
+    const sanitizedContent = dompurify.sanitize(content, { ADD_ATTR: ['id'] })
+    return `<div class="segment" data-segment="${segment.idx}">${sanitizedContent}</div>`
+  }).join('')
+}
+
+/**
  * Composable for reactive markdown parsing
  */
 export function useMarkdown(
   markdown: Ref<string> | ComputedRef<string>,
-  options: HeadingRendererOptions = {},
+  options: MarkdownRendererOptions = {},
 ) {
   const html = ref('')
   const toc = ref<TocItem[]>([])

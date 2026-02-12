@@ -489,6 +489,12 @@ func (s *ContentTestSuite) TestDeletePage() {
 		t.Run(tc.name, func(t *testing.T) {
 			r := require.New(t)
 
+			// Verify trash is empty before test
+			trashBefore, err := s.app.Content.ListTrash()
+			r.NoError(err)
+			r.Empty(trashBefore, "Trash should be empty before deletion")
+
+			beforeTime := time.Now().Unix()
 			r.NoError(s.app.Content.SavePage(tc.url, "Content", model.ContentMeta{Title: "Title"}, ""))
 
 			res := s.api("DELETE", "/pages/"+tc.url,
@@ -496,11 +502,30 @@ func (s *ContentTestSuite) TestDeletePage() {
 				tc.token)
 			r.Equal(tc.responseCode, res.Code)
 
+			afterTime := time.Now().Unix()
+
 			if tc.responseCode == 200 {
 				r.False(s.app.Content.IsPage(tc.url))
+
+				// Verify page is in trash with correct timestamp
+				trashAfter, err := s.app.Content.ListTrash()
+				r.NoError(err)
+				r.Len(trashAfter, 1, "Trash should have exactly one entry")
+				r.Equal(tc.url, trashAfter[0].UrlPath)
+				r.GreaterOrEqual(trashAfter[0].Timestamp, beforeTime, "Timestamp should be >= before time")
+				r.LessOrEqual(trashAfter[0].Timestamp, afterTime, "Timestamp should be <= after time")
+
+				// Clean up trash
+				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].UrlPath, trashAfter[0].Timestamp))
 			} else {
 				r.True(s.app.Content.IsPage(tc.url))
 				r.NoError(s.app.Content.DeletePage(tc.url))
+
+				// Clean up trash
+				trashAfter, _ := s.app.Content.ListTrash()
+				for _, entry := range trashAfter {
+					s.app.Content.DeleteTrashEntry(entry.UrlPath, entry.Timestamp)
+				}
 			}
 		})
 	}
@@ -608,30 +633,63 @@ func (s *ContentTestSuite) TestDeleteNonexistentPageOrFolder() {
 }
 
 func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
-	r := s.Require()
-
-	// Prepare
-	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{}))
-	r.NoError(s.app.Content.SavePage("folder/page", "", model.ContentMeta{}, ""))
-
-	// Test
-	{
-		res := s.api("DELETE", "/pages/folder",
-			nil,
-			s.adminToken)
-		r.Equal(400, res.Code)
+	tests := []struct {
+		name         string
+		token        *string
+		responseCode int
+	}{
+		{"admin", s.adminToken, 200},
+		{"user", s.userToken, 200},
+		{"anonymous", nil, 401},
 	}
-	{
-		res := s.api("DELETE", "/pages/folder",
-			nil,
-			s.userToken)
-		r.Equal(400, res.Code)
-	}
-	{
-		res := s.api("DELETE", "/pages/folder",
-			nil,
-			nil)
-		r.Equal(401, res.Code)
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Verify trash is empty before test
+			trashBefore, err := s.app.Content.ListTrash()
+			r.NoError(err)
+			r.Empty(trashBefore, "Trash should be empty before deletion")
+
+			// Setup: create folder and page for this subtest
+			beforeTime := time.Now().Unix()
+			r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{}))
+			r.NoError(s.app.Content.SavePage("folder/page", "", model.ContentMeta{}, ""))
+
+			// Test
+			res := s.api("DELETE", "/pages/folder", nil, tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			afterTime := time.Now().Unix()
+
+			if tc.responseCode == 200 {
+				r.False(s.app.Content.IsFolder("folder"))
+				r.False(s.app.Content.IsPage("folder/page"))
+
+				// Verify page is in trash with correct timestamp
+				trashAfter, err := s.app.Content.ListTrash()
+				r.NoError(err)
+				r.Len(trashAfter, 1, "Trash should have exactly one entry")
+				r.Equal("folder/page", trashAfter[0].UrlPath)
+				r.GreaterOrEqual(trashAfter[0].Timestamp, beforeTime, "Timestamp should be >= before time")
+				r.LessOrEqual(trashAfter[0].Timestamp, afterTime, "Timestamp should be <= after time")
+
+				// Clean up trash
+				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].UrlPath, trashAfter[0].Timestamp))
+			} else {
+				// Cleanup if deletion failed
+				r.True(s.app.Content.IsFolder("folder"))
+				r.NoError(s.app.Content.DeleteFolder("folder"))
+
+				// Clean up trash
+				trashAfter, _ := s.app.Content.ListTrash()
+				for _, entry := range trashAfter {
+					s.app.Content.DeleteTrashEntry(entry.UrlPath, entry.Timestamp)
+				}
+			}
+		})
 	}
 }
 

@@ -474,14 +474,14 @@ func (app App) deleteContent(w http.ResponseWriter, r *http.Request) {
 		err = app.Content.DeletePage(urlPath)
 
 	} else if folder != nil {
-		err = app.Content.DeleteEmptyFolder(urlPath)
+		err = app.Content.DeleteFolder(urlPath)
 
 	} else {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 	if err != nil {
-		if errors.Is(err, model.ErrFolderNotEmpty) {
+		if errors.Is(err, model.ErrCannotDeleteRoot) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

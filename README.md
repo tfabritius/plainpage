@@ -17,6 +17,10 @@ Powered by Go, Vue/Nuxt. Made with 💖
   - [Pages and Folders](#pages-and-folders)
   - [Access Rights](#access-rights)
   - [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Data Storage](#data-storage)
+  - [Directory Structure](#directory-structure)
+  - [Version History (Attic)](#version-history-attic)
+  - [Trash](#trash)
 - [Security](#security)
 - [Contributing](#contributing)
   - [Development Setup](#development-setup)
@@ -204,6 +208,58 @@ Besides pages and folders, PlainPage allows you to grant additional permissions:
 | `Ctrl+S`           | Save page (when editing)                        |
 | `Esc`              | Cancel edit / close full screen mode            |
 | `Ctrl+Backspace`   | Delete current page/folder                      |
+
+## Data Storage
+
+PlainPage uses a plain file storage system. All data is stored in a configurable data directory (default: `data/`).
+
+### Directory Structure
+
+```
+data/
+├── config.yml          # Application configuration
+├── users.yml           # User accounts
+├── pages/              # Current pages and folders
+│   ├── _index.md       # Root folder metadata
+│   ├── mypage.md       # Page at /mypage
+│   └── docs/           # Folder at /docs
+│       ├── _index.md   # Folder metadata
+│       └── page.md     # Page at /docs/page
+├── attic/              # Version history
+│   ├── mypage.1707740000.md      # Version of /mypage
+│   └── docs/
+│       └── page.1707745000.md    # Version of /docs/page
+└── trash/              # Deleted pages
+    └── docs/
+        └── guide/
+            └── _1707750000/      # Deletion timestamp (prefixed with _)
+                ├── guide.md              # Deleted page
+                ├── guide.1707740000.md   # Attic entries at deletion
+                └── guide.1707745000.md
+```
+
+### Pages and Folders
+
+- **Pages** are stored as Markdown files with YAML frontmatter (`.md`)
+- **Folders** are directories containing an `_index.md` file with folder metadata
+- The frontmatter contains metadata like title, ACL, and modification info
+
+### Version History (Attic)
+
+Every time a page is saved, a copy is stored in the `attic/` directory with the same path structure. The filename includes a Unix timestamp: `{pagename}.{timestamp}.md`
+The attic also contains the current version.
+
+### Trash
+
+When pages are deleted, they are moved to the `trash/` directory instead of being permanently deleted. This allows for recovery if needed.
+
+**Trash structure:** `trash/{original-url-path}/{deletion-timestamp}/`
+
+Each deletion creates a timestamped folder containing:
+- The deleted page file
+- All attic entries that existed at the time of deletion
+
+If a page was deleted multiple times, each deletion has its own timestamp folder, making it easy to see the history and choose which version to restore.
 
 ## Security
 

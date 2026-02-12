@@ -38,8 +38,8 @@ type ContentService struct {
 }
 
 func (s *ContentService) initializeStorage() error {
-	// Create pages and attic directories
-	for _, dir := range []string{"pages", "attic"} {
+	// Create pages, attic, and trash directories
+	for _, dir := range []string{"pages", "attic", "trash"} {
 		// Create directory, if it doesn't exist
 		if !s.storage.Exists(dir) {
 			if err := s.storage.CreateDirectory(dir); err != nil {
@@ -154,7 +154,7 @@ func (s *ContentService) removeFolderFromIndex(urlPath string) error {
 			}
 		} else {
 			if err := s.index.Delete(entry.Url); err != nil {
-				log.Printf("[INDEX] Could not delete page %s: %v", entry.Url, err)
+				log.Printf("[INDEX] Could not delete page %s from index: %v", entry.Url, err)
 			}
 		}
 	}
@@ -162,7 +162,7 @@ func (s *ContentService) removeFolderFromIndex(urlPath string) error {
 	// Delete the folder itself (if not root)
 	if urlPath != "" {
 		if err := s.index.Delete(urlPath); err != nil {
-			log.Printf("[INDEX] Could not delete folder %s: %v", urlPath, err)
+			log.Printf("[INDEX] Could not delete folder %s from index: %v", urlPath, err)
 		}
 	}
 
@@ -237,6 +237,68 @@ func (s *ContentService) IsAtticPage(urlPath string, revision int64) bool {
 	revStr := strconv.FormatInt(revision, 10)
 	fsPath := filepath.Join("attic", urlPath+"."+revStr+".md")
 	return s.storage.Exists(fsPath)
+}
+
+// ListTrash returns all trash entries (deleted pages with their deletion timestamps)
+func (s *ContentService) ListTrash() ([]model.TrashEntry, error) {
+	entries := []model.TrashEntry{}
+	return s.listTrashRecursive("", entries)
+}
+
+func (s *ContentService) listTrashRecursive(relativePath string, entries []model.TrashEntry) ([]model.TrashEntry, error) {
+	dirPath := filepath.Join("trash", relativePath)
+	if !s.storage.Exists(dirPath) {
+		return entries, nil
+	}
+
+	fileInfos, err := s.storage.ReadDirectory(dirPath)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, fi := range fileInfos {
+		if !fi.IsDir() {
+			continue
+		}
+
+		// Check if this is a timestamp directory (starts with _ followed by digits)
+		if strings.HasPrefix(fi.Name(), "_") {
+			timestampStr := strings.TrimPrefix(fi.Name(), "_")
+			if timestamp, err := strconv.ParseInt(timestampStr, 10, 64); err == nil {
+				// This is a deletion timestamp directory
+				urlPath := relativePath
+				entries = append(entries, model.TrashEntry{
+					UrlPath:   urlPath,
+					Timestamp: timestamp,
+				})
+				continue
+			}
+		}
+
+		// This is a path component, recurse
+		subPath := fi.Name()
+		if relativePath != "" {
+			subPath = relativePath + "/" + fi.Name()
+		}
+		entries, err = s.listTrashRecursive(subPath, entries)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return entries, nil
+}
+
+// DeleteTrashEntry permanently deletes a specific trash entry
+func (s *ContentService) DeleteTrashEntry(urlPath string, timestamp int64) error {
+	timestampStr := "_" + strconv.FormatInt(timestamp, 10)
+	trashDir := filepath.Join("trash", urlPath, timestampStr)
+
+	if !s.storage.Exists(trashDir) {
+		return model.ErrNotFound
+	}
+
+	return s.storage.DeleteDirectory(trashDir)
 }
 
 func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, error) {
@@ -317,22 +379,58 @@ func (s *ContentService) savePage(urlPath, content string, meta model.ContentMet
 		Meta:    meta,
 	}
 	if err := s.index.Index(urlPath, page); err != nil {
-		log.Println("[INDEX] Could not update page "+urlPath+":", err)
+		log.Printf("[INDEX] Could not update page %s in index: %v", urlPath, err)
 	}
 
 	return nil
 }
 
 func (s *ContentService) DeletePage(urlPath string) error {
-	fsPath := filepath.Join("pages", urlPath+".md")
-
-	if err := s.storage.DeleteFile(fsPath); err != nil {
+	// Move page and attic entries to trash
+	if err := s.movePageToTrash(urlPath); err != nil {
 		return err
 	}
 
 	// Update search index
 	if err := s.index.Delete(urlPath); err != nil {
-		log.Println("[INDEX] Could not delete page "+urlPath+":", err)
+
+		log.Printf("[INDEX] Could not delete page %s from index: %v", urlPath, err)
+	}
+
+	return nil
+}
+
+// movePageToTrash moves a page and its attic entries to the trash folder.
+// Trash structure: trash/{urlPath}/_{timestamp}/{filename}.md
+func (s *ContentService) movePageToTrash(urlPath string) error {
+	timestamp := time.Now().Unix()
+	timestampStr := "_" + strconv.FormatInt(timestamp, 10)
+	pageName := path.Base(urlPath)
+
+	trashDir := filepath.Join("trash", urlPath, timestampStr)
+
+	// Move the page file
+	srcPagePath := filepath.Join("pages", urlPath+".md")
+	destPagePath := filepath.Join(trashDir, pageName+".md")
+	if err := s.storage.Rename(srcPagePath, destPagePath); err != nil {
+		return fmt.Errorf("could not move page to trash: %w", err)
+	}
+
+	// Move all attic entries for this page
+	atticEntries, err := s.ListAttic(urlPath)
+	if err != nil {
+		// If attic directory doesn't exist or is empty, that's fine
+		return nil
+	}
+
+	for _, entry := range atticEntries {
+		revStr := strconv.FormatInt(entry.Revision, 10)
+		srcAtticPath := filepath.Join("attic", urlPath+"."+revStr+".md")
+		destAtticPath := filepath.Join(trashDir, pageName+"."+revStr+".md")
+
+		if err := s.storage.Rename(srcAtticPath, destAtticPath); err != nil {
+			return fmt.Errorf("could not move attic entry %d to trash: %w", entry.Revision, err)
+		}
 	}
 
 	return nil
@@ -367,7 +465,7 @@ func (s *ContentService) CreateFolder(urlPath string, meta model.ContentMeta) er
 		Meta:    meta,
 	}
 	if err := s.index.Index(urlPath, folder); err != nil {
-		log.Println("[INDEX] Could not add folder "+urlPath+":", err)
+		log.Printf("[INDEX] Could not add folder %s to index: %v", urlPath, err)
 	}
 
 	return nil
@@ -462,7 +560,7 @@ func (s *ContentService) SaveFolder(urlPath string, meta model.ContentMeta) erro
 			Meta:    meta,
 		}
 		if err := s.index.Index(urlPath, folder); err != nil {
-			log.Println("[INDEX] Could not update folder "+urlPath+":", err)
+			log.Printf("[INDEX] Could not update folder %s in index: %v", urlPath, err)
 		}
 	}
 
@@ -487,7 +585,58 @@ func (s *ContentService) DeleteEmptyFolder(urlPath string) error {
 
 	// Update search index
 	if err := s.index.Delete(urlPath); err != nil {
-		log.Println("[INDEX] Could not delete folder "+urlPath+":", err)
+		log.Printf("[INDEX] Could not delete folder %s from index: %v", urlPath, err)
+	}
+
+	return nil
+}
+
+// DeleteFolder deletes a folder and all its contents by moving all pages to trash.
+// Folders and their metadata are not preserved in trash - only individual pages and their attic entries.
+func (s *ContentService) DeleteFolder(urlPath string) error {
+	// Cannot delete root folder
+	if urlPath == "" {
+		return model.ErrCannotDeleteRoot
+	}
+
+	// Remove from search index first
+	if err := s.removeFolderFromIndex(urlPath); err != nil {
+		return err
+	}
+
+	// Move all pages in the folder (and subfolders) to trash
+	if err := s.moveFolderPagesToTrash(urlPath); err != nil {
+		return err
+	}
+
+	// Delete the folder directory (now empty except for _index.md files)
+	dirPath := filepath.Join("pages", urlPath)
+	if err := s.storage.DeleteDirectory(dirPath); err != nil {
+		return fmt.Errorf("could not delete folder directory: %w", err)
+	}
+
+	return nil
+}
+
+// moveFolderPagesToTrash recursively moves all pages in a folder to trash.
+func (s *ContentService) moveFolderPagesToTrash(urlPath string) error {
+	folder, err := s.ReadFolder(urlPath)
+	if err != nil {
+		return fmt.Errorf("could not read folder %s: %w", urlPath, err)
+	}
+
+	for _, entry := range folder.Content {
+		if entry.IsFolder {
+			// Recursively process subfolder
+			if err := s.moveFolderPagesToTrash(entry.Url); err != nil {
+				return err
+			}
+		} else {
+			// Move page to trash
+			if err := s.movePageToTrash(entry.Url); err != nil {
+				return fmt.Errorf("could not move page %s to trash: %w", entry.Url, err)
+			}
+		}
 	}
 
 	return nil
@@ -507,7 +656,7 @@ func (s *ContentService) folderIsEmpty(urlPath string) bool {
 }
 
 func (s *ContentService) DeleteAll() error {
-	for _, dir := range []string{"pages", "attic"} {
+	for _, dir := range []string{"pages", "attic", "trash"} {
 		if err := s.storage.DeleteDirectory(dir); err != nil {
 			return err
 		}
@@ -647,14 +796,14 @@ func (s *ContentService) MovePage(sourcePath, destinationPath string) error {
 
 	// Update search index: delete old, add new
 	if err := s.index.Delete(sourcePath); err != nil {
-		log.Println("[INDEX] Could not delete old page "+sourcePath+":", err)
+		log.Printf("[INDEX] Could not delete old page %s from index: %v", sourcePath, err)
 	}
 	page, err := s.ReadPage(destinationPath, nil)
 	if err != nil {
 		return fmt.Errorf("could not read moved page: %w", err)
 	}
 	if err := s.index.Index(destinationPath, page); err != nil {
-		log.Println("[INDEX] Could not index new page "+destinationPath+":", err)
+		log.Printf("[INDEX] Could not index new page %s: %v", destinationPath, err)
 	}
 
 	return nil

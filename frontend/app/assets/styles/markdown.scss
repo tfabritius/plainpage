@@ -24,6 +24,30 @@
     margin-bottom: 16px;
     font-weight: 600;
     line-height: 1.25;
+
+    .heading-anchor {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.2em;
+      vertical-align: middle;
+      color: var(--ui-text-muted);
+      text-decoration: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+
+      svg {
+        width: 0.8em;
+        height: 0.8em;
+      }
+    }
+
+    &:hover .heading-anchor {
+      opacity: 1;
+    }
+
+    .heading-anchor:hover {
+      color: var(--ui-primary);
+    }
   }
 
   h1,

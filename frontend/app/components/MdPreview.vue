@@ -3,6 +3,7 @@ import type { Tokens } from 'marked'
 import type { Segment } from '~/types/'
 import dompurify from 'dompurify'
 import { marked } from 'marked'
+import slugify from 'slugify'
 
 const props = defineProps<{
   segments: Segment[]
@@ -12,14 +13,49 @@ const emit = defineEmits<{
   (e: 'scroll', payload: { firstVisibleSegmentIdx: number }): void
 }>()
 
-const renderer = new marked.Renderer()
-renderer.link = ({ href, title, text }: Tokens.Link) => `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
+/**
+ * Creates a renderer for preview with heading IDs (no anchor links)
+ */
+function createPreviewRenderer(slugCounter: Map<string, number>) {
+  const renderer = new marked.Renderer()
+
+  // Custom heading renderer with IDs only
+  renderer.heading = ({ tokens, depth }: Tokens.Heading) => {
+    const text = tokens.map(t => ('text' in t ? t.text : '')).join('')
+    const tag = `h${depth}`
+
+    // Only process H1-H4 for IDs
+    if (depth <= 4) {
+      let slug = slugify(text, { lower: true, strict: true })
+
+      const count = slugCounter.get(slug) || 0
+      if (count > 0) {
+        slug = `${slug}-${count}`
+      }
+      slugCounter.set(slug.replace(/-\d+$/, ''), count + 1)
+
+      return `<${tag} id="${slug}">${text}</${tag}>`
+    }
+
+    return `<${tag}>${text}</${tag}>`
+  }
+
+  // External links
+  renderer.link = ({ href, title, text }: Tokens.Link) =>
+    `<a title="${title ?? ''}" href="${href}" target="_blank">${text}</a>`
+
+  return renderer
+}
 
 function renderSegmentsToHtml(segments: Segment[]): string {
+  // Reset slug counter for each render
+  const slugCounter = new Map<string, number>()
+  const renderer = createPreviewRenderer(slugCounter)
+
   return segments.map((segment) => {
     const tokens = segment.tokens
     const content = marked.parser(tokens, { gfm: true, renderer })
-    const sanitizedContent = dompurify.sanitize(content)
+    const sanitizedContent = dompurify.sanitize(content, { ADD_ATTR: ['id'] })
     return `<div class="segment" data-segment="${segment.idx}">${sanitizedContent}</div>`
   }).join('')
 }

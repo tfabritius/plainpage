@@ -1,7 +1,6 @@
 import type { Token } from 'marked'
 
 export * from './api'
-export * from './service'
 
 export interface Segment {
   idx: number

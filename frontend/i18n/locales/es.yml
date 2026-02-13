@@ -7,12 +7,12 @@ _search:
   results: Resultados
 access-denied: Acceso denegado
 account-deleted: Cuenta borrada
-admin-current-password: Su contraseña actual de administrador
 acl:
   admin: Administración
   subject: Sujeto
 add: Añadir
 add-tag: Añadir etiqueta
+admin-current-password: Su contraseña actual de administrador
 administrators: Administradores
 all-registered-users: Todos los usuarios registrados
 anonymous: anónimo
@@ -24,18 +24,24 @@ are-you-sure-to-delete-this-page: ¿Estás seguro de eliminar esta página?
 are-you-sure-to-delete-user: ¿Está seguro de eliminar el usuario "{0}"?
 back-home: Volver al inicio
 back-to-content: Volver al contenido
+back-to-trash: Volver a la papelera
 cancel: Cancelar
+cannot-move-folder-into-itself: No se puede mover una carpeta dentro de sí misma
+cannot-move-to-same-location: No se puede mover al mismo lugar
 change-password: Cambiar contraseña
-confirm: Confirmar
 configuration: Configuración
-current-password: Contraseña actual
-current-password-required: Por favor ingrese la contraseña actual
+confirm: Confirmar
+confirm-delete-items-permanent: ¿Estás seguro de que quieres eliminar permanentemente {count} elemento(s)? Esta acción no se puede deshacer.
+confirm-delete-page-permanent: ¿Estás seguro de que quieres eliminar permanentemente esta página? Esta acción no se puede deshacer.
+confirm-restore-page: ¿Estás seguro de que quieres restaurar esta página?
 create: Crear
 create-folder: Crear carpeta
 create-folder-description: Ingrese los detalles para crear una nueva carpeta
 create-page: Crear página
 create-page-description: Ingrese los detalles para crear una nueva página
 create-user: Crear usuario
+current-password: Contraseña actual
+current-password-required: Por favor ingrese la contraseña actual
 current-version: Versión actual
 dark-mode-off: Luz apagada
 dark-mode-on: Luz encendida
@@ -44,7 +50,10 @@ delete: Borrar
 delete-folder: Borrar carpeta
 delete-my-account: Borrar mi cuenta
 delete-page: Borrar página
+delete-permanently: Eliminar permanentemente
 delete-user: Borrar usuario
+deleted-at: Eliminado
+destination: Destino
 discard-changes: Descartar cambios
 discard-changes-to-this-page: ¿Quieres descartar los cambios de esta página?
 display-name: Nombre para mostrar
@@ -55,6 +64,7 @@ edit-user: Editar usuario
 error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
+folder-moved: Carpeta movida
 folder-name: Nombre de la carpeta
 folder-name-required: Por favor ingrese el nombre de la carpeta
 folder-reloaded: Carpeta recargada
@@ -64,9 +74,10 @@ home: Inicio
 incorrect-password: Contraseña incorrecta
 inherit-permissions: Heredar permisos de la carpeta principal
 invalid-credentials: Credenciales no válidas
-too-many-login-requests: Demasiados intentos de inicio de sesión. Por favor espera {0}s.
 invalid-folder-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
+items-deleted-permanent: '{count} elemento(s) eliminado(s) permanentemente'
+items-restored: '{count} elemento(s) restaurado(s)'
 language: Idioma
 menu: Menú
 modified: Modificado
@@ -78,27 +89,25 @@ move-here: Mover aquí
 move-page: Mover página
 new-password: Nueva contraseña
 new-password-required: Por favor ingrese la nueva contraseña
+no-subfolders: Sin subcarpetas
+no-write-permission: Sin permiso de escritura para esta carpeta
 not-found: Extraviado
 ok: Acceptar
 old-revisions-of: Revisiones antiguas de
 or: o
-cannot-move-folder-into-itself: No se puede mover una carpeta dentro de sí misma
-cannot-move-to-same-location: No se puede mover al mismo lugar
-destination: Destino
-folder-moved: Carpeta movida
-no-subfolders: Sin subcarpetas
-no-write-permission: Sin permiso de escritura para esta carpeta
 page-deleted: Página eliminada
+page-deleted-permanent: Página eliminada permanentemente
 page-moved: Página movida
 page-name: Nombre de la página
 page-name-required: Por favor ingrese el nombre de la página
 page-reloaded: Página recargada
 page-renamed: Página renombrada
+page-restored: Página restaurada
 page-title: Título de la página
 pages: Paginas
 password: Contraseña
-password-repeat: Repita la contraseña
 password-changed: Contraseña cambiada
+password-repeat: Repita la contraseña
 password-repeat-not-equal: Las contraseñas no coinciden
 password-repeat-required: Por favor confirme la contraseña
 password-required: Por favor, ingrese contraseña
@@ -109,42 +118,47 @@ register: Registro
 register-account: Registrar cuenta
 reload: Recargar
 rename: Renombrar
-select-destination-folder: Seleccionar carpeta de destino
 rename-page: Renombrar página
+restore: Restaurar
 revision-doesnt-exist: ¡Esta revisión no existe!
 revisions: Revisiones
 save: Guardar
 saved: Guardado
 search: Buscar
+select-destination-folder: Seleccionar carpeta de destino
 sign-in: Iniciar sesión
 sign-out: Cerrar sesión
 signed-out: Has cerrado sesión.
 table-of-contents: Tabla de Contenidos
 there-was-an-error: Hubo un error.
 this-page-doesnt-exist: ¡Esta página no existe!
-title: Título
 timeAgo:
-  just-now: justo ahora
   ago: 'hace {0}'
+  day: 'día | días'
+  hour: 'hora | horas'
   in: 'en {0}'
+  just-now: justo ahora
   last-month: el mes pasado
-  next-month: el próximo mes
-  month: 'mes | meses'
+  last-week: la semana pasada
   last-year: el año pasado
+  minute: 'minuto | minutos'
+  month: 'mes | meses'
+  next-month: el próximo mes
+  next-week: la próxima semana
   next-year: el próximo año
+  second: 'segundo | segundos'
+  tomorrow: mañana
+  week: 'semana | semanas'
   year: 'año | años'
   yesterday: ayer
-  tomorrow: mañana
-  day: 'día | días'
-  last-week: la semana pasada
-  next-week: la próxima semana
-  week: 'semana | semanas'
-  hour: 'hora | horas'
-  minute: 'minuto | minutos'
-  second: 'segundo | segundos'
+title: Título
+too-many-login-requests: Demasiados intentos de inicio de sesión. Por favor espera {0}s.
+trash: Papelera
+trash-is-empty: La papelera está vacía
 try-again: Intentar otra vez
 untitled: Intitulado
 updated: Actualizado
+url: URL
 user-created: Usuario creado
 user-deleted: Usuario eliminado
 user-updated: Usuario actualizado

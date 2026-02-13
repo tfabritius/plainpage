@@ -7,12 +7,12 @@ _search:
   results: Ergebnisse
 access-denied: Zugriff verweigert
 account-deleted: Konto gelöscht
-admin-current-password: Dein aktuelles Administrator-Passwort
 acl:
   admin: Administration
   subject: Person
 add: Hinzufügen
 add-tag: Tag hinzufügen
+admin-current-password: Dein aktuelles Administrator-Passwort
 administrators: Administratoren
 all-registered-users: Alle registrierten Benutzer
 anonymous: anonym
@@ -24,18 +24,24 @@ are-you-sure-to-delete-this-page: Bist du sicher, dass du diese Seite löschen w
 are-you-sure-to-delete-user: Bist du sicher, dass du Benutzer "{0}" löschen willst?
 back-home: Zurück zum Start
 back-to-content: Zurück zum Inhalt
+back-to-trash: Zurück zum Papierkorb
 cancel: Abbrechen
+cannot-move-folder-into-itself: Ordner kann nicht in sich selbst verschoben werden
+cannot-move-to-same-location: Kann nicht an denselben Ort verschoben werden
 change-password: Passwort ändern
-confirm: Bestätigen
 configuration: Konfiguration
-current-password: Aktuelles Passwort
-current-password-required: Bitte aktuelles Passwort eingeben
+confirm: Bestätigen
+confirm-delete-items-permanent: Bist du sicher, dass du {count} Element(e) endgültig löschen willst? Dies kann nicht rückgängig gemacht werden.
+confirm-delete-page-permanent: Bist du sicher, dass du diese Seite endgültig löschen willst? Dies kann nicht rückgängig gemacht werden.
+confirm-restore-page: Bist du sicher, dass du diese Seite wiederherstellen willst?
 create: Anlegen
 create-folder: Ordner anlegen
 create-folder-description: Details eingeben, um einen neuen Ordner zu erstellen
 create-page: Seite anlegen
 create-page-description: Details eingeben, um eine neue Seite zu erstellen
 create-user: Benutzer anlegen
+current-password: Aktuelles Passwort
+current-password-required: Bitte aktuelles Passwort eingeben
 current-version: Aktuelle Version
 dark-mode-off: Licht an
 dark-mode-on: Licht aus
@@ -44,7 +50,10 @@ delete: Löschen
 delete-folder: Ordner löschen
 delete-my-account: Lösche mein Konto
 delete-page: Seite löschen
+delete-permanently: Endgültig löschen
 delete-user: Benutzer löschen
+deleted-at: Gelöscht
+destination: Ziel
 discard-changes: Änderungen verwerfen
 discard-changes-to-this-page: Änderungen an dieser Seite verwerfen?
 display-name: Anzeigename
@@ -55,6 +64,7 @@ edit-user: Benutzer bearbeiten
 error: Fehler
 folder-created: Ordner angelegt
 folder-deleted: Ordner gelöscht
+folder-moved: Ordner verschoben
 folder-name: Name des Ordners
 folder-name-required: Bitte Name des Ordners eingeben
 folder-reloaded: Ordner neu geladen
@@ -64,9 +74,10 @@ home: Start
 incorrect-password: Falsches Passwort
 inherit-permissions: Berechtigungen vom übergeordneten Ordner erben
 invalid-credentials: Ungültige Zugangsdaten
-too-many-login-requests: Zu viele Anmeldeversuche. Bitte warte {0}s.
 invalid-folder-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
 invalid-page-name: 'Ungültiger Name (erlaubt: [a-z0-9_-])'
+items-deleted-permanent: '{count} Element(e) endgültig gelöscht'
+items-restored: '{count} Element(e) wiederhergestellt'
 language: Sprache
 menu: Menü
 modified: Geändert
@@ -78,27 +89,25 @@ move-here: Hierher verschieben
 move-page: Seite verschieben
 new-password: Neues Passwort
 new-password-required: Bitte neues Passwort eingeben
+no-subfolders: Keine Unterordner
+no-write-permission: Keine Schreibberechtigung für diesen Ordner
 not-found: Nicht gefunden
 ok: OK
 old-revisions-of: Alte Überarbeitungen von
 or: oder
-cannot-move-folder-into-itself: Ordner kann nicht in sich selbst verschoben werden
-cannot-move-to-same-location: Kann nicht an denselben Ort verschoben werden
-destination: Ziel
-folder-moved: Ordner verschoben
-no-subfolders: Keine Unterordner
-no-write-permission: Keine Schreibberechtigung für diesen Ordner
 page-deleted: Seite gelöscht
+page-deleted-permanent: Seite endgültig gelöscht
 page-moved: Seite verschoben
 page-name: Name der Seite
 page-name-required: Bitte Name der Seite eingeben
 page-reloaded: Seite neu geladen
 page-renamed: Seite umbenannt
+page-restored: Seite wiederhergestellt
 page-title: Titel der Seite
 pages: Seiten
 password: Passwort
-password-repeat: Passwort (Wiederholung)
 password-changed: Passwort geändert
+password-repeat: Passwort (Wiederholung)
 password-repeat-not-equal: Passwörter stimmen nicht überein
 password-repeat-required: Bitte Passwort nochmal eingeben
 password-required: Bitte Passwort eingeben
@@ -109,13 +118,14 @@ register: Konto anlegen
 register-account: Konto anlegen
 reload: Neu laden
 rename: Umbenennen
-select-destination-folder: Zielordner auswählen
 rename-page: Seite umbenennen
+restore: Wiederherstellen
 revision-doesnt-exist: Diese Überarbeitung existiert nicht!
 revisions: Überarbeitungen
 save: Speichern
 saved: Gespeichert
 search: Suche
+select-destination-folder: Zielordner auswählen
 sign-in: Anmelden
 sign-out: Abmelden
 signed-out: Du wurdest abgemeldet.
@@ -123,28 +133,32 @@ table-of-contents: Inhaltsverzeichnis
 there-was-an-error: Es gab einen Fehler.
 this-page-doesnt-exist: Diese Seite existiert nicht!
 timeAgo:
-  just-now: gerade eben
   ago: 'vor {0}'
+  day: 'Tag | Tagen'
+  hour: 'Stunde | Stunden'
   in: 'in {0}'
+  just-now: gerade eben
   last-month: letzten Monat
-  next-month: nächsten Monat
-  month: 'Monat | Monaten'
+  last-week: letzte Woche
   last-year: letztes Jahr
+  minute: 'Minute | Minuten'
+  month: 'Monat | Monaten'
+  next-month: nächsten Monat
+  next-week: nächste Woche
   next-year: nächstes Jahr
+  second: 'Sekunde | Sekunden'
+  tomorrow: morgen
+  week: 'Woche | Wochen'
   year: 'Jahr | Jahren'
   yesterday: gestern
-  tomorrow: morgen
-  day: 'Tag | Tagen'
-  last-week: letzte Woche
-  next-week: nächste Woche
-  week: 'Woche | Wochen'
-  hour: 'Stunde | Stunden'
-  minute: 'Minute | Minuten'
-  second: 'Sekunde | Sekunden'
 title: Titel
+too-many-login-requests: Zu viele Anmeldeversuche. Bitte warte {0}s.
+trash: Papierkorb
+trash-is-empty: Papierkorb ist leer
 try-again: Nochmal versuchen
 untitled: Ohne Titel
 updated: Aktualisiert
+url: URL
 user-created: Benutzer angelegt
 user-deleted: Benutzer gelöscht
 user-updated: Benutzer aktualisiert

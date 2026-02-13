@@ -511,12 +511,12 @@ func (s *ContentTestSuite) TestDeletePage() {
 				trashAfter, err := s.app.Content.ListTrash()
 				r.NoError(err)
 				r.Len(trashAfter, 1, "Trash should have exactly one entry")
-				r.Equal(tc.url, trashAfter[0].UrlPath)
-				r.GreaterOrEqual(trashAfter[0].Timestamp, beforeTime, "Timestamp should be >= before time")
-				r.LessOrEqual(trashAfter[0].Timestamp, afterTime, "Timestamp should be <= after time")
+				r.Equal(tc.url, trashAfter[0].Url)
+				r.GreaterOrEqual(trashAfter[0].DeletedAt, beforeTime, "DeletedAt should be >= before time")
+				r.LessOrEqual(trashAfter[0].DeletedAt, afterTime, "DeletedAt should be <= after time")
 
 				// Clean up trash
-				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].UrlPath, trashAfter[0].Timestamp))
+				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].Url, trashAfter[0].DeletedAt))
 			} else {
 				r.True(s.app.Content.IsPage(tc.url))
 				r.NoError(s.app.Content.DeletePage(tc.url))
@@ -524,7 +524,7 @@ func (s *ContentTestSuite) TestDeletePage() {
 				// Clean up trash
 				trashAfter, _ := s.app.Content.ListTrash()
 				for _, entry := range trashAfter {
-					s.app.Content.DeleteTrashEntry(entry.UrlPath, entry.Timestamp)
+					s.app.Content.DeleteTrashEntry(entry.Url, entry.DeletedAt)
 				}
 			}
 		})
@@ -672,12 +672,12 @@ func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
 				trashAfter, err := s.app.Content.ListTrash()
 				r.NoError(err)
 				r.Len(trashAfter, 1, "Trash should have exactly one entry")
-				r.Equal("folder/page", trashAfter[0].UrlPath)
-				r.GreaterOrEqual(trashAfter[0].Timestamp, beforeTime, "Timestamp should be >= before time")
-				r.LessOrEqual(trashAfter[0].Timestamp, afterTime, "Timestamp should be <= after time")
+				r.Equal("folder/page", trashAfter[0].Url)
+				r.GreaterOrEqual(trashAfter[0].DeletedAt, beforeTime, "DeletedAt should be >= before time")
+				r.LessOrEqual(trashAfter[0].DeletedAt, afterTime, "DeletedAt should be <= after time")
 
 				// Clean up trash
-				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].UrlPath, trashAfter[0].Timestamp))
+				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].Url, trashAfter[0].DeletedAt))
 			} else {
 				// Cleanup if deletion failed
 				r.True(s.app.Content.IsFolder("folder"))
@@ -686,7 +686,7 @@ func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
 				// Clean up trash
 				trashAfter, _ := s.app.Content.ListTrash()
 				for _, entry := range trashAfter {
-					s.app.Content.DeleteTrashEntry(entry.UrlPath, entry.Timestamp)
+					s.app.Content.DeleteTrashEntry(entry.Url, entry.DeletedAt)
 				}
 			}
 		})
@@ -2035,6 +2035,347 @@ func (s *ContentTestSuite) TestModifiedByReturnsUserInfo() {
 
 	// Cleanup
 	r.NoError(s.app.Content.DeletePage("test-page"))
+}
+
+// ==================== TRASH API TESTS ====================
+
+// TestTrashListAPI tests the GET /trash/ endpoint
+func (s *ContentTestSuite) TestTrashListAPI() {
+	r := s.Require()
+
+	// Create pages
+	r.NoError(s.app.Content.SavePage("page1", "Content1", model.ContentMeta{Title: "Page 1"}, ""))
+	r.NoError(s.app.Content.SavePage("page2", "Content2", model.ContentMeta{Title: "Page 2"}, ""))
+
+	// Record time range for timestamp validation
+	beforeTime := time.Now().Unix()
+	r.NoError(s.app.Content.DeletePage("page1"))
+	time.Sleep(10 * time.Millisecond)
+	r.NoError(s.app.Content.DeletePage("page2"))
+	afterTime := time.Now().Unix()
+
+	tests := []struct {
+		name         string
+		token        *string
+		responseCode int
+	}{
+		{"admin", s.adminToken, 200},
+		{"user", s.userToken, 403},
+		{"anonymous", nil, 401},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("GET", "/trash/", nil, tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			if tc.responseCode == 200 {
+				body, _ := jsonbody[model.GetTrashListResponse](res)
+				r.Len(body.Items, 2)
+				r.Equal(2, body.TotalCount)
+
+				// Verify DeletedAt timestamps are within expected range
+				for _, item := range body.Items {
+					r.GreaterOrEqual(item.DeletedAt, beforeTime, "DeletedAt should be >= beforeTime")
+					r.LessOrEqual(item.DeletedAt, afterTime, "DeletedAt should be <= afterTime")
+				}
+			}
+		})
+	}
+
+	// Test pagination
+	{
+		res := s.api("GET", "/trash/?page=1&limit=1", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetTrashListResponse](res)
+		r.Len(body.Items, 1)
+		r.Equal(2, body.TotalCount)
+		r.Equal(1, body.Page)
+		r.Equal(1, body.Limit)
+	}
+
+	// Test sorting by url
+	{
+		res := s.api("GET", "/trash/?sortBy=url&sortOrder=asc", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.GetTrashListResponse](res)
+		r.Len(body.Items, 2)
+		r.Equal("page1", body.Items[0].Url)
+		r.Equal("page2", body.Items[1].Url)
+	}
+}
+
+// TestTrashShowPageAPI tests the GET /trash/page endpoint
+func (s *ContentTestSuite) TestTrashShowPageAPI() {
+	r := s.Require()
+
+	// Create, save, and delete a page
+	r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Test Page"}, ""))
+	r.NoError(s.app.Content.DeletePage("page"))
+
+	// Get the trash entry
+	trashEntries, err := s.app.Content.ListTrash()
+	r.NoError(err)
+	r.Len(trashEntries, 1)
+	entry := trashEntries[0]
+
+	tests := []struct {
+		name         string
+		token        *string
+		responseCode int
+	}{
+		{"admin", s.adminToken, 200},
+		{"user", s.userToken, 403},
+		{"anonymous", nil, 401},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("GET", "/trash/page?url="+entry.Url+"&deletedAt="+strconv.FormatInt(entry.DeletedAt, 10), nil, tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			if tc.responseCode == 200 {
+				body, _ := jsonbody[model.GetTrashPageResponse](res)
+				r.Equal("Content", body.Page.Content)
+				r.Equal("Test Page", body.Page.Meta.Title)
+			}
+		})
+	}
+
+	// Test 404 for non-existent item
+	{
+		res := s.api("GET", "/trash/page?url=nonexistent&deletedAt=12345", nil, s.adminToken)
+		r.Equal(404, res.Code)
+	}
+
+	// Test missing parameters
+	{
+		res := s.api("GET", "/trash/page", nil, s.adminToken)
+		r.Equal(400, res.Code)
+
+		res = s.api("GET", "/trash/page?url=page", nil, s.adminToken)
+		r.Equal(400, res.Code)
+	}
+}
+
+// TestTrashDeleteAPI tests the POST /trash/delete endpoint
+func (s *ContentTestSuite) TestTrashDeleteAPI() {
+	tests := []struct {
+		name         string
+		token        *string
+		responseCode int
+	}{
+		{"admin", s.adminToken, 200},
+		{"user", s.userToken, 403},
+		{"anonymous", nil, 401},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Setup: create and delete a page
+			r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Page"}, ""))
+			r.NoError(s.app.Content.DeletePage("page"))
+
+			trashBefore, err := s.app.Content.ListTrash()
+			r.NoError(err)
+			r.Len(trashBefore, 1)
+
+			// Test
+			res := s.api("POST", "/trash/delete",
+				model.TrashActionRequest{Items: []model.TrashItemRef{{Url: trashBefore[0].Url, DeletedAt: trashBefore[0].DeletedAt}}},
+				tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			trashAfter, err := s.app.Content.ListTrash()
+			r.NoError(err)
+
+			if tc.responseCode == 200 {
+				r.Len(trashAfter, 0, "Trash should be empty after permanent deletion")
+			} else {
+				r.Len(trashAfter, 1, "Trash should still have the entry")
+				// Cleanup
+				r.NoError(s.app.Content.DeleteTrashEntry(trashAfter[0].Url, trashAfter[0].DeletedAt))
+			}
+		})
+	}
+}
+
+// TestTrashRestoreAPI tests the POST /trash/restore endpoint
+func (s *ContentTestSuite) TestTrashRestoreAPI() {
+	tests := []struct {
+		name         string
+		token        *string
+		responseCode int
+	}{
+		{"admin", s.adminToken, 200},
+		{"user", s.userToken, 403},
+		{"anonymous", nil, 401},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			// Setup: create and delete a page
+			r.NoError(s.app.Content.SavePage("page", "Content", model.ContentMeta{Title: "Restored Page"}, ""))
+			r.NoError(s.app.Content.DeletePage("page"))
+
+			trashBefore, err := s.app.Content.ListTrash()
+			r.NoError(err)
+			r.Len(trashBefore, 1)
+
+			// Test
+			res := s.api("POST", "/trash/restore",
+				model.TrashActionRequest{Items: []model.TrashItemRef{{Url: trashBefore[0].Url, DeletedAt: trashBefore[0].DeletedAt}}},
+				tc.token)
+			r.Equal(tc.responseCode, res.Code)
+
+			if tc.responseCode == 200 {
+				r.True(s.app.Content.IsPage("page"), "Page should be restored")
+
+				page, err := s.app.Content.ReadPage("page", nil)
+				r.NoError(err)
+				r.Equal("Content", page.Content)
+				r.Equal("Restored Page", page.Meta.Title)
+
+				trashAfter, err := s.app.Content.ListTrash()
+				r.NoError(err)
+				r.Len(trashAfter, 0, "Trash should be empty after restore")
+
+				// Cleanup
+				r.NoError(s.app.Content.DeletePage("page"))
+				trashAfter, _ = s.app.Content.ListTrash()
+				for _, e := range trashAfter {
+					s.app.Content.DeleteTrashEntry(e.Url, e.DeletedAt)
+				}
+			} else {
+				r.False(s.app.Content.IsPage("page"), "Page should not be restored")
+				// Cleanup
+				r.NoError(s.app.Content.DeleteTrashEntry(trashBefore[0].Url, trashBefore[0].DeletedAt))
+			}
+		})
+	}
+}
+
+// TestTrashRestoreDeepNestedPage tests restoring a deeply nested page with auto-created parent folders
+func (s *ContentTestSuite) TestTrashRestoreDeepNestedPage() {
+	r := s.Require()
+
+	// Create deeply nested page: a/b/c/d/page
+	r.NoError(s.app.Content.CreateFolder("nested-a", model.ContentMeta{Title: "A"}))
+	r.NoError(s.app.Content.CreateFolder("nested-a/b", model.ContentMeta{Title: "B"}))
+	r.NoError(s.app.Content.CreateFolder("nested-a/b/c", model.ContentMeta{Title: "C"}))
+	r.NoError(s.app.Content.CreateFolder("nested-a/b/c/d", model.ContentMeta{Title: "D"}))
+	r.NoError(s.app.Content.SavePage("nested-a/b/c/d/page", "Deep Content", model.ContentMeta{Title: "Deep Page"}, ""))
+
+	// Create multiple attic versions
+	time.Sleep(1050 * time.Millisecond)
+	r.NoError(s.app.Content.SavePage("nested-a/b/c/d/page", "Deep Content v2", model.ContentMeta{Title: "Deep Page v2"}, ""))
+	time.Sleep(1050 * time.Millisecond)
+	r.NoError(s.app.Content.SavePage("nested-a/b/c/d/page", "Deep Content v3", model.ContentMeta{Title: "Deep Page v3"}, ""))
+
+	// Verify we have 3 attic entries
+	atticBefore, err := s.app.Content.ListAttic("nested-a/b/c/d/page")
+	r.NoError(err)
+	r.Len(atticBefore, 3, "Should have 3 attic entries before deletion")
+
+	// Delete the entire folder structure
+	r.NoError(s.app.Content.DeleteFolder("nested-a"))
+
+	// Verify page is in trash
+	trashEntries, err := s.app.Content.ListTrash()
+	r.NoError(err)
+	r.Len(trashEntries, 1)
+	r.Equal("nested-a/b/c/d/page", trashEntries[0].Url)
+
+	// Verify all folders are gone
+	r.False(s.app.Content.IsFolder("nested-a"))
+	r.False(s.app.Content.IsFolder("nested-a/b"))
+	r.False(s.app.Content.IsFolder("nested-a/b/c"))
+	r.False(s.app.Content.IsFolder("nested-a/b/c/d"))
+
+	// Restore via API
+	res := s.api("POST", "/trash/restore",
+		model.TrashActionRequest{Items: []model.TrashItemRef{{Url: trashEntries[0].Url, DeletedAt: trashEntries[0].DeletedAt}}},
+		s.adminToken)
+	r.Equal(200, res.Code)
+
+	// Verify all parent folders were auto-created
+	r.True(s.app.Content.IsFolder("nested-a"), "nested-a folder should be auto-created")
+	r.True(s.app.Content.IsFolder("nested-a/b"), "nested-a/b folder should be auto-created")
+	r.True(s.app.Content.IsFolder("nested-a/b/c"), "nested-a/b/c folder should be auto-created")
+	r.True(s.app.Content.IsFolder("nested-a/b/c/d"), "nested-a/b/c/d folder should be auto-created")
+
+	// Verify page was restored with latest content
+	r.True(s.app.Content.IsPage("nested-a/b/c/d/page"))
+	page, err := s.app.Content.ReadPage("nested-a/b/c/d/page", nil)
+	r.NoError(err)
+	r.Equal("Deep Content v3", page.Content)
+	r.Equal("Deep Page v3", page.Meta.Title)
+
+	// Verify all attic entries were restored
+	atticAfter, err := s.app.Content.ListAttic("nested-a/b/c/d/page")
+	r.NoError(err)
+	r.Len(atticAfter, 3, "All 3 attic entries should be restored")
+
+	// Verify we can read old revisions
+	for i, entry := range atticAfter {
+		oldPage, err := s.app.Content.ReadPage("nested-a/b/c/d/page", &entry.Revision)
+		r.NoError(err)
+		r.NotEmpty(oldPage.Content, "Revision %d (rev %d) should have content", i+1, entry.Revision)
+	}
+
+	// Verify trash is empty
+	trashAfter, err := s.app.Content.ListTrash()
+	r.NoError(err)
+	r.Len(trashAfter, 0, "Trash should be empty after restore")
+
+	// Verify page is searchable
+	results, err := s.app.Content.Search("Deep")
+	r.NoError(err)
+	r.GreaterOrEqual(len(results), 1, "Restored page should be searchable")
+}
+
+// TestTrashRestoreConflict tests that restore fails when destination already exists
+func (s *ContentTestSuite) TestTrashRestoreConflict() {
+	r := s.Require()
+
+	// Create and delete a page
+	r.NoError(s.app.Content.SavePage("conflict-page", "Original", model.ContentMeta{Title: "Original"}, ""))
+	r.NoError(s.app.Content.DeletePage("conflict-page"))
+
+	trashEntries, err := s.app.Content.ListTrash()
+	r.NoError(err)
+	r.Len(trashEntries, 1)
+
+	// Create a new page at the same location
+	r.NoError(s.app.Content.SavePage("conflict-page", "New", model.ContentMeta{Title: "New"}, ""))
+
+	// Try to restore - should fail with 409 Conflict
+	res := s.api("POST", "/trash/restore",
+		model.TrashActionRequest{Items: []model.TrashItemRef{{Url: trashEntries[0].Url, DeletedAt: trashEntries[0].DeletedAt}}},
+		s.adminToken)
+	r.Equal(409, res.Code)
+
+	// Page should still have the new content
+	page, err := s.app.Content.ReadPage("conflict-page", nil)
+	r.NoError(err)
+	r.Equal("New", page.Content)
+
+	// Trash should still have the entry
+	trashAfter, err := s.app.Content.ListTrash()
+	r.NoError(err)
+	r.Len(trashAfter, 1)
 }
 
 // TestFolderContentFiltering tests that folder entries (pages and subfolders) are filtered

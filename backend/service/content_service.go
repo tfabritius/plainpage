@@ -239,7 +239,7 @@ func (s *ContentService) IsAtticPage(urlPath string, revision int64) bool {
 	return s.storage.Exists(fsPath)
 }
 
-// ListTrash returns all trash entries (deleted pages with their deletion timestamps)
+// ListTrash returns all trash entries (deleted pages with their deletion timestamps and metadata)
 func (s *ContentService) ListTrash() ([]model.TrashEntry, error) {
 	entries := []model.TrashEntry{}
 	return s.listTrashRecursive("", entries)
@@ -264,12 +264,28 @@ func (s *ContentService) listTrashRecursive(relativePath string, entries []model
 		// Check if this is a timestamp directory (starts with _ followed by digits)
 		if strings.HasPrefix(fi.Name(), "_") {
 			timestampStr := strings.TrimPrefix(fi.Name(), "_")
-			if timestamp, err := strconv.ParseInt(timestampStr, 10, 64); err == nil {
+			if deletedAt, err := strconv.ParseInt(timestampStr, 10, 64); err == nil {
 				// This is a deletion timestamp directory
 				urlPath := relativePath
+
+				// Read metadata from the page file
+				meta := model.ContentMeta{}
+				pageName := path.Base(urlPath)
+				pageFile := filepath.Join("trash", urlPath, fi.Name(), pageName+".md")
+				if s.storage.Exists(pageFile) {
+					bytes, err := s.storage.ReadFile(pageFile)
+					if err == nil {
+						fm, _, err := parseFrontMatter(string(bytes))
+						if err == nil {
+							meta = fm
+						}
+					}
+				}
+
 				entries = append(entries, model.TrashEntry{
-					UrlPath:   urlPath,
-					Timestamp: timestamp,
+					Url:       urlPath,
+					DeletedAt: deletedAt,
+					Meta:      meta,
 				})
 				continue
 			}
@@ -290,8 +306,8 @@ func (s *ContentService) listTrashRecursive(relativePath string, entries []model
 }
 
 // DeleteTrashEntry permanently deletes a specific trash entry
-func (s *ContentService) DeleteTrashEntry(urlPath string, timestamp int64) error {
-	timestampStr := "_" + strconv.FormatInt(timestamp, 10)
+func (s *ContentService) DeleteTrashEntry(urlPath string, deletedAt int64) error {
+	timestampStr := "_" + strconv.FormatInt(deletedAt, 10)
 	trashDir := filepath.Join("trash", urlPath, timestampStr)
 
 	if !s.storage.Exists(trashDir) {
@@ -299,6 +315,108 @@ func (s *ContentService) DeleteTrashEntry(urlPath string, timestamp int64) error
 	}
 
 	return s.storage.DeleteDirectory(trashDir)
+}
+
+// ReadTrashPage reads a specific page from the trash
+func (s *ContentService) ReadTrashPage(urlPath string, deletedAt int64) (model.Page, error) {
+	timestampStr := "_" + strconv.FormatInt(deletedAt, 10)
+	pageName := path.Base(urlPath)
+	pageFile := filepath.Join("trash", urlPath, timestampStr, pageName+".md")
+
+	if !s.storage.Exists(pageFile) {
+		return model.Page{}, model.ErrNotFound
+	}
+
+	bytes, err := s.storage.ReadFile(pageFile)
+	if err != nil {
+		return model.Page{}, err
+	}
+
+	fm, content, err := parseFrontMatter(string(bytes))
+	if err != nil {
+		return model.Page{}, fmt.Errorf("could not parse frontmatter: %w", err)
+	}
+
+	page := model.Page{
+		Url:     urlPath,
+		Content: content,
+		Meta:    fm,
+	}
+	return page, nil
+}
+
+// RestoreFromTrash restores a page from trash to its original location
+func (s *ContentService) RestoreFromTrash(urlPath string, deletedAt int64) error {
+	timestampStr := "_" + strconv.FormatInt(deletedAt, 10)
+	pageName := path.Base(urlPath)
+	trashDir := filepath.Join("trash", urlPath, timestampStr)
+
+	if !s.storage.Exists(trashDir) {
+		return model.ErrNotFound
+	}
+
+	// Check if destination already exists
+	if s.IsPage(urlPath) || s.IsFolder(urlPath) {
+		return model.ErrPageOrFolderExistsAlready
+	}
+
+	// Create parent folders if they don't exist
+	if err := s.ensureParentFoldersExist(urlPath); err != nil {
+		return fmt.Errorf("could not create parent folders: %w", err)
+	}
+
+	// Move the page file back
+	srcPagePath := filepath.Join(trashDir, pageName+".md")
+	destPagePath := filepath.Join("pages", urlPath+".md")
+	if err := s.storage.Rename(srcPagePath, destPagePath); err != nil {
+		return fmt.Errorf("could not restore page: %w", err)
+	}
+
+	// Move all attic entries back
+	trashFiles, err := s.storage.ReadDirectory(trashDir)
+	if err != nil {
+		// Directory might be empty now or error reading it, continue with empty list
+		trashFiles = nil
+	}
+
+	for _, fi := range trashFiles {
+		if fi.IsDir() {
+			continue
+		}
+
+		// Check if this is an attic file (has revision number)
+		name := fi.Name()
+		if !strings.HasPrefix(name, pageName+".") || !strings.HasSuffix(name, ".md") {
+			continue
+		}
+
+		// Extract revision number
+		revPart := strings.TrimPrefix(name, pageName+".")
+		revPart = strings.TrimSuffix(revPart, ".md")
+		if _, err := strconv.ParseInt(revPart, 10, 64); err != nil {
+			continue // Not a revision file
+		}
+
+		srcAtticPath := filepath.Join(trashDir, name)
+		destAtticPath := filepath.Join("attic", urlPath+"."+revPart+".md")
+		if err := s.storage.Rename(srcAtticPath, destAtticPath); err != nil {
+			return fmt.Errorf("could not restore attic entry: %w", err)
+		}
+	}
+
+	// Delete the now-empty trash directory
+	s.storage.DeleteEmptyDirectory(trashDir)
+
+	// Update search index
+	page, err := s.ReadPage(urlPath, nil)
+	if err != nil {
+		return fmt.Errorf("could not read restored page: %w", err)
+	}
+	if err := s.index.Index(urlPath, page); err != nil {
+		log.Printf("[INDEX] Could not index restored page %s: %v", urlPath, err)
+	}
+
+	return nil
 }
 
 func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, error) {
@@ -850,6 +968,32 @@ func (s *ContentService) MoveFolder(sourcePath, destinationPath string) error {
 	// Index the new folder and all its contents
 	if err := s.indexFolder(destinationPath, &s.index); err != nil {
 		log.Println("[INDEX] Could not index new folder:", err)
+	}
+
+	return nil
+}
+
+// ensureParentFoldersExist creates all parent folders for a given path if they don't exist.
+func (s *ContentService) ensureParentFoldersExist(urlPath string) error {
+	parentPath := path.Dir(urlPath)
+	if parentPath == "." || parentPath == "" {
+		// Root folder always exists
+		return nil
+	}
+
+	// If parent exists, we're done
+	if s.IsFolder(parentPath) {
+		return nil
+	}
+
+	// Recursively ensure parent's parent exists first
+	if err := s.ensureParentFoldersExist(parentPath); err != nil {
+		return err
+	}
+
+	// Create this folder with empty metadata
+	if err := s.CreateFolder(parentPath, model.ContentMeta{}); err != nil {
+		return fmt.Errorf("could not create folder %s: %w", parentPath, err)
 	}
 
 	return nil

@@ -133,6 +133,11 @@ const menuItems = computed(() => {
         label: t('configuration'),
         to: '/_admin/settings',
       },
+      {
+        icon: 'tabler:trash',
+        label: t('trash'),
+        to: '/_admin/trash',
+      },
     )
   }
 

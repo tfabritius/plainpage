@@ -73,3 +73,34 @@ type RefreshResponse struct {
 	AccessToken string `json:"accessToken"`
 	User        User   `json:"user"`
 }
+
+type AtticEntry struct {
+	Revision int64 `json:"rev"`
+}
+
+// TrashEntry represents a deleted page in the trash
+type TrashEntry struct {
+	Url       string      `json:"url"`
+	DeletedAt int64       `json:"deletedAt"`
+	Meta      ContentMeta `json:"meta"`
+}
+
+type GetTrashListResponse struct {
+	Items      []TrashEntry `json:"items"`
+	TotalCount int          `json:"totalCount"`
+	Page       int          `json:"page"`
+	Limit      int          `json:"limit"`
+}
+
+type GetTrashPageResponse struct {
+	Page Page `json:"page"`
+}
+
+type TrashActionRequest struct {
+	Items []TrashItemRef `json:"items"`
+}
+
+type TrashItemRef struct {
+	Url       string `json:"url"`
+	DeletedAt int64  `json:"deletedAt"`
+}

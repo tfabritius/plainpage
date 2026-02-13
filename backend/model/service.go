@@ -46,16 +46,6 @@ type FolderEntry struct {
 	ACL *[]AccessRule `json:"-"`
 }
 
-type AtticEntry struct {
-	Revision int64 `json:"rev"`
-}
-
-// TrashEntry represents a deleted page in the trash
-type TrashEntry struct {
-	UrlPath   string
-	Timestamp int64
-}
-
 type AccessRule struct {
 	// The subject trying to access an object
 	// e.g.

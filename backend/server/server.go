@@ -125,6 +125,13 @@ func (app App) GetHandler() http.Handler {
 
 			r.Post("/search", app.searchContent)
 
+			r.With(app.RequireAdminPermission).Route("/trash", func(r chi.Router) {
+				r.Get("/", app.getTrash)
+				r.Get("/page", app.getTrashPage)
+				r.Post("/delete", app.deleteTrashItems)
+				r.Post("/restore", app.restoreTrashItems)
+			})
+
 			r.Route("/auth", func(r chi.Router) {
 				r.With(app.RequireAdminPermission).
 					Get("/users", app.getUsers)

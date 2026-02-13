@@ -7,12 +7,12 @@ _search:
   results: Results
 access-denied: Access denied
 account-deleted: Account deleted
-admin-current-password: Your current admin password
 acl:
   admin: Administration
   subject: Subject
 add: Add
 add-tag: Add Tag
+admin-current-password: Your current admin password
 administrators: Administrators
 all-registered-users: All registered users
 anonymous: anonymous
@@ -24,18 +24,24 @@ are-you-sure-to-delete-this-page: Are you sure to delete this page?
 are-you-sure-to-delete-user: Are you sure to delete user "{0}"?
 back-home: Back home
 back-to-content: Back to content
+back-to-trash: Back to trash
 cancel: Cancel
+cannot-move-folder-into-itself: Cannot move folder into itself
+cannot-move-to-same-location: Cannot move to same location
 change-password: Change password
-confirm: Confirm
 configuration: Configuration
-current-password: Current password
-current-password-required: Please enter current password
+confirm: Confirm
+confirm-delete-items-permanent: Are you sure you want to permanently delete {count} item(s)? This cannot be undone.
+confirm-delete-page-permanent: Are you sure you want to permanently delete this page? This cannot be undone.
+confirm-restore-page: Are you sure you want to restore this page?
 create: Create
 create-folder: Create folder
 create-folder-description: Enter details to create a new folder
 create-page: Create page
 create-page-description: Enter details to create a new page
 create-user: Create user
+current-password: Current password
+current-password-required: Please enter current password
 current-version: Current version
 dark-mode-off: Light on
 dark-mode-on: Light off
@@ -44,7 +50,10 @@ delete: Delete
 delete-folder: Delete folder
 delete-my-account: Delete my account
 delete-page: Delete page
+delete-permanently: Delete permanently
 delete-user: Delete user
+deleted-at: Deleted
+destination: Destination
 discard-changes: Discard changes
 discard-changes-to-this-page: Discard changes to this page?
 display-name: Display name
@@ -55,6 +64,7 @@ edit-user: Edit user
 error: Error
 folder-created: Folder created
 folder-deleted: Folder deleted
+folder-moved: Folder moved
 folder-name: Folder name
 folder-name-required: Please enter folder name
 folder-reloaded: Folder reloaded
@@ -64,9 +74,10 @@ home: Home
 incorrect-password: Incorrect password
 inherit-permissions: Inherit permissions from parent folder
 invalid-credentials: Invalid credentials
-too-many-login-requests: Too many sign in attempts. Please wait {0}s.
 invalid-folder-name: 'Invalid name (allowed: [a-z0-9_-])'
 invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
+items-deleted-permanent: '{count} item(s) deleted permanently'
+items-restored: '{count} item(s) restored'
 language: Language
 menu: Menu
 modified: Modified
@@ -78,28 +89,26 @@ move-here: Move here
 move-page: Move page
 new-password: New password
 new-password-required: Please enter new password
+no-subfolders: No subfolders
+no-write-permission: No write permission for this folder
 not-found: Not found
 ok: OK
 old-revisions-of: Old revisions of
 or: or
-cannot-move-folder-into-itself: Cannot move folder into itself
-cannot-move-to-same-location: Cannot move to same location
-destination: Destination
-folder-moved: Folder moved
-no-subfolders: No subfolders
-no-write-permission: No write permission for this folder
 page-deleted: Page deleted
+page-deleted-permanent: Page deleted permanently
 page-moved: Page moved
 page-name: Page name
 page-name-required: Please enter page name
 page-reloaded: Page reloaded
 page-renamed: Page renamed
+page-restored: Page restored
 page-title: Page title
 pages: Pages
 password: Password
+password-changed: Password changed
 password-repeat: Repeat password
 password-repeat-not-equal: Passwords don't match
-password-changed: Password changed
 password-repeat-required: Please confirm password
 password-required: Please enter password
 permissions: Permissions
@@ -109,13 +118,14 @@ register: Register
 register-account: Register account
 reload: Reload
 rename: Rename
-select-destination-folder: Select the destination folder
 rename-page: Rename page
+restore: Restore
 revision-doesnt-exist: This revision doesn't exist!
 revisions: Revisions
 save: Save
 saved: Saved
 search: Search
+select-destination-folder: Select the destination folder
 sign-in: Sign in
 sign-out: Sign out
 signed-out: You have been signed out.
@@ -123,28 +133,32 @@ table-of-contents: Table of Contents
 there-was-an-error: There was an error.
 this-page-doesnt-exist: This page doesn't exist!
 timeAgo:
-  just-now: just now
   ago: '{0} ago'
+  day: 'day | days'
+  hour: 'hour | hours'
   in: 'in {0}'
+  just-now: just now
   last-month: last month
-  next-month: next month
-  month: 'month | months'
+  last-week: last week
   last-year: last year
+  minute: 'minute | minutes'
+  month: 'month | months'
+  next-month: next month
+  next-week: next week
   next-year: next year
+  second: 'second | seconds'
+  tomorrow: tomorrow
+  week: 'week | weeks'
   year: 'year | years'
   yesterday: yesterday
-  tomorrow: tomorrow
-  day: 'day | days'
-  last-week: last week
-  next-week: next week
-  week: 'week | weeks'
-  hour: 'hour | hours'
-  minute: 'minute | minutes'
-  second: 'second | seconds'
 title: Title
+too-many-login-requests: Too many sign in attempts. Please wait {0}s.
+trash: Trash
+trash-is-empty: Trash is empty
 try-again: Try again
 untitled: Untitled
 updated: Updated
+url: URL
 user-created: User created
 user-deleted: User deleted
 user-updated: User updated

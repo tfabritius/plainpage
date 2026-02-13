@@ -93,6 +93,32 @@ export interface AtticEntry {
   rev: number
 }
 
+export interface TrashEntry {
+  url: string
+  deletedAt: number
+  meta: ContentMeta
+}
+
+export interface GetTrashListResponse {
+  items: TrashEntry[]
+  totalCount: number
+  page: number
+  limit: number
+}
+
+export interface GetTrashPageResponse {
+  page: Page
+}
+
+export interface TrashActionRequest {
+  items: TrashItemRef[]
+}
+
+export interface TrashItemRef {
+  url: string
+  deletedAt: number
+}
+
 export interface AccessRule {
   subject: string
   ops: AccessOp[] | null

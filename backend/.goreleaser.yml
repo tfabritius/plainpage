@@ -22,7 +22,7 @@ builds:
         goarch: arm64
 
     # Ensure reproducible builds:
-    mod_timestamp: '{{ .CommitTimestamp }}'
+    mod_timestamp: "{{ .CommitTimestamp }}"
 
     flags:
       - -trimpath
@@ -43,36 +43,36 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    formats: ['tar.gz']
+    formats: ["tar.gz"]
     format_overrides:
-    # use zip for windows archives
-    - goos: windows
-      formats: ['zip']
+      # use zip for windows archives
+      - goos: windows
+        formats: ["zip"]
 
 dockers:
   - image_templates:
-    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64'
+      - "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64"
     goarch: amd64
     dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
-    - --pull
-    - --platform=linux/amd64
+      - --pull
+      - --platform=linux/amd64
   - image_templates:
-    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64'
+      - "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64"
     goarch: arm64
     dockerfile: Dockerfile
     use: buildx
     build_flag_templates:
-    - --pull
-    - --platform=linux/arm64
+      - --pull
+      - --platform=linux/arm64
 
 docker_manifests:
-  - name_template: 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}'
+  - name_template: "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}"
     image_templates:
-    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64'
-    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64'
-  - name_template: 'ghcr.io/tfabritius/{{ .ProjectName }}:latest'
+      - "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64"
+  - name_template: "ghcr.io/tfabritius/{{ .ProjectName }}:latest"
     image_templates:
-    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64'
-    - 'ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64'
+      - "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-amd64"
+      - "ghcr.io/tfabritius/{{ .ProjectName }}:{{ .Tag }}-arm64"

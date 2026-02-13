@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import type { User } from '~/types'
+import type { PostUserRequest, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { z } from 'zod'
 import { useAuthStore } from '~/store/auth'
@@ -40,7 +40,12 @@ const loading = ref(false)
 async function submit(_event: FormSubmitEvent<FormSchema>) {
   loading.value = true
   try {
-    await apiRawFetch<User>('/auth/users', { method: 'POST', body: formState })
+    const request: PostUserRequest = {
+      username: formState.username,
+      password: formState.password,
+      displayName: formState.displayName,
+    }
+    await apiRawFetch<User>('/auth/users', { method: 'POST', body: request })
   } catch (e) {
     if (e instanceof FetchError && e.statusCode === 409) {
       existingUsername.value = formState.username

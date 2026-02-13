@@ -1,4 +1,4 @@
-// Types corresponding to model/api.go
+/* Types corresponding to backend/model/api.go */
 
 export interface Breadcrumb {
   name: string
@@ -40,6 +40,26 @@ export interface PatchOperation {
   from?: string
 }
 
+export interface LoginRequest {
+  username: string
+  password: string
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+}
+
+export interface PostUserRequest {
+  username: string
+  password: string
+  displayName: string
+}
+
+export interface DeleteUserRequest {
+  password: string
+}
+
 export interface LoginResponse {
   accessToken: string
   user: User
@@ -48,45 +68,6 @@ export interface LoginResponse {
 export interface RefreshResponse {
   accessToken: string
   user: User
-}
-
-export interface ChangePasswordRequest {
-  currentPassword: string
-  newPassword: string
-}
-
-export interface DeleteUserRequest {
-  password: string
-}
-
-// Types corresponding to model/service.go
-
-export interface Page {
-  url: string
-  content: string
-  meta: ContentMeta
-}
-
-export interface Folder {
-  url: string
-  content: FolderEntry[]
-  meta: ContentMeta
-}
-
-export interface ContentMeta {
-  title: string
-  tags: string[] | null
-  acl?: AccessRule[] | null
-  modifiedAt?: string
-  modifiedByUsername?: string
-  modifiedByDisplayName?: string
-}
-
-export interface FolderEntry {
-  url: string
-  name: string
-  title: string
-  isFolder: boolean
 }
 
 export interface AtticEntry {
@@ -117,6 +98,34 @@ export interface TrashActionRequest {
 export interface TrashItemRef {
   url: string
   deletedAt: number
+}
+
+export interface Page {
+  url: string
+  content: string
+  meta: ContentMeta
+}
+
+export interface Folder {
+  url: string
+  content: FolderEntry[]
+  meta: ContentMeta
+}
+
+export interface ContentMeta {
+  title: string
+  tags: string[] | null
+  acl?: AccessRule[] | null
+  modifiedAt?: string
+  modifiedByUsername?: string
+  modifiedByDisplayName?: string
+}
+
+export interface FolderEntry {
+  url: string
+  name: string
+  title: string
+  isFolder: boolean
 }
 
 export interface AccessRule {

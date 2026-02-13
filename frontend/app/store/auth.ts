@@ -1,4 +1,4 @@
-import type { DeleteUserRequest, LoginResponse, PatchOperation, RefreshResponse, User } from '~/types'
+import type { DeleteUserRequest, LoginRequest, LoginResponse, PatchOperation, RefreshResponse, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { defineStore } from 'pinia'
 import { apiRawFetch } from '~/composables/apiFetch'
@@ -18,7 +18,7 @@ export const useAuthStore = defineStore(
     const accessToken = ref('')
     const loggedIn = computed(() => accessToken.value !== '')
 
-    async function login(credentials: { username: string, password: string }): Promise<true | LoginError> {
+    async function login(credentials: LoginRequest): Promise<true | LoginError> {
       accessToken.value = ''
       user.value = undefined
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui'
-import type { ChangePasswordRequest, DeleteUserRequest, PatchOperation, User } from '~/types'
+import type { ChangePasswordRequest, DeleteUserRequest, PatchOperation, PostUserRequest, User } from '~/types'
 import { FetchError } from 'ofetch'
 import { z } from 'zod'
 import { validUsernameRegex } from '~/types'
@@ -98,7 +98,12 @@ async function onSubmit() {
 
       toast.add({ description: t('user-updated'), color: 'success' })
     } else {
-      await apiFetch('/auth/users', { method: 'POST', body: userFormState })
+      const request: PostUserRequest = {
+        username: userFormState.username,
+        password: userFormState.password,
+        displayName: userFormState.displayName,
+      }
+      await apiFetch('/auth/users', { method: 'POST', body: request })
       toast.add({ description: t('user-created'), color: 'success' })
     }
     userFormVisible.value = false

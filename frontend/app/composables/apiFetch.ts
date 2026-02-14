@@ -29,8 +29,7 @@ function getTokenExpiration(token: string): number {
   if (typeof payload === 'object'
     && payload !== null
     && 'exp' in payload
-    && typeof payload.exp === 'number'
-  ) {
+    && typeof payload.exp === 'number') {
     return payload.exp
   }
 

@@ -8,6 +8,7 @@ _search:
   previous: Anterior
   next: Siguiente
   page: Página {page}
+  too-many-requests: Demasiadas solicitudes de búsqueda. Por favor espera {0}s.
 access-denied: Acceso denegado
 account-deleted: Cuenta borrada
 acl:

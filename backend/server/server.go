@@ -18,13 +18,15 @@ import (
 )
 
 type App struct {
-	Frontend     http.FileSystem
-	Storage      model.Storage
-	Content      *service.ContentService
-	Users        *service.UserService
-	AccessToken  service.AccessTokenService
-	RefreshToken *service.RefreshTokenService
-	LoginLimiter *LoginLimiter
+	Frontend            http.FileSystem
+	Storage             model.Storage
+	Content             *service.ContentService
+	Users               *service.UserService
+	AccessToken         service.AccessTokenService
+	RefreshToken        *service.RefreshTokenService
+	LoginLimiter        *LoginLimiter
+	SearchLimiterByIP   *RateLimiter
+	SearchLimiterByUser *RateLimiter
 }
 
 func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
@@ -48,14 +50,20 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 	refreshTokenService := service.NewRefreshTokenService(store)
 	loginLimiter := NewLoginLimiter(5, rate.Every(30*time.Second), 30*time.Minute)
 
+	// Search rate limiters: stricter for unauthenticated users (by IP), more lenient for authenticated users (by userID)
+	searchLimiterByIP := NewRateLimiter(3, rate.Every(10*time.Second), 15*time.Minute)
+	searchLimiterByUser := NewRateLimiter(30, rate.Every(2*time.Second), 15*time.Minute)
+
 	return App{
-		Frontend:     staticFrontendFiles,
-		Storage:      store,
-		Content:      contentService,
-		Users:        userService,
-		AccessToken:  accessTokenService,
-		RefreshToken: refreshTokenService,
-		LoginLimiter: loginLimiter,
+		Frontend:            staticFrontendFiles,
+		Storage:             store,
+		Content:             contentService,
+		Users:               userService,
+		AccessToken:         accessTokenService,
+		RefreshToken:        refreshTokenService,
+		LoginLimiter:        loginLimiter,
+		SearchLimiterByIP:   searchLimiterByIP,
+		SearchLimiterByUser: searchLimiterByUser,
 	}
 }
 
@@ -123,7 +131,8 @@ func (app App) GetHandler() http.Handler {
 					).ServeHTTP)
 			})
 
-			r.Post("/search", app.searchContent)
+			r.With(app.SearchRateLimitMiddleware).
+				Post("/search", app.searchContent)
 
 			r.With(app.RequireAdminPermission).Route("/trash", func(r chi.Router) {
 				r.Get("/", app.getTrash)

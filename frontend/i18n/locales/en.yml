@@ -8,6 +8,7 @@ _search:
   previous: Previous
   next: Next
   page: Page {page}
+  too-many-requests: Too many search requests. Please wait {0}s.
 access-denied: Access denied
 account-deleted: Account deleted
 acl:

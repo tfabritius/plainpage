@@ -9,6 +9,8 @@ import (
 	"golang.org/x/time/rate"
 )
 
+// LoginLimiter is a specialized rate limiter for login attempts, allowing a certain number of failed attempts
+// within a specified time frame before blocking further attempts for a cooldown period.
 type LoginLimiter struct {
 	mu       sync.Mutex
 	limiters map[string]*rate.Limiter

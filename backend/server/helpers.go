@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"strconv"
 
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
@@ -134,6 +135,37 @@ func clientIPFromRequest(r *http.Request) string {
 	}
 
 	return ip
+}
+
+// SearchRateLimitMiddleware applies rate limiting to search requests.
+// Uses stricter limits for unauthenticated users (by IP) and more lenient limits for authenticated users (by userID).
+func (app App) SearchRateLimitMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID := ctxutil.UserID(r.Context())
+
+		var allowed bool
+		var retryAfter int
+
+		if userID != "" {
+			// Authenticated user: rate limit by user ID
+			allowed, retryAfter = app.SearchLimiterByUser.Allow(userID)
+		} else {
+			// Unauthenticated user: rate limit by IP
+			ip := clientIPFromRequest(r)
+			allowed, retryAfter = app.SearchLimiterByIP.Allow(ip)
+		}
+
+		if !allowed {
+			if retryAfter < 1 {
+				retryAfter = 1
+			}
+			w.Header().Set("Retry-After", strconv.Itoa(retryAfter))
+			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // populateModifiedByUserInfo populates ModifiedByUsername and ModifiedByDisplayName from ModifiedByUserID

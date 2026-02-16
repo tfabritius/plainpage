@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { SearchHit, SearchResponse } from '~/types/api'
 import { useRouteQuery } from '@vueuse/router'
+import { FetchError } from 'ofetch'
 
 const { t } = useI18n()
+const toast = useToast()
 
 // Helper to check if a tag was matched in search (appears in fragments)
 function isMatchedTag(result: SearchHit, tag: string): boolean {
@@ -54,9 +56,20 @@ async function onSearch(resetPage = true) {
   }
 
   loading.value = true
-  const response = await apiFetch<SearchResponse>(`/search?q=${encodeURIComponent(query.value)}&page=${currentPage.value}&limit=${limit}`, { method: 'POST' })
-  results.value = response.items
-  hasMore.value = response.hasMore
+  try {
+    const response = await apiFetch<SearchResponse>(`/search?q=${encodeURIComponent(query.value)}&page=${currentPage.value}&limit=${limit}`, { method: 'POST' })
+    results.value = response.items
+    hasMore.value = response.hasMore
+  } catch (err) {
+    results.value = undefined
+    hasMore.value = false
+    if (err instanceof FetchError && err.statusCode === 429) {
+      const retryAfter = err.response?.headers.get('Retry-After') || '10'
+      toast.add({ description: t('_search.too-many-requests', [retryAfter]), color: 'error' })
+    } else {
+      toast.add({ description: String(err), color: 'error' })
+    }
+  }
   loading.value = false
 }
 
@@ -153,7 +166,7 @@ watch(q, () => {
           >
             {{ $t('_search.previous') }}
           </UButton>
-          <span class="text-[var(--ui-text-muted)]">
+          <span class="text-[var(--ui-text-muted)] text-sm">
             {{ $t('_search.page', { page: currentPage }) }}
           </span>
           <UButton

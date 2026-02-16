@@ -596,6 +596,21 @@ func (s *ContentService) CreateFolder(urlPath string, meta model.ContentMeta) er
 	return nil
 }
 
+// ReadFolderMeta reads only the folder's metadata from _index.md without enumerating contents.
+// This is more efficient when only the metadata (e.g., ACL) is needed.
+func (s *ContentService) ReadFolderMeta(urlPath string) (model.ContentMeta, error) {
+	indexPath := filepath.Join("pages", urlPath, "_index.md")
+	bytes, err := s.storage.ReadFile(indexPath)
+	if err != nil {
+		return model.ContentMeta{}, err
+	}
+	fm, _, err := parseFrontMatter(string(bytes))
+	if err != nil {
+		return model.ContentMeta{}, err
+	}
+	return fm, nil
+}
+
 func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 	dirPath := filepath.Join("pages", urlPath)
 
@@ -620,12 +635,12 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 		}
 
 		if e.IsFolder {
-			folder, err := s.ReadFolder(e.Url)
+			meta, err := s.ReadFolderMeta(e.Url)
 			if err != nil {
 				return model.Folder{}, fmt.Errorf("could not read folder %s: %w", e.Url, err)
 			}
-			e.Title = folder.Meta.Title
-			e.ACL = folder.Meta.ACL
+			e.Title = meta.Title
+			e.ACL = meta.ACL
 		} else {
 			if !strings.HasPrefix(e.Name, "_") && strings.HasSuffix(e.Name, ".md") {
 				e.Name = strings.TrimSuffix(e.Name, ".md")
@@ -646,13 +661,8 @@ func (s *ContentService) ReadFolder(urlPath string) (model.Folder, error) {
 		folderEntries = append(folderEntries, e)
 	}
 
-	// Read _index.md
-	indexPath := filepath.Join("pages", urlPath, "_index.md")
-	bytes, err := s.storage.ReadFile(indexPath)
-	if err != nil {
-		return model.Folder{}, err
-	}
-	fm, _, err := parseFrontMatter(string(bytes))
+	// Read folder's own metadata
+	fm, err := s.ReadFolderMeta(urlPath)
 	if err != nil {
 		return model.Folder{}, err
 	}
@@ -810,14 +820,14 @@ func (s *ContentService) addFolderMetaFromParent(urlPath string, metas []model.C
 	}
 
 	if s.IsFolder(parentUrl) {
-		folder, err := s.ReadFolder(parentUrl)
+		folderMeta, err := s.ReadFolderMeta(parentUrl)
 		if err != nil {
 			return nil, err
 		}
 
 		meta := model.ContentMetaWithURL{
 			Url:         parentUrl,
-			ContentMeta: folder.Meta,
+			ContentMeta: folderMeta,
 		}
 
 		metas = append(metas, meta)

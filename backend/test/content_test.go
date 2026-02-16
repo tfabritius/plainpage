@@ -1312,10 +1312,10 @@ func (s *ContentTestSuite) TestSearch() {
 				tc.token)
 			r.Equal(200, res.Code)
 
-			body, _ := jsonbody[[]model.SearchHit](res)
-			r.Len(body, tc.nResults)
+			body, _ := jsonbody[model.SearchResponse](res)
+			r.Len(body.Items, tc.nResults)
 
-			for _, hit := range body {
+			for _, hit := range body.Items {
 				r.Nil(hit.EffectiveACL)
 				r.Nil(hit.Meta.ACL)
 				r.NotEmpty(hit.Url)
@@ -1348,10 +1348,10 @@ func (s *ContentTestSuite) TestSearch() {
 				s.adminToken)
 			r.Equal(200, res.Code)
 
-			body, _ := jsonbody[[]model.SearchHit](res)
-			r.Len(body, tc.nResults)
+			body, _ := jsonbody[model.SearchResponse](res)
+			r.Len(body.Items, tc.nResults)
 
-			for _, hit := range body {
+			for _, hit := range body.Items {
 				r.Nil(hit.EffectiveACL)
 				r.Nil(hit.Meta.ACL)
 				r.NotEmpty(hit.Url)
@@ -1392,10 +1392,10 @@ func (s *ContentTestSuite) TestSearchFolder() {
 				s.adminToken)
 			r.Equal(200, res.Code)
 
-			body, _ := jsonbody[[]model.SearchHit](res)
-			r.Len(body, tc.nResults)
+			body, _ := jsonbody[model.SearchResponse](res)
+			r.Len(body.Items, tc.nResults)
 
-			for _, hit := range body {
+			for _, hit := range body.Items {
 				r.Nil(hit.EffectiveACL)
 				r.Nil(hit.Meta.ACL)
 				r.NotEmpty(hit.Url)
@@ -1407,6 +1407,164 @@ func (s *ContentTestSuite) TestSearchFolder() {
 				r.Equal("<mark>"+tc.q+"</mark>", hit.Fragments["meta.title"][0])
 			}
 		})
+	}
+}
+
+// TestSearchPaginationWithACL tests pagination when many results are filtered by ACL.
+// Creates 20 pages: 10 in admin-only folder (not accessible to users) and 10 in public folder.
+// Verifies that regular users can paginate through only the 10 accessible pages.
+func (s *ContentTestSuite) TestSearchPaginationWithACL() {
+	r := s.Require()
+
+	// Create 10 pages in admin-only folder (not accessible to regular users)
+	for i := 0; i < 10; i++ {
+		err := s.app.Content.SavePage(
+			"admin-only/paginationtest-"+strconv.Itoa(i),
+			"PaginationTest content",
+			model.ContentMeta{Title: "PaginationTest " + strconv.Itoa(i)},
+			"",
+		)
+		r.NoError(err)
+	}
+
+	// Create 10 pages in public folder (accessible to everyone)
+	for i := 0; i < 10; i++ {
+		err := s.app.Content.SavePage(
+			"public/paginationtest-"+strconv.Itoa(i),
+			"PaginationTest content",
+			model.ContentMeta{Title: "PaginationTest " + strconv.Itoa(i)},
+			"",
+		)
+		r.NoError(err)
+	}
+
+	// Test 1: Admin can see all 20 pages
+	{
+		res := s.api("POST", "/search?q=PaginationTest&page=1&limit=100", nil, s.adminToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 20, "Admin should get all 20 results")
+		r.False(body.HasMore, "Admin should not have more pages when all results fit")
+	}
+
+	// Test 2: Admin pagination with limit 5
+	{
+		allUrls := make(map[string]bool)
+
+		for page := 1; page <= 4; page++ {
+			res := s.api("POST", "/search?q=PaginationTest&page="+strconv.Itoa(page)+"&limit=5", nil, s.adminToken)
+			r.Equal(200, res.Code)
+			body, _ := jsonbody[model.SearchResponse](res)
+			r.Len(body.Items, 5, "Admin should get 5 results on page %d", page)
+			r.Equal(page, body.Page)
+
+			for _, item := range body.Items {
+				r.False(allUrls[item.Url], "Should not have duplicate results across pages")
+				allUrls[item.Url] = true
+			}
+
+			if page < 4 {
+				r.True(body.HasMore, "Admin should have more pages on page %d", page)
+			} else {
+				r.False(body.HasMore, "Admin should not have more pages on page 4")
+			}
+		}
+
+		r.Len(allUrls, 20, "Admin should see all 20 pages total")
+	}
+
+	// Test 3: Regular user can only see 10 public pages
+	{
+		res := s.api("POST", "/search?q=PaginationTest&page=1&limit=100", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 10, "User should get only 10 results")
+		r.False(body.HasMore, "User should not have more pages")
+
+		// All results should be from public folder
+		for _, item := range body.Items {
+			r.Contains(item.Url, "public/", "User should only see public pages")
+		}
+	}
+
+	// Test 4: User pagination with limit 3
+	{
+		allUrls := make(map[string]bool)
+
+		// Page 1
+		res := s.api("POST", "/search?q=PaginationTest&page=1&limit=3", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 3, "User should get 3 results on page 1")
+		r.True(body.HasMore, "User should have more pages")
+
+		for _, item := range body.Items {
+			r.Contains(item.Url, "public/", "User should only see public pages")
+			allUrls[item.Url] = true
+		}
+
+		// Page 2
+		res = s.api("POST", "/search?q=PaginationTest&page=2&limit=3", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ = jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 3, "User should get 3 results on page 2")
+		r.True(body.HasMore, "User should have more pages on page 2")
+
+		for _, item := range body.Items {
+			r.Contains(item.Url, "public/", "User should only see public pages")
+			r.False(allUrls[item.Url], "Should not have duplicate results")
+			allUrls[item.Url] = true
+		}
+
+		// Page 3
+		res = s.api("POST", "/search?q=PaginationTest&page=3&limit=3", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ = jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 3, "User should get 3 results on page 3")
+		r.True(body.HasMore, "User should have more pages on page 3")
+
+		for _, item := range body.Items {
+			r.Contains(item.Url, "public/", "User should only see public pages")
+			r.False(allUrls[item.Url], "Should not have duplicate results")
+			allUrls[item.Url] = true
+		}
+
+		// Page 4 (last page with 1 result)
+		res = s.api("POST", "/search?q=PaginationTest&page=4&limit=3", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ = jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 1, "User should get 1 result on page 4")
+		r.False(body.HasMore, "User should not have more pages on page 4")
+
+		for _, item := range body.Items {
+			r.Contains(item.Url, "public/", "User should only see public pages")
+			r.False(allUrls[item.Url], "Should not have duplicate results")
+			allUrls[item.Url] = true
+		}
+
+		r.Len(allUrls, 10, "User should see all 10 public pages total")
+	}
+
+	// Test 5: Anonymous user sees same as regular user (public folder is accessible)
+	{
+		res := s.api("POST", "/search?q=PaginationTest&page=1&limit=100", nil, nil)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.SearchResponse](res)
+		r.Len(body.Items, 10, "Anonymous should get 10 results")
+		r.False(body.HasMore, "Anonymous should not have more pages")
+
+		for _, item := range body.Items {
+			r.Contains(item.Url, "public/", "Anonymous should only see public pages")
+		}
+	}
+
+	// Test 6: Response metadata
+	{
+		res := s.api("POST", "/search?q=PaginationTest&page=2&limit=4", nil, s.userToken)
+		r.Equal(200, res.Code)
+		body, _ := jsonbody[model.SearchResponse](res)
+		r.Equal(2, body.Page, "Response should include correct page number")
+		r.Equal(4, body.Limit, "Response should include correct limit")
 	}
 }
 

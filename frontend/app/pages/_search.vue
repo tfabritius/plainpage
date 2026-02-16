@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SearchHit } from '~/types/api'
+import type { SearchHit, SearchResponse } from '~/types/api'
 import { useRouteQuery } from '@vueuse/router'
 
 const { t } = useI18n()
@@ -17,42 +17,74 @@ function isMatchedTag(result: SearchHit, tag: string): boolean {
 useHead(() => ({ title: t('search') }))
 
 const q = useRouteQuery('q')
+const pageQuery = useRouteQuery('page')
 
 const query = ref('')
 const loading = ref(false)
 const results = ref<SearchHit[]>()
+const currentPage = ref(1)
+const hasMore = ref(false)
+const limit = 20
 
 function readQuery() {
   query.value = Array.isArray(q.value) ? (q.value[0] ?? '') : (q.value ?? '')
+  const pageStr = Array.isArray(pageQuery.value) ? (pageQuery.value[0] ?? '1') : (pageQuery.value ?? '1')
+  const parsedPage = Number.parseInt(pageStr, 10)
+  currentPage.value = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage
 }
 
 function updateQuery() {
   q.value = query.value || undefined
+  pageQuery.value = currentPage.value > 1 ? String(currentPage.value) : undefined
 }
 
-async function onSearch() {
+async function onSearch(resetPage = true) {
   query.value = query.value.trim()
+
+  if (resetPage) {
+    currentPage.value = 1
+  }
 
   updateQuery()
 
   if (query.value === '') {
     results.value = undefined
+    hasMore.value = false
     return
   }
 
   loading.value = true
-  results.value = await apiFetch<SearchHit[]>(`/search?q=${encodeURIComponent(query.value)}`, { method: 'POST' })
+  const response = await apiFetch<SearchResponse>(`/search?q=${encodeURIComponent(query.value)}&page=${currentPage.value}&limit=${limit}`, { method: 'POST' })
+  results.value = response.items
+  hasMore.value = response.hasMore
   loading.value = false
+}
+
+function goToPage(page: number) {
+  currentPage.value = page
+  onSearch(false)
+}
+
+function previousPage() {
+  if (currentPage.value > 1) {
+    goToPage(currentPage.value - 1)
+  }
+}
+
+function nextPage() {
+  if (hasMore.value) {
+    goToPage(currentPage.value + 1)
+  }
 }
 
 onMounted(() => {
   readQuery()
-  onSearch()
+  onSearch(false)
 })
 
 watch(q, () => {
   readQuery()
-  onSearch()
+  onSearch(false)
 })
 </script>
 
@@ -62,7 +94,7 @@ watch(q, () => {
       {{ $t('search') }}
     </template>
 
-    <form class="flex gap-3" @submit.prevent="onSearch">
+    <form class="flex gap-3" @submit.prevent="onSearch(true)">
       <UInput v-model="query" :placeholder="t('search')" class="w-full" size="lg" />
       <ReactiveButton color="primary" icon="tabler:search" variant="solid" :loading="loading" :label="$t('search')" type="submit" />
     </form>
@@ -70,9 +102,6 @@ watch(q, () => {
     <div v-if="loading || results !== undefined">
       <h2 class="font-light text-xl my-4">
         {{ $t('_search.results') }}
-        <span v-if="!loading && results && results.length > 0" class="text-sm ml-1">
-          ({{ results.length }})
-        </span>
       </h2>
 
       <div v-if="loading" class="space-y-4">
@@ -113,6 +142,30 @@ watch(q, () => {
             </div>
           </UCard>
         </NuxtLink>
+
+        <!-- Pagination -->
+        <div class="flex justify-center items-center gap-4 mt-6">
+          <UButton
+            icon="tabler:chevron-left"
+            :disabled="currentPage <= 1"
+            variant="outline"
+            @click="previousPage"
+          >
+            {{ $t('_search.previous') }}
+          </UButton>
+          <span class="text-[var(--ui-text-muted)]">
+            {{ $t('_search.page', { page: currentPage }) }}
+          </span>
+          <UButton
+            icon="tabler:chevron-right"
+            trailing
+            :disabled="!hasMore"
+            variant="outline"
+            @click="nextPage"
+          >
+            {{ $t('_search.next') }}
+          </UButton>
+        </div>
       </div>
       <div v-else-if="results && results.length === 0">
         {{ $t('_search.no-results') }}

@@ -547,37 +547,92 @@ func (app App) searchContent(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query().Get("q")
 	userID := ctxutil.UserID(r.Context())
 
-	results, err := app.Content.Search(q)
-	if err != nil {
-		panic(err)
+	// Parse pagination parameters
+	page := 1
+	limit := 20
+	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
+		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+			page = p
+		}
+	}
+	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
+		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 100 {
+			limit = l
+		}
 	}
 
-	// Filter results to only those accessible to the user
+	// Calculate how many results we need to skip and collect
+	skip := (page - 1) * limit
+	need := limit
+
+	// Iteratively fetch from Bleve until we have enough accessible results
+	const batchSize = 100
+
 	accessibleResults := []model.SearchHit{}
-	for _, r := range results {
+	skipped := 0
+	bleveOffset := 0
+	bleveExhausted := false
+	stoppedEarly := false // Set to true if we break out of the inner loop with results remaining
 
-		if err := app.Users.CheckContentPermissions(r.EffectiveACL, userID, model.AccessOpRead); err != nil {
-			var e *service.AccessDeniedError
-			if errors.As(err, &e) {
-				// Skip this result
-				continue
-			}
-
+	for len(accessibleResults) < need && !bleveExhausted {
+		results, totalHits, err := app.Content.SearchWithPagination(q, bleveOffset, batchSize)
+		if err != nil {
 			panic(err)
 		}
 
-		r.Meta.ACL = nil // Hide ACL
+		// Check if Bleve has more results beyond this batch
+		noMoreBatches := len(results) == 0 || bleveOffset+len(results) >= int(totalHits)
 
-		// Populate user info from userId for API response
-		app.populateModifiedByUserInfo(&r.Meta)
+		// Filter each result by access control
+		processedAll := true
+		for i, result := range results {
+			if err := app.Users.CheckContentPermissions(result.EffectiveACL, userID, model.AccessOpRead); err != nil {
+				var e *service.AccessDeniedError
+				if errors.As(err, &e) {
+					// Skip this result - user doesn't have access
+					continue
+				}
+				panic(err)
+			}
 
-		accessibleResults = append(accessibleResults, r)
+			// User has access to this result
+			if skipped < skip {
+				// This result belongs to a previous page
+				skipped++
+			} else {
+				// This result belongs to the current page
+				result.Meta.ACL = nil // Hide ACL
+				app.populateModifiedByUserInfo(&result.Meta)
+				accessibleResults = append(accessibleResults, result)
+
+				if len(accessibleResults) >= need {
+					// We have enough for this page
+					// Check if there are more results we haven't processed
+					if i < len(results)-1 || !noMoreBatches {
+						stoppedEarly = true
+					}
+					processedAll = false
+					break
+				}
+			}
+		}
+
+		if processedAll && noMoreBatches {
+			bleveExhausted = true
+		}
+
+		bleveOffset += batchSize
 	}
 
-	// Limit to 10 results
-	if len(accessibleResults) > 10 {
-		accessibleResults = accessibleResults[:10]
+	// hasMore is true if we stopped early (didn't check all results)
+	hasMore := stoppedEarly
+
+	response := model.SearchResponse{
+		Items:   accessibleResults,
+		Page:    page,
+		Limit:   limit,
+		HasMore: hasMore,
 	}
 
-	render.JSON(w, r, accessibleResults)
+	render.JSON(w, r, response)
 }

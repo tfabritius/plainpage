@@ -169,18 +169,25 @@ func (s *ContentService) removeFolderFromIndex(urlPath string) error {
 	return nil
 }
 
+// Search searches for content and returns all matching results (up to 10000).
 func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
+	results, _, err := s.SearchWithPagination(q, 0, 10000)
+	return results, err
+}
+
+// SearchWithPagination searches for content with pagination support.
+// Returns the search hits, total number of hits in the index, and any error.
+func (s *ContentService) SearchWithPagination(q string, offset, size int) ([]model.SearchHit, uint64, error) {
 	query := bleve.NewMatchQuery(q)
 
 	search := bleve.NewSearchRequest(query)
 	search.Highlight = bleve.NewHighlight()
-
-	// Return 100 results to have at least 10 the user can access
-	search.Size = 100
+	search.From = offset
+	search.Size = size
 
 	results, err := s.index.Search(search)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	ret := []model.SearchHit{}
@@ -191,14 +198,14 @@ func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
 		if s.IsPage(r.ID) {
 			page, err := s.ReadPage(r.ID, nil)
 			if err != nil {
-				return nil, err
+				return nil, 0, err
 			}
 			meta = page.Meta
 		} else if s.IsFolder(r.ID) {
 			isFolder = true
 			folder, err := s.ReadFolder(r.ID)
 			if err != nil {
-				return nil, err
+				return nil, 0, err
 			}
 			meta = folder.Meta
 		} else {
@@ -207,7 +214,7 @@ func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
 
 		metas, err := s.ReadAncestorsMeta(r.ID)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		acl := s.GetEffectivePermissions(meta, metas)
 
@@ -220,7 +227,7 @@ func (s *ContentService) Search(q string) ([]model.SearchHit, error) {
 		})
 	}
 
-	return ret, nil
+	return ret, results.Total, nil
 }
 
 func (s *ContentService) IsPage(urlPath string) bool {

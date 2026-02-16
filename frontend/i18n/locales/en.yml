@@ -5,6 +5,9 @@ _register:
 _search:
   no-results: No results
   results: Results
+  previous: Previous
+  next: Next
+  page: Page {page}
 access-denied: Access denied
 account-deleted: Account deleted
 acl:

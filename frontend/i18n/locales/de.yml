@@ -5,6 +5,9 @@ _register:
 _search:
   no-results: Keine Ergebnisse
   results: Ergebnisse
+  previous: Zurück
+  next: Weiter
+  page: Seite {page}
 access-denied: Zugriff verweigert
 account-deleted: Konto gelöscht
 acl:

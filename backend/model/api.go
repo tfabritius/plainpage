@@ -189,3 +189,10 @@ type SearchHit struct {
 	EffectiveACL []AccessRule        `json:"-"`
 	IsFolder     bool                `json:"isFolder"`
 }
+
+type SearchResponse struct {
+	Items   []SearchHit `json:"items"`
+	Page    int         `json:"page"`
+	Limit   int         `json:"limit"`
+	HasMore bool        `json:"hasMore"`
+}

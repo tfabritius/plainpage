@@ -160,6 +160,13 @@ export interface SearchHit {
   isFolder: boolean
 }
 
+export interface SearchResponse {
+  items: SearchHit[]
+  page: number
+  limit: number
+  hasMore: boolean
+}
+
 // corresponding to service/user_service.go
 
 export const validUsernameRegex = /^[a-z0-9][a-z0-9_\\.-]{3,20}$/i

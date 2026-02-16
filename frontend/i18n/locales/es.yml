@@ -5,6 +5,9 @@ _register:
 _search:
   no-results: No hay resultados
   results: Resultados
+  previous: Anterior
+  next: Siguiente
+  page: Página {page}
 access-denied: Acceso denegado
 account-deleted: Cuenta borrada
 acl:

@@ -208,6 +208,10 @@ const menuItems = computed(() => {
 })
 
 onKeyStroke('Backspace', (e) => {
+  const target = e.target as HTMLElement
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    return
+  }
   if (props.urlPath !== '' && props.allowDelete && e.ctrlKey && !editFolderOpen.value) {
     e.preventDefault()
     onDeleteFolder()

@@ -252,6 +252,10 @@ async function onCancelEdit() {
 }
 
 onKeyStroke('e', (e) => {
+  const target = e.target as HTMLElement
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    return
+  }
   if (!editing.value && props.allowWrite && !renameModalOpen.value) {
     e.preventDefault()
     onEditPage()
@@ -259,6 +263,10 @@ onKeyStroke('e', (e) => {
 })
 
 onKeyStroke('Backspace', (e) => {
+  const target = e.target as HTMLElement
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    return
+  }
   if (!editing.value && props.allowDelete && e.ctrlKey && !renameModalOpen.value) {
     e.preventDefault()
     onDeletePage()

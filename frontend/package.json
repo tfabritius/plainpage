@@ -48,7 +48,7 @@
     "tailwindcss": "4.2.0",
     "typescript": "^5.9.3",
     "vue-codemirror": "^6.1.1",
-    "vue-tsc": "^3.2.4",
+    "vue-tsc": "^3.2.5",
     "zod": "^4.3.6"
   },
   "pnpm": {

@@ -45,7 +45,7 @@
     "pinia-plugin-persistedstate": "^4.7.1",
     "reka-ui": "2.8.2",
     "slugify": "^1.6.6",
-    "tailwindcss": "4.2.0",
+    "tailwindcss": "4.2.1",
     "typescript": "^5.9.3",
     "vue-codemirror": "^6.1.1",
     "vue-tsc": "^3.2.5",

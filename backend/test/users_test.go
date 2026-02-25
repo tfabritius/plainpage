@@ -1,7 +1,10 @@
 package test
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"strconv"
 	"strings"
 	"testing"
@@ -33,6 +36,72 @@ func (s *UsersTestSuite) SetupSuite() {
 		r.NotNil(body.ACL)
 
 		s.defaultAcl = body.ACL
+	}
+}
+
+func (s *UsersTestSuite) TestGetUsers() {
+	r := s.Require()
+
+	// Admin can list all users
+	{
+		res := s.api("GET", "/auth/users", nil, s.adminToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[[]model.User](res)
+		r.GreaterOrEqual(len(body), 2) // At least admin and user
+	}
+
+	// Non-admin cannot list users
+	{
+		res := s.api("GET", "/auth/users", nil, s.userToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Anonymous cannot list users
+	{
+		res := s.api("GET", "/auth/users", nil, nil)
+		r.Equal(401, res.Code)
+	}
+}
+
+func (s *UsersTestSuite) TestGetUser() {
+	r := s.Require()
+
+	// Admin can get any user's details
+	{
+		res := s.api("GET", "/auth/users/"+TestUserUsername, nil, s.adminToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.User](res)
+		r.Equal(TestUserUsername, body.Username)
+		r.Empty(body.PasswordHash)
+	}
+
+	// Admin can get own details
+	{
+		res := s.api("GET", "/auth/users/"+TestAdminUsername, nil, s.adminToken)
+		r.Equal(200, res.Code)
+
+		body, _ := jsonbody[model.User](res)
+		r.Equal(TestAdminUsername, body.Username)
+	}
+
+	// Non-admin cannot get user details
+	{
+		res := s.api("GET", "/auth/users/"+TestAdminUsername, nil, s.userToken)
+		r.Equal(403, res.Code)
+	}
+
+	// Anonymous cannot get user details
+	{
+		res := s.api("GET", "/auth/users/"+TestAdminUsername, nil, nil)
+		r.Equal(401, res.Code)
+	}
+
+	// 404 for non-existent user
+	{
+		res := s.api("GET", "/auth/users/nonexistent", nil, s.adminToken)
+		r.Equal(404, res.Code)
 	}
 }
 
@@ -154,6 +223,23 @@ func (s *UsersTestSuite) TestCreateUser() {
 			nil)
 		r.Equal(400, res.Code)
 	}
+
+	// Empty username fails
+	{
+		res := s.api("POST", "/auth/users",
+			model.PostUserRequest{Username: "", DisplayName: "Test", Password: "password"},
+			nil)
+		r.Equal(400, res.Code)
+	}
+
+	// Malformed JSON fails
+	{
+		req := httptest.NewRequest("POST", "/_api/auth/users", strings.NewReader("{invalid json}"))
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		s.handler.ServeHTTP(rec, req)
+		r.Equal(400, rec.Code)
+	}
 }
 
 func (s *UsersTestSuite) TestLoginUser() {
@@ -195,6 +281,46 @@ func (s *UsersTestSuite) TestLoginUser() {
 		r.Equal(401, res.Code)
 		r.Equal("Unauthorized", strings.TrimSpace(res.Body.String()))
 	}
+
+	// Use a unique IP to avoid rate limiting from other tests
+	headers := map[string]string{"X-Forwarded-For": "10.0.0.50"}
+
+	// Non-existent username fails with 401
+	{
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: "nonexistent", Password: "password"},
+			headers)
+		r.Equal(401, res.Code)
+	}
+
+	// Empty username fails with 401
+	{
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: "", Password: password},
+			headers)
+		r.Equal(401, res.Code)
+	}
+
+	// Empty password fails with 401
+	{
+		res := s.apiWithHeaders("POST", "/auth/login",
+			model.LoginRequest{Username: username, Password: ""},
+			headers)
+		r.Equal(401, res.Code)
+	}
+
+	// Malformed JSON fails
+	{
+		req := httptest.NewRequest("POST", "/_api/auth/login", strings.NewReader("{invalid}"))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Forwarded-For", "10.0.0.50")
+		rec := httptest.NewRecorder()
+		s.handler.ServeHTTP(rec, req)
+		r.Equal(400, rec.Code)
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
 }
 
 func (s *UsersTestSuite) TestPatchUser() {
@@ -256,6 +382,59 @@ func (s *UsersTestSuite) TestPatchUser() {
 			s.adminToken)
 		r.Equal(200, res.Code)
 	}
+
+	// Test changing username
+	{
+		newUsername := "testPatchUserNew"
+		res := s.api("PATCH", "/auth/users/"+username,
+			[]map[string]string{{"op": "replace", "path": "/username", "value": newUsername}},
+			&token)
+		r.Equal(200, res.Code)
+
+		// Verify username changed
+		updatedUser, err := s.app.Users.GetById(user.ID)
+		r.NoError(err)
+		r.Equal(newUsername, updatedUser.Username)
+
+		username = newUsername // Update for cleanup
+	}
+
+	// Unsupported operation fails
+	{
+		res := s.api("PATCH", "/auth/users/"+username,
+			[]map[string]string{{"op": "add", "path": "/displayName", "value": "New Name"}},
+			&token)
+		r.Equal(400, res.Code)
+	}
+
+	// Unsupported path fails
+	{
+		res := s.api("PATCH", "/auth/users/"+username,
+			[]map[string]string{{"op": "replace", "path": "/password", "value": "newpass"}},
+			&token)
+		r.Equal(400, res.Code)
+	}
+
+	// Missing value fails
+	{
+		res := s.api("PATCH", "/auth/users/"+username,
+			[]map[string]interface{}{{"op": "replace", "path": "/displayName"}},
+			&token)
+		r.Equal(400, res.Code)
+	}
+
+	// Malformed JSON fails
+	{
+		req := httptest.NewRequest("PATCH", "/_api/auth/users/"+username, strings.NewReader("{invalid}"))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		s.handler.ServeHTTP(rec, req)
+		r.Equal(400, rec.Code)
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
 }
 
 func (s *UsersTestSuite) TestRefreshToken() {
@@ -320,6 +499,27 @@ func (s *UsersTestSuite) TestRefreshToken() {
 		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
 		r.Equal(401, res.Code)
 	}
+
+	// Invalid refresh token fails
+	{
+		invalidCookie := &http.Cookie{
+			Name:  "refresh_token",
+			Value: "invalid-token-value",
+		}
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{invalidCookie})
+		r.Equal(401, res.Code)
+
+		// Cookie should be cleared
+		clearedCookie := getRefreshTokenCookie(res)
+		r.NotNil(clearedCookie)
+		r.Empty(clearedCookie.Value)
+	}
+
+	// Missing refresh token cookie fails
+	{
+		res := s.api("POST", "/auth/refresh", nil, nil)
+		r.Equal(401, res.Code)
+	}
 }
 
 func (s *UsersTestSuite) TestLogout() {
@@ -364,6 +564,16 @@ func (s *UsersTestSuite) TestLogout() {
 
 	// Cleanup
 	r.NoError(s.app.Users.DeleteByUsername(username))
+}
+
+func (s *UsersTestSuite) TestLogoutWithoutCookie() {
+	r := s.Require()
+
+	// Logout without cookie should succeed (no-op)
+	{
+		res := s.api("POST", "/auth/logout", nil, nil)
+		r.Equal(200, res.Code)
+	}
 }
 
 func (s *UsersTestSuite) TestDeleteUser() {
@@ -535,6 +745,16 @@ func (s *UsersTestSuite) TestChangePassword() {
 		r.NoError(s.app.Users.DeleteByUsername(otherUsername))
 	}
 
+	// Malformed JSON fails
+	{
+		req := httptest.NewRequest("POST", "/_api/auth/users/"+username+"/password", strings.NewReader("{invalid}"))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		s.handler.ServeHTTP(rec, req)
+		r.Equal(400, rec.Code)
+	}
+
 	// Cleanup
 	r.NoError(s.app.Users.DeleteByUsername(username))
 }
@@ -573,6 +793,49 @@ func (s *UsersTestSuite) TestChangePasswordRevokesAllSessions() {
 	{
 		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
 		r.Equal(401, res.Code)
+	}
+
+	// Cleanup
+	r.NoError(s.app.Users.DeleteByUsername(username))
+}
+
+func (s *UsersTestSuite) TestChangePasswordSessionPreservation() {
+	r := s.Require()
+
+	username := "testChgPwdSession"
+	displayName := "Test User"
+	password := "myPassword"
+
+	user, err := s.app.Users.Create(username, password, displayName)
+	r.NoError(err)
+	token, err := s.app.AccessToken.Create(user.ID)
+	r.NoError(err)
+
+	// Create refresh token for session preservation test
+	refreshTokenID, err := s.app.RefreshToken.Create(user.ID)
+	r.NoError(err)
+	refreshCookie := &http.Cookie{
+		Name:  "refresh_token",
+		Value: refreshTokenID,
+	}
+
+	// Change password with current session cookie - session should be preserved
+	{
+		newPassword := "newPassword123"
+
+		body, _ := json.Marshal(model.ChangePasswordRequest{CurrentPassword: password, NewPassword: newPassword})
+		req := httptest.NewRequest("POST", "/_api/auth/users/"+username+"/password", bytes.NewReader(body))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+		req.AddCookie(refreshCookie)
+
+		rec := httptest.NewRecorder()
+		s.handler.ServeHTTP(rec, req)
+		r.Equal(200, rec.Code)
+
+		// Current session refresh token should still work
+		res := s.apiWithCookie("POST", "/auth/refresh", nil, nil, []*http.Cookie{refreshCookie})
+		r.Equal(200, res.Code)
 	}
 
 	// Cleanup

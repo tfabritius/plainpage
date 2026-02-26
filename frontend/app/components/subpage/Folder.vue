@@ -217,6 +217,17 @@ onKeyStroke('Backspace', (e) => {
     onDeleteFolder()
   }
 })
+
+onKeyStroke('ArrowUp', async (e) => {
+  const target = e.target as HTMLElement
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    return
+  }
+  if (e.altKey && props.urlPath !== '' && !editFolderOpen.value) {
+    e.preventDefault()
+    await navigateTo(`/${parentPath.value}`)
+  }
+})
 </script>
 
 <template>

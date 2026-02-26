@@ -279,6 +279,17 @@ onKeyStroke('s', (e) => {
     onSavePage()
   }
 })
+
+onKeyStroke('ArrowUp', async (e) => {
+  const target = e.target as HTMLElement
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+    return
+  }
+  if (e.altKey && !editing.value && !renameModalOpen.value) {
+    e.preventDefault()
+    await navigateTo(`/${parentPath.value}`)
+  }
+})
 </script>
 
 <template>

@@ -246,6 +246,12 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, err.Error(), http.StatusBadRequest)
 					return
 				}
+
+				// Validate ACL values
+				if err := model.ValidateContentACL(acl); err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
 			}
 
 			if isFolder {

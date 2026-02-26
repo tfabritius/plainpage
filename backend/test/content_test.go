@@ -2536,6 +2536,149 @@ func (s *ContentTestSuite) TestTrashRestoreConflict() {
 	r.Len(trashAfter, 1)
 }
 
+// TestContentACLValidation tests that ACL values are properly validated when setting ACLs on pages/folders
+func (s *ContentTestSuite) TestContentACLValidation() {
+	r := s.Require()
+
+	// Create a test page
+	r.NoError(s.app.Content.SavePage("acl-test-page", "Content", model.ContentMeta{Title: "Test Page"}, ""))
+	// Create a test folder
+	r.NoError(s.app.Content.CreateFolder("acl-test-folder", model.ContentMeta{Title: "Test Folder"}))
+
+	tests := []struct {
+		name         string
+		acl          []model.AccessRule
+		responseCode int
+	}{
+		// Valid ACLs
+		{
+			name:         "valid:anonymous-read",
+			acl:          []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 200,
+		},
+		{
+			name:         "valid:all-read-write",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite}}},
+			responseCode: 200,
+		},
+		{
+			name:         "valid:user-read-write-delete",
+			acl:          []model.AccessRule{{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpWrite, model.AccessOpDelete}}},
+			responseCode: 200,
+		},
+		{
+			name:         "valid:multiple-rules",
+			acl:          []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}}, {Subject: "all", Operations: []model.AccessOp{model.AccessOpWrite}}},
+			responseCode: 200,
+		},
+		{
+			name:         "valid:empty-acl",
+			acl:          []model.AccessRule{},
+			responseCode: 200,
+		},
+		{
+			name:         "valid:no-acl",
+			acl:          nil,
+			responseCode: 200,
+		},
+		{
+			name:         "valid:empty-ops",
+			acl:          []model.AccessRule{{Subject: "anonymous", Operations: []model.AccessOp{}}},
+			responseCode: 200,
+		},
+		// Invalid subjects
+		{
+			name:         "invalid:subject-empty",
+			acl:          []model.AccessRule{{Subject: "", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-garbage",
+			acl:          []model.AccessRule{{Subject: "garbage", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-group",
+			acl:          []model.AccessRule{{Subject: "group:admins", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-user-empty-id",
+			acl:          []model.AccessRule{{Subject: "user:", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-admin",
+			acl:          []model.AccessRule{{Subject: "admin", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		// Invalid operations (config ops not allowed for content)
+		{
+			name:         "invalid:op-admin",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-register",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpRegister}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-unknown",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{"superadmin"}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-mixed-valid-invalid",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead, model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		// Mixed valid and invalid rules
+		{
+			name: "invalid:mixed-rules",
+			acl: []model.AccessRule{
+				{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}},
+				{Subject: "invalid", Operations: []model.AccessOp{model.AccessOpRead}},
+			},
+			responseCode: 400,
+		},
+	}
+
+	// Test page ACL validation
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("PATCH", "/pages/acl-test-page",
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/page/meta/acl", Value: acl2json(tc.acl)},
+				},
+				s.adminToken)
+			r.Equal(tc.responseCode, res.Code, "ACL: %+v", tc.acl)
+		})
+	}
+
+	// Test folder ACL validation
+	for _, tc := range tests {
+		t := s.T()
+		t.Run("folder:"+tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("PATCH", "/pages/acl-test-folder",
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/folder/meta/acl", Value: acl2json(tc.acl)},
+				},
+				s.adminToken)
+			r.Equal(tc.responseCode, res.Code, "ACL: %+v", tc.acl)
+		})
+	}
+
+	// Cleanup
+	r.NoError(s.app.Content.DeletePage("acl-test-page"))
+	r.NoError(s.app.Content.DeleteEmptyFolder("acl-test-folder"))
+}
+
 // TestFolderContentFiltering tests that folder entries (pages and subfolders) are filtered
 // based on the user's read access permissions.
 func (s *ContentTestSuite) TestFolderContentFiltering() {

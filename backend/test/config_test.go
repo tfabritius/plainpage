@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"github.com/tfabritius/plainpage/model"
 )
@@ -327,4 +328,124 @@ func (s *ConfigTestSuite) TestPatchConfigEmptyOperations() {
 	// Config should remain unchanged
 	body, _ := jsonbody[model.Config](res)
 	r.Equal("PlainPage", body.AppTitle)
+}
+
+// TestConfigACLValidation tests that ACL values are properly validated when setting global config ACLs
+func (s *ConfigTestSuite) TestConfigACLValidation() {
+	tests := []struct {
+		name         string
+		acl          []model.AccessRule
+		responseCode int
+	}{
+		// Valid ACLs
+		{
+			name:         "valid:user-admin",
+			acl:          []model.AccessRule{{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 200,
+		},
+		{
+			name: "valid:anonymous-register",
+			acl: []model.AccessRule{
+				{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin}},
+				{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRegister}},
+			},
+			responseCode: 200,
+		},
+		{
+			name: "valid:all-register",
+			acl: []model.AccessRule{
+				{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin}},
+				{Subject: "all", Operations: []model.AccessOp{model.AccessOpRegister}},
+			},
+			responseCode: 200,
+		},
+		{
+			name:         "valid:user-admin-register",
+			acl:          []model.AccessRule{{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin, model.AccessOpRegister}}},
+			responseCode: 200,
+		},
+		{
+			name: "valid:empty-ops",
+			acl: []model.AccessRule{
+				{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin}},
+				{Subject: "anonymous", Operations: []model.AccessOp{}},
+			},
+			responseCode: 200,
+		},
+		// Invalid subjects
+		{
+			name:         "invalid:subject-empty",
+			acl:          []model.AccessRule{{Subject: "", Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-garbage",
+			acl:          []model.AccessRule{{Subject: "garbage", Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-group",
+			acl:          []model.AccessRule{{Subject: "group:admins", Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-user-empty-id",
+			acl:          []model.AccessRule{{Subject: "user:", Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:subject-admin",
+			acl:          []model.AccessRule{{Subject: "admin", Operations: []model.AccessOp{model.AccessOpAdmin}}},
+			responseCode: 400,
+		},
+		// Invalid operations (content ops not allowed for config)
+		{
+			name:         "invalid:op-read",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-write",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpWrite}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-delete",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{model.AccessOpDelete}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-unknown",
+			acl:          []model.AccessRule{{Subject: "all", Operations: []model.AccessOp{"superadmin"}}},
+			responseCode: 400,
+		},
+		{
+			name:         "invalid:op-mixed-valid-invalid",
+			acl:          []model.AccessRule{{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin, model.AccessOpRead}}},
+			responseCode: 400,
+		},
+		// Mixed valid and invalid rules
+		{
+			name: "invalid:mixed-rules",
+			acl: []model.AccessRule{
+				{Subject: "user:" + s.adminUserID, Operations: []model.AccessOp{model.AccessOpAdmin}},
+				{Subject: "invalid", Operations: []model.AccessOp{model.AccessOpAdmin}},
+			},
+			responseCode: 400,
+		},
+	}
+
+	for _, tc := range tests {
+		t := s.T()
+		t.Run(tc.name, func(t *testing.T) {
+			r := require.New(t)
+
+			res := s.api("PATCH", "/config",
+				[]model.PatchOperation{
+					{Op: "replace", Path: "/acl", Value: acl2json(tc.acl)},
+				},
+				s.adminToken)
+			r.Equal(tc.responseCode, res.Code, "ACL: %+v", tc.acl)
+		})
+	}
 }

@@ -91,6 +91,12 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			// Validate ACL values
+			if err := model.ValidateConfigACL(value); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
 			cfg.ACL = value
 
 		default:

@@ -168,6 +168,12 @@ const (
 	AccessOpRegister AccessOp = "register"
 )
 
+// ValidContentOps are the allowed operations for content (page/folder) ACLs
+var ValidContentOps = []AccessOp{AccessOpRead, AccessOpWrite, AccessOpDelete}
+
+// ValidConfigOps are the allowed operations for global config ACLs
+var ValidConfigOps = []AccessOp{AccessOpAdmin, AccessOpRegister}
+
 type User struct {
 	ID           string `json:"id" yaml:"id"`
 	Username     string `json:"username" yaml:"username"`

@@ -142,6 +142,14 @@ export enum AccessOp {
   register = 'register',
 }
 
+// Subsets for validation purposes
+export const ContentAccessOps = [AccessOp.read, AccessOp.write, AccessOp.delete] as const
+export const ConfigAccessOps = [AccessOp.admin, AccessOp.register] as const
+
+// Type helpers for compile-time type checking
+export type ContentAccessOp = (typeof ContentAccessOps)[number]
+export type ConfigAccessOp = (typeof ConfigAccessOps)[number]
+
 export interface User {
   id: string
   username: string

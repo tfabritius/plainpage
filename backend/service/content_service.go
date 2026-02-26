@@ -412,7 +412,7 @@ func (s *ContentService) RestoreFromTrash(urlPath string, deletedAt int64) error
 	}
 
 	// Delete the now-empty trash directory
-	s.storage.DeleteEmptyDirectory(trashDir)
+	_ = s.storage.DeleteEmptyDirectory(trashDir)
 
 	// Update search index
 	page, err := s.ReadPage(urlPath, nil)

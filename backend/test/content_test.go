@@ -524,7 +524,7 @@ func (s *ContentTestSuite) TestDeletePage() {
 				// Clean up trash
 				trashAfter, _ := s.app.Content.ListTrash()
 				for _, entry := range trashAfter {
-					s.app.Content.DeleteTrashEntry(entry.Url, entry.DeletedAt)
+					r.NoError(s.app.Content.DeleteTrashEntry(entry.Url, entry.DeletedAt))
 				}
 			}
 		})
@@ -686,7 +686,7 @@ func (s *ContentTestSuite) TestDeleteNonemptyFolder() {
 				// Clean up trash
 				trashAfter, _ := s.app.Content.ListTrash()
 				for _, entry := range trashAfter {
-					s.app.Content.DeleteTrashEntry(entry.Url, entry.DeletedAt)
+					r.NoError(s.app.Content.DeleteTrashEntry(entry.Url, entry.DeletedAt))
 				}
 			}
 		})
@@ -2414,7 +2414,7 @@ func (s *ContentTestSuite) TestTrashRestoreAPI() {
 				r.NoError(s.app.Content.DeletePage("page"))
 				trashAfter, _ = s.app.Content.ListTrash()
 				for _, e := range trashAfter {
-					s.app.Content.DeleteTrashEntry(e.Url, e.DeletedAt)
+					r.NoError(s.app.Content.DeleteTrashEntry(e.Url, e.DeletedAt))
 				}
 			} else {
 				r.False(s.app.Content.IsPage("page"), "Page should not be restored")

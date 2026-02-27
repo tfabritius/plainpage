@@ -1191,23 +1191,26 @@ func (s *ContentTestSuite) TestAtticRevisions() {
 	urls := []string{
 		"page", "admin-only/page", "read-only/page", "published/page", "public/page",
 	}
+	t1 := time.Now()
+	t2 := t1.Add(time.Hour) // Different timestamp for second version
 	for _, url := range urls {
-		err := (s.app.Content.SavePage(
+		err := s.app.Content.SavePageAt(
 			url,
 			"Old content",
 			model.ContentMeta{Title: "Old title", Tags: []string{"old tag"}},
 			"",
-		))
+			t1,
+		)
 		r.NoError(err)
 	}
-	time.Sleep(1050 * time.Millisecond) // Only one revision per second possible
 	for _, url := range urls {
-		err := (s.app.Content.SavePage(
+		err := s.app.Content.SavePageAt(
 			url,
 			"New content",
 			model.ContentMeta{Title: "New title", Tags: []string{"new tag"}},
 			"",
-		))
+			t2,
+		)
 		r.NoError(err)
 	}
 
@@ -1710,10 +1713,11 @@ func (s *ContentTestSuite) TestMovePageErrors() {
 func (s *ContentTestSuite) TestMovePageWithAttic() {
 	r := s.Require()
 
-	// Create page with multiple revisions
-	r.NoError(s.app.Content.SavePage("page", "Content v1", model.ContentMeta{Title: "Title"}, ""))
-	time.Sleep(1050 * time.Millisecond) // Only one revision per second possible
-	r.NoError(s.app.Content.SavePage("page", "Content v2", model.ContentMeta{Title: "Title"}, ""))
+	// Create page with multiple revisions using different timestamps
+	t1 := time.Now()
+	t2 := t1.Add(time.Hour)
+	r.NoError(s.app.Content.SavePageAt("page", "Content v1", model.ContentMeta{Title: "Title"}, "", t1))
+	r.NoError(s.app.Content.SavePageAt("page", "Content v2", model.ContentMeta{Title: "Title"}, "", t2))
 
 	// Verify attic has 2 entries
 	atticEntries, err := s.app.Content.ListAttic("page")
@@ -1922,11 +1926,12 @@ func (s *ContentTestSuite) TestMoveFolderWithContent() {
 func (s *ContentTestSuite) TestMoveFolderWithAttic() {
 	r := s.Require()
 
-	// Create folder with pages that have attic entries
+	// Create folder with pages that have attic entries using different timestamps
 	r.NoError(s.app.Content.CreateFolder("folder", model.ContentMeta{Title: "Folder"}))
-	r.NoError(s.app.Content.SavePage("folder/page", "Content v1", model.ContentMeta{Title: "Page"}, ""))
-	time.Sleep(1050 * time.Millisecond)
-	r.NoError(s.app.Content.SavePage("folder/page", "Content v2", model.ContentMeta{Title: "Page"}, ""))
+	t1 := time.Now()
+	t2 := t1.Add(time.Hour)
+	r.NoError(s.app.Content.SavePageAt("folder/page", "Content v1", model.ContentMeta{Title: "Page"}, "", t1))
+	r.NoError(s.app.Content.SavePageAt("folder/page", "Content v2", model.ContentMeta{Title: "Page"}, "", t2))
 
 	// Verify attic has entries
 	atticEntries, err := s.app.Content.ListAttic("folder/page")
@@ -2434,13 +2439,14 @@ func (s *ContentTestSuite) TestTrashRestoreDeepNestedPage() {
 	r.NoError(s.app.Content.CreateFolder("nested-a/b", model.ContentMeta{Title: "B"}))
 	r.NoError(s.app.Content.CreateFolder("nested-a/b/c", model.ContentMeta{Title: "C"}))
 	r.NoError(s.app.Content.CreateFolder("nested-a/b/c/d", model.ContentMeta{Title: "D"}))
-	r.NoError(s.app.Content.SavePage("nested-a/b/c/d/page", "Deep Content", model.ContentMeta{Title: "Deep Page"}, ""))
+	t1 := time.Now()
+	r.NoError(s.app.Content.SavePageAt("nested-a/b/c/d/page", "Deep Content", model.ContentMeta{Title: "Deep Page"}, "", t1))
 
-	// Create multiple attic versions
-	time.Sleep(1050 * time.Millisecond)
-	r.NoError(s.app.Content.SavePage("nested-a/b/c/d/page", "Deep Content v2", model.ContentMeta{Title: "Deep Page v2"}, ""))
-	time.Sleep(1050 * time.Millisecond)
-	r.NoError(s.app.Content.SavePage("nested-a/b/c/d/page", "Deep Content v3", model.ContentMeta{Title: "Deep Page v3"}, ""))
+	// Create multiple attic versions using different timestamps
+	t2 := t1.Add(time.Hour)
+	t3 := t2.Add(time.Hour)
+	r.NoError(s.app.Content.SavePageAt("nested-a/b/c/d/page", "Deep Content v2", model.ContentMeta{Title: "Deep Page v2"}, "", t2))
+	r.NoError(s.app.Content.SavePageAt("nested-a/b/c/d/page", "Deep Content v3", model.ContentMeta{Title: "Deep Page v3"}, "", t3))
 
 	// Verify we have 3 attic entries
 	atticBefore, err := s.app.Content.ListAttic("nested-a/b/c/d/page")

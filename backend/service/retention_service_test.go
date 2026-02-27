@@ -120,9 +120,9 @@ func TestCleanupAttic_DeletesByAge(t *testing.T) {
 	oldRevisionTime := time.Now().Add(-15 * 24 * time.Hour)   // 15 days ago
 	recentRevisionTime := time.Now().Add(-3 * 24 * time.Hour) // 3 days ago
 
-	err := contentService.savePageAt("testpage", "Content v1", model.ContentMeta{Title: "Test Page"}, "", true, oldRevisionTime)
+	err := contentService.SavePageAt("testpage", "Content v1", model.ContentMeta{Title: "Test Page"}, "", oldRevisionTime)
 	r.NoError(err)
-	err = contentService.savePageAt("testpage", "Content v2", model.ContentMeta{Title: "Test Page"}, "", true, recentRevisionTime)
+	err = contentService.SavePageAt("testpage", "Content v2", model.ContentMeta{Title: "Test Page"}, "", recentRevisionTime)
 	r.NoError(err)
 
 	// Verify both attic entries exist
@@ -153,7 +153,7 @@ func TestCleanupAttic_DeletesByCount(t *testing.T) {
 	// Create a page with 5 versions (all recent, so age won't delete them)
 	for i := 1; i <= 5; i++ {
 		revisionTime := now.Add(-time.Duration(i) * time.Minute) // 1-5 minutes ago
-		err := contentService.savePageAt("testpage", "Content v"+string(rune('0'+i)), model.ContentMeta{Title: "Test Page"}, "", true, revisionTime)
+		err := contentService.SavePageAt("testpage", "Content v"+string(rune('0'+i)), model.ContentMeta{Title: "Test Page"}, "", revisionTime)
 		r.NoError(err)
 	}
 
@@ -183,13 +183,13 @@ func TestCleanupAttic_DeletesByAgeAndCount(t *testing.T) {
 	oldRevisionTime := now.Add(-15 * 24 * time.Hour) // 15 days ago
 
 	// Create 1 old entry (will be deleted by age)
-	err := contentService.savePageAt("testpage", "Old content", model.ContentMeta{Title: "Test Page"}, "", true, oldRevisionTime)
+	err := contentService.SavePageAt("testpage", "Old content", model.ContentMeta{Title: "Test Page"}, "", oldRevisionTime)
 	r.NoError(err)
 
 	// Create 4 recent entries
 	for i := 1; i <= 4; i++ {
 		revisionTime := now.Add(-time.Duration(i) * time.Minute) // 1-4 minutes ago
-		err := contentService.savePageAt("testpage", "Content v"+string(rune('0'+i)), model.ContentMeta{Title: "Test Page"}, "", true, revisionTime)
+		err := contentService.SavePageAt("testpage", "Content v"+string(rune('0'+i)), model.ContentMeta{Title: "Test Page"}, "", revisionTime)
 		r.NoError(err)
 	}
 
@@ -223,14 +223,14 @@ func TestCleanupAttic_MultiplePages(t *testing.T) {
 	// Create page1 with 4 versions
 	for i := 1; i <= 4; i++ {
 		revisionTime := now.Add(-time.Duration(i) * time.Minute)
-		err := contentService.savePageAt("page1", "Content", model.ContentMeta{Title: "Page 1"}, "", true, revisionTime)
+		err := contentService.SavePageAt("page1", "Content", model.ContentMeta{Title: "Page 1"}, "", revisionTime)
 		r.NoError(err)
 	}
 
 	// Create page2 with 3 versions
 	for i := 1; i <= 3; i++ {
 		revisionTime := now.Add(-time.Duration(i) * time.Minute)
-		err := contentService.savePageAt("page2", "Content", model.ContentMeta{Title: "Page 2"}, "", true, revisionTime)
+		err := contentService.SavePageAt("page2", "Content", model.ContentMeta{Title: "Page 2"}, "", revisionTime)
 		r.NoError(err)
 	}
 
@@ -263,7 +263,7 @@ func TestCleanupAttic_KeepsAllWhenBelowMaxVersions(t *testing.T) {
 	// Create a page with 2 versions
 	for i := 1; i <= 2; i++ {
 		revisionTime := now.Add(-time.Duration(i) * time.Minute)
-		err := contentService.savePageAt("testpage", "Content", model.ContentMeta{Title: "Test Page"}, "", true, revisionTime)
+		err := contentService.SavePageAt("testpage", "Content", model.ContentMeta{Title: "Test Page"}, "", revisionTime)
 		r.NoError(err)
 	}
 
@@ -294,9 +294,9 @@ func TestCleanupAttic_PreservesMostRecentVersion(t *testing.T) {
 	veryOldRevisionTime := time.Now().Add(-30 * 24 * time.Hour) // 30 days ago
 	oldRevisionTime := time.Now().Add(-15 * 24 * time.Hour)     // 15 days ago
 
-	err := contentService.savePageAt("testpage", "Content v1", model.ContentMeta{Title: "Test Page"}, "", true, veryOldRevisionTime)
+	err := contentService.SavePageAt("testpage", "Content v1", model.ContentMeta{Title: "Test Page"}, "", veryOldRevisionTime)
 	r.NoError(err)
-	err = contentService.savePageAt("testpage", "Content v2", model.ContentMeta{Title: "Test Page"}, "", true, oldRevisionTime)
+	err = contentService.SavePageAt("testpage", "Content v2", model.ContentMeta{Title: "Test Page"}, "", oldRevisionTime)
 	r.NoError(err)
 
 	// Verify both attic entries exist
@@ -325,7 +325,7 @@ func TestCleanupAttic_PreservesOnlyVersion(t *testing.T) {
 	// Create a page with only one version, and it's old
 	oldRevisionTime := time.Now().Add(-30 * 24 * time.Hour) // 30 days ago
 
-	err := contentService.savePageAt("testpage", "Content", model.ContentMeta{Title: "Test Page"}, "", true, oldRevisionTime)
+	err := contentService.SavePageAt("testpage", "Content", model.ContentMeta{Title: "Test Page"}, "", oldRevisionTime)
 	r.NoError(err)
 
 	// Verify one attic entry exists

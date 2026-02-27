@@ -14,13 +14,14 @@ func TestDeleteAtticEntry(t *testing.T) {
 	mock := newMockStorage()
 	contentService := NewContentService(mock)
 
-	// Create a page
-	err := contentService.SavePage("testpage", "Content v1", model.ContentMeta{Title: "Test Page"}, "")
+	// Create a page with first version
+	t1 := time.Now()
+	err := contentService.SavePageAt("testpage", "Content v1", model.ContentMeta{Title: "Test Page"}, "", t1)
 	r.NoError(err)
 
-	// Wait and save again to create another version
-	time.Sleep(1100 * time.Millisecond)
-	err = contentService.SavePage("testpage", "Content v2", model.ContentMeta{Title: "Test Page"}, "")
+	// Save again with a different timestamp to create another version
+	t2 := t1.Add(time.Hour)
+	err = contentService.SavePageAt("testpage", "Content v2", model.ContentMeta{Title: "Test Page"}, "", t2)
 	r.NoError(err)
 
 	// Verify we have 2 attic entries

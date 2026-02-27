@@ -455,17 +455,24 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 
 // SavePage saves a page and creates a version in the attic.
 func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMeta, userID string) error {
-	return s.savePageAt(urlPath, content, meta, userID, true, time.Now())
+	return s.savePageAtInternal(urlPath, content, meta, userID, true, time.Now())
 }
 
 // SavePageWithoutVersion saves a page without creating a version in the attic.
 // Use this for metadata-only changes (e.g., ACL, title) that shouldn't create history entries.
 func (s *ContentService) SavePageWithoutVersion(urlPath, content string, meta model.ContentMeta, userID string) error {
-	return s.savePageAt(urlPath, content, meta, userID, false, time.Now())
+	return s.savePageAtInternal(urlPath, content, meta, userID, false, time.Now())
 }
 
-// savePageAt saves a page with a specific timestamp (for testing with custom timestamps).
-func (s *ContentService) savePageAt(urlPath, content string, meta model.ContentMeta, userID string, createVersion bool, revisionTime time.Time) error {
+// SavePageAt saves a page with a specific timestamp.
+// This is primarily useful for testing scenarios where you need to create multiple
+// attic versions without waiting for time to pass (since revisions are stored with second precision).
+func (s *ContentService) SavePageAt(urlPath, content string, meta model.ContentMeta, userID string, revisionTime time.Time) error {
+	return s.savePageAtInternal(urlPath, content, meta, userID, true, revisionTime)
+}
+
+// savePageAtInternal saves a page with a specific timestamp (internal implementation).
+func (s *ContentService) savePageAtInternal(urlPath, content string, meta model.ContentMeta, userID string, createVersion bool, revisionTime time.Time) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}

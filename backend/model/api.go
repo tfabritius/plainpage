@@ -182,10 +182,38 @@ type User struct {
 }
 
 type Config struct {
-	ACL       []AccessRule `json:"acl" yaml:"acl"`
-	AppTitle  string       `json:"appTitle" yaml:"appTitle"`
-	JwtSecret string       `json:"-" yaml:"jwtSecret"`
-	SetupMode bool         `json:"setupMode" yaml:"setupMode"`
+	ACL       []AccessRule    `json:"acl" yaml:"acl"`
+	AppTitle  string          `json:"appTitle" yaml:"appTitle"`
+	JwtSecret string          `json:"-" yaml:"jwtSecret"`
+	SetupMode bool            `json:"setupMode" yaml:"setupMode"`
+	Retention RetentionConfig `json:"retention" yaml:"retention"`
+}
+
+// RetentionConfig defines automatic cleanup policies for trash and version history
+type RetentionConfig struct {
+	Trash TrashRetention `json:"trash" yaml:"trash"`
+	Attic AtticRetention `json:"attic" yaml:"attic"`
+}
+
+// TrashRetention defines the retention policy for deleted items in trash
+type TrashRetention struct {
+	// MaxAgeDays specifies the maximum age in days for trash items.
+	// Items older than this will be permanently deleted.
+	// 0 means disabled (keep forever).
+	MaxAgeDays int `json:"maxAgeDays" yaml:"maxAgeDays"`
+}
+
+// AtticRetention defines the retention policy for version history
+type AtticRetention struct {
+	// MaxAgeDays specifies the maximum age in days for versions.
+	// Versions older than this will be deleted.
+	// 0 means disabled (keep forever).
+	MaxAgeDays int `json:"maxAgeDays" yaml:"maxAgeDays"`
+
+	// MaxVersions specifies the maximum number of versions to keep per page.
+	// Older versions beyond this limit will be deleted.
+	// 0 means unlimited.
+	MaxVersions int `json:"maxVersions" yaml:"maxVersions"`
 }
 
 type SearchHit struct {

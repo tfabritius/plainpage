@@ -1,7 +1,6 @@
 package service
 
 import (
-	"io/fs"
 	"strings"
 	"testing"
 
@@ -9,68 +8,9 @@ import (
 	"github.com/tfabritius/plainpage/model"
 )
 
-type mockStorage struct {
-	users []byte
-}
-
-func (m *mockStorage) Exists(path string) bool {
-	if path == "users.yml" {
-		// return len(m.users) > 0
-		return m.users != nil
-	}
-	panic("not supported")
-}
-
-func (m *mockStorage) ReadFile(path string) ([]byte, error) {
-	if path == "users.yml" {
-		return m.users, nil
-	}
-	panic("not supported")
-}
-
-func (m *mockStorage) WriteFile(path string, data []byte) error {
-	if path == "users.yml" {
-		m.users = data
-		return nil
-	}
-	panic("not supported")
-}
-
-func (m *mockStorage) DeleteFile(path string) error {
-	panic("not supported")
-}
-
-func (m *mockStorage) CreateDirectory(path string) error {
-	panic("not supported")
-}
-
-func (m *mockStorage) ReadConfig() (model.Config, error) {
-	panic("not supported")
-}
-
-func (m *mockStorage) WriteConfig(config model.Config) error {
-	panic("not supported")
-}
-
-func (m *mockStorage) ReadDirectory(fsPath string) ([]fs.FileInfo, error) {
-	panic("not supported")
-}
-
-func (m *mockStorage) DeleteEmptyDirectory(fsPath string) error {
-	panic("not supported")
-}
-
-func (m *mockStorage) DeleteDirectory(fsPath string) error {
-	panic("not supported")
-}
-
-func (m *mockStorage) Rename(oldPath, newPath string) error {
-	panic("not supported")
-}
-
 func TestUserService_Create(t *testing.T) {
 	r := require.New(t)
-	mock := &mockStorage{}
+	mock := newMockStorage()
 	userService := NewUserService(mock)
 
 	username := "testuser"
@@ -98,7 +38,7 @@ func TestUserService_Create(t *testing.T) {
 
 func TestUserService_GetByUsername(t *testing.T) {
 	r := require.New(t)
-	mock := &mockStorage{}
+	mock := newMockStorage()
 	userService := NewUserService(mock)
 
 	var cUserId string
@@ -121,7 +61,7 @@ func TestUserService_GetByUsername(t *testing.T) {
 
 func TestUserService_GetById(t *testing.T) {
 	r := require.New(t)
-	mock := &mockStorage{}
+	mock := newMockStorage()
 	userService := NewUserService(mock)
 
 	var cUserId string
@@ -144,7 +84,7 @@ func TestUserService_GetById(t *testing.T) {
 
 func TestUserService_VerifyCredentials(t *testing.T) {
 	r := require.New(t)
-	mock := &mockStorage{}
+	mock := newMockStorage()
 	userService := NewUserService(mock)
 
 	username := "testuser"
@@ -200,8 +140,7 @@ func TestUserService_VerifyCredentials(t *testing.T) {
 
 func TestUserService_Save(t *testing.T) {
 	r := require.New(t)
-
-	mock := &mockStorage{}
+	mock := newMockStorage()
 	userService := NewUserService(mock)
 
 	username := "testuser"
@@ -242,8 +181,7 @@ func TestUserService_Save(t *testing.T) {
 
 func TestUserService_DeleteByUsername(t *testing.T) {
 	r := require.New(t)
-
-	mock := &mockStorage{}
+	mock := newMockStorage()
 	userService := NewUserService(mock)
 
 	for _, i := range []string{"a", "b", "c", "d", "e"} {

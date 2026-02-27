@@ -144,9 +144,26 @@ jwtSecret: "..."
 
 # Enables anonymous registration with admin rights (auto-disabled after first registration)
 setupMode: false
+
+# Retention policies for automatic cleanup (all values default to 0 = disabled)
+retention:
+  trash:
+    maxAgeDays: 30    # Delete trash items older than 30 days
+  attic:
+    maxAgeDays: 90    # Delete versions older than 90 days
+    maxVersions: 50   # Keep at most 50 versions per page
 ```
 
 ⚠️ **Security Note:** The `jwtSecret` is used to sign and verify JWT tokens. It is generated automatically. Keep it safe! For security reasons it's neither exposed nor can be changed via UI.
+
+#### Retention Policies
+
+PlainPage can automatically clean up old trash items and version history to manage disk space. Retention policies are configured via UI and stored in `config.yml`.
+
+**Notes:**
+- All retention settings default to `0` (disabled) for safety
+- Cleanup runs automatically every 24 hours
+- For attic cleanup, versions are deleted if *either* the age limit *or* the version count limit is exceeded
 
 ## Usage
 
@@ -250,6 +267,8 @@ data/
 Every time a page is saved, a copy is stored in the `attic/` directory with the same path structure. The filename includes a Unix timestamp: `{pagename}.{timestamp}.md`
 The attic also contains the current version.
 
+💡 **Tip:** Configure [retention policies](#retention-policies) to automatically clean up old versions and manage disk space.
+
 ### Trash
 
 When pages are deleted, they are moved to the `trash/` directory instead of being permanently deleted. This allows for recovery if needed.
@@ -261,6 +280,8 @@ Each deletion creates a timestamped folder containing:
 - All attic entries that existed at the time of deletion
 
 If a page was deleted multiple times, each deletion has its own timestamp folder, making it easy to see the history and choose which version to restore.
+
+💡 **Tip:** Configure [retention policies](#retention-policies) to automatically clean up old trash items and free up disk space.
 
 ## Security
 

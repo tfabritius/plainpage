@@ -99,6 +99,33 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 
 			cfg.ACL = value
 
+		case "/retention/trash/maxAgeDays":
+			var value int
+			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			cfg.Retention.Trash.MaxAgeDays = max(value, 0)
+
+		case "/retention/attic/maxAgeDays":
+			var value int
+			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			cfg.Retention.Attic.MaxAgeDays = max(value, 0)
+
+		case "/retention/attic/maxVersions":
+			var value int
+			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			cfg.Retention.Attic.MaxVersions = max(value, 0)
+
 		default:
 			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
 			return

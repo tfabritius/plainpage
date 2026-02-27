@@ -22,6 +22,8 @@ all-registered-users: All registered users
 anonymous: anonymous
 anonymous-users: Anonymous users
 application-title: Application title
+attic-retention-age: Version history max age
+attic-retention-versions: Version history max count
 are-you-sure-to-delete-this-account: Are you sure to delete this account?
 are-you-sure-to-delete-this-folder: Are you sure to delete this folder?
 are-you-sure-to-delete-this-page: Are you sure to delete this page?
@@ -49,6 +51,7 @@ current-password-required: Please enter current password
 current-version: Current version
 dark-mode-off: Light on
 dark-mode-on: Light off
+days: days
 define-custom-permissions: Define custom permissions
 delete: Delete
 delete-folder: Delete folder
@@ -124,6 +127,8 @@ reload: Reload
 rename: Rename
 rename-page: Rename page
 restore: Restore
+retention: Storage Retention
+retention-description: Automatically clean up old trash items and version history. Cleanup runs every 24 hours.
 revision-doesnt-exist: This revision doesn't exist!
 revisions: Revisions
 save: Save
@@ -159,6 +164,7 @@ title: Title
 too-many-login-requests: Too many sign in attempts. Please wait {0}s.
 trash: Trash
 trash-is-empty: Trash is empty
+trash-retention-age: Trash max age
 try-again: Try again
 untitled: Untitled
 updated: Updated
@@ -173,4 +179,7 @@ username-not-unique: Username is taken already
 username-required: Please enter username
 users: Users
 version: Version
+versions-per-page: versions per page
 write: Write
+zero-disabled: (0 = disabled)
+zero-unlimited: (0 = unlimited)

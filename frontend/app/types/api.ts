@@ -159,6 +159,21 @@ export interface User {
 export interface Config {
   appTitle: string
   acl: AccessRule[] | null
+  retention: RetentionConfig
+}
+
+export interface RetentionConfig {
+  trash: TrashRetention
+  attic: AtticRetention
+}
+
+export interface TrashRetention {
+  maxAgeDays: number
+}
+
+export interface AtticRetention {
+  maxAgeDays: number
+  maxVersions: number
 }
 
 export interface SearchHit {

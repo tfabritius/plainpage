@@ -12,7 +12,7 @@ type Storage interface {
 	DeleteFile(fsPath string) error
 
 	CreateDirectory(fsPath string) error
-	ReadDirectory(fsPath string) ([]fs.FileInfo, error)
+	ReadDirectory(fsPath string) ([]fs.DirEntry, error)
 	DeleteEmptyDirectory(fsPath string) error
 	DeleteDirectory(fsPath string) error
 	Rename(oldPath, newPath string) error

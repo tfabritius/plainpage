@@ -27,6 +27,9 @@ async function onSave() {
     body: [
       { op: 'replace', path: '/appTitle', value: data.value?.appTitle },
       { op: 'replace', path: '/acl', value: acl },
+      { op: 'replace', path: '/retention/trash/maxAgeDays', value: data.value?.retention.trash.maxAgeDays },
+      { op: 'replace', path: '/retention/attic/maxAgeDays', value: data.value?.retention.attic.maxAgeDays },
+      { op: 'replace', path: '/retention/attic/maxVersions', value: data.value?.retention.attic.maxVersions },
     ],
   })
 
@@ -58,14 +61,64 @@ async function onSave() {
     <UForm
       id="settingsForm"
       :state="data"
+      class="space-y-6"
       @submit="onSave"
     >
       <UFormField :label="$t('application-title')">
         <UInput v-model="data.appTitle" class="w-full" />
       </UFormField>
-      <UFormField :label="$t('permissions')" class="mt-4">
+
+      <PlainFieldset :legend="$t('permissions')">
         <AclTable ref="aclTableRef" :acl="data?.acl ?? []" :show-columns="['register', 'admin']" />
-      </UFormField>
+      </PlainFieldset>
+
+      <PlainFieldset :legend="$t('retention')">
+        <p class="text-sm text-[var(--ui-text-muted)] mb-4">
+          {{ $t('retention-description') }}
+        </p>
+
+        <div class="space-y-4">
+          <UFormField :label="$t('trash-retention-age')">
+            <div class="flex items-center gap-2">
+              <UInput
+                v-model.number="data.retention.trash.maxAgeDays"
+                type="number"
+                min="0"
+                class="w-24"
+              />
+              <span class="text-sm text-[var(--ui-text-muted)]">{{ $t('days') }}</span>
+              <span class="text-xs text-[var(--ui-text-dimmed)]">{{ $t('zero-disabled') }}</span>
+            </div>
+          </UFormField>
+
+          <UFormField :label="$t('attic-retention-age')">
+            <div class="flex items-center gap-2">
+              <UInput
+                v-model.number="data.retention.attic.maxAgeDays"
+                type="number"
+                min="0"
+                class="w-24"
+              />
+              <span class="text-sm text-[var(--ui-text-muted)]">{{ $t('days') }}</span>
+              <span class="text-xs text-[var(--ui-text-dimmed)]">{{ $t('zero-disabled') }}</span>
+            </div>
+          </UFormField>
+
+          <UFormField :label="$t('attic-retention-versions')">
+            <div class="flex items-center gap-2">
+              <UInput
+                v-model.number="data.retention.attic.maxVersions"
+                type="number"
+                min="0"
+                class="w-24"
+              />
+              <span class="text-sm text-[var(--ui-text-muted)]">{{ $t('versions-per-page') }}</span>
+              <span class="text-xs text-[var(--ui-text-dimmed)]">{{ $t('zero-unlimited') }}</span>
+            </div>
+          </UFormField>
+        </div>
+      </PlainFieldset>
+
       <UFormField :label="$t('version')" class="mt-4">
         <UInput
           :model-value="version" disabled class="w-full"

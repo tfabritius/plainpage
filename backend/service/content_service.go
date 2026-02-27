@@ -455,16 +455,17 @@ func (s *ContentService) ReadPage(urlPath string, revision *int64) (model.Page, 
 
 // SavePage saves a page and creates a version in the attic.
 func (s *ContentService) SavePage(urlPath, content string, meta model.ContentMeta, userID string) error {
-	return s.savePage(urlPath, content, meta, userID, true)
+	return s.savePageAt(urlPath, content, meta, userID, true, time.Now())
 }
 
 // SavePageWithoutVersion saves a page without creating a version in the attic.
 // Use this for metadata-only changes (e.g., ACL, title) that shouldn't create history entries.
 func (s *ContentService) SavePageWithoutVersion(urlPath, content string, meta model.ContentMeta, userID string) error {
-	return s.savePage(urlPath, content, meta, userID, false)
+	return s.savePageAt(urlPath, content, meta, userID, false, time.Now())
 }
 
-func (s *ContentService) savePage(urlPath, content string, meta model.ContentMeta, userID string, createVersion bool) error {
+// savePageAt saves a page with a specific timestamp (for testing with custom timestamps).
+func (s *ContentService) savePageAt(urlPath, content string, meta model.ContentMeta, userID string, createVersion bool, revisionTime time.Time) error {
 	if !s.IsFolder(path.Dir(urlPath)) {
 		return model.ErrParentFolderNotFound
 	}
@@ -488,7 +489,7 @@ func (s *ContentService) savePage(urlPath, content string, meta model.ContentMet
 	}
 
 	if createVersion {
-		revision := time.Now().Unix()
+		revision := revisionTime.Unix()
 		revStr := strconv.FormatInt(revision, 10)
 		atticFile := filepath.Join("attic", urlPath+"."+revStr+".md")
 
@@ -511,24 +512,28 @@ func (s *ContentService) savePage(urlPath, content string, meta model.ContentMet
 }
 
 func (s *ContentService) DeletePage(urlPath string) error {
+	return s.deletePageAt(urlPath, time.Now())
+}
+
+// deletePageAt deletes a page at the specified time (for testing with custom timestamps).
+func (s *ContentService) deletePageAt(urlPath string, deletedAt time.Time) error {
 	// Move page and attic entries to trash
-	if err := s.movePageToTrash(urlPath); err != nil {
+	if err := s.movePageToTrashAt(urlPath, deletedAt); err != nil {
 		return err
 	}
 
 	// Update search index
 	if err := s.index.Delete(urlPath); err != nil {
-
 		log.Printf("[INDEX] Could not delete page %s from index: %v", urlPath, err)
 	}
 
 	return nil
 }
 
-// movePageToTrash moves a page and its attic entries to the trash folder.
+// movePageToTrashAt moves a page and its attic entries to the trash folder at the specified time.
 // Trash structure: trash/{urlPath}/_{timestamp}/{filename}.md
-func (s *ContentService) movePageToTrash(urlPath string) error {
-	timestamp := time.Now().Unix()
+func (s *ContentService) movePageToTrashAt(urlPath string, deletedAt time.Time) error {
+	timestamp := deletedAt.Unix()
 	timestampStr := "_" + strconv.FormatInt(timestamp, 10)
 	pageName := path.Base(urlPath)
 
@@ -768,7 +773,7 @@ func (s *ContentService) moveFolderPagesToTrash(urlPath string) error {
 			}
 		} else {
 			// Move page to trash
-			if err := s.movePageToTrash(entry.Url); err != nil {
+			if err := s.movePageToTrashAt(entry.Url, time.Now()); err != nil {
 				return fmt.Errorf("could not move page %s to trash: %w", entry.Url, err)
 			}
 		}
@@ -857,6 +862,7 @@ func (s *ContentService) GetEffectivePermissions(meta model.ContentMeta, ancesto
 	return []model.AccessRule{}
 }
 
+// ListAttic lists all attic entries (revisions) for a given page, sorted by revision number ascending.
 func (s *ContentService) ListAttic(urlPath string) ([]model.AtticEntry, error) {
 	pageName := path.Base(urlPath)
 	parentDir := filepath.Join("attic", filepath.Dir(urlPath))
@@ -1035,4 +1041,45 @@ func (s *ContentService) moveAtticEntries(oldPath, newPath string) error {
 	}
 
 	return nil
+}
+
+// DeleteAtticEntry deletes a single attic entry (version) for a page.
+func (s *ContentService) DeleteAtticEntry(urlPath string, revision int64) error {
+	revStr := strconv.FormatInt(revision, 10)
+	atticPath := filepath.Join("attic", urlPath+"."+revStr+".md")
+
+	if !s.storage.Exists(atticPath) {
+		return model.ErrNotFound
+	}
+
+	return s.storage.DeleteFile(atticPath)
+}
+
+// ListAllPages returns the URLs of all pages in the wiki by recursively walking the pages directory.
+func (s *ContentService) ListAllPages() ([]string, error) {
+	return s.listAllPagesRecursive("")
+}
+
+func (s *ContentService) listAllPagesRecursive(urlPath string) ([]string, error) {
+	var pages []string
+
+	folder, err := s.ReadFolder(urlPath)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, entry := range folder.Content {
+		if entry.IsFolder {
+			// Recursively process subfolder
+			subPages, err := s.listAllPagesRecursive(entry.Url)
+			if err != nil {
+				return nil, err
+			}
+			pages = append(pages, subPages...)
+		} else {
+			pages = append(pages, entry.Url)
+		}
+	}
+
+	return pages, nil
 }

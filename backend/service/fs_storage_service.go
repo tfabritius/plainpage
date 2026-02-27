@@ -89,7 +89,7 @@ func (fss *fsStorage) CreateDirectory(fsPath string) error {
 	return nil
 }
 
-func (fss *fsStorage) ReadDirectory(fsPath string) ([]fs.FileInfo, error) {
+func (fss *fsStorage) ReadDirectory(fsPath string) ([]fs.DirEntry, error) {
 	dirPath := filepath.Join(fss.DataDir, fsPath)
 
 	// Open the directory
@@ -100,12 +100,12 @@ func (fss *fsStorage) ReadDirectory(fsPath string) ([]fs.FileInfo, error) {
 	defer dir.Close()
 
 	// Get a list of all files in the directory
-	fileInfos, err := dir.Readdir(0)
+	dirEntries, err := dir.ReadDir(0)
 	if err != nil {
 		return nil, fmt.Errorf("could not read directory: %w", err)
 	}
 
-	return fileInfos, nil
+	return dirEntries, nil
 }
 
 func (fss *fsStorage) DeleteEmptyDirectory(fsPath string) error {

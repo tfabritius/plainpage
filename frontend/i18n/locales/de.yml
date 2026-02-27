@@ -22,6 +22,8 @@ all-registered-users: Alle registrierten Benutzer
 anonymous: anonym
 anonymous-users: Anonyme Benutzer
 application-title: Titel der App
+attic-retention-age: Maximales Alter der Versionshistorie
+attic-retention-versions: Maximale Anzahl der Versionen
 are-you-sure-to-delete-this-account: Bist du sicher, dass du dieses Konto löschen willst?
 are-you-sure-to-delete-this-folder: Bist du sicher, dass du diesen Ordner löschen willst?
 are-you-sure-to-delete-this-page: Bist du sicher, dass du diese Seite löschen willst?
@@ -49,6 +51,7 @@ current-password-required: Bitte aktuelles Passwort eingeben
 current-version: Aktuelle Version
 dark-mode-off: Licht an
 dark-mode-on: Licht aus
+days: Tage
 define-custom-permissions: Eigene Berechtigungen festlegen
 delete: Löschen
 delete-folder: Ordner löschen
@@ -124,6 +127,8 @@ reload: Neu laden
 rename: Umbenennen
 rename-page: Seite umbenennen
 restore: Wiederherstellen
+retention: Speicherbereinigung
+retention-description: Automatische Bereinigung alter Papierkorb-Einträge und Versionshistorie. Die Bereinigung läuft alle 24 Stunden.
 revision-doesnt-exist: Diese Überarbeitung existiert nicht!
 revisions: Überarbeitungen
 save: Speichern
@@ -159,6 +164,7 @@ title: Titel
 too-many-login-requests: Zu viele Anmeldeversuche. Bitte warte {0}s.
 trash: Papierkorb
 trash-is-empty: Papierkorb ist leer
+trash-retention-age: Maximales Alter im Papierkorb
 try-again: Nochmal versuchen
 untitled: Ohne Titel
 updated: Aktualisiert
@@ -173,4 +179,7 @@ username-not-unique: Benutzername ist bereits vergeben
 username-required: Bitte Benutzernamen eingeben
 users: Benutzer
 version: Version
+versions-per-page: Versionen pro Seite
 write: Schreiben
+zero-disabled: (0 = deaktiviert)
+zero-unlimited: (0 = unbegrenzt)

@@ -55,9 +55,10 @@ func main() {
 
 	app := server.NewApp(frontend, store)
 
-	// Start background token cleanup scheduler
+	// Start background schedulers
 	cleanupCtx, cleanupCancel := context.WithCancel(context.Background())
 	app.RefreshToken.StartCleanupScheduler(cleanupCtx, 24*time.Hour)
+	app.Retention.StartCleanupScheduler(cleanupCtx, 24*time.Hour)
 
 	handler := app.GetHandler()
 

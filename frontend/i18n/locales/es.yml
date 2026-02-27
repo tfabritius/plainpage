@@ -22,6 +22,8 @@ all-registered-users: Todos los usuarios registrados
 anonymous: anónimo
 anonymous-users: Usuarios anónimos
 application-title: Titulo de la aplicación
+attic-retention-age: Antigüedad máxima del historial de versiones
+attic-retention-versions: Cantidad máxima de versiones
 are-you-sure-to-delete-this-account: ¿Estás seguro de eliminar esta cuenta?
 are-you-sure-to-delete-this-folder: ¿Estás seguro de eliminar esta carpeta?
 are-you-sure-to-delete-this-page: ¿Estás seguro de eliminar esta página?
@@ -49,6 +51,7 @@ current-password-required: Por favor ingrese la contraseña actual
 current-version: Versión actual
 dark-mode-off: Luz apagada
 dark-mode-on: Luz encendida
+days: días
 define-custom-permissions: Definir permisos propios
 delete: Borrar
 delete-folder: Borrar carpeta
@@ -124,6 +127,8 @@ reload: Recargar
 rename: Renombrar
 rename-page: Renombrar página
 restore: Restaurar
+retention: Retención de almacenamiento
+retention-description: Limpieza automática de elementos antiguos de la papelera e historial de versiones. La limpieza se ejecuta cada 24 horas.
 revision-doesnt-exist: ¡Esta revisión no existe!
 revisions: Revisiones
 save: Guardar
@@ -159,6 +164,7 @@ title: Título
 too-many-login-requests: Demasiados intentos de inicio de sesión. Por favor espera {0}s.
 trash: Papelera
 trash-is-empty: La papelera está vacía
+trash-retention-age: Antigüedad máxima en papelera
 try-again: Intentar otra vez
 untitled: Intitulado
 updated: Actualizado
@@ -173,4 +179,7 @@ username-not-unique: El nombre de usuario ya está tomado
 username-required: Por favor ingrese nombre de usuario
 users: Usuarios
 version: Versión
+versions-per-page: versiones por página
 write: Escribir
+zero-disabled: (0 = desactivado)
+zero-unlimited: (0 = ilimitado)

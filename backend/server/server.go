@@ -24,6 +24,7 @@ type App struct {
 	Users               *service.UserService
 	AccessToken         service.AccessTokenService
 	RefreshToken        *service.RefreshTokenService
+	Retention           *service.RetentionService
 	LoginLimiter        *LoginLimiter
 	SearchLimiterByIP   *RateLimiter
 	SearchLimiterByUser *RateLimiter
@@ -48,6 +49,7 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 	userService := service.NewUserService(store)
 	accessTokenService := service.NewAccessTokenService(cfg.JwtSecret)
 	refreshTokenService := service.NewRefreshTokenService(store)
+	retentionService := service.NewRetentionService(contentService, store)
 	loginLimiter := NewLoginLimiter(5, rate.Every(30*time.Second), 30*time.Minute)
 
 	// Search rate limiters: stricter for unauthenticated users (by IP), more lenient for authenticated users (by userID)
@@ -61,6 +63,7 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 		Users:               userService,
 		AccessToken:         accessTokenService,
 		RefreshToken:        refreshTokenService,
+		Retention:           retentionService,
 		LoginLimiter:        loginLimiter,
 		SearchLimiterByIP:   searchLimiterByIP,
 		SearchLimiterByUser: searchLimiterByUser,

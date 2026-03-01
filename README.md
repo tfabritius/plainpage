@@ -200,11 +200,11 @@ Permissions can be granted to:
 
 Permissions are controlled with fine-grained operations:
 
-| Permission | Description                                                        |
-| ---------- | ------------------------------------------------------------------ |
-| *Read*     | Allows users to access pages and folders                           |
-| *Write*    | Allows users to change pages and folders (e.g., create new ones)   |
-| *Delete*   | Allows users to delete pages and folders completely                |
+| Permission | Description                                                      |
+| ---------- | ---------------------------------------------------------------- |
+| *Read*     | Allows users to access pages and folders                         |
+| *Write*    | Allows users to change pages and folders (e.g., create new ones) |
+| *Delete*   | Allows users to delete pages and folders completely              |
 
 This allows you to restrict certain content to specific users and/or expose certain content publicly.
 
@@ -218,14 +218,14 @@ Besides pages and folders, PlainPage allows you to grant additional permissions:
 
 ### Keyboard Shortcuts
 
-| Shortcut           | Action                                          |
-| ------------------ | ----------------------------------------------- |
-| `Ctrl+K`, `/`      | Search                                          |
-| `E`                | Edit page                                       |
-| `Ctrl+S`           | Save page (when editing)                        |
-| `Esc`              | Cancel edit / close full screen mode            |
-| `Alt+↑`            | Navigate to parent folder                       |
-| `Ctrl+Backspace`   | Delete current page/folder                      |
+| Shortcut         | Action                               |
+| ---------------- | ------------------------------------ |
+| `Ctrl+K`, `/`    | Search                               |
+| `E`              | Edit page                            |
+| `Ctrl+S`         | Save page (when editing)             |
+| `Esc`            | Cancel edit / close full screen mode |
+| `Alt+↑`          | Navigate to parent folder            |
+| `Ctrl+Backspace` | Delete current page/folder           |
 
 ## Data Storage
 

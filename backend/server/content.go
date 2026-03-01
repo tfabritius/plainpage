@@ -8,6 +8,7 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/render"
 	"github.com/tfabritius/plainpage/model"
@@ -156,6 +157,12 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 	render.JSON(w, r, response)
 }
 
+// PatchableContent is the wrapper for content PATCH operations
+type PatchableContent struct {
+	Page   *model.Page   `json:"page" patch:"allow"`
+	Folder *model.Folder `json:"folder" patch:"allow"`
+}
+
 func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 	urlPath := r.PathValue("*")
 	userID := ctxutil.UserID(r.Context())
@@ -168,7 +175,6 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Poor man's implementation of RFC 6902
 	var operations []model.PatchOperation
 	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -177,59 +183,16 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 
 	isFolder := folder != nil
 
-	if page != nil && folder != nil {
+	if page == nil && folder == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	// Track url changes
-	var newUrl *string
-	// Track metadata changes (ACL, title, etc.)
-	metadataChanged := false
-
-	for _, operation := range operations {
-		if operation.Op != "replace" {
-			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
-			return
-		}
-
-		// Detect url change
-		if (isFolder && operation.Path == "/folder/url") || (!isFolder && operation.Path == "/page/url") {
-			if operation.Value == nil {
-				http.Error(w, "url value is required", http.StatusBadRequest)
-				return
-			}
-			var urlValue string
-			if err := json.Unmarshal([]byte(*operation.Value), &urlValue); err != nil {
-				http.Error(w, "invalid url value: "+err.Error(), http.StatusBadRequest)
-				return
-			}
-			newUrl = &urlValue
-			continue
-		}
-
-		// Handle title changes
-		if (isFolder && operation.Path == "/folder/meta/title") || (!isFolder && operation.Path == "/page/meta/title") {
-			var title string
-			if operation.Value != nil {
-				if err := json.Unmarshal([]byte(*operation.Value), &title); err != nil {
-					http.Error(w, "invalid title value: "+err.Error(), http.StatusBadRequest)
-					return
-				}
-			}
-
-			if isFolder {
-				folder.Meta.Title = title
-			} else {
-				page.Meta.Title = title
-			}
-			metadataChanged = true
-			continue
-		}
-
-		// Handle ACL changes - requires admin permission
-		if (isFolder && operation.Path == "/folder/meta/acl") || (!isFolder && operation.Path == "/page/meta/acl") {
-			// ACL changes require admin permission
+	// Check if any operation targets ACL - require admin permission
+	aclPatched := false
+	for _, op := range operations {
+		if strings.Contains(op.Path, "/meta/acl") {
+			aclPatched = true
 			if userID == "" {
 				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
@@ -238,50 +201,96 @@ func (app App) patchContent(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 				return
 			}
-
-			var acl []model.AccessRule
-			if operation.Value != nil {
-				err := json.Unmarshal([]byte(*operation.Value), &acl)
-				if err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-					return
-				}
-
-				// Validate ACL values
-				if err := model.ValidateContentACL(acl); err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-					return
-				}
-			}
-
-			if isFolder {
-				if operation.Value == nil {
-					folder.Meta.ACL = nil
-				} else {
-					folder.Meta.ACL = &acl
-				}
-			} else {
-				if operation.Value == nil {
-					page.Meta.ACL = nil
-				} else {
-					page.Meta.ACL = &acl
-				}
-			}
-			metadataChanged = true
-			continue
+			break
 		}
+	}
 
-		http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
+	// Initialize patchable struct with current values
+	patchReq := PatchableContent{}
+
+	if isFolder {
+		patchReq.Folder = &model.Folder{
+			Url: urlPath,
+			Meta: model.ContentMeta{
+				Title: folder.Meta.Title,
+				ACL:   folder.Meta.ACL,
+			},
+		}
+	} else {
+		patchReq.Page = &model.Page{
+			Url: urlPath,
+			Meta: model.ContentMeta{
+				Title: page.Meta.Title,
+				ACL:   page.Meta.ACL,
+			},
+		}
+	}
+
+	// Apply patch operations to patchable struct
+	if err := ApplyJSONPatch(&patchReq, operations); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
+	urlChanged := false
+	metadataChanged := false
+
+	var newUrl string
+
+	if isFolder {
+		if patchReq.Folder.Meta.Title != folder.Meta.Title {
+			metadataChanged = true
+			folder.Meta.Title = patchReq.Folder.Meta.Title
+		}
+
+		if aclPatched {
+			// Validate ACL only if it's not nil (nil means "inherit")
+			if patchReq.Folder.Meta.ACL != nil {
+				if err := model.ValidateContentACL(*patchReq.Folder.Meta.ACL); err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+			}
+
+			metadataChanged = true
+			folder.Meta.ACL = patchReq.Folder.Meta.ACL
+		}
+
+		if patchReq.Folder.Url != folder.Url {
+			urlChanged = true
+			newUrl = patchReq.Folder.Url
+		}
+	} else {
+		if patchReq.Page.Meta.Title != page.Meta.Title {
+			metadataChanged = true
+			page.Meta.Title = patchReq.Page.Meta.Title
+		}
+
+		if aclPatched {
+			// Validate ACL only if it's not nil (nil means "inherit")
+			if patchReq.Page.Meta.ACL != nil {
+				if err := model.ValidateContentACL(*patchReq.Page.Meta.ACL); err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+			}
+
+			metadataChanged = true
+			page.Meta.ACL = patchReq.Page.Meta.ACL
+		}
+
+		if patchReq.Page.Url != page.Url {
+			urlChanged = true
+			newUrl = patchReq.Page.Url
+		}
+	}
+
 	// Apply url change if requested
-	if newUrl != nil {
-		err := app.moveContent(w, urlPath, *newUrl, userID, isFolder)
-		if err != nil {
+	if urlChanged {
+		if err := app.moveContent(w, urlPath, newUrl, userID, isFolder); err != nil {
 			return // Error already written to response
 		}
-		urlPath = *newUrl
+		urlPath = newUrl
 	}
 
 	// Save metadata changes (ACL, etc.) only if changed

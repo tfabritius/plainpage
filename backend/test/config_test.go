@@ -257,13 +257,14 @@ func (s *ConfigTestSuite) TestPatchConfigErrors() {
 		r.Contains(res.Body.String(), "operation add not supported")
 	}
 
-	// Test: Missing value
+	// Test: Missing value (null value not allowed for non-nullable string field)
 	{
 		res := s.api("PATCH", "/config", []model.PatchOperation{
 			{Op: "replace", Path: "/appTitle"},
 		}, s.adminToken)
 		r.Equal(400, res.Code)
-		r.Contains(res.Body.String(), "value missing")
+		r.Contains(res.Body.String(), "non-nullable field")
+		r.Contains(res.Body.String(), "/appTitle")
 	}
 
 	// Test: Unsupported path
@@ -272,7 +273,8 @@ func (s *ConfigTestSuite) TestPatchConfigErrors() {
 			{Op: "replace", Path: "/unknownField", Value: str2json("Test")},
 		}, s.adminToken)
 		r.Equal(400, res.Code)
-		r.Contains(res.Body.String(), "path /unknownField not supported")
+		r.Contains(res.Body.String(), "/unknownField")
+		r.Contains(res.Body.String(), "path not supported")
 	}
 
 	// Test: Invalid JSON for appTitle (expecting string, sending number)

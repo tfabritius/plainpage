@@ -127,45 +127,40 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Poor man's implementation of RFC 6902
 	var operations []model.PatchOperation
 	if err := json.NewDecoder(r.Body).Decode(&operations); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	for _, operation := range operations {
-		if operation.Op != "replace" {
-			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
-			return
-		}
+	originalID := user.ID
+	originalUsername := user.Username
 
-		var value string
-		if operation.Value == nil {
-			http.Error(w, "value missing", http.StatusBadRequest)
-			return
-		} else {
-			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-		}
+	// Apply patch operations
+	if err := ApplyJSONPatch(&user, operations); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-		switch operation.Path {
-		case "/username":
-			if err := app.Users.SetUsername(&user, value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-		case "/displayName":
-			user.DisplayName = value
-		default:
-			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
+	// Validation: ID must not be changed
+	if user.ID != originalID {
+		http.Error(w, "changing id is not allowed", http.StatusBadRequest)
+		return
+	}
+
+	// validation: validate username format if changed
+	if user.Username != originalUsername {
+		if err := app.Users.SetUsername(&user, user.Username); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 	}
 
 	if err := app.Users.Save(user); err != nil {
+		if errors.Is(err, model.ErrUserExistsAlready) {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		panic(err)
 	}
 

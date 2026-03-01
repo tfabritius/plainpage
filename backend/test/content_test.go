@@ -825,6 +825,7 @@ func (s *ContentTestSuite) TestUpdatePageACL() {
 				"",
 			))
 
+			// Test: set ACL from nil to a value
 			acl := []model.AccessRule{
 				{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}},
 			}
@@ -839,20 +840,21 @@ func (s *ContentTestSuite) TestUpdatePageACL() {
 			r.NoError(err)
 			if tc.responseCode == 200 {
 				r.Equal(acl, *page.Meta.ACL)
+
+				// Test: set ACL from a value back to nil
+				res = s.api("PATCH", "/pages/"+tc.url,
+					[]model.PatchOperation{
+						{Op: "replace", Path: "/page/meta/acl", Value: nil},
+					},
+					tc.token)
+				r.Equal(200, res.Code)
+
+				page, err = s.app.Content.ReadPage(tc.url, nil)
+				r.NoError(err)
+				r.Nil(page.Meta.ACL)
 			} else {
 				r.Nil(page.Meta.ACL)
 			}
-
-			res = s.api("PATCH", "/pages/"+tc.url,
-				[]model.PatchOperation{
-					{Op: "replace", Path: "/page/meta/acl", Value: nil},
-				},
-				tc.token)
-			r.Equal(tc.responseCode, res.Code)
-
-			page, err = s.app.Content.ReadPage(tc.url, nil)
-			r.NoError(err)
-			r.Nil(page.Meta.ACL)
 
 			// Cleanup
 			r.NoError(s.app.Content.DeletePage(tc.url))
@@ -1034,7 +1036,7 @@ func (s *ContentTestSuite) TestUpdateFolderACL() {
 			// Prepare
 			r.NoError(s.app.Content.CreateFolder(tc.url, model.ContentMeta{}))
 
-			// Test
+			// Test: set ACL from nil to a value
 			acl := []model.AccessRule{
 				{Subject: "anonymous", Operations: []model.AccessOp{model.AccessOpRead}},
 			}
@@ -1049,20 +1051,21 @@ func (s *ContentTestSuite) TestUpdateFolderACL() {
 			r.NoError(err)
 			if tc.responseCode == 200 {
 				r.Equal(acl, *folder.Meta.ACL)
+
+				// Test: set ACL from a value back to nil
+				res = s.api("PATCH", "/pages/"+tc.url,
+					[]model.PatchOperation{
+						{Op: "replace", Path: "/folder/meta/acl", Value: nil},
+					},
+					tc.token)
+				r.Equal(200, res.Code)
+
+				folder, err = s.app.Content.ReadFolder(tc.url)
+				r.NoError(err)
+				r.Nil(folder.Meta.ACL)
 			} else {
 				r.Nil(folder.Meta.ACL)
 			}
-
-			res = s.api("PATCH", "/pages/"+tc.url,
-				[]model.PatchOperation{
-					{Op: "replace", Path: "/folder/meta/acl", Value: nil},
-				},
-				tc.token)
-			r.Equal(tc.responseCode, res.Code)
-
-			folder, err = s.app.Content.ReadFolder(tc.url)
-			r.NoError(err)
-			r.Nil(folder.Meta.ACL)
 
 			// Cleanup
 			r.NoError(s.app.Content.DeleteEmptyFolder(tc.url))

@@ -109,21 +109,21 @@ type TrashItemRef struct {
 }
 
 type Page struct {
-	Url     string      `json:"url"`
+	Url     string      `json:"url" patch:"allow"`
 	Content string      `json:"content"`
-	Meta    ContentMeta `json:"meta"`
+	Meta    ContentMeta `json:"meta" patch:"allow"`
 }
 
 type Folder struct {
-	Url     string        `json:"url"`
+	Url     string        `json:"url" patch:"allow"`
 	Content []FolderEntry `json:"content"`
-	Meta    ContentMeta   `json:"meta"`
+	Meta    ContentMeta   `json:"meta" patch:"allow"`
 }
 
 type ContentMeta struct {
-	Title                 string        `json:"title" yaml:"title"`
+	Title                 string        `json:"title" yaml:"title" patch:"allow"`
 	Tags                  []string      `json:"tags" yaml:"tags"`
-	ACL                   *[]AccessRule `json:"acl" yaml:"acl"`
+	ACL                   *[]AccessRule `json:"acl" yaml:"acl" patch:"allow"`
 	ModifiedAt            time.Time     `json:"modifiedAt,omitempty" yaml:"modifiedAt"`
 	ModifiedByUserID      string        `json:"-" yaml:"modifiedBy"`                      // Stored in YAML, not exposed in API
 	ModifiedByUsername    string        `json:"modifiedByUsername,omitempty" yaml:"-"`    // Exposed in API, not stored in YAML
@@ -176,23 +176,23 @@ var ValidConfigOps = []AccessOp{AccessOpAdmin, AccessOpRegister}
 
 type User struct {
 	ID           string `json:"id" yaml:"id"`
-	Username     string `json:"username" yaml:"username"`
+	Username     string `json:"username" yaml:"username" patch:"allow"`
 	PasswordHash string `json:"-" yaml:"passwordHash"`
-	DisplayName  string `json:"displayName" yaml:"displayName"`
+	DisplayName  string `json:"displayName" yaml:"displayName" patch:"allow"`
 }
 
 type Config struct {
-	ACL       []AccessRule    `json:"acl" yaml:"acl"`
-	AppTitle  string          `json:"appTitle" yaml:"appTitle"`
+	ACL       []AccessRule    `json:"acl" yaml:"acl" patch:"allow"`
+	AppTitle  string          `json:"appTitle" yaml:"appTitle" patch:"allow"`
 	JwtSecret string          `json:"-" yaml:"jwtSecret"`
-	SetupMode bool            `json:"setupMode" yaml:"setupMode"`
-	Retention RetentionConfig `json:"retention" yaml:"retention"`
+	SetupMode bool            `json:"-" yaml:"setupMode"`
+	Retention RetentionConfig `json:"retention" yaml:"retention" patch:"allow"`
 }
 
 // RetentionConfig defines automatic cleanup policies for trash and version history
 type RetentionConfig struct {
-	Trash TrashRetention `json:"trash" yaml:"trash"`
-	Attic AtticRetention `json:"attic" yaml:"attic"`
+	Trash TrashRetention `json:"trash" yaml:"trash" patch:"allow"`
+	Attic AtticRetention `json:"attic" yaml:"attic" patch:"allow"`
 }
 
 // TrashRetention defines the retention policy for deleted items in trash
@@ -200,7 +200,7 @@ type TrashRetention struct {
 	// MaxAgeDays specifies the maximum age in days for trash items.
 	// Items older than this will be permanently deleted.
 	// 0 means disabled (keep forever).
-	MaxAgeDays int `json:"maxAgeDays" yaml:"maxAgeDays"`
+	MaxAgeDays int `json:"maxAgeDays" yaml:"maxAgeDays" patch:"allow"`
 }
 
 // AtticRetention defines the retention policy for version history
@@ -208,12 +208,12 @@ type AtticRetention struct {
 	// MaxAgeDays specifies the maximum age in days for versions.
 	// Versions older than this will be deleted.
 	// 0 means disabled (keep forever).
-	MaxAgeDays int `json:"maxAgeDays" yaml:"maxAgeDays"`
+	MaxAgeDays int `json:"maxAgeDays" yaml:"maxAgeDays" patch:"allow"`
 
 	// MaxVersions specifies the maximum number of versions to keep per page.
 	// Older versions beyond this limit will be deleted.
 	// 0 means unlimited.
-	MaxVersions int `json:"maxVersions" yaml:"maxVersions"`
+	MaxVersions int `json:"maxVersions" yaml:"maxVersions" patch:"allow"`
 }
 
 type SearchHit struct {

@@ -62,75 +62,21 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	for _, operation := range operations {
-		if operation.Op != "replace" {
-			http.Error(w, "operation "+operation.Op+" not supported", http.StatusBadRequest)
-			return
-		}
-
-		if operation.Value == nil {
-			http.Error(w, "value missing", http.StatusBadRequest)
-			return
-		}
-
-		switch operation.Path {
-		case "/appTitle":
-			var value string
-			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			cfg.AppTitle = value
-
-		case "/acl":
-			var value []model.AccessRule
-
-			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			// Validate ACL values
-			if err := model.ValidateConfigACL(value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			cfg.ACL = value
-
-		case "/retention/trash/maxAgeDays":
-			var value int
-			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			cfg.Retention.Trash.MaxAgeDays = max(value, 0)
-
-		case "/retention/attic/maxAgeDays":
-			var value int
-			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			cfg.Retention.Attic.MaxAgeDays = max(value, 0)
-
-		case "/retention/attic/maxVersions":
-			var value int
-			if err := json.Unmarshal([]byte(*operation.Value), &value); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-
-			cfg.Retention.Attic.MaxVersions = max(value, 0)
-
-		default:
-			http.Error(w, "path "+operation.Path+" not supported", http.StatusBadRequest)
-			return
-		}
+	if err := ApplyJSONPatch(&cfg, operations); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
+
+	// Validation: ACL rules
+	if err := model.ValidateConfigACL(cfg.ACL); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validation: Retention values must be non-negative
+	cfg.Retention.Trash.MaxAgeDays = max(cfg.Retention.Trash.MaxAgeDays, 0)
+	cfg.Retention.Attic.MaxAgeDays = max(cfg.Retention.Attic.MaxAgeDays, 0)
+	cfg.Retention.Attic.MaxVersions = max(cfg.Retention.Attic.MaxVersions, 0)
 
 	if err := app.Storage.WriteConfig(cfg); err != nil {
 		panic(err)

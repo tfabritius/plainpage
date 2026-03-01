@@ -1,17 +1,35 @@
 {
   "editor.formatOnSave": false,
-
   "go.survey.prompt": false,
-
-  "eslint.workingDirectories": ["frontend"],
-  "eslint.validate": ["javascript", "json", "jsonc", "scss", "typescript", "vue"],
-
-  "[javascript][json][jsonc][scss][typescript][vue]": {
+  "eslint.workingDirectories": [
+    "frontend"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "vue",
+    "html",
+    "yaml",
+    "css",
+    "less",
+    "scss",
+    "pcss",
+    "postcss"
+  ],
+  "[javascript][typescript][vue][html][yaml][css][less][scss][pcss][postcss]": {
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    }
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "never"
+    },
   },
-
+  "[json][jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "vscode.markdown-language-features",
+    "editor.formatOnSave": true
+  },
   "i18n-ally.dirStructure": "auto",
   "i18n-ally.extract.autoDetect": true,
   "i18n-ally.localesPaths": "frontend/i18n/locales",

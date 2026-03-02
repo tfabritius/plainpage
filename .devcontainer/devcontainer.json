@@ -1,0 +1,40 @@
+{
+  "name": "PlainPage Dev",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+  "containerUser": "vscode",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.24"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    }
+  },
+  "forwardPorts": [
+    3000,
+    8080
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "editorconfig.editorconfig",
+        "golang.go",
+        "vue.volar",
+        "dbaeumer.vscode-eslint",
+        "lokalise.i18n-ally",
+        "bradlc.vscode-tailwindcss",
+        "antfu.iconify",
+        "yzhang.markdown-all-in-one"
+      ]
+    }
+  },
+  "mounts": [
+    "source=node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume",
+    "source=pnpm-store,target=/home/vscode/.pnpm-store,type=volume"
+  ],
+  "postCreateCommand": "sudo chown -R vscode:vscode ${containerWorkspaceFolder} 2>/dev/null || true; corepack enable && cd backend && go mod download && cd ../frontend && pnpm config set store-dir /home/vscode/.pnpm-store && pnpm install"
+}

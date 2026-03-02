@@ -24,7 +24,8 @@
   },
   "[json][jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "files.insertFinalNewline": true,
   },
   "[markdown]": {
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",

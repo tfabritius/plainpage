@@ -176,6 +176,19 @@ func (m *mockStorage) WriteConfig(config model.Config) error {
 	panic("not implemented")
 }
 
+func (m *mockStorage) GetDirectorySize(fsPath string) (uint64, error) {
+	var size uint64
+	prefix := withPrefix(fsPath)
+
+	for path, data := range m.files {
+		if strings.HasPrefix(path, prefix) {
+			size += uint64(len(data))
+		}
+	}
+
+	return size, nil
+}
+
 // mockDirEntry implements fs.DirEntry for testing
 type mockDirEntry struct {
 	name  string

@@ -107,6 +107,7 @@ func (app App) GetHandler() http.Handler {
 
 			r.With(app.RequireAdminPermission).Get("/config", app.getConfig)
 			r.With(app.RequireAdminPermission).Patch("/config", app.patchConfig)
+			r.With(app.RequireAdminPermission).Get("/stats", app.getStats)
 
 			r.With(app.RetrieveContentMiddleware).Route("/pages", func(r chi.Router) {
 				r.Get("/*",

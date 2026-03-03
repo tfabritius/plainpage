@@ -19,4 +19,6 @@ type Storage interface {
 
 	ReadConfig() (Config, error)
 	WriteConfig(config Config) error
+
+	GetDirectorySize(fsPath string) (uint64, error)
 }

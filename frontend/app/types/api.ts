@@ -190,6 +190,24 @@ export interface SearchResponse {
   hasMore: boolean
 }
 
+export interface GetStatsResponse {
+  memory: MemoryStats
+  diskUsage: DiskUsageStats
+}
+
+export interface MemoryStats {
+  alloc: number
+  totalAlloc: number
+  sys: number
+}
+
+export interface DiskUsageStats {
+  total: number // Total disk usage (bytes)
+  pages: number // Size of pages directory
+  attic: number // Size of attic directory
+  trash: number // Size of trash directory
+}
+
 // corresponding to service/user_service.go
 
 export const validUsernameRegex = /^[a-z0-9][a-z0-9_\\.-]{3,20}$/i

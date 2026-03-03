@@ -1067,6 +1067,20 @@ func (s *ContentService) ListAllPages() ([]string, error) {
 	return s.listAllPagesRecursive("")
 }
 
+// GetDiskUsage returns disk usage statistics for the content directories.
+func (s *ContentService) GetDiskUsage() model.DiskUsageStats {
+	pagesSize, _ := s.storage.GetDirectorySize("pages")
+	atticSize, _ := s.storage.GetDirectorySize("attic")
+	trashSize, _ := s.storage.GetDirectorySize("trash")
+
+	return model.DiskUsageStats{
+		Pages: pagesSize,
+		Attic: atticSize,
+		Trash: trashSize,
+		Total: pagesSize + atticSize + trashSize,
+	}
+}
+
 func (s *ContentService) listAllPagesRecursive(urlPath string) ([]string, error) {
 	var pages []string
 

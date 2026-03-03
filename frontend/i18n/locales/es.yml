@@ -9,6 +9,18 @@ _search:
   next: Siguiente
   page: Página {page}
   too-many-requests: Demasiadas solicitudes de búsqueda. Por favor espera {0}s.
+_settings:
+  disk-attic: Historial de versiones
+  disk-pages: Páginas
+  disk-total: Total
+  disk-trash: Papelera
+  disk-usage: Uso de disco
+  memory-alloc: Asignación actual
+  memory-sys: Memoria del sistema
+  memory-total-alloc: Total asignado
+  memory-usage: Uso de memoria
+  statistics: Estadísticas
+  statistics-description: Uso actual de recursos del servidor.
 access-denied: Acceso denegado
 account-deleted: Cuenta borrada
 acl:

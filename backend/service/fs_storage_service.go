@@ -171,3 +171,26 @@ func (fss *fsStorage) WriteConfig(config model.Config) error {
 
 	return nil
 }
+
+func (fss *fsStorage) GetDirectorySize(fsPath string) (uint64, error) {
+	fullPath := filepath.Join(fss.DataDir, fsPath)
+
+	var size uint64
+	err := filepath.WalkDir(fullPath, func(_ string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return nil // Skip errors (e.g., permission denied, missing directory)
+		}
+		if !d.IsDir() {
+			info, err := d.Info()
+			if err == nil {
+				size += uint64(info.Size())
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return 0, err
+	}
+	return size, nil
+}

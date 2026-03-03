@@ -230,3 +230,21 @@ type SearchResponse struct {
 	Limit   int         `json:"limit"`
 	HasMore bool        `json:"hasMore"`
 }
+
+type GetStatsResponse struct {
+	Memory    MemoryStats    `json:"memory"`
+	DiskUsage DiskUsageStats `json:"diskUsage"`
+}
+
+type MemoryStats struct {
+	Alloc      uint64 `json:"alloc"`
+	TotalAlloc uint64 `json:"totalAlloc"`
+	Sys        uint64 `json:"sys"`
+}
+
+type DiskUsageStats struct {
+	Total uint64 `json:"total"` // Total disk usage (bytes)
+	Pages uint64 `json:"pages"` // Size of pages directory
+	Attic uint64 `json:"attic"` // Size of attic directory
+	Trash uint64 `json:"trash"` // Size of trash directory
+}

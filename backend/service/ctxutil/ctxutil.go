@@ -13,7 +13,8 @@ const (
 	ctxKeyUserID
 	ctxKeyPage
 	ctxKeyFolder
-	ctxKeyAncestorsMeta
+	ctxKeyAncestors
+	ctxKeyEffectiveACL
 )
 
 // WithUserID creates a new context that has username injected
@@ -30,10 +31,11 @@ func UserID(ctx context.Context) string {
 }
 
 // WithContent creates a new context that has content injected
-func WithContent(ctx context.Context, page *model.Page, folder *model.Folder, ancestorsMeta []model.ContentMetaWithURL) context.Context {
+func WithContent(ctx context.Context, page *model.Page, folder *model.Folder, ancestors []model.UrlAndMeta, effectiveAcl []model.AccessRule) context.Context {
 	ctx = context.WithValue(ctx, ctxKeyPage, page)
 	ctx = context.WithValue(ctx, ctxKeyFolder, folder)
-	ctx = context.WithValue(ctx, ctxKeyAncestorsMeta, ancestorsMeta)
+	ctx = context.WithValue(ctx, ctxKeyAncestors, ancestors)
+	ctx = context.WithValue(ctx, ctxKeyEffectiveACL, effectiveAcl)
 	return ctx
 }
 
@@ -53,10 +55,18 @@ func Folder(ctx context.Context) *model.Folder {
 	return nil
 }
 
-// AncestorsMeta tries to retrieve meta of ancestors from the given context
-func AncestorsMeta(ctx context.Context) []model.ContentMetaWithURL {
-	if metas, ok := ctx.Value(ctxKeyAncestorsMeta).([]model.ContentMetaWithURL); ok {
+// Ancestors tries to retrieve ancestors from the given context
+func Ancestors(ctx context.Context) []model.UrlAndMeta {
+	if metas, ok := ctx.Value(ctxKeyAncestors).([]model.UrlAndMeta); ok {
 		return metas
+	}
+	return nil
+}
+
+// EffectiveACL tries to retrieve the effective ACL from the given context
+func EffectiveACL(ctx context.Context) []model.AccessRule {
+	if acl, ok := ctx.Value(ctxKeyEffectiveACL).([]model.AccessRule); ok {
+		return acl
 	}
 	return nil
 }

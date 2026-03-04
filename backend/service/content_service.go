@@ -212,7 +212,7 @@ func (s *ContentService) SearchWithPagination(q string, offset, size int) ([]mod
 			continue
 		}
 
-		metas, err := s.ReadAncestorsMeta(r.ID)
+		metas, err := s.ReadAncestors(r.ID)
 		if err != nil {
 			return nil, 0, err
 		}
@@ -821,11 +821,11 @@ func (s *ContentService) DeleteAll() error {
 	return nil
 }
 
-func (s *ContentService) ReadAncestorsMeta(urlPath string) ([]model.ContentMetaWithURL, error) {
-	return s.addFolderMetaFromParent(urlPath, []model.ContentMetaWithURL{})
+func (s *ContentService) ReadAncestors(urlPath string) ([]model.UrlAndMeta, error) {
+	return s.readAncestorsRecursive(urlPath, []model.UrlAndMeta{})
 }
 
-func (s *ContentService) addFolderMetaFromParent(urlPath string, metas []model.ContentMetaWithURL) ([]model.ContentMetaWithURL, error) {
+func (s *ContentService) readAncestorsRecursive(urlPath string, ancestors []model.UrlAndMeta) ([]model.UrlAndMeta, error) {
 	parentUrl, err := url.JoinPath(urlPath, "..")
 	if err != nil {
 		return nil, err
@@ -837,25 +837,25 @@ func (s *ContentService) addFolderMetaFromParent(urlPath string, metas []model.C
 			return nil, err
 		}
 
-		meta := model.ContentMetaWithURL{
+		parent := model.UrlAndMeta{
 			Url:         parentUrl,
 			ContentMeta: folderMeta,
 		}
 
-		metas = append(metas, meta)
+		ancestors = append(ancestors, parent)
 	}
 	// if it doesn't exist, skip it
 
 	if parentUrl == "" {
-		return metas, nil
+		return ancestors, nil
 	}
-	return s.addFolderMetaFromParent(parentUrl, metas)
+	return s.readAncestorsRecursive(parentUrl, ancestors)
 }
 
 // GetEffectivePermissions returns the effective ACL for content by checking the content's own ACL
 // and falling back to ancestor ACLs. Returns an empty slice if no ACL is found (should never
 // occur in reality).
-func (s *ContentService) GetEffectivePermissions(meta model.ContentMeta, ancestorsMetas []model.ContentMetaWithURL) []model.AccessRule {
+func (s *ContentService) GetEffectivePermissions(meta model.ContentMeta, ancestorsMetas []model.UrlAndMeta) []model.AccessRule {
 	if meta.ACL != nil {
 		return *meta.ACL
 	}

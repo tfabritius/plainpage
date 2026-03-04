@@ -10,7 +10,7 @@ func (Folder) BleveType() string {
 	return "folder"
 }
 
-type ContentMetaWithURL struct {
+type UrlAndMeta struct {
 	ContentMeta
 	Url string
 }

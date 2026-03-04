@@ -65,14 +65,23 @@ func (app App) RetrieveContentMiddleware(next http.Handler) http.Handler {
 			folder = &f
 		}
 
-		metas, err := app.Content.ReadAncestorsMeta(urlPath)
+		ancestors, err := app.Content.ReadAncestors(urlPath)
 		if err != nil {
 			panic(err)
 		}
 
+		// Calculate effective ACL from content metadata and ancestors
+		var contentMeta model.ContentMeta
+		if page != nil {
+			contentMeta = page.Meta
+		} else if folder != nil {
+			contentMeta = folder.Meta
+		}
+		effectiveACL := app.Content.GetEffectivePermissions(contentMeta, ancestors)
+
 		// Store information in request context
 		ctx := r.Context()
-		ctx = ctxutil.WithContent(ctx, page, folder, metas)
+		ctx = ctxutil.WithContent(ctx, page, folder, ancestors, effectiveACL)
 		r = r.WithContext(ctx)
 
 		next.ServeHTTP(w, r)
@@ -82,22 +91,9 @@ func (app App) RetrieveContentMiddleware(next http.Handler) http.Handler {
 func (app App) RequireContentPermission(op model.AccessOp, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := ctxutil.UserID(r.Context())
+		effectiveACL := ctxutil.EffectiveACL(r.Context())
 
-		page := ctxutil.Page(r.Context())
-		folder := ctxutil.Folder(r.Context())
-		metas := ctxutil.AncestorsMeta(r.Context())
-
-		var meta model.ContentMeta
-
-		if page != nil {
-			meta = page.Meta
-		} else if folder != nil {
-			meta = folder.Meta
-		}
-
-		acl := app.Content.GetEffectivePermissions(meta, metas)
-
-		if err := app.Users.CheckContentPermissions(acl, userID, op); err != nil {
+		if err := app.Users.CheckContentPermissions(effectiveACL, userID, op); err != nil {
 			var e *service.AccessDeniedError
 			if errors.As(err, &e) {
 				http.Error(w, http.StatusText(e.StatusCode), e.StatusCode)

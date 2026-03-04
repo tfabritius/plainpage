@@ -25,18 +25,18 @@ func isValidUrl(urlPath string) bool {
 	return urlPath == "" || urlRegex.MatchString(urlPath)
 }
 
-func (App) getBreadcrumbs(urlPath string, page *model.Page, folder *model.Folder, ancestorsMeta []model.ContentMetaWithURL) []model.Breadcrumb {
+func (App) getBreadcrumbs(urlPath string, page *model.Page, folder *model.Folder, ancestors []model.UrlAndMeta) []model.Breadcrumb {
 	breadcrumbs := []model.Breadcrumb{}
 
-	for i := len(ancestorsMeta) - 1; i >= 0; i-- {
-		if ancestorsMeta[i].Url == "" {
+	for i := len(ancestors) - 1; i >= 0; i-- {
+		if ancestors[i].Url == "" {
 			continue
 		}
 
 		breadcrumb := model.Breadcrumb{
-			Url:   ancestorsMeta[i].Url,
-			Title: ancestorsMeta[i].Title,
-			Name:  path.Base(ancestorsMeta[i].Url),
+			Url:   ancestors[i].Url,
+			Title: ancestors[i].Title,
+			Name:  path.Base(ancestors[i].Url),
 		}
 
 		breadcrumbs = append(breadcrumbs, breadcrumb)
@@ -65,19 +65,10 @@ func (app App) getContent(w http.ResponseWriter, r *http.Request) {
 	userID := ctxutil.UserID(r.Context())
 	page := ctxutil.Page(r.Context())
 	folder := ctxutil.Folder(r.Context())
-	metas := ctxutil.AncestorsMeta(r.Context())
+	metas := ctxutil.Ancestors(r.Context())
+	effectiveAcl := ctxutil.EffectiveACL(r.Context())
 
 	response := model.GetContentResponse{}
-
-	// Get the content's own metadata for permission calculation
-	var contentMeta model.ContentMeta
-	if page != nil {
-		contentMeta = page.Meta
-	} else if folder != nil {
-		contentMeta = folder.Meta
-	}
-
-	effectiveAcl := app.Content.GetEffectivePermissions(contentMeta, metas)
 
 	response.AllowWrite = app.Users.CheckContentPermissions(effectiveAcl, userID, model.AccessOpWrite) == nil
 	response.AllowDelete = app.Users.CheckContentPermissions(effectiveAcl, userID, model.AccessOpDelete) == nil
@@ -341,7 +332,7 @@ func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, user
 		sourceParentMeta = srcFolder.Meta
 	}
 
-	srcAncestorMetas, err := app.Content.ReadAncestorsMeta(sourceParent)
+	srcAncestorMetas, err := app.Content.ReadAncestors(sourceParent)
 	if err != nil {
 		panic(err)
 	}
@@ -371,7 +362,7 @@ func (app App) moveContent(w http.ResponseWriter, urlPath, destinationPath, user
 		panic(err)
 	}
 
-	destAncestorMetas, err := app.Content.ReadAncestorsMeta(destinationParent)
+	destAncestorMetas, err := app.Content.ReadAncestors(destinationParent)
 	if err != nil {
 		panic(err)
 	}
@@ -508,14 +499,14 @@ func (app App) getAttic(w http.ResponseWriter, r *http.Request) {
 	queryRev := r.URL.Query().Get("rev")
 
 	page := ctxutil.Page(r.Context())
-	ancestorsMeta := ctxutil.AncestorsMeta(r.Context())
+	ancestors := ctxutil.Ancestors(r.Context())
 
 	if !isValidUrl(urlPath) || page == nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
-	breadcrumbs := app.getBreadcrumbs(urlPath, page, nil, ancestorsMeta)
+	breadcrumbs := app.getBreadcrumbs(urlPath, page, nil, ancestors)
 
 	var revision int64
 	if queryRev == "" {

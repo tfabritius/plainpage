@@ -70,14 +70,6 @@ func (s *UserService) saveAllUnlocked(users []model.User) error {
 	return nil
 }
 
-func (s *UserService) SetUsername(user *model.User, username string) error {
-	if !s.isValidUsername(username) {
-		return model.ErrInvalidUsername
-	}
-	user.Username = username
-	return nil
-}
-
 func (*UserService) SetPasswordHash(user *model.User, password string) error {
 	hash, err := argon2.HashPasswordDefault(password)
 	if err != nil {
@@ -124,9 +116,10 @@ func (s *UserService) Create(username, password, displayName string) (model.User
 	user := model.User{
 		ID:          id,
 		DisplayName: displayName,
+		Username:    username,
 	}
 
-	if err := s.SetUsername(&user, username); err != nil {
+	if err := s.ValidateUsername(user.Username); err != nil {
 		return model.User{}, err
 	}
 
@@ -399,6 +392,10 @@ func (*UserService) isUsernameUnique(users []model.User, username string) bool {
 // Pre-compiled regex for username validation
 var usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_\.-]{3,20}$`)
 
-func (*UserService) isValidUsername(username string) bool {
-	return usernameRegex.MatchString(username)
+// ValidateUsername checks if a username meets format requirements
+func (*UserService) ValidateUsername(username string) error {
+	if !usernameRegex.MatchString(username) {
+		return model.ErrInvalidUsername
+	}
+	return nil
 }

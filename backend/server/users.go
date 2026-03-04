@@ -150,7 +150,7 @@ func (app App) patchUser(w http.ResponseWriter, r *http.Request) {
 
 	// validation: validate username format if changed
 	if user.Username != originalUsername {
-		if err := app.Users.SetUsername(&user, user.Username); err != nil {
+		if err := app.Users.ValidateUsername(user.Username); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

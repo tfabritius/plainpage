@@ -124,6 +124,8 @@ function createWrapUnwrapGenerator(enclosingStart: string, enclosingEnd: string)
   return generator
 }
 
+const { formatMarkdown } = useMarkdownFormatter()
+
 const breakpoints = useBreakpoints(breakpointsTailwind)
 const isMdOrLarger = breakpoints.greaterOrEqual('md')
 const showPreview = ref(isMdOrLarger.value)
@@ -169,6 +171,14 @@ function onToolbarClick(action: string) {
   }
   if (action === 'preview') {
     showPreview.value = !showPreview.value
+    return
+  }
+  if (action === 'format') {
+    const editor = codeEditor.value
+    if (editor) {
+      const formattedText = formatMarkdown(markdown.value)
+      editor.replaceDocument(formattedText)
+    }
     return
   }
 

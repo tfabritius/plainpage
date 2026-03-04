@@ -1,3 +1,4 @@
+<!-- omit in toc -->
 # ![Logo](frontend/public/favicon.svg) PlainPage
 
 [![Release](https://img.shields.io/github/v/release/tfabritius/plainpage)](https://github.com/tfabritius/plainpage/releases/latest)
@@ -6,26 +7,38 @@ PlainPage is a self-hosted wiki app that embodies simplicity, ease of use, and p
 
 Powered by Go, Vue/Nuxt. Made with 💖
 
+<!-- omit in toc -->
 ## Table of Contents
 
 - [Key Features](#key-features)
+  - [More Features](#more-features)
+  - [Known Limitations](#known-limitations)
 - [Installation and Setup](#installation-and-setup)
   - [Quick Start](#quick-start)
   - [Production Setup](#production-setup)
+    - [Using Docker Compose (Recommended)](#using-docker-compose-recommended)
+    - [Using Docker Run](#using-docker-run)
+    - [Reverse Proxy](#reverse-proxy)
   - [Configuration](#configuration)
+    - [Retention Policies](#retention-policies)
 - [Usage](#usage)
   - [Pages and Folders](#pages-and-folders)
   - [Access Rights](#access-rights)
+    - [Access Rights for Pages and Folders](#access-rights-for-pages-and-folders)
+    - [Access Rights Beyond Pages and Folders](#access-rights-beyond-pages-and-folders)
   - [Keyboard Shortcuts](#keyboard-shortcuts)
 - [Data Storage](#data-storage)
   - [Directory Structure](#directory-structure)
+  - [Pages and Folders](#pages-and-folders-1)
   - [Version History (Attic)](#version-history-attic)
   - [Trash](#trash)
 - [Security](#security)
+  - [Security Best Practices](#security-best-practices)
 - [Contributing](#contributing)
   - [Development Setup](#development-setup)
   - [Building from Source](#building-from-source)
   - [Running Tests](#running-tests)
+  - [Contributing Guidelines](#contributing-guidelines)
 
 ## Key Features
 
@@ -44,6 +57,7 @@ Powered by Go, Vue/Nuxt. Made with 💖
 - Localization: English, German, Spanish
 - Supports light/dark mode
 - Embedded full text search
+- Markdown formatting (pretty print tables and lists)
 
 ### Known Limitations
 

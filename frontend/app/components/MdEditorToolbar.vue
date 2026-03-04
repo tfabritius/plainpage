@@ -47,6 +47,8 @@ const emit = defineEmits<{
       <MdToolbarButton icon="tabler:code" @click="emit('click', 'code-inline')" />
       <MdToolbarButton icon="tabler:braces" @click="emit('click', 'code-block')" />
       <MdToolbarButton icon="tabler:table" @click="emit('click', 'table')" />
+      <span class="text-[var(--ui-text)]/30 mx-1">|</span>
+      <MdToolbarButton icon="tabler:wand" @click="emit('click', 'format')" />
     </div>
     <div class="flex items-center gap-0.5">
       <MdToolbarButton

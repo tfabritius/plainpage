@@ -104,6 +104,33 @@ function replaceLine(generator: MdEditorGenerator) {
   view.focus()
 }
 
+function replaceDocument(newText: string) {
+  const view = editorView.value
+  if (!view) {
+    return
+  }
+
+  // Get current cursor position to try to restore it
+  const cursorPosition = view.state.selection.ranges[0]?.head ?? 0
+
+  // Replace entire document
+  const changes = { from: 0, to: view.state.doc.length, insert: newText }
+  view.dispatch({
+    changes,
+  })
+
+  // Try to restore cursor position (clamped to new document length)
+  const newCursorPosition = Math.min(cursorPosition, newText.length)
+  view.dispatch({
+    selection: EditorSelection.create([
+      EditorSelection.cursor(newCursorPosition),
+    ]),
+  })
+
+  // Set focus on editor
+  view.focus()
+}
+
 function replaceSelection(generator: MdEditorGenerator) {
   const view = editorView.value
   if (!view) {
@@ -133,7 +160,7 @@ function replaceSelection(generator: MdEditorGenerator) {
   view.focus()
 }
 
-defineExpose({ scrollToLineNo, replaceSelection, replaceLine })
+defineExpose({ scrollToLineNo, replaceSelection, replaceLine, replaceDocument })
 
 // Compartment to switch editor theme
 const editorTheme = new Compartment()

@@ -442,18 +442,15 @@ func (app App) putContent(w http.ResponseWriter, r *http.Request) {
 		err = app.Content.SavePage(urlPath, body.Page.Content, body.Page.Meta, userID)
 	} else if body.Folder != nil {
 		if folder != nil {
-			// if folder exists already, take over ACL
-			body.Folder.Meta.ACL = folder.Meta.ACL
-
-			// and update
-			err = app.Content.SaveFolder(urlPath, body.Folder.Meta)
-		} else {
-			// make sure ACLs are not set
-			body.Folder.Meta.ACL = nil
-
-			// and create
-			err = app.Content.CreateFolder(urlPath, body.Folder.Meta)
+			http.Error(w, "folder already exists", http.StatusBadRequest)
+			return
 		}
+
+		// make sure ACLs are not set
+		body.Folder.Meta.ACL = nil
+
+		// and create
+		err = app.Content.CreateFolder(urlPath, body.Folder.Meta)
 	} else {
 		http.Error(w, "Content missing", http.StatusBadRequest)
 		return

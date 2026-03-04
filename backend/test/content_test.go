@@ -252,6 +252,28 @@ func (s *ContentTestSuite) TestCreateContentInvalid() {
 	r.Equal(400, res.Code)
 }
 
+// TestCreateFolderAlreadyExists tests that PUT returns 400 when trying to create a folder that already exists
+func (s *ContentTestSuite) TestCreateFolderAlreadyExists() {
+	r := s.Require()
+
+	r.NoError(s.app.Content.CreateFolder("existing-folder", model.ContentMeta{Title: "Original Title"}))
+
+	// Try to create a folder at the same URL - should return 400
+	res := s.api("PUT", "/pages/existing-folder",
+		model.PutRequest{Folder: &model.Folder{Meta: model.ContentMeta{Title: "New Title"}}},
+		s.adminToken)
+	r.Equal(400, res.Code)
+	r.Contains(res.Body.String(), "folder already exists")
+
+	// Verify the original folder is unchanged
+	folder, err := s.app.Content.ReadFolder("existing-folder")
+	r.NoError(err)
+	r.Equal("Original Title", folder.Meta.Title)
+
+	// Cleanup
+	r.NoError(s.app.Content.DeleteEmptyFolder("existing-folder"))
+}
+
 func (s *ContentTestSuite) TestReadPage() {
 	tests := []struct {
 		name         string
@@ -932,69 +954,6 @@ func (s *ContentTestSuite) TestUpdatePageTitle() {
 
 			// Cleanup
 			r.NoError(s.app.Content.DeletePage(tc.url))
-		})
-	}
-}
-
-func (s *ContentTestSuite) TestUpdateFolder() {
-	tests := []struct {
-		name         string
-		token        *string
-		url          string
-		responseCode int
-	}{
-		// root
-		{"admin:root", s.adminToken, "folder", 200},
-		{"user:root", s.userToken, "folder", 200},
-		{"anonymous:root", nil, "folder", 401},
-		// admin-only
-		{"admin:adminOnly", s.adminToken, "admin-only/folder", 200},
-		{"user:adminOnly", s.userToken, "admin-only/folder", 403},
-		{"anonymous:adminOnly", nil, "admin-only/folder", 401},
-		// read-only
-		{"admin:readOnly", s.adminToken, "read-only/folder", 200},
-		{"user:readOnly", s.userToken, "read-only/folder", 403},
-		{"anonymous:readOnly", nil, "read-only/folder", 401},
-		// published
-		{"admin:published", s.adminToken, "published/folder", 200},
-		{"user:published", s.userToken, "published/folder", 200},
-		{"anonymous:published", nil, "published/folder", 401},
-		// public
-		{"admin:public", s.adminToken, "public/folder", 200},
-		{"user:public", s.userToken, "public/folder", 200},
-		{"anonymous:public", nil, "public/folder", 200},
-	}
-
-	for _, tc := range tests {
-		t := s.T()
-		t.Run(tc.name, func(t *testing.T) {
-			r := require.New(t)
-
-			// Prepare
-			r.NoError(s.app.Content.CreateFolder(tc.url, model.ContentMeta{Title: "Old Title"}))
-
-			// Test
-			res := s.api("PUT", "/pages/"+tc.url,
-				model.PutRequest{Folder: &model.Folder{
-					Meta: model.ContentMeta{
-						Title: "New Title",
-						ACL:   &[]model.AccessRule{},
-					},
-				}},
-				tc.token)
-			r.Equal(tc.responseCode, res.Code)
-
-			folder, err := s.app.Content.ReadFolder(tc.url)
-			r.NoError(err)
-			if tc.responseCode == 200 {
-				r.Equal("New Title", folder.Meta.Title)
-			} else {
-				r.Equal("Old Title", folder.Meta.Title)
-			}
-			r.Nil(folder.Meta.ACL) // ACL remains unchanged
-
-			// Cleanup
-			r.NoError(s.app.Content.DeleteEmptyFolder(tc.url))
 		})
 	}
 }

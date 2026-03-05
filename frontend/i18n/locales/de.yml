@@ -173,6 +173,33 @@ timeAgo:
   year: 'Jahr | Jahren'
   yesterday: gestern
 title: Titel
+toolbar:
+  bold: Fett
+  italic: Kursiv
+  underline: Unterstrichen
+  strikethrough: Durchgestrichen
+  superscript: Hochgestellt
+  subscript: Tiefgestellt
+  heading: Überschrift
+  heading-1: Überschrift 1
+  heading-2: Überschrift 2
+  heading-3: Überschrift 3
+  heading-4: Überschrift 4
+  heading-5: Überschrift 5
+  heading-6: Überschrift 6
+  list-unordered: Aufzählung
+  list-ordered: Nummerierte Liste
+  checkbox: Checkbox
+  quote: Zitat
+  link: Link
+  code-inline: Inline-Code
+  code-block: Codeblock
+  table: Tabelle
+  format: Formatieren
+  fullscreen: Vollbild
+  minimize: Vollbild beenden
+  show-preview: Vorschau anzeigen
+  hide-preview: Vorschau ausblenden
 too-many-login-requests: Zu viele Anmeldeversuche. Bitte warte {0}s.
 trash: Papierkorb
 trash-is-empty: Papierkorb ist leer

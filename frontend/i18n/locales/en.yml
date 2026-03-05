@@ -173,6 +173,33 @@ timeAgo:
   year: 'year | years'
   yesterday: yesterday
 title: Title
+toolbar:
+  bold: Bold
+  italic: Italic
+  underline: Underline
+  strikethrough: Strikethrough
+  superscript: Superscript
+  subscript: Subscript
+  heading: Heading
+  heading-1: Heading 1
+  heading-2: Heading 2
+  heading-3: Heading 3
+  heading-4: Heading 4
+  heading-5: Heading 5
+  heading-6: Heading 6
+  list-unordered: Bullet list
+  list-ordered: Numbered list
+  checkbox: Checkbox
+  quote: Quote
+  link: Link
+  code-inline: Inline code
+  code-block: Code block
+  table: Table
+  format: Format
+  fullscreen: Fullscreen
+  minimize: Exit fullscreen
+  show-preview: Show preview
+  hide-preview: Hide preview
 too-many-login-requests: Too many sign in attempts. Please wait {0}s.
 trash: Trash
 trash-is-empty: Trash is empty

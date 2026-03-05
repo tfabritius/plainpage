@@ -248,3 +248,8 @@ type DiskUsageStats struct {
 	Attic uint64 `json:"attic"` // Size of attic directory
 	Trash uint64 `json:"trash"` // Size of trash directory
 }
+
+// RestoreBackupResponse is returned after a backup restore operation
+type RestoreBackupResponse struct {
+	UsersRestored bool `json:"usersRestored"`
+}

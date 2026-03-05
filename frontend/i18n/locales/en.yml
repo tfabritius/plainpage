@@ -10,6 +10,21 @@ _search:
   page: Page {page}
   too-many-requests: Too many search requests. Please wait {0}s.
 _settings:
+  backup: Backup
+  backup-description: Download a complete backup of all wiki data as a ZIP file.
+  backup-download: Download Backup
+  backup-downloaded: Backup downloaded
+  backup-include-config: Include configuration (app settings, permissions, retention policies)
+  backup-include-users: Include users (user accounts with password hashes)
+  backup-users-warning: 'Warning: The backup will contain password hashes. Store it securely.'
+  restore: Restore
+  restore-description: Upload a backup ZIP file to restore all wiki data.
+  restore-upload: Upload & Restore
+  restore-select-file: Select backup file
+  restore-warning: 'Warning: Restoring a backup will replace all existing content. If the backup contains configuration or user data, these will also be overwritten.'
+  restore-confirm: Are you sure you want to restore this backup?
+  restore-success: Backup restored successfully
+  restore-success-logout: Backup restored. You will be logged out because user accounts were restored.
   disk-attic: Version history
   disk-pages: Pages
   disk-total: Total

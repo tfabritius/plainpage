@@ -10,6 +10,21 @@ _search:
   page: Página {page}
   too-many-requests: Demasiadas solicitudes de búsqueda. Por favor espera {0}s.
 _settings:
+  backup: Copia de seguridad
+  backup-description: Descarga una copia de seguridad completa de todos los datos del wiki como archivo ZIP.
+  backup-download: Descargar copia de seguridad
+  backup-downloaded: Copia de seguridad descargada
+  backup-include-config: Incluir configuración (ajustes de la app, permisos, políticas de retención)
+  backup-include-users: Incluir usuarios (cuentas de usuario con hashes de contraseñas)
+  backup-users-warning: 'Advertencia: La copia de seguridad contendrá hashes de contraseñas. Guárdala de forma segura.'
+  restore: Restaurar
+  restore-description: Sube un archivo ZIP de copia de seguridad para restaurar todos los datos del wiki.
+  restore-upload: Subir y Restaurar
+  restore-select-file: Seleccionar archivo de copia de seguridad
+  restore-warning: 'Advertencia: Restaurar una copia de seguridad reemplazará todo el contenido existente. Si la copia de seguridad contiene configuración o datos de usuario, estos también serán sobrescritos.'
+  restore-confirm: ¿Estás seguro de que quieres restaurar esta copia de seguridad?
+  restore-success: Copia de seguridad restaurada con éxito
+  restore-success-logout: Copia de seguridad restaurada. Cerrarás sesión porque se restauraron las cuentas de usuario.
   disk-attic: Historial de versiones
   disk-pages: Páginas
   disk-total: Total

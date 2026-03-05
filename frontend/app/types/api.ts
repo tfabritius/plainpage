@@ -208,6 +208,10 @@ export interface DiskUsageStats {
   trash: number // Size of trash directory
 }
 
+export interface RestoreBackupResponse {
+  usersRestored: boolean
+}
+
 // corresponding to service/user_service.go
 
 export const validUsernameRegex = /^[a-z0-9][a-z0-9_\\.-]{3,20}$/i

@@ -10,6 +10,21 @@ _search:
   page: Seite {page}
   too-many-requests: Zu viele Suchanfragen. Bitte warte {0}s.
 _settings:
+  backup: Backup
+  backup-description: Lade ein vollständiges Backup aller Wiki-Daten als ZIP-Datei herunter.
+  backup-download: Backup herunterladen
+  backup-downloaded: Backup heruntergeladen
+  backup-include-config: Konfiguration einschließen (App-Einstellungen, Berechtigungen, Aufbewahrungsrichtlinien)
+  backup-include-users: Benutzer einschließen (Benutzerkonten mit Passwort-Hashes)
+  backup-users-warning: 'Warnung: Das Backup enthält Passwort-Hashes. Sicher aufbewahren.'
+  restore: Wiederherstellen
+  restore-description: Lade eine Backup-ZIP-Datei hoch, um alle Wiki-Daten wiederherzustellen.
+  restore-upload: Hochladen & Wiederherstellen
+  restore-select-file: Backup-Datei auswählen
+  restore-warning: 'Warnung: Das Wiederherstellen eines Backups ersetzt alle bestehenden Inhalte. Wenn das Backup Konfiguration oder Benutzerdaten enthält, werden diese ebenfalls überschrieben.'
+  restore-confirm: Bist du sicher, dass du dieses Backup wiederherstellen willst?
+  restore-success: Backup erfolgreich wiederhergestellt
+  restore-success-logout: Backup wiederhergestellt. Du wirst abgemeldet, da Benutzerkonten wiederhergestellt wurden.
   disk-attic: Versionshistorie
   disk-pages: Seiten
   disk-total: Gesamt

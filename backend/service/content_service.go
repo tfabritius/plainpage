@@ -1,7 +1,9 @@
 package service
 
 import (
+	"archive/zip"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"path"
@@ -14,7 +16,14 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/mapping"
 	"github.com/tfabritius/plainpage/model"
+	"gopkg.in/yaml.v3"
 )
+
+// BackupOptions configures what to include in a backup
+type BackupOptions struct {
+	IncludeConfig bool
+	IncludeUsers  bool
+}
 
 func NewContentService(store model.Storage) *ContentService {
 	s := ContentService{
@@ -1103,4 +1112,254 @@ func (s *ContentService) listAllPagesRecursive(urlPath string) ([]string, error)
 	}
 
 	return pages, nil
+}
+
+// WriteBackup writes a complete backup ZIP archive to the provided writer.
+// The backup always includes content directories (pages, attic, trash).
+// Config and users can be optionally included via BackupOptions.
+func (s *ContentService) WriteBackup(w io.Writer, opts BackupOptions) error {
+	zipWriter := zip.NewWriter(w)
+	defer zipWriter.Close()
+
+	// Content directories (always included)
+	contentDirs := []string{"pages", "attic", "trash"}
+	for _, dir := range contentDirs {
+		if err := s.addDirectoryToZip(zipWriter, dir, dir); err != nil {
+			return fmt.Errorf("could not add %s to archive: %w", dir, err)
+		}
+	}
+
+	// Optionally add config.yml (with JWT secret stripped)
+	if opts.IncludeConfig {
+		if err := s.addConfigToZip(zipWriter); err != nil {
+			return fmt.Errorf("could not add config to archive: %w", err)
+		}
+	}
+
+	// Optionally add users.yml
+	if opts.IncludeUsers {
+		if err := s.addUsersToZip(zipWriter); err != nil {
+			return fmt.Errorf("could not add users to archive: %w", err)
+		}
+	}
+
+	return nil
+}
+
+// addDirectoryToZip recursively adds a directory to the ZIP archive
+func (s *ContentService) addDirectoryToZip(zipWriter *zip.Writer, fsPath, zipPath string) error {
+	if !s.storage.Exists(fsPath) {
+		return nil // Directory doesn't exist, skip it
+	}
+
+	entries, err := s.storage.ReadDirectory(fsPath)
+	if err != nil {
+		return err
+	}
+
+	for _, entry := range entries {
+		entryFsPath := filepath.Join(fsPath, entry.Name())
+		entryZipPath := filepath.Join(zipPath, entry.Name())
+
+		if entry.IsDir() {
+			// Recursively add subdirectory
+			if err := s.addDirectoryToZip(zipWriter, entryFsPath, entryZipPath); err != nil {
+				return err
+			}
+		} else {
+			// Add file to ZIP
+			if err := s.addFileToZip(zipWriter, entryFsPath, entryZipPath); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// addFileToZip adds a single file to the ZIP archive
+func (s *ContentService) addFileToZip(zipWriter *zip.Writer, fsPath, zipPath string) error {
+	content, err := s.storage.ReadFile(fsPath)
+	if err != nil {
+		return err
+	}
+
+	header := &zip.FileHeader{
+		Name:     zipPath,
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+	}
+
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(content)
+	return err
+}
+
+// addConfigToZip adds config.yml to the ZIP archive with JWT secret stripped
+func (s *ContentService) addConfigToZip(zipWriter *zip.Writer) error {
+	config, err := s.storage.ReadConfig()
+	if err != nil {
+		return err
+	}
+
+	// Strip sensitive data
+	config.JwtSecret = ""
+
+	// Serialize to YAML
+	content, err := yaml.Marshal(&config)
+	if err != nil {
+		return err
+	}
+
+	header := &zip.FileHeader{
+		Name:     "config.yml",
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+	}
+
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(content)
+	return err
+}
+
+// addUsersToZip adds users.yml to the ZIP archive
+func (s *ContentService) addUsersToZip(zipWriter *zip.Writer) error {
+	// Read users.yml directly from storage (no need to parse and re-serialize)
+	content, err := s.storage.ReadFile("users.yml")
+	if err != nil {
+		return err
+	}
+
+	header := &zip.FileHeader{
+		Name:     "users.yml",
+		Method:   zip.Deflate,
+		Modified: time.Now(),
+	}
+
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+
+	_, err = writer.Write(content)
+	return err
+}
+
+// RestoreBackup restores a backup from a ZIP archive.
+// Returns true if users.yml was restored (which invalidates sessions).
+func (s *ContentService) RestoreBackup(zipReader *zip.Reader) (bool, error) {
+	// Check what's in the ZIP
+	hasUsers := false
+	for _, f := range zipReader.File {
+		if f.Name == "users.yml" {
+			hasUsers = true
+		}
+	}
+
+	// Delete existing content directories
+	for _, dir := range []string{"pages", "attic", "trash"} {
+		if s.storage.Exists(dir) {
+			if err := s.storage.DeleteDirectory(dir); err != nil {
+				return false, fmt.Errorf("could not delete %s: %w", dir, err)
+			}
+		}
+	}
+
+	// Extract files from ZIP
+	for _, f := range zipReader.File {
+		if f.FileInfo().IsDir() {
+			continue
+		}
+
+		// Only restore specific paths
+		if !strings.HasPrefix(f.Name, "pages/") &&
+			!strings.HasPrefix(f.Name, "attic/") &&
+			!strings.HasPrefix(f.Name, "trash/") &&
+			f.Name != "config.yml" &&
+			f.Name != "users.yml" {
+			continue
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return false, fmt.Errorf("could not open %s: %w", f.Name, err)
+		}
+
+		content, err := io.ReadAll(rc)
+		rc.Close()
+		if err != nil {
+			return false, fmt.Errorf("could not read %s: %w", f.Name, err)
+		}
+
+		// Handle config.yml specially - need to handle JWT secret
+		if f.Name == "config.yml" {
+			if err := s.restoreConfig(content, hasUsers); err != nil {
+				return false, fmt.Errorf("could not restore config: %w", err)
+			}
+			continue
+		}
+
+		// Write the file
+		if err := s.storage.WriteFile(f.Name, content); err != nil {
+			return false, fmt.Errorf("could not write %s: %w", f.Name, err)
+		}
+	}
+
+	// Reinitialize storage (creates directories and default _index.md if needed)
+	if err := s.initializeStorage(); err != nil {
+		return false, fmt.Errorf("could not reinitialize storage: %w", err)
+	}
+
+	// Recreate search index
+	if err := s.RecreateIndex(); err != nil {
+		return false, fmt.Errorf("could not recreate index: %w", err)
+	}
+
+	return hasUsers, nil
+}
+
+// restoreConfig restores config.yml, handling JWT secret appropriately
+func (s *ContentService) restoreConfig(content []byte, regenerateJwtSecret bool) error {
+	// Parse the uploaded config
+	var newConfig model.Config
+	if err := yaml.Unmarshal(content, &newConfig); err != nil {
+		return fmt.Errorf("could not parse config: %w", err)
+	}
+
+	// Read existing config to get current JWT secret
+	existingConfig, err := s.storage.ReadConfig()
+	if err != nil {
+		// If no existing config, we'll generate a new secret
+		existingConfig = model.Config{}
+	}
+
+	if regenerateJwtSecret || existingConfig.JwtSecret == "" {
+		// Generate new JWT secret (invalidates all sessions)
+		newConfig.JwtSecret = generateJwtSecret()
+	} else {
+		// Keep existing JWT secret
+		newConfig.JwtSecret = existingConfig.JwtSecret
+	}
+
+	// Write the config
+	return s.storage.WriteConfig(newConfig)
+}
+
+// generateJwtSecret generates a new random JWT secret
+func generateJwtSecret() string {
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, 64)
+	for i := range b {
+		b[i] = chars[time.Now().UnixNano()%int64(len(chars))]
+		time.Sleep(time.Nanosecond) // Ensure different values
+	}
+	return string(b)
 }

@@ -33,8 +33,8 @@
     }
   },
   "mounts": [
-    "source=node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume",
-    "source=pnpm-store,target=/home/vscode/.pnpm-store,type=volume"
+    "source=plainpage-frontend-node_modules,target=${containerWorkspaceFolder}/frontend/node_modules,type=volume",
+    "source=plainpage-pnpm-store,target=/home/vscode/.pnpm-store,type=volume"
   ],
   "postCreateCommand": "sudo chown -R vscode:vscode ${containerWorkspaceFolder} 2>/dev/null || true; corepack enable && cd backend && go mod download && cd ../frontend && pnpm config set store-dir /home/vscode/.pnpm-store && pnpm install"
 }

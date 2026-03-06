@@ -336,6 +336,14 @@ cd backend
 go run .
 ```
 
+💡 **Tip for Developers:** Create a `.env` file in the `backend/` folder with the following content:
+
+```ini
+DATA_DIR=./data
+```
+
+This ensures a static data directory during development. Without this, the data directory would be relative to the compiled Go binary, which is placed in a temporary directory when using `go run .`, causing data to be lost between runs.
+
 Browse to [http://localhost:3000](http://localhost:3000). Nuxt will proxy requests to the backend.
 
 ### Building from Source

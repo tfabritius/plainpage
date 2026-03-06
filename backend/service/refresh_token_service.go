@@ -348,6 +348,28 @@ func (s *RefreshTokenService) CleanupExpired() error {
 	return s.saveIndexUnlocked(newIndex)
 }
 
+// DeleteAll removes all refresh tokens (used when restoring a backup with users.yml)
+func (s *RefreshTokenService) DeleteAll() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Read current index to get all token IDs
+	index, err := s.readIndexUnlocked()
+	if err != nil {
+		return err
+	}
+
+	// Delete all token files
+	for _, entry := range index {
+		if err := s.deleteTokenData(entry.ID); err != nil {
+			return fmt.Errorf("could not delete token %s: %w", entry.ID, err)
+		}
+	}
+
+	// Clear the index
+	return s.saveIndexUnlocked([]RefreshTokenIndexEntry{})
+}
+
 // StartCleanupScheduler starts a background goroutine that periodically cleans up expired tokens
 func (s *RefreshTokenService) StartCleanupScheduler(ctx context.Context, interval time.Duration) {
 	// Run cleanup immediately at startup

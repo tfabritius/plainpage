@@ -451,3 +451,77 @@ func (s *ConfigTestSuite) TestConfigACLValidation() {
 		})
 	}
 }
+
+// TestBackupRestoreRevokesRefreshTokens tests that restoring a backup with users.yml revokes all refresh tokens
+func (s *ConfigTestSuite) TestBackupRestoreRevokesRefreshTokens() {
+	r := s.Require()
+
+	// Step 1: Login to get a refresh token
+	loginRes := s.api("POST", "/auth/login",
+		model.LoginRequest{Username: TestAdminUsername, Password: TestAdminPassword},
+		nil)
+	r.Equal(200, loginRes.Code)
+
+	// Get the refresh token cookie
+	refreshCookie := getRefreshTokenCookie(loginRes)
+	r.NotNil(refreshCookie, "Should have received a refresh token cookie")
+	r.NotEmpty(refreshCookie.Value)
+
+	// Verify the refresh token works
+	refreshRes := s.apiWithCookie("POST", "/auth/refresh", nil, nil, loginRes.Result().Cookies())
+	r.Equal(200, refreshRes.Code, "Refresh token should be valid before restore")
+
+	// Step 2: Download backup WITH users
+	backupRes := s.api("GET", "/storage/download?includeConfig&includeUsers", nil, s.adminToken)
+	r.Equal(200, backupRes.Code)
+	backupData := backupRes.Body.Bytes()
+	r.NotEmpty(backupData)
+
+	// Step 3: Restore the backup (which includes users.yml)
+	restoreRes := s.apiRawBody("POST", "/storage/restore", backupData, s.adminToken)
+	r.Equal(200, restoreRes.Code)
+
+	body, _ := jsonbody[model.RestoreBackupResponse](restoreRes)
+	r.True(body.UsersRestored, "Backup should have restored users")
+
+	// Step 4: Verify the refresh token is now invalid (was revoked)
+	refreshRes = s.apiWithCookie("POST", "/auth/refresh", nil, nil, loginRes.Result().Cookies())
+	r.Equal(401, refreshRes.Code, "Refresh token should be revoked after restore with users")
+}
+
+// TestBackupRestoreWithoutUsersKeepsRefreshTokens tests that restoring a backup WITHOUT users.yml keeps refresh tokens valid
+func (s *ConfigTestSuite) TestBackupRestoreWithoutUsersKeepsRefreshTokens() {
+	r := s.Require()
+
+	// Step 1: Login to get a refresh token
+	loginRes := s.api("POST", "/auth/login",
+		model.LoginRequest{Username: TestAdminUsername, Password: TestAdminPassword},
+		nil)
+	r.Equal(200, loginRes.Code)
+
+	// Get the refresh token cookie
+	refreshCookie := getRefreshTokenCookie(loginRes)
+	r.NotNil(refreshCookie, "Should have received a refresh token cookie")
+	r.NotEmpty(refreshCookie.Value)
+
+	// Verify the refresh token works
+	refreshRes := s.apiWithCookie("POST", "/auth/refresh", nil, nil, loginRes.Result().Cookies())
+	r.Equal(200, refreshRes.Code, "Refresh token should be valid before restore")
+
+	// Step 2: Download backup WITHOUT users (content only)
+	backupRes := s.api("GET", "/storage/download", nil, s.adminToken)
+	r.Equal(200, backupRes.Code)
+	backupData := backupRes.Body.Bytes()
+	r.NotEmpty(backupData)
+
+	// Step 3: Restore the backup (which does NOT include users.yml)
+	restoreRes := s.apiRawBody("POST", "/storage/restore", backupData, s.adminToken)
+	r.Equal(200, restoreRes.Code)
+
+	body, _ := jsonbody[model.RestoreBackupResponse](restoreRes)
+	r.False(body.UsersRestored, "Backup should NOT have restored users")
+
+	// Step 4: Verify the refresh token is still valid (was NOT revoked)
+	refreshRes = s.apiWithCookie("POST", "/auth/refresh", nil, nil, loginRes.Result().Cookies())
+	r.Equal(200, refreshRes.Code, "Refresh token should still be valid after restore without users")
+}

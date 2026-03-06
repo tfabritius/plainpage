@@ -56,6 +56,15 @@ func (app App) restoreStorage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If users were restored, revoke all refresh tokens for security
+	// (prevents old tokens from authenticating as wrong/deleted users)
+	if usersRestored {
+		if err := app.RefreshToken.DeleteAll(); err != nil {
+			http.Error(w, "Failed to revoke sessions: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
 	render.JSON(w, r, model.RestoreBackupResponse{
 		UsersRestored: usersRestored,
 	})

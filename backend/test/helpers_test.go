@@ -207,3 +207,16 @@ func getRefreshTokenCookie(res *httptest.ResponseRecorder) *http.Cookie {
 	}
 	return nil
 }
+
+// apiRawBody makes an API request with raw bytes as body (for binary data like ZIP files)
+func (s *AppTestSuite) apiRawBody(method, target string, body []byte, token *string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(method, "/_api"+target, bytes.NewReader(body))
+
+	if token != nil {
+		req.Header.Set("Authorization", "Bearer "+*token)
+	}
+
+	res := httptest.NewRecorder()
+	s.handler.ServeHTTP(res, req)
+	return res
+}

@@ -52,14 +52,14 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Read config
-	cfg, err := app.Storage.ReadConfig()
+	// Check if in setup mode
+	setupMode, err := app.Config.IsSetupMode()
 	if err != nil {
 		panic(err)
 	}
 
 	// Check authorization
-	if !cfg.SetupMode {
+	if !setupMode {
 		userID := ctxutil.UserID(r.Context())
 
 		if err := app.Users.CheckAppPermissions(userID, model.AccessOpRegister); err != nil {
@@ -87,15 +87,9 @@ func (app App) postUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if cfg.SetupMode {
-		// Terminate setup mode
-		cfg.SetupMode = false
-
-		// Grant admin rights
-		cfg.ACL = append(cfg.ACL, model.AccessRule{Subject: "user:" + user.ID, Operations: []model.AccessOp{model.AccessOpAdmin}})
-
-		// Save config
-		if err := app.Storage.WriteConfig(cfg); err != nil {
+	if setupMode {
+		// Terminate setup mode and grant admin rights to first user
+		if err := app.Config.EndSetupMode(user.ID); err != nil {
 			panic(err)
 		}
 	}

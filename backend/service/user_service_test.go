@@ -11,7 +11,8 @@ import (
 func TestUserService_Create(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	userService := NewUserService(mock)
+	configService := NewConfigService(mock)
+	userService := NewUserService(mock, configService)
 
 	username := "testuser"
 	password := "testpassword"
@@ -39,7 +40,8 @@ func TestUserService_Create(t *testing.T) {
 func TestUserService_GetByUsername(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	userService := NewUserService(mock)
+	configService := NewConfigService(mock)
+	userService := NewUserService(mock, configService)
 
 	var cUserId string
 	for _, i := range []string{"a", "b", "c", "d", "e"} {
@@ -62,7 +64,8 @@ func TestUserService_GetByUsername(t *testing.T) {
 func TestUserService_GetById(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	userService := NewUserService(mock)
+	configService := NewConfigService(mock)
+	userService := NewUserService(mock, configService)
 
 	var cUserId string
 	for _, i := range []string{"a", "b", "c", "d", "e"} {
@@ -85,7 +88,8 @@ func TestUserService_GetById(t *testing.T) {
 func TestUserService_VerifyCredentials(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	userService := NewUserService(mock)
+	configService := NewConfigService(mock)
+	userService := NewUserService(mock, configService)
 
 	username := "testuser"
 	password := "testpassword"
@@ -141,7 +145,8 @@ func TestUserService_VerifyCredentials(t *testing.T) {
 func TestUserService_Save(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	userService := NewUserService(mock)
+	configService := NewConfigService(mock)
+	userService := NewUserService(mock, configService)
 
 	username := "testuser"
 	password := "testpassword"
@@ -182,7 +187,8 @@ func TestUserService_Save(t *testing.T) {
 func TestUserService_DeleteByUsername(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	userService := NewUserService(mock)
+	configService := NewConfigService(mock)
+	userService := NewUserService(mock, configService)
 
 	for _, i := range []string{"a", "b", "c", "d", "e"} {
 		_, err := userService.Create("testuser-"+i, "test-password", "Test Name "+i)

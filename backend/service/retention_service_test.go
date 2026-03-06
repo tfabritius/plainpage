@@ -26,8 +26,9 @@ func TestCleanupTrash_Disabled(t *testing.T) {
 func TestCleanupTrash_DeletesOldEntries(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	// Create pages
 	err := contentService.SavePage("old-page", "Content", model.ContentMeta{Title: "Old Page"}, "")
@@ -64,8 +65,9 @@ func TestCleanupTrash_DeletesOldEntries(t *testing.T) {
 func TestCleanupTrash_KeepsAllWhenNoneExpired(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	// Create and delete pages recently
 	err := contentService.SavePage("page1", "Content", model.ContentMeta{Title: "Page 1"}, "")
@@ -113,8 +115,9 @@ func TestCleanupAttic_Disabled(t *testing.T) {
 func TestCleanupAttic_DeletesByAge(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	// Create a page with versions at different times
 	oldRevisionTime := time.Now().Add(-15 * 24 * time.Hour)   // 15 days ago
@@ -145,8 +148,9 @@ func TestCleanupAttic_DeletesByAge(t *testing.T) {
 func TestCleanupAttic_DeletesByCount(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	now := time.Now()
 
@@ -176,8 +180,9 @@ func TestCleanupAttic_DeletesByCount(t *testing.T) {
 func TestCleanupAttic_DeletesByAgeAndCount(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	now := time.Now()
 	oldRevisionTime := now.Add(-15 * 24 * time.Hour) // 15 days ago
@@ -215,8 +220,9 @@ func TestCleanupAttic_DeletesByAgeAndCount(t *testing.T) {
 func TestCleanupAttic_MultiplePages(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	now := time.Now()
 
@@ -255,8 +261,9 @@ func TestCleanupAttic_MultiplePages(t *testing.T) {
 func TestCleanupAttic_KeepsAllWhenBelowMaxVersions(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	now := time.Now()
 
@@ -286,8 +293,9 @@ func TestCleanupAttic_KeepsAllWhenBelowMaxVersions(t *testing.T) {
 func TestCleanupAttic_PreservesMostRecentVersion(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	// Create a page with all versions older than maxAgeDays
 	// Both versions are old enough to be deleted by age policy
@@ -319,8 +327,9 @@ func TestCleanupAttic_PreservesMostRecentVersion(t *testing.T) {
 func TestCleanupAttic_PreservesOnlyVersion(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
-	retentionService := NewRetentionService(contentService, mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
+	retentionService := NewRetentionService(contentService, configService)
 
 	// Create a page with only one version, and it's old
 	oldRevisionTime := time.Now().Add(-30 * 24 * time.Hour) // 30 days ago

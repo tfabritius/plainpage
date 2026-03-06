@@ -13,14 +13,15 @@ import (
 
 const accessTokenValidity = 15 * time.Minute // 15 minutes
 
-func NewAccessTokenService(jwtSecret string) AccessTokenService {
+// NewAccessTokenService creates a new access token service
+func NewAccessTokenService(config *ConfigService) AccessTokenService {
 	return AccessTokenService{
-		jwtSecret: jwtSecret,
+		config: config,
 	}
 }
 
 type AccessTokenService struct {
-	jwtSecret string
+	config *ConfigService
 }
 
 func (s *AccessTokenService) Create(userID string) (string, error) {
@@ -33,7 +34,7 @@ func (s *AccessTokenService) Create(userID string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedTokenString, err := token.SignedString([]byte(s.jwtSecret))
+	signedTokenString, err := token.SignedString(s.config.GetJwtSecret())
 	if err != nil {
 		return "", err
 	}
@@ -47,7 +48,7 @@ func (s *AccessTokenService) validate(tokenString string) (string, error) {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(s.jwtSecret), nil
+		return s.config.GetJwtSecret(), nil
 	})
 
 	if err != nil {

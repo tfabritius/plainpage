@@ -15,10 +15,27 @@ import (
 
 const jwtSecret = "testSecret"
 
+// createTestConfigService creates a ConfigService with a known JWT secret for testing
+func createTestConfigService(t *testing.T) *ConfigService {
+	mock := newMockStorage().(*mockStorage)
+	configService := NewConfigService(mock)
+	// Read and update the config with our test secret
+	cfg, err := configService.Read()
+	if err != nil {
+		t.Fatalf("could not read config: %v", err)
+	}
+	cfg.JwtSecret = jwtSecret
+	if err := configService.Write(cfg); err != nil {
+		t.Fatalf("could not write config: %v", err)
+	}
+	return configService
+}
+
 func TestGenerateToken(t *testing.T) {
 	r := require.New(t)
 
-	tokenService := NewAccessTokenService(jwtSecret)
+	configService := createTestConfigService(t)
+	tokenService := NewAccessTokenService(configService)
 	userID := "test-user"
 
 	tokenString, err := tokenService.Create(userID)
@@ -47,7 +64,8 @@ func TestGenerateToken(t *testing.T) {
 func TestToken2ContextMiddleware(t *testing.T) {
 	r := require.New(t)
 
-	tokenService := NewAccessTokenService(jwtSecret)
+	configService := createTestConfigService(t)
+	tokenService := NewAccessTokenService(configService)
 	userID := "test-user"
 
 	tokenString, err := tokenService.Create(userID)

@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 
 	"github.com/tfabritius/plainpage/model"
-	"gopkg.in/yaml.v3"
 )
 
 type fsStorage struct {
@@ -139,34 +138,6 @@ func (fss *fsStorage) createDir(file string) error {
 	err := os.MkdirAll(dir, 0700)
 	if err != nil {
 		return fmt.Errorf("could not create directories: %w", err)
-	}
-
-	return nil
-}
-
-func (fss *fsStorage) ReadConfig() (model.Config, error) {
-	bytes, err := fss.ReadFile("config.yml")
-	if err != nil {
-		return model.Config{}, fmt.Errorf("could not read config.yml: %w", err)
-	}
-
-	// parse YAML
-	config := model.Config{}
-	if err := yaml.Unmarshal(bytes, &config); err != nil {
-		return model.Config{}, fmt.Errorf("could not parse YAML: %w", err)
-	}
-
-	return config, nil
-}
-
-func (fss *fsStorage) WriteConfig(config model.Config) error {
-	bytes, err := yaml.Marshal(&config)
-	if err != nil {
-		return fmt.Errorf("failed to marshal: %w", err)
-	}
-
-	if err := fss.WriteFile("config.yml", bytes); err != nil {
-		return fmt.Errorf("could not write config.yml: %w", err)
 	}
 
 	return nil

@@ -15,9 +15,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func NewUserService(store model.Storage) *UserService {
+func NewUserService(store model.Storage, config *ConfigService) *UserService {
 	s := UserService{
 		storage: store,
+		config:  config,
 	}
 
 	// Initialize users.yml
@@ -33,6 +34,7 @@ func NewUserService(store model.Storage) *UserService {
 
 type UserService struct {
 	storage model.Storage
+	config  *ConfigService
 	mu      sync.RWMutex
 }
 
@@ -306,7 +308,7 @@ func (s *UserService) CheckAppPermissions(
 	userID string,
 	op model.AccessOp,
 ) error {
-	cfg, err := s.storage.ReadConfig()
+	cfg, err := s.config.Read()
 	if err != nil {
 		return err
 	}
@@ -348,7 +350,7 @@ func (s *UserService) checkPermissions(acl []model.AccessRule, userID string, op
 
 	// Read global ACL
 	if !aclIsApp {
-		cfg, err := s.storage.ReadConfig()
+		cfg, err := s.config.Read()
 		if err != nil {
 			return err
 		}

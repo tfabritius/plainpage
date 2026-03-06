@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/tfabritius/plainpage/model"
-	"gopkg.in/yaml.v3"
 )
 
 // mockStorage implements model.Storage for testing
@@ -167,27 +166,6 @@ func (m *mockStorage) Rename(oldPath, newPath string) error {
 	}
 
 	return fmt.Errorf("could not rename %s", oldPath)
-}
-
-func (m *mockStorage) ReadConfig() (model.Config, error) {
-	data, ok := m.files["config.yml"]
-	if !ok {
-		return model.Config{}, fmt.Errorf("config.yml not found")
-	}
-	var config model.Config
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return model.Config{}, err
-	}
-	return config, nil
-}
-
-func (m *mockStorage) WriteConfig(config model.Config) error {
-	data, err := yaml.Marshal(&config)
-	if err != nil {
-		return err
-	}
-	m.files["config.yml"] = data
-	return nil
 }
 
 func (m *mockStorage) GetDirectorySize(fsPath string) (uint64, error) {

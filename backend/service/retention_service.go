@@ -11,14 +11,14 @@ import (
 // RetentionService handles automatic cleanup of trash and attic based on retention policies
 type RetentionService struct {
 	content *ContentService
-	storage model.Storage
+	config  *ConfigService
 }
 
 // NewRetentionService creates a new retention service
-func NewRetentionService(content *ContentService, storage model.Storage) *RetentionService {
+func NewRetentionService(content *ContentService, config *ConfigService) *RetentionService {
 	return &RetentionService{
 		content: content,
-		storage: storage,
+		config:  config,
 	}
 }
 
@@ -134,7 +134,7 @@ func (s *RetentionService) cleanupPageAttic(pageUrl string, policy model.AtticRe
 
 // Cleanup runs both trash and attic cleanup based on current configuration
 func (s *RetentionService) Cleanup() error {
-	cfg, err := s.storage.ReadConfig()
+	cfg, err := s.config.Read()
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,7 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 	allowRegister := app.Users.CheckAppPermissions(userID, model.AccessOpRegister) == nil
 	allowAdmin := app.Users.CheckAppPermissions(userID, model.AccessOpAdmin) == nil
 
-	cfg, err := app.Storage.ReadConfig()
+	cfg, err := app.Config.Read()
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func (app App) exposeConfig(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app App) getConfig(w http.ResponseWriter, r *http.Request) {
-	cfg, err := app.Storage.ReadConfig()
+	cfg, err := app.Config.Read()
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +57,7 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cfg, err := app.Storage.ReadConfig()
+	cfg, err := app.Config.Read()
 	if err != nil {
 		panic(err)
 	}
@@ -78,7 +78,7 @@ func (app App) patchConfig(w http.ResponseWriter, r *http.Request) {
 	cfg.Retention.Attic.MaxAgeDays = max(cfg.Retention.Attic.MaxAgeDays, 0)
 	cfg.Retention.Attic.MaxVersions = max(cfg.Retention.Attic.MaxVersions, 0)
 
-	if err := app.Storage.WriteConfig(cfg); err != nil {
+	if err := app.Config.Write(cfg); err != nil {
 		panic(err)
 	}
 

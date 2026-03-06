@@ -16,7 +16,6 @@ import (
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/mapping"
 	"github.com/tfabritius/plainpage/model"
-	"gopkg.in/yaml.v3"
 )
 
 // BackupOptions configures what to include in a backup
@@ -25,9 +24,10 @@ type BackupOptions struct {
 	IncludeUsers  bool
 }
 
-func NewContentService(store model.Storage) *ContentService {
+func NewContentService(store model.Storage, config *ConfigService) *ContentService {
 	s := ContentService{
 		storage: store,
+		config:  config,
 	}
 
 	if err := s.initializeStorage(); err != nil {
@@ -44,6 +44,7 @@ func NewContentService(store model.Storage) *ContentService {
 type ContentService struct {
 	storage model.Storage
 	index   bleve.Index
+	config  *ConfigService
 }
 
 func (s *ContentService) initializeStorage() error {
@@ -1201,16 +1202,7 @@ func (s *ContentService) addFileToZip(zipWriter *zip.Writer, fsPath, zipPath str
 
 // addConfigToZip adds config.yml to the ZIP archive with JWT secret stripped
 func (s *ContentService) addConfigToZip(zipWriter *zip.Writer) error {
-	config, err := s.storage.ReadConfig()
-	if err != nil {
-		return err
-	}
-
-	// Strip sensitive data
-	config.JwtSecret = ""
-
-	// Serialize to YAML
-	content, err := yaml.Marshal(&config)
+	content, err := s.config.ExportForBackup()
 	if err != nil {
 		return err
 	}
@@ -1301,7 +1293,7 @@ func (s *ContentService) RestoreBackup(zipReader *zip.Reader) (bool, error) {
 
 		// Handle config.yml specially - need to handle JWT secret
 		if f.Name == "config.yml" {
-			if err := s.restoreConfig(content, hasUsers); err != nil {
+			if err := s.config.RestoreFromBackup(content, hasUsers); err != nil {
 				return false, fmt.Errorf("could not restore config: %w", err)
 			}
 			continue
@@ -1324,42 +1316,4 @@ func (s *ContentService) RestoreBackup(zipReader *zip.Reader) (bool, error) {
 	}
 
 	return hasUsers, nil
-}
-
-// restoreConfig restores config.yml, handling JWT secret appropriately
-func (s *ContentService) restoreConfig(content []byte, regenerateJwtSecret bool) error {
-	// Parse the uploaded config
-	var newConfig model.Config
-	if err := yaml.Unmarshal(content, &newConfig); err != nil {
-		return fmt.Errorf("could not parse config: %w", err)
-	}
-
-	// Read existing config to get current JWT secret
-	existingConfig, err := s.storage.ReadConfig()
-	if err != nil {
-		// If no existing config, we'll generate a new secret
-		existingConfig = model.Config{}
-	}
-
-	if regenerateJwtSecret || existingConfig.JwtSecret == "" {
-		// Generate new JWT secret (invalidates all sessions)
-		newConfig.JwtSecret = generateJwtSecret()
-	} else {
-		// Keep existing JWT secret
-		newConfig.JwtSecret = existingConfig.JwtSecret
-	}
-
-	// Write the config
-	return s.storage.WriteConfig(newConfig)
-}
-
-// generateJwtSecret generates a new random JWT secret
-func generateJwtSecret() string {
-	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, 64)
-	for i := range b {
-		b[i] = chars[time.Now().UnixNano()%int64(len(chars))]
-		time.Sleep(time.Nanosecond) // Ensure different values
-	}
-	return string(b)
 }

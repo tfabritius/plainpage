@@ -1,8 +1,6 @@
 package server
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -12,7 +10,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/tfabritius/plainpage/libs/spa"
-	"github.com/tfabritius/plainpage/libs/utils"
 	"github.com/tfabritius/plainpage/model"
 	"github.com/tfabritius/plainpage/service"
 )
@@ -20,6 +17,7 @@ import (
 type App struct {
 	Frontend            http.FileSystem
 	Storage             model.Storage
+	Config              *service.ConfigService
 	Content             *service.ContentService
 	Users               *service.UserService
 	AccessToken         service.AccessTokenService
@@ -31,25 +29,14 @@ type App struct {
 }
 
 func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
-	if !store.Exists("config.yml") {
-		log.Println("Initializing config...")
-		cfg := initializeConfig()
+	// Initialize config service (creates default config if needed)
+	configService := service.NewConfigService(store)
 
-		if err := store.WriteConfig(cfg); err != nil {
-			panic(err)
-		}
-	}
-
-	cfg, err := store.ReadConfig()
-	if err != nil {
-		panic(fmt.Errorf("could not load config: %w", err))
-	}
-
-	contentService := service.NewContentService(store)
-	userService := service.NewUserService(store)
-	accessTokenService := service.NewAccessTokenService(cfg.JwtSecret)
+	contentService := service.NewContentService(store, configService)
+	userService := service.NewUserService(store, configService)
+	accessTokenService := service.NewAccessTokenService(configService)
 	refreshTokenService := service.NewRefreshTokenService(store)
-	retentionService := service.NewRetentionService(contentService, store)
+	retentionService := service.NewRetentionService(contentService, configService)
 	loginLimiter := NewLoginLimiter(5, rate.Every(30*time.Second), 30*time.Minute)
 
 	// Search rate limiters: stricter for unauthenticated users (by IP), more lenient for authenticated users (by userID)
@@ -59,6 +46,7 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 	return App{
 		Frontend:            staticFrontendFiles,
 		Storage:             store,
+		Config:              configService,
 		Content:             contentService,
 		Users:               userService,
 		AccessToken:         accessTokenService,
@@ -68,23 +56,6 @@ func NewApp(staticFrontendFiles http.FileSystem, store model.Storage) App {
 		SearchLimiterByIP:   searchLimiterByIP,
 		SearchLimiterByUser: searchLimiterByUser,
 	}
-}
-
-// initializeConfig creates default configuration on first start
-func initializeConfig() model.Config {
-	cfg := model.Config{}
-	var err error
-
-	cfg.AppTitle = "PlainPage"
-
-	cfg.JwtSecret, err = utils.GenerateRandomString(16)
-	if err != nil {
-		panic(err)
-	}
-
-	cfg.SetupMode = true
-
-	return cfg
 }
 
 func (app App) GetHandler() http.Handler {

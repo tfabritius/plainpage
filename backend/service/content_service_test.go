@@ -14,7 +14,8 @@ import (
 func TestDeleteAtticEntry(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
 
 	// Create a page with first version
 	t1 := time.Now()
@@ -55,7 +56,8 @@ func TestDeleteAtticEntry(t *testing.T) {
 func TestDeleteAtticEntry_NotFound(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
 
 	// Try to delete attic entry for non-existent page
 	err := contentService.DeleteAtticEntry("nonexistent", 12345)
@@ -76,7 +78,8 @@ func TestDeleteAtticEntry_NotFound(t *testing.T) {
 func TestWriteBackup_ContentOnly(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
 
 	// Create some content
 	err := contentService.SavePage("page1", "Content 1", model.ContentMeta{Title: "Page 1"}, "")
@@ -125,17 +128,18 @@ func TestWriteBackup_WithConfigAndUsers(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage().(*mockStorage)
 
-	// Setup config
-	err := mock.WriteConfig(model.Config{
-		AppTitle:  "Test Wiki",
-		JwtSecret: "secret123",
-	})
+	// Setup configService via ConfigService
+	configService := NewConfigService(mock) // This will create default config
+	cfg, err := configService.Read()
+	r.NoError(err)
+	cfg.AppTitle = "Test Wiki"
+	err = configService.Write(cfg)
 	r.NoError(err)
 
 	// Setup users
 	mock.files["users.yml"] = []byte("- id: user1\n  username: testuser\n")
 
-	contentService := NewContentService(mock)
+	contentService := NewContentService(mock, configService)
 
 	// Create a page
 	err = contentService.SavePage("testpage", "Content", model.ContentMeta{Title: "Test"}, "")
@@ -170,7 +174,8 @@ func TestWriteBackup_WithConfigAndUsers(t *testing.T) {
 			_, err = configContent.ReadFrom(rc)
 			rc.Close()
 			r.NoError(err)
-			r.NotContains(configContent.String(), "secret123", "JWT secret should be stripped from backup")
+			// The YAML field is present but value is empty
+			r.Contains(configContent.String(), "jwtSecret: \"\"", "JWT secret should be empty in backup")
 		}
 	}
 }
@@ -181,7 +186,8 @@ func TestRestoreBackup_ContentOnly(t *testing.T) {
 
 	// Create source storage with content
 	srcMock := newMockStorage()
-	srcService := NewContentService(srcMock)
+	srcConfig := NewConfigService(srcMock)
+	srcService := NewContentService(srcMock, srcConfig)
 
 	err := srcService.SavePage("original-page", "Original Content", model.ContentMeta{Title: "Original"}, "")
 	r.NoError(err)
@@ -196,7 +202,8 @@ func TestRestoreBackup_ContentOnly(t *testing.T) {
 
 	// Create destination storage with different content
 	dstMock := newMockStorage()
-	dstService := NewContentService(dstMock)
+	dstConfig := NewConfigService(dstMock)
+	dstService := NewContentService(dstMock, dstConfig)
 
 	err = dstService.SavePage("other-page", "Other Content", model.ContentMeta{Title: "Other"}, "")
 	r.NoError(err)
@@ -230,10 +237,15 @@ func TestRestoreBackup_WithUsers(t *testing.T) {
 	// Create source storage with users
 	srcMock := newMockStorage().(*mockStorage)
 	srcMock.files["users.yml"] = []byte("- id: user1\n  username: testuser\n")
-	err := srcMock.WriteConfig(model.Config{AppTitle: "Test", JwtSecret: "old-secret"})
+	srcConfigService := NewConfigService(srcMock)
+	srcCfg, err := srcConfigService.Read()
 	r.NoError(err)
+	srcCfg.AppTitle = "Test"
+	err = srcConfigService.Write(srcCfg)
+	r.NoError(err)
+	oldSecret := srcCfg.JwtSecret
 
-	srcService := NewContentService(srcMock)
+	srcService := NewContentService(srcMock, srcConfigService)
 
 	// Create backup with users
 	var buf bytes.Buffer
@@ -245,10 +257,15 @@ func TestRestoreBackup_WithUsers(t *testing.T) {
 
 	// Create destination storage
 	dstMock := newMockStorage().(*mockStorage)
-	err = dstMock.WriteConfig(model.Config{AppTitle: "Dest", JwtSecret: "dest-secret"})
+	dstConfigService := NewConfigService(dstMock)
+	dstCfg, err := dstConfigService.Read()
 	r.NoError(err)
+	dstCfg.AppTitle = "Dest"
+	err = dstConfigService.Write(dstCfg)
+	r.NoError(err)
+	destSecret := dstCfg.JwtSecret
 
-	dstService := NewContentService(dstMock)
+	dstService := NewContentService(dstMock, dstConfigService)
 
 	// Restore backup
 	zipReader, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
@@ -264,10 +281,10 @@ func TestRestoreBackup_WithUsers(t *testing.T) {
 	r.Contains(string(usersData), "testuser")
 
 	// Verify JWT secret was regenerated (not the old one from backup or the dest one)
-	config, err := dstMock.ReadConfig()
+	config, err := dstConfigService.Read()
 	r.NoError(err)
-	r.NotEqual("old-secret", config.JwtSecret, "should not use backup's JWT secret")
-	r.NotEqual("dest-secret", config.JwtSecret, "should not keep dest's JWT secret")
+	r.NotEqual(oldSecret, config.JwtSecret, "should not use backup's JWT secret")
+	r.NotEqual(destSecret, config.JwtSecret, "should not keep dest's JWT secret")
 	r.NotEmpty(config.JwtSecret, "should have a new JWT secret")
 }
 
@@ -275,7 +292,8 @@ func TestRestoreBackup_WithUsers(t *testing.T) {
 func TestRestoreBackup_InvalidZip(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
 
 	// Create an invalid/empty ZIP
 	var buf bytes.Buffer
@@ -305,7 +323,8 @@ func getFilesWithPrefix(files map[string]bool, prefix string) []string {
 func TestListAllPages(t *testing.T) {
 	r := require.New(t)
 	mock := newMockStorage()
-	contentService := NewContentService(mock)
+	configService := NewConfigService(mock)
+	contentService := NewContentService(mock, configService)
 
 	// Initially no pages (only root folder exists)
 	pages, err := contentService.ListAllPages()

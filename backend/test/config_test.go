@@ -35,11 +35,31 @@ func (s *ConfigTestSuite) SetupSuite() {
 }
 
 func (s *ConfigTestSuite) TearDownTest() {
+	// After restore tests, the JWT secret may have changed, invalidating our tokens.
+	s.resetTokens()
+
 	// Restore default config after each test
 	s.api("PATCH", "/config", []model.PatchOperation{
 		{Op: "replace", Path: "/appTitle", Value: str2json("PlainPage")},
 	}, s.adminToken)
 	s.saveGlobalAcl(s.adminToken, s.defaultAcl)
+}
+
+// resetTokens re-creates access tokens for all test users.
+// This is needed after operations that may change the JWT secret (like restore with users).
+func (s *ConfigTestSuite) resetTokens() {
+	adminToken, err := s.app.AccessToken.Create(s.adminUserID)
+	if err != nil {
+		// If we can't create a token, the test will fail anyway
+		return
+	}
+	s.adminToken = &adminToken
+
+	userToken, err := s.app.AccessToken.Create(s.userUserID)
+	if err != nil {
+		return
+	}
+	s.userToken = &userToken
 }
 
 // TestExposeConfig tests the GET /app endpoint which exposes basic app configuration

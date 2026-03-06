@@ -17,8 +17,5 @@ type Storage interface {
 	DeleteDirectory(fsPath string) error
 	Rename(oldPath, newPath string) error
 
-	ReadConfig() (Config, error)
-	WriteConfig(config Config) error
-
 	GetDirectorySize(fsPath string) (uint64, error)
 }

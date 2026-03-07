@@ -165,7 +165,7 @@ const menuItems = computed(() => {
           toast.add({ description: t('signed-out'), color: 'success' })
 
           // Redirect to home if current page requires authentication
-          const currentRoute = route.matched[route.matched.length - 1]
+          const currentRoute = route.matched.at(-1)
           const middleware = currentRoute?.meta?.middleware
           const requiresAuth = Array.isArray(middleware) && middleware.includes('require-auth')
           if (requiresAuth) {

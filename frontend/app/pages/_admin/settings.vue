@@ -49,6 +49,7 @@ async function downloadBackup() {
     const url = window.URL.createObjectURL(response)
     const a = document.createElement('a')
     a.href = url
+    // eslint-disable-next-line e18e/prefer-static-regex
     a.download = `plainpage-backup-${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-')}.zip`
     document.body.appendChild(a)
     a.click()

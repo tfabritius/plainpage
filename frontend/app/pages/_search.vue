@@ -131,16 +131,16 @@ watch(q, () => {
           <UCard class="cursor-pointer transition-all duration-200 hover:ring-[var(--ui-primary)]/50 hover:bg-[var(--ui-bg-elevated)]/50">
             <div class="text-xl flex items-center">
               <UIcon :name="result.isFolder ? 'tabler:folder' : 'tabler:file-text'" class="mr-1" />
-              <span v-if="'meta.title' in result.fragments" v-html="result.fragments['meta.title'][0]" />
+              <HighlightedText v-if="result.fragments['meta.title']" :fragment="result.fragments['meta.title'][0]!" />
               <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
             </div>
             <div class="text-sm font-mono text-[var(--ui-text-muted)]">
-              <span v-if="'url' in result.fragments" v-html="result.fragments.url[0]" />
+              <HighlightedText v-if="result.fragments.url?.[0]" :fragment="result.fragments.url[0]" />
               <span v-else>{{ result.url }}</span>
             </div>
 
-            <div v-if="'content' in result.fragments" class="text-[var(--ui-text-muted)] mt-2">
-              <div v-for="(f, ii) in result.fragments.content" :key="ii" v-html="f" />
+            <div v-if="result.fragments.content" class="text-[var(--ui-text-muted)] mt-2">
+              <HighlightedText v-for="(f, ii) in result.fragments.content" :key="ii" :fragment="f" />
             </div>
 
             <div v-if="result.meta.tags?.length" class="flex gap-1 flex-wrap mt-2">

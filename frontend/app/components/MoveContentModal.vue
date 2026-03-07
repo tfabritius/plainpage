@@ -28,7 +28,7 @@ const allowWriteInCurrentFolder = ref(false)
 // Compute the item name from the current path
 const itemName = computed(() => {
   const parts = props.currentPath.split('/')
-  return parts[parts.length - 1] || ''
+  return parts.at(-1) || ''
 })
 
 // Compute the current parent path

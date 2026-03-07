@@ -58,7 +58,7 @@ async function onPageMoved(newPath: string) {
 const newPageName = ref('')
 const currentPageName = computed(() => {
   const urlParts = props.page.url.split('/')
-  return urlParts[urlParts.length - 1] || ''
+  return urlParts.at(-1) || ''
 })
 const parentPath = computed(() => {
   const urlParts = props.page.url.split('/')

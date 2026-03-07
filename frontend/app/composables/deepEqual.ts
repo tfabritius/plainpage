@@ -29,7 +29,7 @@ export function deepEqual<T>(o1: T, o2: T): boolean {
     const keys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])] as Extract<keyof T, string>[]
 
     return keys.every((key) => {
-      if (Object.prototype.hasOwnProperty.call(o1, key) && Object.prototype.hasOwnProperty.call(o2, key)) {
+      if (Object.hasOwn(o1, key) && Object.hasOwn(o2, key)) {
         return deepEqual(o1[key], o2[key])
       }
       return false

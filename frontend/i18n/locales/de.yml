@@ -86,6 +86,7 @@ delete-my-account: Lösche mein Konto
 delete-page: Seite löschen
 delete-permanently: Endgültig löschen
 delete-user: Benutzer löschen
+delete-user-name: Benutzer "{0}" löschen
 deleted-at: Gelöscht
 destination: Ziel
 discard-changes: Änderungen verwerfen
@@ -95,6 +96,7 @@ displayname-required: Bitte Anzeigename eingeben
 edit: Bearbeiten
 edit-folder: Ordner bearbeiten
 edit-user: Benutzer bearbeiten
+edit-user-name: Benutzer "{0}" bearbeiten
 error: Fehler
 folder-created: Ordner angelegt
 folder-deleted: Ordner gelöscht
@@ -151,6 +153,8 @@ read: Lesen
 register: Konto anlegen
 register-account: Konto anlegen
 reload: Neu laden
+remove-rule: Regel für "{0}" entfernen
+remove-tag: Tag "{0}" entfernen
 rename: Umbenennen
 rename-page: Seite umbenennen
 restore: Wiederherstellen

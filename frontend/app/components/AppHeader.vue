@@ -212,8 +212,10 @@ const menuItems = computed(() => {
     >
       <template #content>
         <div class="flex items-center gap-2 p-3">
-          <UIcon name="tabler:search" class="w-5 h-5 text-(--ui-text-muted) flex-shrink-0" />
+          <label for="search-input" class="sr-only">{{ $t('search') }}</label>
+          <UIcon name="tabler:search" class="w-5 h-5 text-(--ui-text-muted) flex-shrink-0" aria-hidden="true" />
           <input
+            id="search-input"
             ref="searchInputRef"
             v-model="searchQuery"
             type="text"
@@ -221,7 +223,7 @@ const menuItems = computed(() => {
             class="flex-1 bg-transparent border-none outline-none text-base text-(--ui-text) placeholder:text-(--ui-text-muted)"
             @keypress.enter="onSearch"
           >
-          <UKbd class="hidden sm:flex">
+          <UKbd class="hidden sm:flex" aria-hidden="true">
             Esc
           </UKbd>
         </div>

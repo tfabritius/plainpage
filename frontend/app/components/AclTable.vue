@@ -234,13 +234,18 @@ defineExpose({ getAcl })
       <UCheckbox v-model="row.original.admin" :disabled="['anonymous', 'all', 'admin'].includes(row.original.subject)" />
     </template>
     <template #actions-cell="{ row }">
-      <UButton
+      <UTooltip
         v-if="!['anonymous', 'all', 'admin'].includes(row.original.subject)"
-        variant="link"
-        color="error"
-        icon="tabler:trash"
-        @click="onRemoveRule(row.original.subject)"
-      />
+        :text="t('remove-rule', [row.original.user?.username || row.original.subject])"
+      >
+        <UButton
+          variant="link"
+          color="error"
+          icon="tabler:trash"
+          :aria-label="t('remove-rule', [row.original.user?.username || row.original.subject])"
+          @click="onRemoveRule(row.original.subject)"
+        />
+      </UTooltip>
     </template>
   </UTable>
 

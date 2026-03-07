@@ -90,7 +90,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
           :state="formState"
           @submit="submit"
         >
-          <UFormField name="displayName">
+          <UFormField :label="$t('display-name')" name="displayName" :ui="{ label: 'sr-only' }">
             <UInput
               v-model="formState.displayName"
               :placeholder="$t('display-name')"
@@ -99,7 +99,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
               size="lg"
             />
           </UFormField>
-          <UFormField name="username" class="mt-4">
+          <UFormField :label="$t('username')" name="username" class="mt-4" :ui="{ label: 'sr-only' }">
             <UInput
               v-model="formState.username"
               type="text"
@@ -108,7 +108,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
               size="lg"
             />
           </UFormField>
-          <UFormField name="password" class="mt-4">
+          <UFormField :label="$t('password')" name="password" class="mt-4" :ui="{ label: 'sr-only' }">
             <UInput
               v-model="formState.password"
               type="password"
@@ -117,7 +117,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
               size="lg"
             />
           </UFormField>
-          <UFormField name="passwordConfirm" class="mt-4">
+          <UFormField :label="$t('password-repeat')" name="passwordConfirm" class="mt-4" :ui="{ label: 'sr-only' }">
             <UInput
               v-model="formState.passwordConfirm"
               type="password"
@@ -126,7 +126,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
               size="lg"
             />
           </UFormField>
-          <UFormField class="mt-4">
+          <div class="mt-4">
             <UButton
               type="submit"
               color="primary"
@@ -136,7 +136,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
               size="lg"
               :loading="loading"
             />
-          </UFormField>
+          </div>
         </UForm>
 
         <div class="mt-6 pt-4 border-t border-default text-center">

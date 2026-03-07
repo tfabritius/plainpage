@@ -86,6 +86,7 @@ delete-my-account: Delete my account
 delete-page: Delete page
 delete-permanently: Delete permanently
 delete-user: Delete user
+delete-user-name: Delete user "{0}"
 deleted-at: Deleted
 destination: Destination
 discard-changes: Discard changes
@@ -95,6 +96,7 @@ displayname-required: Please enter display name
 edit: Edit
 edit-folder: Edit folder
 edit-user: Edit user
+edit-user-name: Edit user "{0}"
 error: Error
 folder-created: Folder created
 folder-deleted: Folder deleted
@@ -151,6 +153,8 @@ read: Read
 register: Register
 register-account: Register account
 reload: Reload
+remove-rule: Remove rule for "{0}"
+remove-tag: Remove tag "{0}"
 rename: Rename
 rename-page: Rename page
 restore: Restore

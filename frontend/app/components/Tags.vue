@@ -63,6 +63,7 @@ function onCancelInput() {
         size="xs"
         color="primary"
         variant="link"
+        :aria-label="$t('remove-tag', [tag])"
         :ui="{ base: 'p-0' }"
         @click="handleClose(tag)"
       />

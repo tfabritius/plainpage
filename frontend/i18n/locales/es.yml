@@ -86,6 +86,7 @@ delete-my-account: Borrar mi cuenta
 delete-page: Borrar página
 delete-permanently: Eliminar permanentemente
 delete-user: Borrar usuario
+delete-user-name: Borrar usuario "{0}"
 deleted-at: Eliminado
 destination: Destino
 discard-changes: Descartar cambios
@@ -95,6 +96,7 @@ displayname-required: Ingrese el nombre para mostrar
 edit: Editar
 edit-folder: Editar carpeta
 edit-user: Editar usuario
+edit-user-name: Editar usuario "{0}"
 error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
@@ -151,6 +153,8 @@ read: Leer
 register: Registro
 register-account: Registrar cuenta
 reload: Recargar
+remove-rule: Eliminar regla para "{0}"
+remove-tag: Eliminar etiqueta "{0}"
 rename: Renombrar
 rename-page: Renombrar página
 restore: Restaurar

@@ -206,8 +206,23 @@ async function onDeleteConfirm() {
       :data="data" :columns="columns"
     >
       <template #actions-cell="{ row }">
-        <UButton variant="link" icon="tabler:edit" @click="onEdit(row.original)" />
-        <UButton variant="link" icon="tabler:trash" color="error" @click="onDeleteClick(row.original)" />
+        <UTooltip :text="t('edit-user-name', [row.original.username])">
+          <UButton
+            variant="link"
+            icon="tabler:edit"
+            :aria-label="t('edit-user-name', [row.original.username])"
+            @click="onEdit(row.original)"
+          />
+        </UTooltip>
+        <UTooltip :text="t('delete-user-name', [row.original.username])">
+          <UButton
+            variant="link"
+            icon="tabler:trash"
+            color="error"
+            :aria-label="t('delete-user-name', [row.original.username])"
+            @click="onDeleteClick(row.original)"
+          />
+        </UTooltip>
       </template>
     </UTable>
 

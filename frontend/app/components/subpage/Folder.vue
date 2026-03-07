@@ -312,21 +312,16 @@ onKeyStroke('ArrowUp', async (e) => {
       </template>
       <template #body>
         <form id="editFolderForm" class="space-y-4" @submit.prevent="saveEditedFolder">
-          <div>
-            <label class="block text-sm font-medium mb-1">{{ $t('folder-title') }}</label>
+          <UFormField :label="$t('folder-title')" name="folderTitle">
             <UInput v-model="editableTitle" class="w-full" autofocus />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">{{ $t('folder-name') }}</label>
+          </UFormField>
+          <UFormField :label="$t('folder-name')" name="folderName" :error="editableName && !isValidFolderName ? $t('invalid-folder-name') : undefined">
             <UInput
               v-model="editableName"
               class="w-full"
               :status="editableName && !isValidFolderName ? 'error' : undefined"
             />
-            <p v-if="editableName && !isValidFolderName" class="text-sm text-red-500 mt-1">
-              {{ $t('invalid-folder-name') }}
-            </p>
-          </div>
+          </UFormField>
         </form>
       </template>
       <template #footer>

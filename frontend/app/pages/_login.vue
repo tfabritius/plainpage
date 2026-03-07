@@ -60,7 +60,7 @@ async function submit() {
         </div>
 
         <form @submit.prevent @keypress.enter="submit">
-          <UFormField>
+          <UFormField :label="$t('username')" name="username" :ui="{ label: 'sr-only' }">
             <UInput
               v-model="loginFormData.username"
               type="text"
@@ -70,7 +70,7 @@ async function submit() {
               size="lg"
             />
           </UFormField>
-          <UFormField class="mt-4">
+          <UFormField :label="$t('password')" name="password" class="mt-4" :ui="{ label: 'sr-only' }">
             <UInput
               v-model="loginFormData.password"
               type="password"
@@ -79,7 +79,7 @@ async function submit() {
               size="lg"
             />
           </UFormField>
-          <UFormField class="mt-4">
+          <div class="mt-4">
             <UButton
               color="primary"
               variant="solid"
@@ -89,7 +89,7 @@ async function submit() {
               :loading="loading"
               @click="submit"
             />
-          </UFormField>
+          </div>
         </form>
 
         <div

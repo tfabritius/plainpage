@@ -24,13 +24,21 @@ function getTokenExpiration(token: string): number {
     return 0
   }
 
-  const jsonStr = window.atob(token.split('.')[1] ?? '')
-  const payload = JSON.parse(jsonStr) as unknown
-  if (typeof payload === 'object'
-    && payload !== null
-    && 'exp' in payload
-    && typeof payload.exp === 'number') {
-    return payload.exp
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) {
+      return 0
+    }
+    const jsonStr = window.atob(parts[1]!) // length check above ensures parts[1] exists
+    const payload = JSON.parse(jsonStr) as unknown
+    if (typeof payload === 'object'
+      && payload !== null
+      && 'exp' in payload
+      && typeof payload.exp === 'number') {
+      return payload.exp
+    }
+  } catch {
+    // Invalid base64 or JSON - treat as invalid token
   }
 
   return 0

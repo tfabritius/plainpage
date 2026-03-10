@@ -82,6 +82,7 @@ days: días
 define-custom-permissions: Definir permisos propios
 delete: Borrar
 delete-folder: Borrar carpeta
+download-markdown: Descargar Markdown
 diff:
   additions: adiciones
   compare: Comparar
@@ -106,6 +107,7 @@ discard-changes: Descartar cambios
 discard-changes-to-this-page: ¿Quieres descartar los cambios de esta página?
 display-name: Nombre para mostrar
 displayname-required: Ingrese el nombre para mostrar
+drop-markdown-file: Suelta el archivo Markdown aquí
 edit: Editar
 edit-folder: Editar carpeta
 edit-user: Editar usuario
@@ -123,6 +125,7 @@ home: Inicio
 incorrect-password: Contraseña incorrecta
 inherit-permissions: Heredar permisos de la carpeta principal
 invalid-credentials: Credenciales no válidas
+invalid-file-type: Tipo de archivo no válido. Por favor sube un archivo Markdown (.md)
 invalid-folder-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 invalid-page-name: 'Nombre no válido (permitido: [a-z0-9_-])'
 items-deleted-permanent: '{count} elemento(s) eliminado(s) permanentemente'
@@ -144,6 +147,7 @@ not-found: Extraviado
 ok: Acceptar
 old-revisions-of: Revisiones antiguas de
 or: o
+page-already-exists: Ya existe una página con este nombre
 page-deleted: Página eliminada
 page-deleted-permanent: Página eliminada permanentemente
 page-moved: Página movida
@@ -239,6 +243,7 @@ trash-retention-age: Antigüedad máxima en papelera
 try-again: Intentar otra vez
 untitled: Intitulado
 updated: Actualizado
+upload-markdown: Subir Markdown
 url: URL
 user-created: Usuario creado
 user-deleted: Usuario eliminado

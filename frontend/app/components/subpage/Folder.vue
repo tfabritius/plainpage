@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { Breadcrumb, Folder, PatchOperation } from '~/types'
+import { useDropZone } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import slugify from 'slugify'
 import { useAppStore } from '~/store/app'
 import { validUrlPartRegex } from '~/types/api'
 
@@ -58,6 +60,102 @@ function openEditFolderModal() {
 const moveModalOpen = ref(false)
 async function onFolderMoved(newPath: string) {
   await navigateTo(`/${newPath}`)
+}
+
+// Upload markdown functionality
+const fileInputRef = useTemplateRef<HTMLInputElement>('fileInputRef')
+const dropZoneRef = useTemplateRef<HTMLElement>('dropZoneRef')
+
+function triggerFileUpload() {
+  fileInputRef.value?.click()
+}
+
+// Drag and drop using VueUse
+const { isOverDropZone } = useDropZone(dropZoneRef, {
+  onDrop: async (files) => {
+    if (!props.allowWrite || !files?.length || !files[0]) {
+      return
+    }
+    await processMarkdownFile(files[0])
+  },
+})
+
+async function processMarkdownFile(file: File): Promise<void> {
+  // Validate file is markdown
+  if (!file.name.toLowerCase().endsWith('.md')) {
+    toast.add({
+      description: t('invalid-file-type'),
+      color: 'error',
+    })
+    return
+  }
+
+  // Extract page name from filename
+  // eslint-disable-next-line e18e/prefer-static-regex
+  const nameWithoutExt = file.name.replace(/\.md$/i, '')
+  const pageName = slugify(nameWithoutExt, { lower: true, strict: true })
+
+  // Check if a page with this name already exists
+  const existingPage = props.folder.content.find(
+    entry => !entry.isFolder && entry.name === pageName,
+  )
+
+  if (existingPage) {
+    toast.add({
+      description: t('page-already-exists'),
+      color: 'error',
+    })
+    return
+  }
+
+  // Read file content
+  const content = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = e => resolve(e.target?.result as string || '')
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsText(file)
+  })
+
+  const newUrl = props.urlPath !== '' ? `${props.urlPath}/${pageName}` : pageName
+
+  try {
+    await apiFetch(`/pages/${newUrl}`, {
+      method: 'PUT',
+      body: {
+        page: {
+          content,
+          meta: {
+            title: nameWithoutExt,
+            tags: [],
+          },
+        },
+      },
+    })
+
+    toast.add({
+      description: t('saved'),
+      color: 'success',
+    })
+
+    await navigateTo(`/${newUrl}`)
+  } catch (err) {
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
+  }
+}
+
+async function onMarkdownFileSelected(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (file) {
+    await processMarkdownFile(file)
+  }
+
+  // Reset file input
+  target.value = ''
 }
 
 async function saveEditedFolder() {
@@ -155,6 +253,14 @@ async function onDeleteFolder() {
 const menuItems = computed(() => {
   const items: DropdownMenuItem[] = []
 
+  if (props.allowWrite) {
+    items.push({
+      icon: 'tabler:upload',
+      label: t('upload-markdown'),
+      onSelect: triggerFileUpload,
+    })
+  }
+
   items.push(
     {
       icon: 'tabler:refresh',
@@ -231,110 +337,134 @@ onKeyStroke('ArrowUp', async (e) => {
 </script>
 
 <template>
-  <Layout :breadcrumbs="breadcrumbs">
-    <template #title>
-      <UIcon name="tabler:folder" class="mr-2" />
-      {{ pageTitle }}
-    </template>
-
-    <template v-if="urlPath !== ''" #title:suffix>
-      <UButton
-        class="opacity-0 group-hover:opacity-100 duration-100"
-        variant="link"
-        color="neutral"
-        @click="openEditFolderModal"
-      >
-        <UIcon name="tabler:edit" size="1.5em" />
-      </UButton>
-    </template>
-
-    <template #actions>
-      <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
-        <ReactiveButton icon="tabler:file-plus" :label="$t('create-page')" />
-      </NewContentModal>
-      <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
-        <ReactiveButton icon="tabler:folder-plus" :label="$t('create-folder')" />
-      </NewContentModal>
-
-      <UDropdownMenu :items="menuItems">
-        <ReactiveButton icon="tabler:dots-vertical" :label="$t('more')" />
-      </UDropdownMenu>
-    </template>
-
-    <div v-if="subfolders.length > 0">
-      <h2 class="font-light text-lg my-4">
-        {{ $t('folders') }}
-      </h2>
-      <MultiColumnList
-        :items="subfolders"
-        :sort-and-group-by="item => item.title || item.name"
-        :group-if-more-than="10"
-      >
-        <template #item="{ item }">
-          <ULink :to="`/${item.url}`" class="inline-flex items-center gap-1">
-            <UIcon name="tabler:folder" /> <span>{{ item.title || item.name }}</span>
-          </ULink>
-        </template>
-      </MultiColumnList>
+  <div ref="dropZoneRef" class="contents">
+    <!-- Drop zone overlay -->
+    <div
+      v-if="isOverDropZone && allowWrite"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-(--ui-bg)/80 border-4 border-dashed border-primary pointer-events-none"
+    >
+      <div class="text-center">
+        <UIcon name="tabler:upload" class="size-16 text-primary" />
+        <p class="mt-2 text-lg font-medium">
+          {{ $t('drop-markdown-file') }}
+        </p>
+      </div>
     </div>
 
-    <div v-if="pages.length > 0">
-      <h2 class="font-light text-lg my-4">
-        {{ $t('pages') }}
-      </h2>
-      <MultiColumnList
-        :items="pages"
-        :sort-and-group-by="item => item.title || item.name"
-        :group-if-more-than="10"
-      >
-        <template #item="{ item }">
-          <ULink :to="`/${item.url}`" class="inline-flex items-center gap-1">
-            <UIcon name="tabler:file-text" /> <span>{{ item.title || item.name }}</span>
-          </ULink>
-        </template>
-      </MultiColumnList>
-    </div>
-
-    <PlainDialog ref="plainDialog" />
-
-    <!-- Move Modal -->
-    <MoveContentModal
-      v-model:open="moveModalOpen"
-      :current-path="urlPath"
-      :is-folder="true"
-      @moved="onFolderMoved"
-    />
-
-    <!-- Edit Folder Modal -->
-    <UModal v-model:open="editFolderOpen">
+    <Layout :breadcrumbs="breadcrumbs">
       <template #title>
-        {{ $t('edit-folder') }}
+        <UIcon name="tabler:folder" class="mr-2" />
+        {{ pageTitle }}
       </template>
-      <template #body>
-        <form id="editFolderForm" class="space-y-4" @submit.prevent="saveEditedFolder">
-          <UFormField :label="$t('folder-title')" name="folderTitle">
-            <UInput v-model="editableTitle" class="w-full" autofocus />
-          </UFormField>
-          <UFormField :label="$t('folder-name')" name="folderName" :error="editableName && !isValidFolderName ? $t('invalid-folder-name') : undefined">
-            <UInput
-              v-model="editableName"
-              class="w-full"
-              :status="editableName && !isValidFolderName ? 'error' : undefined"
-            />
-          </UFormField>
-        </form>
-      </template>
-      <template #footer>
-        <UButton :label="$t('cancel')" @click="editFolderOpen = false" />
+
+      <template v-if="urlPath !== ''" #title:suffix>
         <UButton
-          color="primary"
-          variant="solid"
-          :label="$t('ok')"
-          type="submit"
-          form="editFolderForm"
-          :disabled="!isValidFolderName"
-        />
+          class="opacity-0 group-hover:opacity-100 duration-100"
+          variant="link"
+          color="neutral"
+          @click="openEditFolderModal"
+        >
+          <UIcon name="tabler:edit" size="1.5em" />
+        </UButton>
       </template>
-    </UModal>
-  </Layout>
+
+      <template #actions>
+        <NewContentModal v-if="allowWrite" type="page" :url-path="urlPath">
+          <ReactiveButton icon="tabler:file-plus" :label="$t('create-page')" />
+        </NewContentModal>
+        <NewContentModal v-if="allowWrite" type="folder" :url-path="urlPath">
+          <ReactiveButton icon="tabler:folder-plus" :label="$t('create-folder')" />
+        </NewContentModal>
+
+        <UDropdownMenu :items="menuItems">
+          <ReactiveButton icon="tabler:dots-vertical" :label="$t('more')" />
+        </UDropdownMenu>
+      </template>
+
+      <div v-if="subfolders.length > 0">
+        <h2 class="font-light text-lg my-4">
+          {{ $t('folders') }}
+        </h2>
+        <MultiColumnList
+          :items="subfolders"
+          :sort-and-group-by="item => item.title || item.name"
+          :group-if-more-than="10"
+        >
+          <template #item="{ item }">
+            <ULink :to="`/${item.url}`" class="inline-flex items-center gap-1">
+              <UIcon name="tabler:folder" /> <span>{{ item.title || item.name }}</span>
+            </ULink>
+          </template>
+        </MultiColumnList>
+      </div>
+
+      <div v-if="pages.length > 0">
+        <h2 class="font-light text-lg my-4">
+          {{ $t('pages') }}
+        </h2>
+        <MultiColumnList
+          :items="pages"
+          :sort-and-group-by="item => item.title || item.name"
+          :group-if-more-than="10"
+        >
+          <template #item="{ item }">
+            <ULink :to="`/${item.url}`" class="inline-flex items-center gap-1">
+              <UIcon name="tabler:file-text" /> <span>{{ item.title || item.name }}</span>
+            </ULink>
+          </template>
+        </MultiColumnList>
+      </div>
+
+      <PlainDialog ref="plainDialog" />
+
+      <!-- Move Modal -->
+      <MoveContentModal
+        v-model:open="moveModalOpen"
+        :current-path="urlPath"
+        :is-folder="true"
+        @moved="onFolderMoved"
+      />
+
+      <!-- Edit Folder Modal -->
+      <UModal v-model:open="editFolderOpen">
+        <template #title>
+          {{ $t('edit-folder') }}
+        </template>
+        <template #body>
+          <form id="editFolderForm" class="space-y-4" @submit.prevent="saveEditedFolder">
+            <UFormField :label="$t('folder-title')" name="folderTitle">
+              <UInput v-model="editableTitle" class="w-full" autofocus />
+            </UFormField>
+            <UFormField :label="$t('folder-name')" name="folderName" :error="editableName && !isValidFolderName ? $t('invalid-folder-name') : undefined">
+              <UInput
+                v-model="editableName"
+                class="w-full"
+                :status="editableName && !isValidFolderName ? 'error' : undefined"
+              />
+            </UFormField>
+          </form>
+        </template>
+        <template #footer>
+          <UButton :label="$t('cancel')" @click="editFolderOpen = false" />
+          <UButton
+            color="primary"
+            variant="solid"
+            :label="$t('ok')"
+            type="submit"
+            form="editFolderForm"
+            :disabled="!isValidFolderName"
+          />
+        </template>
+      </UModal>
+
+      <!-- Hidden file input for markdown upload -->
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept=".md,text/markdown"
+        class="hidden"
+        @change="onMarkdownFileSelected"
+      >
+    </Layout>
+  </div>
 </template>

@@ -82,6 +82,7 @@ days: days
 define-custom-permissions: Define custom permissions
 delete: Delete
 delete-folder: Delete folder
+download-markdown: Download Markdown
 diff:
   additions: additions
   compare: Compare
@@ -105,6 +106,7 @@ destination: Destination
 discard-changes: Discard changes
 discard-changes-to-this-page: Discard changes to this page?
 display-name: Display name
+drop-markdown-file: Drop Markdown file here
 displayname-required: Please enter display name
 edit: Edit
 edit-folder: Edit folder
@@ -123,6 +125,7 @@ home: Home
 incorrect-password: Incorrect password
 inherit-permissions: Inherit permissions from parent folder
 invalid-credentials: Invalid credentials
+invalid-file-type: Invalid file type. Please upload a Markdown file (.md)
 invalid-folder-name: 'Invalid name (allowed: [a-z0-9_-])'
 invalid-page-name: 'Invalid name (allowed: [a-z0-9_-])'
 items-deleted-permanent: '{count} item(s) deleted permanently'
@@ -144,6 +147,7 @@ not-found: Not found
 ok: OK
 old-revisions-of: Old revisions of
 or: or
+page-already-exists: A page with this name already exists
 page-deleted: Page deleted
 page-deleted-permanent: Page deleted permanently
 page-moved: Page moved
@@ -239,6 +243,7 @@ trash-retention-age: Trash max age
 try-again: Try again
 untitled: Untitled
 updated: Updated
+upload-markdown: Upload Markdown
 url: URL
 user-created: User created
 user-deleted: User deleted

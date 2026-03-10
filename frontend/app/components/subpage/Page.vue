@@ -176,6 +176,26 @@ async function onDeletePage() {
   }
 }
 
+function downloadAsMarkdown() {
+  // Get filename from the last segment of the URL
+  const urlParts = props.page.url.split('/')
+  const pageName = urlParts.at(-1) || 'page'
+  const filename = `${pageName}.md`
+
+  // Create blob with markdown content
+  const blob = new Blob([props.page.content], { type: 'text/markdown;charset=utf-8' })
+
+  // Create download link and trigger download
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+}
+
 const menuItems = computed(() => {
   const items: DropdownMenuItem[] = []
 
@@ -194,6 +214,12 @@ const menuItems = computed(() => {
     onSelect: async () => {
       await navigateTo({ query: { rev: null } })
     },
+  })
+
+  items.push({
+    icon: 'tabler:download',
+    label: t('download-markdown'),
+    onSelect: downloadAsMarkdown,
   })
 
   if (props.allowWrite && props.allowDelete) {

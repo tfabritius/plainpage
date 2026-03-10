@@ -13,7 +13,7 @@ useHead(() => ({ title: t('error') }))
   <div class="min-h-screen box-border p-2 flex flex-col">
     <AppHeader />
 
-    <div class="m-auto text-center text-gray-500">
+    <div class="m-auto text-center text-muted">
       <UIcon name="tabler:network-off" size="5em" />
 
       <div class="m-2">

@@ -48,7 +48,7 @@ async function submit() {
   <div class="min-h-screen box-border p-2 flex flex-col">
     <AppHeader />
 
-    <div class="m-auto text-center text-gray-500">
+    <div class="m-auto">
       <UCard class="w-80" variant="elevated">
         <div class="text-center mb-4">
           <div class="w-16 h-16 rounded-2xl bg-primary mx-auto flex items-center justify-center mb-4 shadow-lg">

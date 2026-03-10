@@ -188,7 +188,7 @@ watch(open, (isOpen) => {
 
     <template #body>
       <div class="space-y-4">
-        <p class="text-sm text-gray-600 dark:text-gray-400">
+        <p class="text-sm text-muted">
           {{ $t('select-destination-folder') }}
         </p>
 
@@ -221,7 +221,7 @@ watch(open, (isOpen) => {
           </button>
 
           <!-- Empty folder -->
-          <div v-if="subfolders.length === 0" class="p-4 text-center text-gray-500">
+          <div v-if="subfolders.length === 0" class="p-4 text-center text-muted">
             {{ $t('no-subfolders') }}
           </div>
 
@@ -239,14 +239,14 @@ watch(open, (isOpen) => {
           >
             <UIcon name="tabler:folder" class="text-lg shrink-0" />
             <span class="truncate">{{ folder.title || folder.name }}</span>
-            <UIcon name="tabler:chevron-right" class="ml-auto text-gray-400 shrink-0" />
+            <UIcon name="tabler:chevron-right" class="ml-auto text-muted shrink-0" />
           </button>
         </div>
 
         <!-- Destination preview -->
         <div class="text-sm">
-          <span class="text-gray-500">{{ $t('destination') }}:</span>
-          <code class="ml-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded">
+          <span class="text-muted">{{ $t('destination') }}:</span>
+          <code class="ml-2 px-2 py-1 bg-muted rounded">
             {{ `/${destinationPath}` }}
           </code>
         </div>

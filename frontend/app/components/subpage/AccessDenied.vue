@@ -8,8 +8,8 @@ useHead(() => ({ title: t('access-denied') }))
   <div class="min-h-screen box-border p-2 flex flex-col">
     <AppHeader />
 
-    <div class="m-auto text-center text-gray-500">
-      <UIcon name="tabler:hand-stop" size="5em" />
+    <div class="m-auto text-center text-muted">
+      <UIcon name="tabler:lock" size="5em" />
       <div class="m-2">
         {{ $t('access-denied') }}
       </div>

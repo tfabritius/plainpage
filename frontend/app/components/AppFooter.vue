@@ -7,10 +7,10 @@ const { version } = storeToRefs(app)
 </script>
 
 <template>
-  <div class="pt-3 text-sm text-gray-400 dark:text-gray-600 flex items-center justify-center">
+  <div class="pt-3 text-sm text-dimmed flex items-center justify-center">
     <ULink
       to="https://github.com/tfabritius/plainpage"
-      class="text-gray-400 dark:text-gray-600 inline-flex items-center gap-1"
+      class="text-dimmed inline-flex items-center gap-1"
     >
       <UIcon name="tabler:brand-github" class="size-4" />
       <span>PlainPage</span>

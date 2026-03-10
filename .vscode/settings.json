@@ -1,6 +1,9 @@
 {
   "editor.formatOnSave": false,
   "go.survey.prompt": false,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
   "eslint.workingDirectories": [
     "frontend"
   ],

@@ -13,7 +13,6 @@ function isMatchedTag(result: SearchHit, tag: string): boolean {
     return false
   }
   // Strip HTML tags from fragments to compare with plain tag
-  // eslint-disable-next-line e18e/prefer-static-regex
   return matchedTags.some(fragment => fragment.replace(/<[^>]*>/g, '') === tag)
 }
 

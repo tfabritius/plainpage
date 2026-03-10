@@ -7,7 +7,6 @@ import { useAuthStore } from '~/store/auth'
 const { t } = useI18n()
 
 const route = useRoute()
-// eslint-disable-next-line e18e/prefer-static-regex
 const urlPath = computed(() => route.path.replace(/^\//, ''))
 
 // revQuery is a string if ?rev=123 is passed,

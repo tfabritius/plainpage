@@ -91,7 +91,6 @@ async function processMarkdownFile(file: File): Promise<void> {
   }
 
   // Extract page name from filename
-  // eslint-disable-next-line e18e/prefer-static-regex
   const nameWithoutExt = file.name.replace(/\.md$/i, '')
   const pageName = slugify(nameWithoutExt, { lower: true, strict: true })
 

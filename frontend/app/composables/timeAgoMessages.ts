@@ -6,9 +6,7 @@ export function timeAgoMessages(): UseTimeAgoMessages<UseTimeAgoUnitNamesDefault
 
   return {
     justNow: t('timeAgo.just-now'),
-    // eslint-disable-next-line e18e/prefer-static-regex
     past: n => (/\d/.test(n) ? t('timeAgo.ago', [n]) : n),
-    // eslint-disable-next-line e18e/prefer-static-regex
     future: n => (/\d/.test(n) ? t('timeAgo.in', [n]) : n),
 
     month: (n, past) =>

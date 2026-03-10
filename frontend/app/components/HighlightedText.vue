@@ -21,7 +21,6 @@ function parseHighlightedFragment(fragment: string): HighlightPart[] {
   const parts: HighlightPart[] = []
 
   // Split by <mark> and </mark> tags, keeping track of position
-  // eslint-disable-next-line e18e/prefer-static-regex
   const tokens = fragment.split(/(<mark>|<\/mark>)/)
   let inHighlight = false
 

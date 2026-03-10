@@ -46,7 +46,6 @@ function createMarkdownRenderer(
       if (count > 0) {
         slug = `${slug}-${count}`
       }
-      // eslint-disable-next-line e18e/prefer-static-regex
       slugCounter.set(slug.replace(/-\d+$/, ''), count + 1)
 
       // Collect TOC item

@@ -36,6 +36,7 @@ export default withNuxt(
       'jsonc/sort-keys': 'off',
       'regexp/prefer-d': 'off',
       'regexp/prefer-w': 'off',
+      'e18e/prefer-static-regex': 'off',
     },
   }),
 )

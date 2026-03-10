@@ -20,7 +20,7 @@ const { t } = useI18n()
       <MdToolbarButton icon="tabler:strikethrough" :tooltip="t('toolbar.strikethrough')" @click="emit('click', 'strikethrough')" />
       <MdToolbarButton icon="tabler:superscript" :tooltip="t('toolbar.superscript')" @click="emit('click', 'superscript')" />
       <MdToolbarButton icon="tabler:subscript" :tooltip="t('toolbar.subscript')" @click="emit('click', 'subscript')" />
-      <span class="text-[var(--ui-text)]/30 mx-1">|</span>
+      <span class="text-(--ui-text)/30 mx-1">|</span>
 
       <UPopover
         mode="hover"
@@ -44,12 +44,12 @@ const { t } = useI18n()
       <MdToolbarButton icon="tabler:checkbox" :tooltip="t('toolbar.checkbox')" @click="emit('click', 'checkbox')" />
       <MdToolbarButton icon="tabler:quote" :tooltip="t('toolbar.quote')" @click="emit('click', 'quote')" />
 
-      <span class="text-[var(--ui-text)]/30 mx-1">|</span>
+      <span class="text-(--ui-text)/30 mx-1">|</span>
       <MdToolbarButton icon="tabler:link" :tooltip="t('toolbar.link')" @click="emit('click', 'link')" />
       <MdToolbarButton icon="tabler:code" :tooltip="t('toolbar.code-inline')" @click="emit('click', 'code-inline')" />
       <MdToolbarButton icon="tabler:braces" :tooltip="t('toolbar.code-block')" @click="emit('click', 'code-block')" />
       <MdToolbarButton icon="tabler:table" :tooltip="t('toolbar.table')" @click="emit('click', 'table')" />
-      <span class="text-[var(--ui-text)]/30 mx-1">|</span>
+      <span class="text-(--ui-text)/30 mx-1">|</span>
       <MdToolbarButton icon="tabler:wand" :tooltip="t('toolbar.format')" @click="emit('click', 'format')" />
     </div>
     <div class="flex items-center gap-0.5">

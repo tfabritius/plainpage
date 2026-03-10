@@ -210,7 +210,7 @@ function formatBytes(bytes: number): string {
       </PlainFieldset>
 
       <PlainFieldset :legend="$t('retention')">
-        <p class="text-sm text-[var(--ui-text-muted)] mb-4">
+        <p class="text-sm text-muted mb-4">
           {{ $t('retention-description') }}
         </p>
 
@@ -223,8 +223,8 @@ function formatBytes(bytes: number): string {
                 min="0"
                 class="w-24"
               />
-              <span class="text-sm text-[var(--ui-text-muted)]">{{ $t('days') }}</span>
-              <span class="text-xs text-[var(--ui-text-dimmed)]">{{ $t('zero-disabled') }}</span>
+              <span class="text-sm text-muted">{{ $t('days') }}</span>
+              <span class="text-xs text-dimmed">{{ $t('zero-disabled') }}</span>
             </div>
           </UFormField>
 
@@ -236,8 +236,8 @@ function formatBytes(bytes: number): string {
                 min="0"
                 class="w-24"
               />
-              <span class="text-sm text-[var(--ui-text-muted)]">{{ $t('days') }}</span>
-              <span class="text-xs text-[var(--ui-text-dimmed)]">{{ $t('zero-disabled') }}</span>
+              <span class="text-sm text-muted">{{ $t('days') }}</span>
+              <span class="text-xs text-dimmed">{{ $t('zero-disabled') }}</span>
             </div>
           </UFormField>
 
@@ -249,8 +249,8 @@ function formatBytes(bytes: number): string {
                 min="0"
                 class="w-24"
               />
-              <span class="text-sm text-[var(--ui-text-muted)]">{{ $t('versions-per-page') }}</span>
-              <span class="text-xs text-[var(--ui-text-dimmed)]">{{ $t('zero-unlimited') }}</span>
+              <span class="text-sm text-muted">{{ $t('versions-per-page') }}</span>
+              <span class="text-xs text-dimmed">{{ $t('zero-unlimited') }}</span>
             </div>
           </UFormField>
         </div>
@@ -258,14 +258,14 @@ function formatBytes(bytes: number): string {
 
       <PlainFieldset :legend="$t('_settings.statistics')">
         <div class="flex items-center justify-between mb-4">
-          <p class="text-sm text-[var(--ui-text-muted)]">
+          <p class="text-sm text-muted">
             {{ $t('_settings.statistics-description') }}
           </p>
           <UButton variant="ghost" icon="tabler:refresh" @click="() => refreshStats()" />
         </div>
 
         <div v-if="statsStatus === 'pending'" class="flex items-center justify-center py-8">
-          <UIcon name="tabler:loader-2" class="w-6 h-6 animate-spin text-[var(--ui-text-muted)]" />
+          <UIcon name="tabler:loader-2" class="w-6 h-6 animate-spin text-muted" />
         </div>
 
         <div v-else-if="stats" class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -275,19 +275,19 @@ function formatBytes(bytes: number): string {
             </h4>
             <dl class="space-y-1 text-sm">
               <div class="flex justify-between">
-                <dt class="text-[var(--ui-text-muted)]">
+                <dt class="text-muted">
                   {{ $t('_settings.memory-alloc') }}
                 </dt>
                 <dd>{{ formatBytes(stats.memory.alloc) }}</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-[var(--ui-text-muted)]">
+                <dt class="text-muted">
                   {{ $t('_settings.memory-total-alloc') }}
                 </dt>
                 <dd>{{ formatBytes(stats.memory.totalAlloc) }}</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-[var(--ui-text-muted)]">
+                <dt class="text-muted">
                   {{ $t('_settings.memory-sys') }}
                 </dt>
                 <dd>{{ formatBytes(stats.memory.sys) }}</dd>
@@ -301,24 +301,24 @@ function formatBytes(bytes: number): string {
             </h4>
             <dl class="space-y-1 text-sm">
               <div class="flex justify-between">
-                <dt class="text-[var(--ui-text-muted)]">
+                <dt class="text-muted">
                   {{ $t('_settings.disk-pages') }}
                 </dt>
                 <dd>{{ formatBytes(stats.diskUsage.pages) }}</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-[var(--ui-text-muted)]">
+                <dt class="text-muted">
                   {{ $t('_settings.disk-attic') }}
                 </dt>
                 <dd>{{ formatBytes(stats.diskUsage.attic) }}</dd>
               </div>
               <div class="flex justify-between">
-                <dt class="text-[var(--ui-text-muted)]">
+                <dt class="text-muted">
                   {{ $t('_settings.disk-trash') }}
                 </dt>
                 <dd>{{ formatBytes(stats.diskUsage.trash) }}</dd>
               </div>
-              <div class="flex justify-between font-medium border-t border-[var(--ui-border)] pt-1 mt-1">
+              <div class="flex justify-between font-medium border-t border-default pt-1 mt-1">
                 <dt>{{ $t('_settings.disk-total') }}</dt>
                 <dd>{{ formatBytes(stats.diskUsage.total) }}</dd>
               </div>
@@ -328,7 +328,7 @@ function formatBytes(bytes: number): string {
       </PlainFieldset>
 
       <PlainFieldset :legend="$t('_settings.backup')">
-        <p class="text-sm text-[var(--ui-text-muted)] mb-4">
+        <p class="text-sm text-muted mb-4">
           {{ $t('_settings.backup-description') }}
         </p>
 
@@ -336,8 +336,8 @@ function formatBytes(bytes: number): string {
           <div class="flex flex-col gap-3">
             <UCheckbox v-model="backupIncludeConfig" :label="$t('_settings.backup-include-config')" />
             <UCheckbox v-model="backupIncludeUsers" :label="$t('_settings.backup-include-users')" />
-            <div v-if="backupIncludeUsers" class="flex items-center gap-1 ml-6 text-[var(--ui-warning)]">
-              <UIcon name="tabler:alert-triangle" class="w-4 h-4 flex-shrink-0" />
+            <div v-if="backupIncludeUsers" class="flex items-center gap-1 ml-6 text-warning">
+              <UIcon name="tabler:alert-triangle" class="w-4 h-4 shrink-0" />
               <p class="text-xs">
                 {{ $t('_settings.backup-users-warning') }}
               </p>
@@ -356,12 +356,12 @@ function formatBytes(bytes: number): string {
       </PlainFieldset>
 
       <PlainFieldset :legend="$t('_settings.restore')">
-        <p class="text-sm text-[var(--ui-text-muted)] mb-4">
+        <p class="text-sm text-muted mb-4">
           {{ $t('_settings.restore-description') }}
         </p>
 
-        <div class="flex items-center gap-1 mb-4 text-[var(--ui-warning)]">
-          <UIcon name="tabler:alert-triangle" class="w-4 h-4 flex-shrink-0" />
+        <div class="flex items-center gap-1 mb-4 text-warning">
+          <UIcon name="tabler:alert-triangle" class="w-4 h-4 shrink-0" />
           <p class="text-xs">
             {{ $t('_settings.restore-warning') }}
           </p>
@@ -372,7 +372,7 @@ function formatBytes(bytes: number): string {
             <input
               type="file"
               accept=".zip"
-              class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[var(--ui-bg-elevated)] file:text-[var(--ui-text)] hover:file:bg-[var(--ui-bg-accented)] file:cursor-pointer"
+              class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-elevated file:text-default hover:file:bg-accented file:cursor-pointer"
               @change="onRestoreFileChange"
             >
           </div>

@@ -129,18 +129,18 @@ watch(q, () => {
 
       <div v-else-if="results && results.length > 0" class="space-y-4">
         <NuxtLink v-for="(result, i) in results" :key="i" :to="`/${result.url}`" class="block">
-          <UCard class="cursor-pointer transition-all duration-200 hover:ring-[var(--ui-primary)]/50 hover:bg-[var(--ui-bg-elevated)]/50">
+          <UCard class="cursor-pointer transition-all duration-200 hover:ring-(--ui-primary)/50 hover:bg-(--ui-bg-elevated)/50">
             <div class="text-xl flex items-center">
               <UIcon :name="result.isFolder ? 'tabler:folder' : 'tabler:file-text'" class="mr-1" />
               <HighlightedText v-if="result.fragments['meta.title']" :fragment="result.fragments['meta.title'][0]!" />
               <span v-else :class="{ 'font-italic': !result.meta.title }">{{ result.meta.title || 'Untitled' }}</span>
             </div>
-            <div class="text-sm font-mono text-[var(--ui-text-muted)]">
+            <div class="text-sm font-mono text-muted">
               <HighlightedText v-if="result.fragments.url?.[0]" :fragment="result.fragments.url[0]" />
               <span v-else>{{ result.url }}</span>
             </div>
 
-            <div v-if="result.fragments.content" class="text-[var(--ui-text-muted)] mt-2">
+            <div v-if="result.fragments.content" class="text-muted mt-2">
               <HighlightedText v-for="(f, ii) in result.fragments.content" :key="ii" :fragment="f" />
             </div>
 
@@ -167,7 +167,7 @@ watch(q, () => {
           >
             {{ $t('_search.previous') }}
           </UButton>
-          <span class="text-[var(--ui-text-muted)] text-sm">
+          <span class="text-muted text-sm">
             {{ $t('_search.page', { page: currentPage }) }}
           </span>
           <UButton

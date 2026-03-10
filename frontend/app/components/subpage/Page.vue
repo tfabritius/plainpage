@@ -305,7 +305,7 @@ onKeyStroke('ArrowUp', async (e) => {
     </template>
 
     <template v-if="!editing && hasModifiedAt" #subtitle>
-      <span class="text-[var(--ui-text-muted)]/50">
+      <span class="text-(--ui-text-muted)/50">
         {{ $t('modified') }} <span :title="modifiedAtFormatted">{{ modifiedAtTimeAgo }}</span> {{ $t('modified-by') }}
         <span v-if="page.meta.modifiedByUsername" :title="page.meta.modifiedByUsername">{{ page.meta.modifiedByDisplayName }}</span>
         <span v-else class="italic">{{ $t('anonymous') }}</span>

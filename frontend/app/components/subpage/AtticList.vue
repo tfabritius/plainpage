@@ -95,7 +95,7 @@ const navTo = navigateTo
       />
     </template>
 
-    <p v-if="data?.entries && data.entries.length > 1" class="text-sm text-[var(--ui-text-muted)] mb-4">
+    <p v-if="data?.entries && data.entries.length > 1" class="text-sm text-muted mb-4">
       {{ $t('diff.select-two-revisions') }}
     </p>
 
@@ -104,11 +104,11 @@ const navTo = navigateTo
         v-for="(el, idx) in data?.entries"
         :key="el.rev"
         class="flex items-center rounded-lg"
-        :class="{ 'bg-[var(--ui-bg-muted)]/50': isSelected(el.rev) }"
+        :class="{ 'bg-(--ui-bg-muted)/50': isSelected(el.rev) }"
       >
         <!-- Checkbox area with its own hover -->
         <div
-          class="flex items-center justify-center w-12 py-2 pl-3 rounded-l-lg hover:bg-[var(--ui-bg-muted)] self-stretch"
+          class="flex items-center justify-center w-12 py-2 pl-3 rounded-l-lg hover:bg-muted self-stretch"
           @click="toggleSelection(el.rev)"
         >
           <UCheckbox
@@ -122,7 +122,7 @@ const navTo = navigateTo
         <ULink
           :to="`?rev=${el.rev}`"
           :active="false"
-          class="flex-1 py-2 pl-2 pr-3 rounded-r-lg hover:bg-[var(--ui-bg-muted)]"
+          class="flex-1 py-2 pl-2 pr-3 rounded-r-lg hover:bg-muted"
         >
           {{ format(el.date, 'yyyy-MM-dd HH:mm:ss') }}
           <UseTimeAgo v-slot="{ timeAgo }" :time="el.date" :messages="timeAgoMessages()">

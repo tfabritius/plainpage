@@ -43,7 +43,7 @@ defineExpose({ setScrollTop })
       class="flex select-none touch-none p-0.5 w-2.5"
     >
       <ScrollAreaThumb
-        class="flex-1 bg-neutral-200 hover:bg-neutral-300 transition-colors duration-[160ms] ease-out rounded-[10px] relative"
+        class="flex-1 bg-neutral-200 hover:bg-neutral-300 transition-colors duration-160 ease-out rounded-[10px] relative"
       />
     </ScrollAreaScrollbar>
     <ScrollAreaCorner />

@@ -167,10 +167,10 @@ const stats = computed(() => {
     </div>
 
     <!-- Side-by-side view -->
-    <div v-if="mode === 'side-by-side'" class="diff-container border border-[var(--ui-border)] rounded-lg overflow-hidden">
+    <div v-if="mode === 'side-by-side'" class="diff-container border border-default rounded-lg overflow-hidden">
       <!-- Headers -->
-      <div class="grid grid-cols-2 bg-[var(--ui-bg-muted)] border-b border-[var(--ui-border)]">
-        <div class="px-3 py-2 font-medium text-sm border-r border-[var(--ui-border)]">
+      <div class="grid grid-cols-2 bg-muted border-b border-default">
+        <div class="px-3 py-2 font-medium text-sm border-r border-default">
           {{ oldLabel || t('diff.old-version') }}
         </div>
         <div class="px-3 py-2 font-medium text-sm">
@@ -184,18 +184,18 @@ const stats = computed(() => {
           <template v-for="(pair, idx) in sideBySideLines" :key="idx">
             <!-- Left (old) -->
             <div
-              class="flex border-b border-r border-[var(--ui-border)]"
+              class="flex border-b border-r border-default"
               :class="{
                 'bg-red-100 dark:bg-red-900/40': pair.left?.type === 'removed',
-                'bg-[var(--ui-bg)]': pair.left?.type === 'unchanged' || !pair.left,
+                'bg-default': pair.left?.type === 'unchanged' || !pair.left,
               }"
             >
               <span
-                class="w-12 flex-shrink-0 px-2 py-0.5 text-right text-[var(--ui-text-muted)] select-none border-r border-[var(--ui-border)]"
+                class="w-12 shrink-0 px-2 py-0.5 text-right text-muted select-none border-r border-default"
               >
                 {{ pair.left?.oldLineNum ?? '' }}
               </span>
-              <span class="w-6 flex-shrink-0 px-1 py-0.5 text-center select-none">
+              <span class="w-6 shrink-0 px-1 py-0.5 text-center select-none">
                 <template v-if="pair.left?.type === 'removed'">-</template>
               </span>
               <pre class="flex-1 px-2 py-0.5 whitespace-pre-wrap break-all">{{ pair.left?.content ?? '' }}</pre>
@@ -203,18 +203,18 @@ const stats = computed(() => {
 
             <!-- Right (new) -->
             <div
-              class="flex border-b border-[var(--ui-border)]"
+              class="flex border-b border-default"
               :class="{
                 'bg-green-100 dark:bg-green-900/40': pair.right?.type === 'added',
-                'bg-[var(--ui-bg)]': pair.right?.type === 'unchanged' || !pair.right,
+                'bg-default': pair.right?.type === 'unchanged' || !pair.right,
               }"
             >
               <span
-                class="w-12 flex-shrink-0 px-2 py-0.5 text-right text-[var(--ui-text-muted)] select-none border-r border-[var(--ui-border)]"
+                class="w-12 shrink-0 px-2 py-0.5 text-right text-muted select-none border-r border-default"
               >
                 {{ pair.right?.newLineNum ?? '' }}
               </span>
-              <span class="w-6 flex-shrink-0 px-1 py-0.5 text-center select-none">
+              <span class="w-6 shrink-0 px-1 py-0.5 text-center select-none">
                 <template v-if="pair.right?.type === 'added'">+</template>
               </span>
               <pre class="flex-1 px-2 py-0.5 whitespace-pre-wrap break-all">{{ pair.right?.content ?? '' }}</pre>
@@ -225,9 +225,9 @@ const stats = computed(() => {
     </div>
 
     <!-- Unified view -->
-    <div v-else class="diff-container border border-[var(--ui-border)] rounded-lg overflow-hidden">
+    <div v-else class="diff-container border border-default rounded-lg overflow-hidden">
       <!-- Header -->
-      <div class="bg-[var(--ui-bg-muted)] border-b border-[var(--ui-border)] px-3 py-2">
+      <div class="bg-muted border-b border-default px-3 py-2">
         <div class="font-medium text-sm">
           {{ oldLabel || t('diff.old-version') }} → {{ newLabel || t('diff.new-version') }}
         </div>
@@ -239,25 +239,25 @@ const stats = computed(() => {
           <div
             v-for="(line, idx) in diffResult"
             :key="idx"
-            class="flex border-b border-[var(--ui-border)] last:border-b-0"
+            class="flex border-b border-default last:border-b-0"
             :class="{
               'bg-red-100 dark:bg-red-900/40': line.type === 'removed',
               'bg-green-100 dark:bg-green-900/40': line.type === 'added',
-              'bg-[var(--ui-bg)]': line.type === 'unchanged',
+              'bg-default': line.type === 'unchanged',
             }"
           >
             <span
-              class="w-12 flex-shrink-0 px-2 py-0.5 text-right text-[var(--ui-text-muted)] select-none border-r border-[var(--ui-border)]"
+              class="w-12 shrink-0 px-2 py-0.5 text-right text-muted select-none border-r border-default"
             >
               {{ line.oldLineNum ?? '' }}
             </span>
             <span
-              class="w-12 flex-shrink-0 px-2 py-0.5 text-right text-[var(--ui-text-muted)] select-none border-r border-[var(--ui-border)]"
+              class="w-12 shrink-0 px-2 py-0.5 text-right text-muted select-none border-r border-default"
             >
               {{ line.newLineNum ?? '' }}
             </span>
             <span
-              class="w-6 flex-shrink-0 px-1 py-0.5 text-center select-none"
+              class="w-6 shrink-0 px-1 py-0.5 text-center select-none"
               :class="{
                 'text-red-600 dark:text-red-400': line.type === 'removed',
                 'text-green-600 dark:text-green-400': line.type === 'added',

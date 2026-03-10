@@ -120,7 +120,7 @@ const navTo = navigateTo
       <!-- Version info cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <!-- Old version info -->
-        <div class="p-3 rounded-lg bg-[var(--ui-bg-muted)]">
+        <div class="p-3 rounded-lg bg-muted">
           <div class="font-medium text-sm mb-1 flex items-center justify-between">
             <span>{{ oldLabel }}</span>
             <UButton
@@ -132,10 +132,10 @@ const navTo = navigateTo
             />
           </div>
           <div v-if="data.oldPage.meta.title" class="text-sm mb-1">
-            <UIcon name="tabler:file-text" class="mr-1 align-middle text-[var(--ui-text-muted)]" />
+            <UIcon name="tabler:file-text" class="mr-1 align-middle text-muted" />
             <span class="align-middle">{{ data.oldPage.meta.title }}</span>
           </div>
-          <div v-if="data.oldPage.meta.modifiedByDisplayName" class="text-sm text-[var(--ui-text-muted)]">
+          <div v-if="data.oldPage.meta.modifiedByDisplayName" class="text-sm text-muted">
             <UIcon name="tabler:user" class="mr-1 align-middle" />
             <span class="align-middle">{{ data.oldPage.meta.modifiedByDisplayName }}</span>
           </div>
@@ -145,7 +145,7 @@ const navTo = navigateTo
         </div>
 
         <!-- New version info -->
-        <div class="p-3 rounded-lg bg-[var(--ui-bg-muted)]">
+        <div class="p-3 rounded-lg bg-muted">
           <div class="font-medium text-sm mb-1 flex items-center justify-between">
             <span>{{ newLabel }}</span>
             <UButton
@@ -157,10 +157,10 @@ const navTo = navigateTo
             />
           </div>
           <div v-if="data.newPage.meta.title" class="text-sm mb-1">
-            <UIcon name="tabler:file-text" class="mr-1 align-middle text-[var(--ui-text-muted)]" />
+            <UIcon name="tabler:file-text" class="mr-1 align-middle text-muted" />
             <span class="align-middle">{{ data.newPage.meta.title }}</span>
           </div>
-          <div v-if="data.newPage.meta.modifiedByDisplayName" class="text-sm text-[var(--ui-text-muted)]">
+          <div v-if="data.newPage.meta.modifiedByDisplayName" class="text-sm text-muted">
             <UIcon name="tabler:user" class="mr-1 align-middle" />
             <span class="align-middle">{{ data.newPage.meta.modifiedByDisplayName }}</span>
           </div>

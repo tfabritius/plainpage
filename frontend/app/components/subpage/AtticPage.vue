@@ -64,6 +64,12 @@ const navTo = navigateTo
     <template #actions>
       <ReactiveButton
         v-if="!data.notFound"
+        icon="tabler:history"
+        :label="$t('revisions')"
+        @click="navTo({ query: { rev: null } })"
+      />
+      <ReactiveButton
+        v-if="!data.notFound"
         icon="tabler:arrow-back-up"
         :label="$t('current-version')"
         @click="navTo({ query: { rev: undefined } })"

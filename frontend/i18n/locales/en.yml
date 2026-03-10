@@ -82,6 +82,18 @@ days: days
 define-custom-permissions: Define custom permissions
 delete: Delete
 delete-folder: Delete folder
+diff:
+  additions: additions
+  compare: Compare
+  comparing-revisions: Comparing revisions
+  deletions: deletions
+  new-version: New version
+  no-revisions: No revisions available
+  old-version: Old version
+  one-revision-missing: One of the revisions could not be found
+  select-two-revisions: Select two revisions to compare
+  side-by-side: Side by side
+  unified: Unified
 delete-my-account: Delete my account
 delete-page: Delete page
 delete-permanently: Delete permanently

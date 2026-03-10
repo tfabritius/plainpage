@@ -82,6 +82,18 @@ days: Tage
 define-custom-permissions: Eigene Berechtigungen festlegen
 delete: Löschen
 delete-folder: Ordner löschen
+diff:
+  additions: Hinzufügungen
+  compare: Vergleichen
+  comparing-revisions: Überarbeitungen vergleichen
+  deletions: Löschungen
+  new-version: Neue Version
+  no-revisions: Keine Überarbeitungen verfügbar
+  old-version: Alte Version
+  one-revision-missing: Eine der Überarbeitungen konnte nicht gefunden werden
+  select-two-revisions: Wähle zwei Überarbeitungen zum Vergleichen
+  side-by-side: Nebeneinander
+  unified: Vereint
 delete-my-account: Lösche mein Konto
 delete-page: Seite löschen
 delete-permanently: Endgültig löschen

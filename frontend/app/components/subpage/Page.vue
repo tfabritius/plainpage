@@ -189,7 +189,7 @@ const menuItems = computed(() => {
   })
 
   items.push({
-    icon: 'tabler:restore',
+    icon: 'tabler:history',
     label: t('revisions'),
     onSelect: async () => {
       await navigateTo({ query: { rev: null } })

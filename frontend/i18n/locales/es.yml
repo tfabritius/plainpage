@@ -82,6 +82,18 @@ days: días
 define-custom-permissions: Definir permisos propios
 delete: Borrar
 delete-folder: Borrar carpeta
+diff:
+  additions: adiciones
+  compare: Comparar
+  comparing-revisions: Comparando revisiones
+  deletions: eliminaciones
+  new-version: Nueva versión
+  no-revisions: No hay revisiones disponibles
+  old-version: Versión anterior
+  one-revision-missing: No se pudo encontrar una de las revisiones
+  select-two-revisions: Selecciona dos revisiones para comparar
+  side-by-side: Lado a lado
+  unified: Unificado
 delete-my-account: Borrar mi cuenta
 delete-page: Borrar página
 delete-permanently: Eliminar permanentemente

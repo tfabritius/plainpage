@@ -10,7 +10,15 @@ const route = useRoute()
 // eslint-disable-next-line e18e/prefer-static-regex
 const urlPath = computed(() => route.path.replace(/^\//, ''))
 
+// revQuery is a string if ?rev=123 is passed,
+// null if ?rev is passed (no value),
+// undefined if rev isn't used as query parameter,
+// is null if ?rev=123&rev=456 is passed (multiple values) - not used
 const revQuery = useRouteQuery('rev', undefined, {
+  transform: (data: string | string[] | null | undefined) => Array.isArray(data) ? null : data,
+})
+
+const diffQuery = useRouteQuery('diff', undefined, {
   transform: (data: string | string[] | null | undefined) => Array.isArray(data) ? null : data,
 })
 
@@ -71,6 +79,12 @@ const pageTitle = computed(() => {
     />
     <SubpageAccessDenied
       v-else-if="data?.accessDenied"
+    />
+    <SubpageAtticDiff
+      v-else-if="revQuery && diffQuery"
+      :url-path="urlPath"
+      :revision1="revQuery"
+      :revision2="diffQuery"
     />
     <SubpageAtticList
       v-else-if="revQuery === null"

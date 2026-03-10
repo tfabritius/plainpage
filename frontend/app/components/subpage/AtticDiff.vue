@@ -121,8 +121,15 @@ const navTo = navigateTo
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <!-- Old version info -->
         <div class="p-3 rounded-lg bg-[var(--ui-bg-muted)]">
-          <div class="font-medium text-sm mb-1">
-            {{ oldLabel }}
+          <div class="font-medium text-sm mb-1 flex items-center justify-between">
+            <span>{{ oldLabel }}</span>
+            <UButton
+              variant="link"
+              size="xs"
+              icon="tabler:external-link"
+              :title="$t('diff.view-revision')"
+              @click="navTo({ query: { rev: data.oldRev, diff: undefined } })"
+            />
           </div>
           <div v-if="data.oldPage.meta.title" class="text-sm mb-1">
             <UIcon name="tabler:file-text" class="mr-1 align-middle text-[var(--ui-text-muted)]" />
@@ -139,8 +146,15 @@ const navTo = navigateTo
 
         <!-- New version info -->
         <div class="p-3 rounded-lg bg-[var(--ui-bg-muted)]">
-          <div class="font-medium text-sm mb-1">
-            {{ newLabel }}
+          <div class="font-medium text-sm mb-1 flex items-center justify-between">
+            <span>{{ newLabel }}</span>
+            <UButton
+              variant="link"
+              size="xs"
+              icon="tabler:external-link"
+              :title="$t('diff.view-revision')"
+              @click="navTo({ query: { rev: data.newRev, diff: undefined } })"
+            />
           </div>
           <div v-if="data.newPage.meta.title" class="text-sm mb-1">
             <UIcon name="tabler:file-text" class="mr-1 align-middle text-[var(--ui-text-muted)]" />

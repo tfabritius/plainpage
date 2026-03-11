@@ -126,6 +126,7 @@ async function onDeleteSelected() {
     t('confirm-delete-items-permanent', { count: selectedItems.value.size }),
     {
       title: t('delete-permanently'),
+      icon: 'tabler:alert-triangle',
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },
@@ -273,6 +274,7 @@ async function onRestorePage() {
     t('confirm-restore-page'),
     {
       title: t('restore'),
+      icon: 'tabler:alert-triangle',
       confirmButtonText: t('restore'),
     },
   )
@@ -308,6 +310,7 @@ async function onDeletePagePermanently() {
     t('confirm-delete-page-permanent'),
     {
       title: t('delete-permanently'),
+      icon: 'tabler:alert-triangle',
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },

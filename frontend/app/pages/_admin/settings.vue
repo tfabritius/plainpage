@@ -83,6 +83,7 @@ async function confirmRestore() {
     t('_settings.restore-confirm'),
     {
       title: t('_settings.restore'),
+      icon: 'tabler:alert-triangle',
       confirmButtonText: t('_settings.restore-upload'),
       confirmButtonColor: 'error',
     },

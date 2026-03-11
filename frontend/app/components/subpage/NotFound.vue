@@ -89,6 +89,7 @@ async function onCancelEdit() {
       t('discard-changes-to-this-page'),
       {
         title: t('discard-changes'),
+        icon: 'tabler:alert-triangle',
         confirmButtonColor: 'warning',
       },
     )) {

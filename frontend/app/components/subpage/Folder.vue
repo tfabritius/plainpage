@@ -222,6 +222,7 @@ async function onDeleteFolder() {
     t('are-you-sure-to-delete-this-folder'),
     {
       title: t('delete-folder'),
+      icon: 'tabler:alert-triangle',
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },

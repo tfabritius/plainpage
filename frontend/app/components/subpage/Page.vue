@@ -149,6 +149,7 @@ async function onDeletePage() {
     t('are-you-sure-to-delete-this-page'),
     {
       title: t('delete-page'),
+      icon: 'tabler:alert-triangle',
       confirmButtonText: t('delete'),
       confirmButtonColor: 'warning',
     },
@@ -267,6 +268,7 @@ async function onCancelEdit() {
       t('discard-changes-to-this-page'),
       {
         title: t('discard-changes'),
+        icon: 'tabler:alert-triangle',
         confirmButtonColor: 'warning',
       },
     )) {

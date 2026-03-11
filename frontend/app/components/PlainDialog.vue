@@ -11,6 +11,7 @@ const {
 
 interface ConfirmOptions {
   title?: string
+  icon?: string
   confirmButtonText?: string
   confirmButtonColor?: 'success' | 'warning' | 'error'
   cancelButtonText?: string
@@ -67,19 +68,38 @@ defineExpose({ confirm })
       :dismissible="true"
       @update:open="(v: Boolean) => v || confirmDialog(false)"
     >
-      <template #title>
-        {{ parameters.title || t('confirm') }}
-      </template>
-
-      <template #description>
-        <span ref="message" tabindex="-1" class="outline-none">
-          {{ parameters.message }}
+      <template #header>
+        <UIcon
+          v-if="parameters.icon"
+          :name="parameters.icon"
+          class="w-5 h-5"
+        />
+        <span class="text-lg font-semibold text-highlighted">
+          {{ parameters.title || t('confirm') }}
         </span>
       </template>
 
+      <template #body>
+        <p
+          ref="message"
+          tabindex="-1"
+          class="outline-none"
+        >
+          {{ parameters.message }}
+        </p>
+      </template>
+
       <template #footer>
-        <UButton :label="parameters.cancelButtonText || t('cancel')" @click="confirmDialog(false)" />
-        <UButton :color="parameters.confirmButtonColor || 'primary'" variant="solid" :label="parameters.confirmButtonText || t('ok')" @click="confirmDialog(true)" />
+        <UButton
+          :label="parameters.cancelButtonText || t('cancel')"
+          @click="confirmDialog(false)"
+        />
+        <UButton
+          :color="parameters.confirmButtonColor || 'primary'"
+          variant="solid"
+          :label="parameters.confirmButtonText || t('ok')"
+          @click="confirmDialog(true)"
+        />
       </template>
     </UModal>
   </Teleport>

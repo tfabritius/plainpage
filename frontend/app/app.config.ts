@@ -90,8 +90,9 @@ export default defineAppConfig({
 
     modal: {
       slots: {
+        header: 'gap-3',
         content: 'bg-default ',
-        footer: 'justify-end',
+        footer: 'justify-end gap-3',
       },
     },
 

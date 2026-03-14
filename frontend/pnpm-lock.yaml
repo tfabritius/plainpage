@@ -91,8 +91,8 @@ importers:
         specifier: 2.9.0
         version: 2.9.0(vue@3.5.29(typescript@5.9.3))
       slugify:
-        specifier: ^1.6.6
-        version: 1.6.6
+        specifier: ^1.6.8
+        version: 1.6.8
       tailwindcss:
         specifier: 4.2.1
         version: 4.2.1
@@ -5985,8 +5985,8 @@ packages:
     resolution: {integrity: sha512-ZA6oR3T/pEyuqwMgAKT0/hAv8oAXckzbkmR0UkUosQ+Mc4RxGoJkRmwHgHufaenlyAgE1Mxgpdcrf75y6XcnDg==}
     engines: {node: '>=14.16'}
 
-  slugify@1.6.6:
-    resolution: {integrity: sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==}
+  slugify@1.6.8:
+    resolution: {integrity: sha512-HVk9X1E0gz3mSpoi60h/saazLKXKaZThMLU3u/aNwoYn8/xQyX2MGxL0ui2eaokkD7tF+Zo+cKTHUbe1mmmGzA==}
     engines: {node: '>=8.0.0'}
 
   smob@1.6.1:
@@ -13568,7 +13568,7 @@ snapshots:
 
   slash@5.1.0: {}
 
-  slugify@1.6.6: {}
+  slugify@1.6.8: {}
 
   smob@1.6.1: {}
 

@@ -17,7 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "diff": "^8.0.3",
+    "diff": "^8.0.4",
     "vue": "^3.5.30"
   },
   "devDependencies": {

@@ -21,7 +21,7 @@ jobs:
           fetch-depth: 0
 
       ### Frontend
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
         with:
           package_json_file: frontend/package.json
         # pnpm has to be installed before node to make use of caching

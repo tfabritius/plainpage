@@ -1120,7 +1120,6 @@ func (s *ContentService) listAllPagesRecursive(urlPath string) ([]string, error)
 // Config and users can be optionally included via BackupOptions.
 func (s *ContentService) WriteBackup(w io.Writer, opts BackupOptions) error {
 	zipWriter := zip.NewWriter(w)
-	defer zipWriter.Close()
 
 	// Content directories (always included)
 	contentDirs := []string{"pages", "attic", "trash"}
@@ -1142,6 +1141,10 @@ func (s *ContentService) WriteBackup(w io.Writer, opts BackupOptions) error {
 		if err := s.addUsersToZip(zipWriter); err != nil {
 			return fmt.Errorf("could not add users to archive: %w", err)
 		}
+	}
+
+	if err := zipWriter.Close(); err != nil {
+		return fmt.Errorf("could not close ZIP writer: %w", err)
 	}
 
 	return nil
@@ -1286,7 +1289,9 @@ func (s *ContentService) RestoreBackup(zipReader *zip.Reader) (bool, error) {
 		}
 
 		content, err := io.ReadAll(rc)
-		rc.Close()
+		if err := rc.Close(); err != nil {
+			return false, fmt.Errorf("could not close %s: %w", f.Name, err)
+		}
 		if err != nil {
 			return false, fmt.Errorf("could not read %s: %w", f.Name, err)
 		}

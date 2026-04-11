@@ -415,6 +415,13 @@ onKeyStroke('ArrowUp', async (e) => {
         </MultiColumnList>
       </div>
 
+      <div v-if="folder.content.length === 0" class="text-center py-12 text-muted">
+        <UIcon name="tabler:folder-open" class="size-16 mx-auto mb-4 opacity-50" />
+        <p class="text-lg">
+          {{ $t('folder-is-empty') }}
+        </p>
+      </div>
+
       <PlainDialog ref="plainDialog" />
 
       <!-- Move Modal -->

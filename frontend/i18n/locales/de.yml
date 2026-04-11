@@ -115,6 +115,7 @@ edit-user-name: Benutzer "{0}" bearbeiten
 error: Fehler
 folder-created: Ordner angelegt
 folder-deleted: Ordner gelöscht
+folder-is-empty: Dieser Ordner ist leer
 folder-moved: Ordner verschoben
 folder-name: Name des Ordners
 folder-name-required: Bitte Name des Ordners eingeben

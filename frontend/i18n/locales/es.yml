@@ -115,6 +115,7 @@ edit-user-name: Editar usuario "{0}"
 error: Error
 folder-created: Carpeta creada
 folder-deleted: Carpeta eliminada
+folder-is-empty: Esta carpeta está vacía
 folder-moved: Carpeta movida
 folder-name: Nombre de la carpeta
 folder-name-required: Por favor ingrese el nombre de la carpeta

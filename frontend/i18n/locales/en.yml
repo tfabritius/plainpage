@@ -115,6 +115,7 @@ edit-user-name: Edit user "{0}"
 error: Error
 folder-created: Folder created
 folder-deleted: Folder deleted
+folder-is-empty: This folder is empty
 folder-moved: Folder moved
 folder-name: Folder name
 folder-name-required: Please enter folder name

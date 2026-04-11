@@ -142,6 +142,7 @@ function onDeleteCancel() {
           </UFormField>
           <UFormField :label="$t('new-password')" name="password" class="mt-4">
             <UInput v-model="passwordState.password" type="password" autocomplete="off" class="w-full" />
+            <PasswordStrength :password="passwordState.password" class="mt-1" />
           </UFormField>
           <UFormField :label="$t('password-repeat')" name="passwordConfirm" class="mt-4">
             <UInput v-model="passwordState.passwordConfirm" type="password" autocomplete="off" class="w-full" />

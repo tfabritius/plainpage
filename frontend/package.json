@@ -18,7 +18,8 @@
   },
   "dependencies": {
     "diff": "^8.0.4",
-    "vue": "^3.5.32"
+    "vue": "^3.5.32",
+    "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^8.1.1",

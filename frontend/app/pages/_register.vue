@@ -116,6 +116,7 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
               class="w-full"
               size="lg"
             />
+            <PasswordStrength :password="formState.password" class="mt-1" />
           </UFormField>
           <UFormField :label="$t('password-repeat')" name="passwordConfirm" class="mt-4" :ui="{ label: 'sr-only' }">
             <UInput

@@ -190,6 +190,7 @@ async function onDeleteConfirm() {
           </UFormField>
           <UFormField :label="$t('password')" name="password">
             <UInput v-model="userFormState.password" type="password" autocomplete="off" class="w-full" />
+            <PasswordStrength :password="userFormState.password" class="mt-1" />
           </UFormField>
           <UFormField :label="$t('password-repeat')" name="passwordConfirm">
             <UInput v-model="userFormState.passwordConfirm" type="password" autocomplete="off" class="w-full" />

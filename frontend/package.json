@@ -17,7 +17,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "diff": "^8.0.4",
+    "diff": "^9.0.0",
     "vue": "^3.5.32",
     "zxcvbn-typescript": "^5.0.1"
   },

@@ -22,7 +22,7 @@
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^8.1.1",
+    "@antfu/eslint-config": "^8.2.0",
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/state": "^6.6.0",
     "@codemirror/theme-one-dark": "^6.1.3",

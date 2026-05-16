@@ -50,7 +50,7 @@
     "slugify": "^1.6.9",
     "tailwindcss": "4.3.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.5",
+    "vitest": "^4.1.6",
     "vue-codemirror": "^6.1.1",
     "vue-tsc": "^3.2.8",
     "zod": "^4.4.3"

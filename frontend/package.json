@@ -63,7 +63,11 @@
         "vue",
         "vue-router"
       ]
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "vue-demi"
+    ]
   },
   "packageManager": "pnpm@10.30.2"
 }

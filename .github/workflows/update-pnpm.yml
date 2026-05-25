@@ -1,0 +1,56 @@
+name: Update pnpm
+
+on:
+  schedule:
+    - cron: '0 9 * * 0' # Weekly on Sunday at 9:00
+  workflow_dispatch:
+
+jobs:
+  update-pnpm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: frontend/package.json
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get current pnpm version
+        id: old
+        run: echo "version=$(pnpm --version)" >> $GITHUB_OUTPUT
+
+      - name: Update pnpm to latest
+        run: corepack use pnpm@latest
+
+      - name: Get new pnpm version
+        id: new
+        run: echo "version=$(pnpm --version)" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.PAT }}
+          commit-message: 'Bump pnpm from ${{ steps.old.outputs.version }} to ${{ steps.new.outputs.version }}'
+          title: 'Bump pnpm from ${{ steps.old.outputs.version }} to ${{ steps.new.outputs.version }}'
+          branch: update-pnpm
+          labels: dependencies
+
+      - name: Enable auto-merge
+        if: steps.cpr.outputs.pull-request-number
+        run: gh pr merge --auto --rebase "$PR_URL"
+        env:
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -50,7 +50,7 @@
     "reka-ui": "2.9.10",
     "sass-embedded": "^1.100.0",
     "slugify": "^1.6.9",
-    "tailwindcss": "4.3.0",
+    "tailwindcss": "4.3.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8",
     "vue-codemirror": "^6.1.1",

@@ -30,7 +30,7 @@ function lineNoToSegment(lineNo: number): Segment | null {
 
 // Splits markdown into segments, adds tokens of type space to previous segment
 function splitMdToSegments(markdown: string): Segment[] {
-  const tokens = marked.lexer(markdown)
+  const tokens = marked.lexer(markdown, { gfm: true })
 
   const segments: Segment[] = []
 

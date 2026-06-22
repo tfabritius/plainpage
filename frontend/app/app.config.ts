@@ -75,13 +75,6 @@ export default defineAppConfig({
       slots: {
         base: 'rounded-lg shadow-sm',
       },
-      compoundVariants: [
-        {
-          color: 'primary',
-          variant: ['outline', 'subtle'],
-          class: 'focus-visible:ring-1',
-        },
-      ],
     },
 
     link: {

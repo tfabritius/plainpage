@@ -9,7 +9,7 @@ export function useMarkdownFormatter() {
    * Format the entire markdown document
    */
   function formatMarkdown(text: string): string {
-    const tokens = marked.lexer(text)
+    const tokens = marked.lexer(text, { gfm: true })
     const lines = text.split('\n')
 
     // Track which line ranges have been formatted (to avoid double processing)

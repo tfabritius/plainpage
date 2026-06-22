@@ -100,12 +100,6 @@ async function onCancelEdit() {
   editing.value = false
 }
 
-onKeyStroke('Escape', async (_event: KeyboardEvent) => {
-  if (editing.value) {
-    onCancelEdit()
-  }
-}, { eventName: 'keyup' })
-
 onKeyStroke('s', (e) => {
   if (editing.value && e.ctrlKey) {
     e.preventDefault()
@@ -144,7 +138,7 @@ const navTo = navigateTo
       <ReactiveButton v-else icon="tabler:home" :label="$t('back-home')" @click="navTo('/')" />
     </div>
 
-    <PageEditor v-else v-model="editablePage" />
+    <PageEditor v-else v-model="editablePage" @escape="onCancelEdit" />
 
     <PlainDialog ref="plainDialog" />
   </Layout>

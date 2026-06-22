@@ -111,6 +111,57 @@ displayname-required: Please enter display name
 edit: Edit
 edit-folder: Edit folder
 edit-user: Edit user
+editor:
+  bold: Bold
+  checkbox: Checkbox
+  code-block: Code block
+  code-inline: Inline code
+  divider: Divider
+  empty: Empty
+  format: Format
+  fullscreen: Fullscreen
+  heading: Heading
+  heading-1: Heading 1
+  heading-2: Heading 2
+  heading-3: Heading 3
+  heading-4: Heading 4
+  heading-5: Heading 5
+  heading-6: Heading 6
+  hide-preview: Hide preview
+  insert: Insert
+  italic: Italic
+  link: Link
+  link-hint-protocol: 'Tip: Add https:// for external links'
+  link-open: Open in new window
+  link-remove: Remove Link
+  list-ordered: Numbered list
+  list-unordered: Bullet list
+  lists: Lists
+  minimize: Exit fullscreen
+  paragraph: Paragraph
+  placeholder: Type / for commands...
+  quote: Quote
+  redo: Redo
+  show-preview: Show preview
+  source: Source
+  strikethrough: Strikethrough
+  subscript: Subscript
+  superscript: Superscript
+  switch-to-source: Switch to source editor
+  switch-to-visual: Switch to visual editor
+  table: Table
+  table-add-column-after: Add column after
+  table-add-column-before: Add column before
+  table-add-row-above: Add row above
+  table-add-row-below: Add row below
+  table-delete: Delete table
+  table-delete-column: Delete column
+  table-delete-row: Delete row
+  text: Text
+  turn-into: Turn into
+  underline: Underline
+  undo: Undo
+  visual: Visual
 edit-user-name: Edit user "{0}"
 error: Error
 folder-created: Folder created
@@ -210,33 +261,8 @@ timeAgo:
   year: 'year | years'
   yesterday: yesterday
 title: Title
-toolbar:
-  bold: Bold
-  italic: Italic
-  underline: Underline
-  strikethrough: Strikethrough
-  superscript: Superscript
-  subscript: Subscript
-  heading: Heading
-  heading-1: Heading 1
-  heading-2: Heading 2
-  heading-3: Heading 3
-  heading-4: Heading 4
-  heading-5: Heading 5
-  heading-6: Heading 6
-  list-unordered: Bullet list
-  list-ordered: Numbered list
-  checkbox: Checkbox
-  quote: Quote
-  link: Link
-  code-inline: Inline code
-  code-block: Code block
-  table: Table
-  format: Format
-  fullscreen: Fullscreen
-  minimize: Exit fullscreen
-  show-preview: Show preview
-  hide-preview: Hide preview
+text: Text
+optional: Optional
 too-many-login-requests: Too many sign in attempts. Please wait {0}s.
 trash: Trash
 trash-is-empty: Trash is empty

@@ -200,7 +200,7 @@ watch(isDark, updateTheme)
 <template>
   <Codemirror
     v-model="doc"
-    placeholder="Empty"
+    :placeholder="$t('editor.empty')"
     :style="{ height: '100%' }"
     :autofocus="true"
     :indent-with-tab="true"

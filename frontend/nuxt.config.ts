@@ -54,11 +54,28 @@ export default defineNuxtConfig({
     strict: true,
   },
 
+  build: {
+    transpile: [
+      '@tiptap/extension-table',
+      '@tiptap/extension-table-row',
+      '@tiptap/extension-table-cell',
+      '@tiptap/extension-table-header',
+    ],
+  },
+
   nitro: {
     devProxy: {
       '/_api': {
         target: 'http://localhost:8080/_api',
       },
+    },
+  },
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        'vue-codemirror',
+      ],
     },
   },
 

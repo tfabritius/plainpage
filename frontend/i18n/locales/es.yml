@@ -111,6 +111,57 @@ drop-markdown-file: Suelta el archivo Markdown aquí
 edit: Editar
 edit-folder: Editar carpeta
 edit-user: Editar usuario
+editor:
+  bold: Negrita
+  checkbox: Casilla de verificación
+  code-block: Bloque de código
+  code-inline: Código en línea
+  divider: Separador
+  empty: Vacío
+  format: Formatear
+  fullscreen: Pantalla completa
+  heading: Encabezado
+  heading-1: Encabezado 1
+  heading-2: Encabezado 2
+  heading-3: Encabezado 3
+  heading-4: Encabezado 4
+  heading-5: Encabezado 5
+  heading-6: Encabezado 6
+  hide-preview: Ocultar vista previa
+  insert: Insertar
+  italic: Cursiva
+  link: Enlace
+  link-hint-protocol: 'Consejo: Agregue https:// para enlaces externos'
+  link-open: Abrir en ventana nueva
+  link-remove: Eliminar enlace
+  list-ordered: Lista numerada
+  list-unordered: Lista con viñetas
+  lists: Listas
+  minimize: Salir de pantalla completa
+  paragraph: Párrafo
+  placeholder: Escribe / para comandos...
+  quote: Cita
+  redo: Rehacer
+  show-preview: Mostrar vista previa
+  source: Código fuente
+  strikethrough: Tachado
+  subscript: Subíndice
+  superscript: Superíndice
+  switch-to-source: Cambiar al editor de código fuente
+  switch-to-visual: Cambiar al editor visual
+  table: Tabla
+  table-add-column-after: Añadir columna después
+  table-add-column-before: Añadir columna antes
+  table-add-row-above: Añadir fila arriba
+  table-add-row-below: Añadir fila abajo
+  table-delete: Eliminar tabla
+  table-delete-column: Eliminar columna
+  table-delete-row: Eliminar fila
+  text: Texto
+  turn-into: Convertir en
+  underline: Subrayado
+  undo: Deshacer
+  visual: Visual
 edit-user-name: Editar usuario "{0}"
 error: Error
 folder-created: Carpeta creada
@@ -210,33 +261,8 @@ timeAgo:
   year: 'año | años'
   yesterday: ayer
 title: Título
-toolbar:
-  bold: Negrita
-  italic: Cursiva
-  underline: Subrayado
-  strikethrough: Tachado
-  superscript: Superíndice
-  subscript: Subíndice
-  heading: Encabezado
-  heading-1: Encabezado 1
-  heading-2: Encabezado 2
-  heading-3: Encabezado 3
-  heading-4: Encabezado 4
-  heading-5: Encabezado 5
-  heading-6: Encabezado 6
-  list-unordered: Lista con viñetas
-  list-ordered: Lista numerada
-  checkbox: Casilla de verificación
-  quote: Cita
-  link: Enlace
-  code-inline: Código en línea
-  code-block: Bloque de código
-  table: Tabla
-  format: Formatear
-  fullscreen: Pantalla completa
-  minimize: Salir de pantalla completa
-  show-preview: Mostrar vista previa
-  hide-preview: Ocultar vista previa
+text: Texto
+optional: Opcional
 too-many-login-requests: Demasiados intentos de inicio de sesión. Por favor espera {0}s.
 trash: Papelera
 trash-is-empty: La papelera está vacía

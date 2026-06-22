@@ -217,3 +217,98 @@
     }
   }
 }
+
+// Task list styles for TipTap editor (global, outside .markdown)
+.ProseMirror ul[data-type='taskList'],
+ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+
+  > li {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-start;
+    gap: 0.5em;
+    margin-bottom: 0.25em;
+
+    > label {
+      flex-shrink: 0;
+      margin-top: 0.25em;
+      display: flex;
+      align-items: center;
+
+      input[type='checkbox'] {
+        cursor: pointer;
+        width: 1em;
+        height: 1em;
+        accent-color: var(--ui-primary);
+      }
+    }
+
+    > div {
+      flex: 1;
+      min-width: 0;
+      display: block;
+
+      > p {
+        margin: 0;
+        display: inline;
+      }
+    }
+
+    // Nested task lists
+    ul[data-type='taskList'] {
+      margin-top: 0.25em;
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Table styles for TipTap editor (global, outside .markdown)
+table.tiptap-table,
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+
+  td,
+  th {
+    min-width: 1em;
+    border: 2px solid var(--ui-border);
+    padding: 0.5rem;
+    vertical-align: top;
+    box-sizing: border-box;
+    position: relative;
+
+    > * {
+      margin-bottom: 0;
+    }
+  }
+
+  th {
+    font-weight: 600;
+    text-align: left;
+    background-color: var(--ui-bg-muted);
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+// Selected cell highlight
+.ProseMirror .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: '';
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(200, 200, 255, 0.4);
+  pointer-events: none;
+}

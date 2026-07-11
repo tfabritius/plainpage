@@ -25,8 +25,8 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0
       '@codemirror/state':
-        specifier: ^6.6.0
-        version: 6.6.0
+        specifier: ^6.7.1
+        version: 6.7.1
       '@codemirror/theme-one-dark':
         specifier: ^6.1.3
         version: 6.1.3
@@ -440,8 +440,8 @@ packages:
   '@codemirror/search@6.5.11':
     resolution: {integrity: sha512-KmWepDE6jUdL6n8cAAqIpRmLPBZ5ZKnicE8oGU/s3QrAVID+0VhLFrzUucVKHG5035/BSykhExDL/Xm7dHthiA==}
 
-  '@codemirror/state@6.6.0':
-    resolution: {integrity: sha512-4nbvra5R5EtiCzr9BTHiTLc+MLXK2QGiAVYMyi8PkQd3SR+6ixar/Q/01Fa21TBIDOZXgeWV4WppsQolSreAPQ==}
+  '@codemirror/state@6.7.1':
+    resolution: {integrity: sha512-9QzNDgE4EYDnAHfrTlR2lwiPciiOymLtwKK+8yHQzCc7GXhAP9xdEbEJFy2IWB1j9UGUl9BsgMmTo/ImA02T7A==}
 
   '@codemirror/theme-one-dark@6.1.3':
     resolution: {integrity: sha512-NzBdIvEJmx6fjeremiGp3t/okrLPYT0d9orIc7AFun8oZcRk58aejkqhv6spnz4MLAevrKNPMQYXEWMg4s+sKA==}
@@ -1239,8 +1239,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@marijn/find-cluster-break@1.0.2':
-    resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
+  '@marijn/find-cluster-break@1.0.3':
+    resolution: {integrity: sha512-FY+MKLBoTsLNJF/eLWaOsXGdz6uh3Iu1axjPf6TUq92IYumcTcXWHoS747JARLkcdlJ/Waiaxc5wQfFO8jC6NA==}
 
   '@miyaneee/rollup-plugin-json5@1.2.0':
     resolution: {integrity: sha512-JjTIaXZp9WzhUHpElrqPnl1AzBi/rvRs065F71+aTmlqvTMVkdbjZ8vfFl4nRlgJy+TPBw69ZK4pwFdmOAt4aA==}
@@ -7679,14 +7679,14 @@ snapshots:
   '@codemirror/autocomplete@6.19.1':
     dependencies:
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/common': 1.3.0
 
   '@codemirror/commands@6.8.1':
     dependencies:
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/common': 1.3.0
 
@@ -7694,7 +7694,7 @@ snapshots:
     dependencies:
       '@codemirror/autocomplete': 6.19.1
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@lezer/common': 1.3.0
       '@lezer/css': 1.3.0
 
@@ -7704,7 +7704,7 @@ snapshots:
       '@codemirror/lang-css': 6.3.1
       '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/common': 1.3.0
       '@lezer/css': 1.3.0
@@ -7715,7 +7715,7 @@ snapshots:
       '@codemirror/autocomplete': 6.19.1
       '@codemirror/language': 6.11.3
       '@codemirror/lint': 6.9.1
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/common': 1.3.0
       '@lezer/javascript': 1.5.4
@@ -7725,14 +7725,14 @@ snapshots:
       '@codemirror/autocomplete': 6.19.1
       '@codemirror/lang-html': 6.4.11
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/common': 1.3.0
       '@lezer/markdown': 1.5.1
 
   '@codemirror/language@6.11.3':
     dependencies:
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/common': 1.3.0
       '@lezer/highlight': 1.2.2
@@ -7741,30 +7741,30 @@ snapshots:
 
   '@codemirror/lint@6.9.1':
     dependencies:
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       crelt: 1.0.6
 
   '@codemirror/search@6.5.11':
     dependencies:
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       crelt: 1.0.6
 
-  '@codemirror/state@6.6.0':
+  '@codemirror/state@6.7.1':
     dependencies:
-      '@marijn/find-cluster-break': 1.0.2
+      '@marijn/find-cluster-break': 1.0.3
 
   '@codemirror/theme-one-dark@6.1.3':
     dependencies:
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       '@lezer/highlight': 1.2.2
 
   '@codemirror/view@6.43.1':
     dependencies:
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       crelt: 1.0.6
       style-mod: 4.1.3
       w3c-keyname: 2.2.8
@@ -8400,7 +8400,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@marijn/find-cluster-break@1.0.2': {}
+  '@marijn/find-cluster-break@1.0.3': {}
 
   '@miyaneee/rollup-plugin-json5@1.2.0(rollup@4.61.1)':
     dependencies:
@@ -11199,7 +11199,7 @@ snapshots:
       '@codemirror/language': 6.11.3
       '@codemirror/lint': 6.9.1
       '@codemirror/search': 6.5.11
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
 
   color-convert@2.0.1:
@@ -15008,7 +15008,7 @@ snapshots:
     dependencies:
       '@codemirror/commands': 6.8.1
       '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.6.0
+      '@codemirror/state': 6.7.1
       '@codemirror/view': 6.43.1
       codemirror: 6.0.2
       vue: 3.5.39(typescript@6.0.3)

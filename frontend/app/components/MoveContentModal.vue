@@ -268,7 +268,7 @@ watch(open, (isOpen) => {
     </template>
 
     <template #footer>
-      <UButton :label="$t('cancel')" @click="open = false" />
+      <UButton :label="$t('cancel')" @click="() => { open = false } " />
       <UButton
         color="primary"
         variant="solid"

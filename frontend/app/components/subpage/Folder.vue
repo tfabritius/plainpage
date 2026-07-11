@@ -452,7 +452,7 @@ onKeyStroke('ArrowUp', async (e) => {
           </form>
         </template>
         <template #footer>
-          <UButton :label="$t('cancel')" @click="editFolderOpen = false" />
+          <UButton :label="$t('cancel')" @click="() => { editFolderOpen = false }" />
           <UButton
             color="primary"
             variant="solid"

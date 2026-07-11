@@ -150,7 +150,7 @@ const stats = computed(() => {
             :variant="mode === 'side-by-side' ? 'subtle' : 'outline'"
             size="sm"
             icon="tabler:columns-2"
-            @click="mode = 'side-by-side'"
+            @click="() => { mode = 'side-by-side' }"
           >
             {{ t('diff.side-by-side') }}
           </UButton>
@@ -158,7 +158,7 @@ const stats = computed(() => {
             :variant="mode === 'unified' ? 'subtle' : 'outline'"
             size="sm"
             icon="tabler:align-left"
-            @click="mode = 'unified'"
+            @click="() => { mode = 'unified' }"
           >
             {{ t('diff.unified') }}
           </UButton>

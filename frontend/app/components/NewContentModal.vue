@@ -130,7 +130,7 @@ async function onOpenChanged(open: boolean) {
       </UForm>
     </template>
     <template #footer>
-      <UButton :label="$t('cancel')" @click="open = false" />
+      <UButton :label="$t('cancel')" @click="() => { open = false }" />
       <UButton color="primary" variant="solid" :label="$t('ok')" type="submit" form="newContentForm" />
     </template>
   </UModal>

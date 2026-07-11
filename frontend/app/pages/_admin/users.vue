@@ -198,7 +198,7 @@ async function onDeleteConfirm() {
         </UForm>
       </template>
       <template #footer>
-        <UButton :label="$t('cancel')" @click="userFormVisible = false" />
+        <UButton :label="$t('cancel')" @click="() => { userFormVisible = false }" />
         <UButton color="primary" variant="solid" :label="userFormSelectedUsername ? $t('save') : $t('create')" type="submit" form="userForm" />
       </template>
     </UModal>
@@ -237,7 +237,7 @@ async function onDeleteConfirm() {
         </UFormField>
       </template>
       <template #footer>
-        <UButton :label="$t('cancel')" @click="deleteModalOpen = false" />
+        <UButton :label="$t('cancel')" @click="() => { deleteModalOpen = false }" />
         <UButton color="warning" variant="solid" :label="$t('delete')" @click="onDeleteConfirm" />
       </template>
     </UModal>

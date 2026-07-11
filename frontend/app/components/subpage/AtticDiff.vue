@@ -128,7 +128,7 @@ const navTo = navigateTo
               size="xs"
               icon="tabler:external-link"
               :title="$t('diff.view-revision')"
-              @click="navTo({ query: { rev: data.oldRev, diff: undefined } })"
+              @click="() => { navTo({ query: { rev: data?.oldRev, diff: undefined } }) }"
             />
           </div>
           <div v-if="data.oldPage.meta.title" class="text-sm mb-1">
@@ -153,7 +153,7 @@ const navTo = navigateTo
               size="xs"
               icon="tabler:external-link"
               :title="$t('diff.view-revision')"
-              @click="navTo({ query: { rev: data.newRev, diff: undefined } })"
+              @click="() => { navTo({ query: { rev: data?.newRev, diff: undefined } }) }"
             />
           </div>
           <div v-if="data.newPage.meta.title" class="text-sm mb-1">

@@ -31,7 +31,7 @@
     "@iconify-json/tabler": "^1.2.35",
     "@nuxt/eslint": "^1.16.0",
     "@nuxt/icon": "^2.3.1",
-    "@nuxt/ui": "4.9.0",
+    "@nuxt/ui": "4.10.0",
     "@nuxtjs/i18n": "10.4.1",
     "@pinia/nuxt": "^0.11.3",
     "@tiptap/core": "^3.27.3",

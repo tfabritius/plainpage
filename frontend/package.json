@@ -63,7 +63,7 @@
     "sass-embedded": "^1.100.0",
     "slugify": "^1.6.9",
     "tailwindcss": "4.3.2",
-    "typescript": "^6.0.3",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.10",
     "vue-codemirror": "^6.1.1",
     "vue-tsc": "^3.3.7",

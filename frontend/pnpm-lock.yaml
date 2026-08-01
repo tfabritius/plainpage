@@ -37,8 +37,8 @@ importers:
         specifier: ^1.2.12
         version: 1.2.12
       '@iconify-json/tabler':
-        specifier: ^1.2.37
-        version: 1.2.37
+        specifier: ^1.2.38
+        version: 1.2.38
       '@nuxt/eslint':
         specifier: ^1.16.0
         version: 1.16.0(@typescript-eslint/utils@8.62.1(eslint@10.7.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@vue/compiler-sfc@3.5.39)(crossws@0.4.6(srvx@0.11.16))(esbuild@0.28.1)(eslint-plugin-format@2.0.1(eslint@10.7.0(jiti@2.7.0)(supports-color@10.2.2)))(eslint@10.7.0(jiti@2.7.0)(supports-color@10.2.2))(magicast@0.5.3)(oxc-parser@0.133.0)(rollup@4.61.1)(supports-color@10.2.2)(typescript@6.0.3)(vite@7.3.5(jiti@2.7.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.100.0)(terser@5.48.0)(yaml@2.9.0))
@@ -1100,8 +1100,8 @@ packages:
   '@iconify-json/flag@1.2.12':
     resolution: {integrity: sha512-B5zphOSTn54UX9v1sKsR1atuhyuXExiAkjuLQA8aeDcB68+P6oiStEDeEEVkbHgwvFvklPM2G7GhqFw6VMnXhw==}
 
-  '@iconify-json/tabler@1.2.37':
-    resolution: {integrity: sha512-tXc0jGhrxec6eTKxMI9We/r3cEItyU5dG8ngDOEKsL36a6+/xwk4sR7PIZROVajzxmvyUBsn659adDIfcswiUw==}
+  '@iconify-json/tabler@1.2.38':
+    resolution: {integrity: sha512-9v6ooRU/bKOK/Whv4w2aiK5gBnfCV9Ei+uD1iDDeLu2b+EnF3G3ZKkRKWEOOLG8bJyfKn6XEia6gUQ9oO7cF+Q==}
 
   '@iconify/collections@1.0.705':
     resolution: {integrity: sha512-JyUTM5/vqZfnUwtM18kh3nUB82A8QYHDLQj5zEZAvgR3hFdZvDhlH0LEdqOYKHWMTNW5l16EiiY2kstuw/EiTQ==}
@@ -8280,7 +8280,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/tabler@1.2.37':
+  '@iconify-json/tabler@1.2.38':
     dependencies:
       '@iconify/types': 2.0.0
 

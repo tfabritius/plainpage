@@ -55,7 +55,7 @@
     "dompurify": "^3.4.12",
     "eslint": "^10.8.0",
     "eslint-plugin-format": "^2.0.1",
-    "marked": "^18.0.7",
+    "marked": "^18.0.9",
     "nuxt": "^4.5.1",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",

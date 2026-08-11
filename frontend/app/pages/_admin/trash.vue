@@ -353,7 +353,6 @@ function getTrashPageUrl(item: TrashEntry): string {
 </script>
 
 <template>
-  <!-- PAGE VIEW MODE -->
   <SubpageNetworkError
     v-if="isPageView && pageError && !pageData"
     :msg="pageError?.message"
@@ -417,7 +416,6 @@ function getTrashPageUrl(item: TrashEntry): string {
     <PlainDialog ref="plainDialog" />
   </Layout>
 
-  <!-- LIST VIEW MODE -->
   <SubpageNetworkError
     v-else-if="!listData && listError"
     :msg="listError?.message"

@@ -118,8 +118,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(eslint@10.8.1(jiti@2.7.0)(supports-color@10.2.2))
       marked:
-        specifier: ^18.0.7
-        version: 18.0.7
+        specifier: ^18.0.10
+        version: 18.0.10
       nuxt:
         specifier: ^4.5.2
         version: 4.5.2(e9d45b03894c2d57fd544b45899f90c1)
@@ -5009,8 +5009,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marked@18.0.7:
-    resolution: {integrity: sha512-iDVQ5ldaiKXn6b2JroX5kgRfmwgqolW7NpaEzTl1k/2Zh1njIEN9yniyLV/mOvWwtsE8OGgkjsCYvijuPk1dtA==}
+  marked@18.0.10:
+    resolution: {integrity: sha512-FJeH4bRpYoXiggcgriCGItKCSv3xkngJc4QCZ/rkQCogU3VYaLxYJoZl8Nw/b4+x7iij/pd+09mZ6A1dXzpL0A==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -12253,7 +12253,7 @@ snapshots:
 
   marked@17.0.6: {}
 
-  marked@18.0.7: {}
+  marked@18.0.10: {}
 
   mdast-util-find-and-replace@3.0.2:
     dependencies:

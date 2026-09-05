@@ -34,7 +34,7 @@
     "@nuxt/ui": "4.11.0",
     "@nuxtjs/i18n": "10.6.0",
     "@pinia/nuxt": "^1.0.2",
-    "@tiptap/core": "^3.30.4",
+    "@tiptap/core": "^3.31.3",
     "@tiptap/extension-link": "^3.31.3",
     "@tiptap/extension-subscript": "^3.29.0",
     "@tiptap/extension-superscript": "^3.29.0",

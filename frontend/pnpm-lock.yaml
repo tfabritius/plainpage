@@ -58,8 +58,8 @@ importers:
         specifier: ^3.30.4
         version: 3.30.4(@tiptap/pm@3.29.0)
       '@tiptap/extension-link':
-        specifier: ^3.30.5
-        version: 3.30.5(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
+        specifier: ^3.31.3
+        version: 3.31.3(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
       '@tiptap/extension-subscript':
         specifier: ^3.29.0
         version: 3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
@@ -2579,11 +2579,11 @@ packages:
     peerDependencies:
       '@tiptap/core': 3.27.1
 
-  '@tiptap/extension-link@3.30.5':
-    resolution: {integrity: sha512-zsQ+q83HpCYOMTNzdjb12dggE7sZMp0aqQJhArdavSTl8hLbVY/u3qJN88t25IEwAKVK0pcTJfWWA2QFl8bjAQ==}
+  '@tiptap/extension-link@3.31.3':
+    resolution: {integrity: sha512-986wOQzTL9Zr5lf84LCLpm+YOms8A0K39/8DVoqRfebqcOe0/eq4bnztmAlfabOd+kJY92g3AgZERFUx/w+dcw==}
     peerDependencies:
-      '@tiptap/core': 3.30.5
-      '@tiptap/pm': 3.30.5
+      '@tiptap/core': 3.31.3
+      '@tiptap/pm': 3.31.3
 
   '@tiptap/extension-list-item@3.27.1':
     resolution: {integrity: sha512-zwRl01ETfCkWUvtvK5fw9bXtAajMPkvlkE3Cq6JvH3LF7XXJwDtNj5Tj7exacMpCaSZmlNc43vFb2rAYnrnwMA==}
@@ -9710,7 +9710,7 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.30.4(@tiptap/pm@3.29.0)
 
-  '@tiptap/extension-link@3.30.5(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)':
+  '@tiptap/extension-link@3.31.3(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)':
     dependencies:
       '@tiptap/core': 3.30.4(@tiptap/pm@3.29.0)
       '@tiptap/pm': 3.29.0
@@ -9846,7 +9846,7 @@ snapshots:
       '@tiptap/extension-heading': 3.27.1(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))
       '@tiptap/extension-horizontal-rule': 3.26.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
       '@tiptap/extension-italic': 3.27.1(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))
-      '@tiptap/extension-link': 3.30.5(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
+      '@tiptap/extension-link': 3.31.3(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
       '@tiptap/extension-list': 3.28.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
       '@tiptap/extension-list-item': 3.27.1(@tiptap/extension-list@3.28.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))
       '@tiptap/extension-list-keymap': 3.27.1(@tiptap/extension-list@3.28.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))

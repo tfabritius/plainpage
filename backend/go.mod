@@ -1,6 +1,6 @@
 module github.com/tfabritius/plainpage
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/blevesearch/bleve/v2 v2.6.1
@@ -10,7 +10,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.12.1
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 	golang.org/x/time v0.15.0
 	gopkg.in/yaml.v3 v3.0.1
 )

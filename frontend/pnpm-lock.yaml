@@ -76,8 +76,8 @@ importers:
         specifier: ^3.30.5
         version: 3.30.5(@tiptap/extension-table@3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))
       '@tiptap/extension-table-row':
-        specifier: ^3.30.5
-        version: 3.30.5(@tiptap/extension-table@3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))
+        specifier: ^3.31.3
+        version: 3.31.3(@tiptap/extension-table@3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))
       '@tiptap/extension-task-item':
         specifier: ^3.30.5
         version: 3.30.5(@tiptap/extension-list@3.28.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))
@@ -2656,10 +2656,10 @@ packages:
     peerDependencies:
       '@tiptap/extension-table': 3.30.5
 
-  '@tiptap/extension-table-row@3.30.5':
-    resolution: {integrity: sha512-cvcB6SCXf9SFcsTLpTOJKkDuujdtks6DuwurjQmo5tyOInq29rk+6La2Lk6BhK2ORtjONx0N81o7l8PPg11iAA==}
+  '@tiptap/extension-table-row@3.31.3':
+    resolution: {integrity: sha512-up6tDK+hYVTFDeJ3XqKO0WJqBzyXNfGxMoimo5h83jrq9dcNh0oPCOzglZ7rdo8GH9I3VJ2fNKxxU2Eg2HcMoQ==}
     peerDependencies:
-      '@tiptap/extension-table': 3.30.5
+      '@tiptap/extension-table': 3.31.3
 
   '@tiptap/extension-table@3.29.0':
     resolution: {integrity: sha512-EwWZ5XDrAx1Us61eq9Gv5EblLmH14l8Al6X2VpFVI00TTu4qDwlW5wfnTsAkfAU0Ri0LyxLYb3lBfOvC8NV7uw==}
@@ -9774,7 +9774,7 @@ snapshots:
     dependencies:
       '@tiptap/extension-table': 3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
 
-  '@tiptap/extension-table-row@3.30.5(@tiptap/extension-table@3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))':
+  '@tiptap/extension-table-row@3.31.3(@tiptap/extension-table@3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0))':
     dependencies:
       '@tiptap/extension-table': 3.29.0(@tiptap/core@3.30.4(@tiptap/pm@3.29.0))(@tiptap/pm@3.29.0)
 

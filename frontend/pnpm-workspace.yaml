@@ -1,13 +1,7 @@
-shellEmulator: true
+minimumReleaseAgeExcludePrune: true
 
 # eslint-disable-next-line pnpm/yaml-enforce-settings
 trustPolicy: off
-
-allowBuilds:
-  '@parcel/watcher': true
-  esbuild: true
-  unrs-resolver: true
-  vue-demi: true
 
 peerDependencyRules:
   ignoreMissing:
@@ -15,3 +9,11 @@ peerDependencyRules:
     - vite
     - vue
     - vue-router
+
+shellEmulator: true
+
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  unrs-resolver: true
+  vue-demi: true

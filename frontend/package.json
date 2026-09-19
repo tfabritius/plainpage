@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "diff": "^9.0.0",
-    "vue": "^3.5.42",
+    "vue": "^3.5.43",
     "zxcvbn-typescript": "^5.0.1"
   },
   "devDependencies": {

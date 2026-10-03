@@ -252,8 +252,8 @@ importers:
         specifier: ^14.4.0
         version: 14.4.0(vue@3.5.43(typescript@6.0.3))
       '@vueuse/core':
-        specifier: ^14.4.0
-        version: 14.4.0(vue@3.5.43(typescript@6.0.3))
+        specifier: ^15.0.0
+        version: 15.0.0(vue@3.5.43(typescript@6.0.3))
       '@vueuse/nuxt':
         specifier: ^15.0.0
         version: 15.0.0(magic-string@1.1.0)(magicast@0.5.4)(nuxt@4.5.2(36cd70b925bc584fca923d0e3ad0bb6c))(oxc-parser@0.141.0)(rolldown@1.2.3)(unplugin@3.3.0(esbuild@0.28.2)(rolldown@1.2.3)(rollup@4.62.4)(vite@8.2.1(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.105.0)(sass@1.104.0)(terser@5.49.2)(yaml@2.9.0)))(vue@3.5.43(typescript@6.0.3))

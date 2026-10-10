@@ -56,7 +56,7 @@
     "eslint": "^10.11.0",
     "eslint-plugin-format": "^2.0.1",
     "marked": "^18.0.14",
-    "nuxt": "^4.5.2",
+    "nuxt": "^4.6.0",
     "pinia": "^4.0.3",
     "pinia-plugin-persistedstate": "^4.7.1",
     "reka-ui": "2.10.5",

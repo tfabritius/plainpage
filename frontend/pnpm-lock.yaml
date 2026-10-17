@@ -192,8 +192,8 @@ importers:
         specifier: ^6.43.14
         version: 6.43.14
       '@iconify-json/flag':
-        specifier: ^1.2.12
-        version: 1.2.12
+        specifier: ^1.2.13
+        version: 1.2.13
       '@iconify-json/tabler':
         specifier: ^1.2.42
         version: 1.2.42
@@ -1273,8 +1273,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/flag@1.2.12':
-    resolution: {integrity: sha512-B5zphOSTn54UX9v1sKsR1atuhyuXExiAkjuLQA8aeDcB68+P6oiStEDeEEVkbHgwvFvklPM2G7GhqFw6VMnXhw==}
+  '@iconify-json/flag@1.2.13':
+    resolution: {integrity: sha512-uw2v+aoZpM9HTeQcqPKPEvNoEHp7fDtBMfqoFQ++1BCS7xSNhfhaWpQy8JQcm3l3e/ex6eJkLi6Mc0aGaSXbuQ==}
 
   '@iconify-json/tabler@1.2.42':
     resolution: {integrity: sha512-fObaBh/H2zJphk3lS1dWPUf/buuGaCHQXnB4UYgKOPXQub5Ac1qEu0AHRj/0+E2FEl8pWfgM2xQWzfz7ffcY+A==}
@@ -8662,7 +8662,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@iconify-json/flag@1.2.12':
+  '@iconify-json/flag@1.2.13':
     dependencies:
       '@iconify/types': 2.0.0
 

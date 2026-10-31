@@ -60,7 +60,7 @@
     "pinia": "^4.1.0",
     "pinia-plugin-persistedstate": "^4.7.1",
     "reka-ui": "2.11.0",
-    "sass-embedded": "^1.105.1",
+    "sass-embedded": "^1.107.0",
     "slugify": "^1.6.9",
     "tailwindcss": "4.3.3",
     "typescript": "^6.0.3",

@@ -12,13 +12,21 @@ definePageMeta({
 const { t } = useI18n()
 const toast = useToast()
 
-useHead({ title: t('users') })
+useHead({
+  title: t('users'),
+})
 
 const { data, error, refresh } = await useAsyncData('/auth/users', () => apiFetch<User[]>('/auth/users'))
 
 const columns: TableColumn<User>[] = [
-  { header: t('username'), accessorKey: 'username' },
-  { header: t('display-name'), accessorKey: 'displayName' },
+  {
+    header: t('username'),
+    accessorKey: 'username',
+  },
+  {
+    header: t('display-name'),
+    accessorKey: 'displayName',
+  },
   { header: '', id: 'actions' },
 ]
 
@@ -38,11 +46,20 @@ const userFormSchema = z.object({
   password: z.string().refine(password => userFormSelectedUsername.value || password.length > 0, t('password-required')),
   passwordConfirm: z.string(),
 })
-  .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
+  .refine(({ password, passwordConfirm }) => password === passwordConfirm, {
+    message: t('password-repeat-not-equal'),
+    path: ['passwordConfirm'],
+  })
 
 type UserFormSchema = z.output<typeof userFormSchema>
 const userFormState = reactive<UserFormSchema>(
-  { displayName: '', username: '', adminCurrentPassword: '', password: '', passwordConfirm: '' },
+  {
+    displayName: '',
+    username: '',
+    adminCurrentPassword: '',
+    password: '',
+    passwordConfirm: '',
+  },
 )
 
 async function onCreate() {
@@ -96,7 +113,10 @@ async function onSubmit() {
         })
       }
 
-      toast.add({ description: t('user-updated'), color: 'success' })
+      toast.add({
+        description: t('user-updated'),
+        color: 'success',
+      })
     } else {
       const request: PostUserRequest = {
         username: userFormState.username,
@@ -104,12 +124,18 @@ async function onSubmit() {
         displayName: userFormState.displayName,
       }
       await apiFetch('/auth/users', { method: 'POST', body: request })
-      toast.add({ description: t('user-created'), color: 'success' })
+      toast.add({
+        description: t('user-created'),
+        color: 'success',
+      })
     }
     userFormVisible.value = false
     refresh()
   } catch (err) {
-    toast.add({ description: String(err), color: 'error' })
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
   }
 }
 
@@ -129,7 +155,10 @@ async function onDeleteConfirm() {
   }
 
   if (!deletePasswordInput.value) {
-    toast.add({ description: t('current-password-required'), color: 'error' })
+    toast.add({
+      description: t('current-password-required'),
+      color: 'error',
+    })
     return
   }
 
@@ -140,14 +169,23 @@ async function onDeleteConfirm() {
       body: request,
     })
     deleteModalOpen.value = false
-    toast.add({ description: t('user-deleted'), color: 'success' })
+    toast.add({
+      description: t('user-deleted'),
+      color: 'success',
+    })
     refresh()
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 403) {
-      toast.add({ description: t('incorrect-password'), color: 'error' })
+      toast.add({
+        description: t('incorrect-password'),
+        color: 'error',
+      })
       return
     }
-    toast.add({ description: String(err), color: 'error' })
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
   }
 }
 </script>

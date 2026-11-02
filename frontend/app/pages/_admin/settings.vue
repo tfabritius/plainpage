@@ -11,7 +11,9 @@ definePageMeta({
 const { t } = useI18n()
 const toast = useToast()
 
-useHead({ title: t('configuration') })
+useHead({
+  title: t('configuration'),
+})
 
 const app = useAppStore()
 const authStore = useAuthStore()

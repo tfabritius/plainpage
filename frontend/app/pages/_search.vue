@@ -16,7 +16,9 @@ function isMatchedTag(result: SearchHit, tag: string): boolean {
   return matchedTags.some(fragment => fragment.replace(/<[^>]*>/g, '') === tag)
 }
 
-useHead(() => ({ title: t('search') }))
+useHead(() => ({
+  title: t('search'),
+}))
 
 const q = useRouteQuery('q')
 const pageQuery = useRouteQuery('page')
@@ -29,15 +31,23 @@ const hasMore = ref(false)
 const limit = 20
 
 function readQuery() {
-  query.value = Array.isArray(q.value) ? (q.value[0] ?? '') : (q.value ?? '')
-  const pageStr = Array.isArray(pageQuery.value) ? (pageQuery.value[0] ?? '1') : (pageQuery.value ?? '1')
+  query.value = Array.isArray(q.value)
+    ? (q.value[0] ?? '')
+    : (q.value ?? '')
+  const pageStr = Array.isArray(pageQuery.value)
+    ? (pageQuery.value[0] ?? '1')
+    : (pageQuery.value ?? '1')
   const parsedPage = Number.parseInt(pageStr, 10)
-  currentPage.value = Number.isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage
+  currentPage.value = Number.isNaN(parsedPage) || parsedPage < 1
+    ? 1
+    : parsedPage
 }
 
 function updateQuery() {
   q.value = query.value || undefined
-  pageQuery.value = currentPage.value > 1 ? String(currentPage.value) : undefined
+  pageQuery.value = currentPage.value > 1
+    ? String(currentPage.value)
+    : undefined
 }
 
 async function onSearch(resetPage = true) {
@@ -65,9 +75,15 @@ async function onSearch(resetPage = true) {
     hasMore.value = false
     if (err instanceof FetchError && err.statusCode === 429) {
       const retryAfter = err.response?.headers.get('Retry-After') || '10'
-      toast.add({ description: t('_search.too-many-requests', [retryAfter]), color: 'error' })
+      toast.add({
+        description: t('_search.too-many-requests', [retryAfter]),
+        color: 'error',
+      })
     } else {
-      toast.add({ description: String(err), color: 'error' })
+      toast.add({
+        description: String(err),
+        color: 'error',
+      })
     }
   }
   loading.value = false

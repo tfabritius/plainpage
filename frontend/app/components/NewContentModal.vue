@@ -17,8 +17,12 @@ const titleInput = useTemplateRef('titleInputRef')
 const formSchema = z.object({
   title: z.string(),
   name: z.string()
-    .min(1, props.type === 'page' ? t('page-name-required') : t('folder-name-required'))
-    .regex(validUrlPartRegex, props.type === 'page' ? t('invalid-page-name') : t('invalid-folder-name')),
+    .min(1, props.type === 'page'
+      ? t('page-name-required')
+      : t('folder-name-required'))
+    .regex(validUrlPartRegex, props.type === 'page'
+      ? t('invalid-page-name')
+      : t('invalid-folder-name')),
 })
 type FormSchema = z.output<typeof formSchema>
 
@@ -40,7 +44,9 @@ function onNameChanged() {
 }
 
 async function submit() {
-  const newUrl = `${props.urlPath !== '' ? `/${props.urlPath}` : ''}/${formState.name}`
+  const newUrl = `${props.urlPath !== ''
+    ? `/${props.urlPath}`
+    : ''}/${formState.name}`
 
   if (props.type === 'page') {
     await navigateTo({
@@ -52,7 +58,11 @@ async function submit() {
     try {
       await apiFetch(`/pages${newUrl}`, {
         method: 'PUT',
-        body: { folder: { meta: { title: formState.title } } },
+        body: {
+          folder: {
+            meta: { title: formState.title },
+          },
+        },
       })
     } catch (err) {
       toast.add({

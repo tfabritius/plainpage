@@ -16,12 +16,18 @@ const toast = useToast()
 
 // Query params for page view mode
 const viewUrl = useRouteQuery<string | undefined>('url', undefined, {
-  transform: val => Array.isArray(val) ? val[0] : val,
+  transform: val => Array.isArray(val)
+    ? val[0]
+    : val,
 })
 const viewDeletedAt = useRouteQuery('deletedAt', 0, {
   transform: (val) => {
-    const str = Array.isArray(val) ? val[0] : val
-    return str ? Number.parseInt(str, 10) : 0
+    const str = Array.isArray(val)
+      ? val[0]
+      : val
+    return str
+      ? Number.parseInt(str, 10)
+      : 0
   },
 })
 
@@ -48,7 +54,12 @@ const { data: listData, error: listError, refresh: listRefresh, status: listStat
     return response
   },
   {
-    watch: [listPage, sortBy, sortOrder, isPageView],
+    watch: [
+      listPage,
+      sortBy,
+      sortOrder,
+      isPageView,
+    ],
   },
 )
 
@@ -110,7 +121,10 @@ function getSelectedItemRefs(): TrashItemRef[] {
     const parts = key.split(':')
     const deletedAtStr = parts.pop() ?? '0'
     const url = parts.join(':')
-    refs.push({ url, deletedAt: Number.parseInt(deletedAtStr, 10) })
+    refs.push({
+      url,
+      deletedAt: Number.parseInt(deletedAtStr, 10),
+    })
   }
   return refs
 }
@@ -139,7 +153,9 @@ async function onDeleteSelected() {
   try {
     await apiFetch('/trash/delete', {
       method: 'POST',
-      body: { items: getSelectedItemRefs() },
+      body: {
+        items: getSelectedItemRefs(),
+      },
     })
 
     toast.add({
@@ -165,7 +181,9 @@ async function onRestoreSelected() {
   try {
     await apiFetch('/trash/restore', {
       method: 'POST',
-      body: { items: getSelectedItemRefs() },
+      body: {
+        items: getSelectedItemRefs(),
+      },
     })
 
     toast.add({
@@ -203,7 +221,9 @@ watch([sortBy, sortOrder], () => {
 
 function toggleSort(column: 'url' | 'deletedAt') {
   if (sortBy.value === column) {
-    sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
+    sortOrder.value = sortOrder.value === 'asc'
+      ? 'desc'
+      : 'asc'
   } else {
     sortBy.value = column
     sortOrder.value = 'desc'
@@ -214,14 +234,25 @@ function getSortIcon(column: 'url' | 'deletedAt'): string {
   if (sortBy.value !== column) {
     return 'tabler:arrows-sort'
   }
-  return sortOrder.value === 'asc' ? 'tabler:sort-ascending' : 'tabler:sort-descending'
+  return sortOrder.value === 'asc'
+    ? 'tabler:sort-ascending'
+    : 'tabler:sort-descending'
 }
 
 const columns: TableColumn<TrashEntry>[] = [
   { header: '', id: 'select' },
-  { header: t('title'), id: 'title' },
-  { header: t('url'), id: 'url' },
-  { header: t('deleted-at'), id: 'deletedAt' },
+  {
+    header: t('title'),
+    id: 'title',
+  },
+  {
+    header: t('url'),
+    id: 'url',
+  },
+  {
+    header: t('deleted-at'),
+    id: 'deletedAt',
+  },
 ]
 
 // ==================== PAGE VIEW STATE ====================
@@ -266,7 +297,9 @@ useHead(() => {
   if (isPageView.value) {
     return { title: `${t('trash')}: ${pageTitle.value}` }
   }
-  return { title: t('trash') }
+  return {
+    title: t('trash'),
+  }
 })
 
 async function onRestorePage() {
@@ -287,7 +320,9 @@ async function onRestorePage() {
     await apiFetch('/trash/restore', {
       method: 'POST',
       body: {
-        items: [{ url: viewUrl.value, deletedAt: viewDeletedAt.value }],
+        items: [
+          { url: viewUrl.value, deletedAt: viewDeletedAt.value },
+        ],
       },
     })
 
@@ -322,7 +357,9 @@ async function onDeletePagePermanently() {
 
   try {
     const request: TrashActionRequest = {
-      items: [{ url: viewUrl.value!, deletedAt: viewDeletedAt.value }],
+      items: [
+        { url: viewUrl.value!, deletedAt: viewDeletedAt.value },
+      ],
     }
     await apiFetch('/trash/delete', {
       method: 'POST',

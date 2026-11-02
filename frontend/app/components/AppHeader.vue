@@ -42,7 +42,10 @@ const searchOpen = ref(false)
 const searchInputRef = ref<HTMLInputElement>()
 
 async function onSearch() {
-  await navigateTo({ path: '/_search', query: { q: searchQuery.value } })
+  await navigateTo({
+    path: '/_search',
+    query: { q: searchQuery.value },
+  })
   searchQuery.value = ''
   searchOpen.value = false
 }
@@ -149,7 +152,9 @@ const menuItems = computed(() => {
     },
     {
       icon: isDark.value ? 'tabler:sun' : 'tabler:moon',
-      label: isDark.value ? t('dark-mode-off') : t('dark-mode-on'),
+      label: isDark.value
+        ? t('dark-mode-off')
+        : t('dark-mode-on'),
       onSelect: () => toggleDark(),
     },
   )
@@ -162,7 +167,10 @@ const menuItems = computed(() => {
         label: t('sign-out'),
         onSelect: async () => {
           await auth.logout()
-          toast.add({ description: t('signed-out'), color: 'success' })
+          toast.add({
+            description: t('signed-out'),
+            color: 'success',
+          })
 
           // Redirect to home if current page requires authentication
           const currentRoute = route.matched.at(-1)

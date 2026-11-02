@@ -33,7 +33,9 @@ function createMarkdownRenderer(
 
   // Custom heading renderer that adds IDs and optionally collects TOC
   renderer.heading = ({ tokens, depth }: Tokens.Heading) => {
-    const text = tokens.map(t => ('text' in t ? t.text : '')).join('')
+    const text = tokens.map(t => ('text' in t
+      ? t.text
+      : '')).join('')
     const tag = `h${depth}`
 
     // Only process H1-H4 for TOC
@@ -126,7 +128,9 @@ export function parseMarkdownSegments(
 
   return segments.map((segment) => {
     const content = marked.parser(segment.tokens, { gfm: true, renderer })
-    const sanitizedContent = dompurify.sanitize(content, { ADD_ATTR: ['id'] })
+    const sanitizedContent = dompurify.sanitize(content, {
+      ADD_ATTR: ['id'],
+    })
     return `<div class="segment" data-segment="${segment.idx}">${sanitizedContent}</div>`
   }).join('')
 }

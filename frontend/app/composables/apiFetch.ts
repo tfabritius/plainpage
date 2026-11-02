@@ -69,7 +69,9 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
   const makeRequest = async (): Promise<T> => {
     const headers = {
       ...opts?.headers,
-      authorization: authStore.loggedIn ? `Bearer ${authStore.accessToken}` : '',
+      authorization: authStore.loggedIn
+        ? `Bearer ${authStore.accessToken}`
+        : '',
     }
 
     return await $fetch<T>(request, {
@@ -129,7 +131,10 @@ export async function apiFetch<T>(request: string, opts?: NitroFetchOptions<Nitr
 
 async function redirectToLogin(route: ReturnType<typeof useRoute>): Promise<never> {
   if (route.path !== '/_login') {
-    await navigateTo({ path: '/_login', query: { returnTo: route.fullPath } })
+    await navigateTo({
+      path: '/_login',
+      query: { returnTo: route.fullPath },
+    })
   }
   // Return a never-resolving promise - navigation is happening, component will unmount
   return new Promise(() => {})

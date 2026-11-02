@@ -26,7 +26,12 @@ export function deepEqual<T>(o1: T, o2: T): boolean {
 
   // Handle Object
   if (o1 instanceof Object && o2 instanceof Object) {
-    const keys = [...new Set([...Object.keys(o1), ...Object.keys(o2)])] as Extract<keyof T, string>[]
+    const keys = [
+      ...new Set([
+        ...Object.keys(o1),
+        ...Object.keys(o2),
+      ]),
+    ] as Extract<keyof T, string>[]
 
     return keys.every((key) => {
       if (Object.hasOwn(o1, key) && Object.hasOwn(o2, key)) {

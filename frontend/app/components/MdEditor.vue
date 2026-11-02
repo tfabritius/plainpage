@@ -44,7 +44,9 @@ function splitMdToSegments(markdown: string): Segment[] {
   let idx = 0
 
   for (const token of tokens) {
-    const tokenLines = token.raw ? token.raw.split('\n').length - 1 : 0
+    const tokenLines = token.raw
+      ? token.raw.split('\n').length - 1
+      : 0
 
     if (token.type !== 'space') {
       // Start a new segment
@@ -117,7 +119,9 @@ function createWrapUnwrapGenerator(enclosingStart: string, enclosingEnd: string)
 
     return {
       text,
-      selection: oldText === '' ? { from: enclosingStart.length, to: enclosingStart.length } : undefined,
+      selection: oldText === ''
+        ? { from: enclosingStart.length, to: enclosingStart.length }
+        : undefined,
     }
   }
 

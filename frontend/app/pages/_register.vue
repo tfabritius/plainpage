@@ -18,19 +18,31 @@ const formSchema = z.object({
     .min(4, t('username-length'))
     .max(20, t('username-length'))
     .regex(validUsernameRegex, t('username-invalid'))
-    .refine(username => username !== existingUsername.value, { message: t('username-not-unique') }),
+    .refine(username => username !== existingUsername.value, {
+      message: t('username-not-unique'),
+    }),
   displayName: z.string().min(1, t('displayname-required')),
   password: z.string().min(1, t('password-required')),
   passwordConfirm: z.string(),
 })
-  .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
+  .refine(({ password, passwordConfirm }) => password === passwordConfirm, {
+    message: t('password-repeat-not-equal'),
+    path: ['passwordConfirm'],
+  })
 
 type FormSchema = z.output<typeof formSchema>
 const formState = reactive<FormSchema>(
-  { displayName: '', username: '', password: '', passwordConfirm: '' },
+  {
+    displayName: '',
+    username: '',
+    password: '',
+    passwordConfirm: '',
+  },
 )
 
-useHead(() => ({ title: t('register') }))
+useHead(() => ({
+  title: t('register'),
+}))
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -51,7 +63,10 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
       existingUsername.value = formState.username
       form.value?.validate({})
     } else {
-      toast.add({ description: String(e), color: 'error' })
+      toast.add({
+        description: String(e),
+        color: 'error',
+      })
     }
     loading.value = false
     return
@@ -59,10 +74,15 @@ async function submit(_event: FormSubmitEvent<FormSchema>) {
 
   const ok = await auth.login(formState)
   if (ok) {
-    const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
+    const returnTo = typeof route.query.returnTo === 'string'
+      ? route.query.returnTo
+      : '/'
     await navigateTo(returnTo)
   } else {
-    toast.add({ description: t('invalid-credentials'), color: 'error' })
+    toast.add({
+      description: t('invalid-credentials'),
+      color: 'error',
+    })
   }
 
   loading.value = false

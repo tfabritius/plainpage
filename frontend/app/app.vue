@@ -8,10 +8,12 @@ useHead({
   bodyAttrs: {
     class: 'font-sans m-0',
   },
-  link: [{
-    rel: 'icon',
-    href: '/favicon.svg',
-  }],
+  link: [
+    {
+      rel: 'icon',
+      href: '/favicon.svg',
+    },
+  ],
 })
 
 const auth = useAuthStore()

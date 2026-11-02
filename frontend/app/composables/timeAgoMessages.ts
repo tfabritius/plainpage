@@ -6,8 +6,12 @@ export function timeAgoMessages(): UseTimeAgoMessages<UseTimeAgoUnitNamesDefault
 
   return {
     justNow: t('timeAgo.just-now'),
-    past: n => (/\d/.test(n) ? t('timeAgo.ago', [n]) : n),
-    future: n => (/\d/.test(n) ? t('timeAgo.in', [n]) : n),
+    past: n => (/\d/.test(n)
+      ? t('timeAgo.ago', [n])
+      : n),
+    future: n => (/\d/.test(n)
+      ? t('timeAgo.in', [n])
+      : n),
 
     month: (n, past) =>
       n === 1

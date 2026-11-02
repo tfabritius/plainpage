@@ -78,7 +78,9 @@ const customHandlers = {
 
 const { slashmenuItems, bubbleToolbarItems, getTableToolbarItems } = useEditorToolbar(customHandlers)
 
-const appendToBody = import.meta.client ? () => document.body : undefined
+const appendToBody = import.meta.client
+  ? () => document.body
+  : undefined
 </script>
 
 <template>

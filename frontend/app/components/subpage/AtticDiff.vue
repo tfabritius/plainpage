@@ -63,10 +63,14 @@ const pageTitle = computed(() => {
 useHead(() => ({ title: `${t('diff.compare')}: ${pageTitle.value}` }))
 
 const oldLabel = computed(() =>
-  data.value?.oldRev ? format(new Date(Number(data.value.oldRev) * 1000), 'yyyy-MM-dd HH:mm:ss') : '',
+  data.value?.oldRev
+    ? format(new Date(Number(data.value.oldRev) * 1000), 'yyyy-MM-dd HH:mm:ss')
+    : '',
 )
 const newLabel = computed(() =>
-  data.value?.newRev ? format(new Date(Number(data.value.newRev) * 1000), 'yyyy-MM-dd HH:mm:ss') : '',
+  data.value?.newRev
+    ? format(new Date(Number(data.value.newRev) * 1000), 'yyyy-MM-dd HH:mm:ss')
+    : '',
 )
 
 const navTo = navigateTo

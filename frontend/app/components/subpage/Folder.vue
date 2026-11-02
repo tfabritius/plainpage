@@ -115,7 +115,9 @@ async function processMarkdownFile(file: File): Promise<void> {
     reader.readAsText(file)
   })
 
-  const newUrl = props.urlPath !== '' ? `${props.urlPath}/${pageName}` : pageName
+  const newUrl = props.urlPath !== ''
+    ? `${props.urlPath}/${pageName}`
+    : pageName
 
   try {
     await apiFetch(`/pages/${newUrl}`, {
@@ -164,7 +166,9 @@ async function saveEditedFolder() {
   }
 
   try {
-    const newUrl = parentPath.value ? `${parentPath.value}/${editableName.value}` : editableName.value
+    const newUrl = parentPath.value
+      ? `${parentPath.value}/${editableName.value}`
+      : editableName.value
     const nameChanged = props.urlPath !== '' && newUrl !== props.urlPath
     const titleChanged = editableTitle.value !== props.folder.meta.title
 
@@ -267,7 +271,10 @@ const menuItems = computed(() => {
       label: t('reload'),
       onSelect: async () => {
         await props.onReload()
-        toast.add({ description: t('folder-reloaded'), color: 'success' })
+        toast.add({
+          description: t('folder-reloaded'),
+          color: 'success',
+        })
       },
     },
   )
@@ -294,7 +301,9 @@ const menuItems = computed(() => {
         icon: 'tabler:lock',
         label: t('permissions'),
         onSelect: async () => {
-          await navigateTo({ query: { acl: null } })
+          await navigateTo({
+            query: { acl: null },
+          })
         },
       },
     )

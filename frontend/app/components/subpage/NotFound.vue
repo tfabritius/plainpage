@@ -34,7 +34,9 @@ const editing = computed({
 
 const showEditor = computed(() => editing.value || saving.value)
 
-useHead(() => ({ title: t('not-found') }))
+useHead(() => ({
+  title: t('not-found'),
+}))
 
 onMounted(() => {
   // Take new page's title from state if available.
@@ -50,7 +52,10 @@ function createThisPage() {
 }
 
 async function createThisFolder() {
-  await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: null } })
+  await apiFetch(`/pages/${props.urlPath}`, {
+    method: 'PUT',
+    body: { page: null },
+  })
 
   toast.add({
     description: t('folder-created'),
@@ -61,7 +66,10 @@ async function createThisFolder() {
 
 async function onSavePage() {
   try {
-    await apiFetch(`/pages/${props.urlPath}`, { method: 'PUT', body: { page: editablePage.value } })
+    await apiFetch(`/pages/${props.urlPath}`, {
+      method: 'PUT',
+      body: { page: editablePage.value },
+    })
 
     // Set saving=true first to keep editor visible, then set editing=false and refresh
     // The editor stays visible while saving

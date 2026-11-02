@@ -30,12 +30,18 @@ useHead(() => ({ title: pageTitle.value }))
 // Modified info - check for non-zero time (Go's zero time starts with year 0001)
 const hasModifiedAt = computed(() => props.page.meta.modifiedAt && !props.page.meta.modifiedAt.startsWith('0001-'))
 const modifiedAt = computed(() => new Date(props.page.meta.modifiedAt ?? ''))
-const modifiedAtTimeAgo = useTimeAgo(modifiedAt, { messages: timeAgoMessages() })
+const modifiedAtTimeAgo = useTimeAgo(modifiedAt, {
+  messages: timeAgoMessages(),
+})
 const modifiedAtFormatted = computed(() => modifiedAt.value.toLocaleString())
 
 const plainDialog = useTemplateRef('plainDialog')
 
-const emptyPage: Page = { url: '', content: '', meta: { title: '', tags: [] } }
+const emptyPage: Page = {
+  url: '',
+  content: '',
+  meta: { title: '', tags: [] },
+}
 const editablePage = ref(deepClone(emptyPage))
 
 const editQuery = useRouteQuery('edit')
@@ -78,7 +84,9 @@ async function onRenamePage() {
     return
   }
 
-  const newUrl = parentPath.value ? `${parentPath.value}/${newPageName.value}` : newPageName.value
+  const newUrl = parentPath.value
+    ? `${parentPath.value}/${newPageName.value}`
+    : newPageName.value
 
   if (newUrl === props.page.url) {
     renameModalOpen.value = false
@@ -88,7 +96,9 @@ async function onRenamePage() {
   try {
     await apiFetch(`/pages/${props.page.url}`, {
       method: 'PATCH',
-      body: [{ op: 'replace', path: '/page/url', value: newUrl }],
+      body: [
+        { op: 'replace', path: '/page/url', value: newUrl },
+      ],
     })
 
     renameModalOpen.value = false
@@ -119,7 +129,10 @@ function onEditPage() {
 
 async function onSavePage() {
   try {
-    await apiFetch(`/pages/${editablePage.value.url}`, { method: 'PUT', body: { page: editablePage.value } })
+    await apiFetch(`/pages/${editablePage.value.url}`, {
+      method: 'PUT',
+      body: { page: editablePage.value },
+    })
     editing.value = false
 
     toast.add({
@@ -205,7 +218,10 @@ const menuItems = computed(() => {
     label: t('reload'),
     onSelect: async () => {
       await props.onReload()
-      toast.add({ description: t('page-reloaded'), color: 'success' })
+      toast.add({
+        description: t('page-reloaded'),
+        color: 'success',
+      })
     },
   })
 
@@ -213,7 +229,9 @@ const menuItems = computed(() => {
     icon: 'tabler:history',
     label: t('revisions'),
     onSelect: async () => {
-      await navigateTo({ query: { rev: null } })
+      await navigateTo({
+        query: { rev: null },
+      })
     },
   })
 
@@ -243,7 +261,9 @@ const menuItems = computed(() => {
         icon: 'tabler:lock',
         label: t('permissions'),
         onSelect: async () => {
-          await navigateTo({ query: { acl: null } })
+          await navigateTo({
+            query: { acl: null },
+          })
         },
       },
     )

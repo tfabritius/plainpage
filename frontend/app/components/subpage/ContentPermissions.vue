@@ -22,15 +22,19 @@ async function onGoBack() {
 }
 
 async function onSave() {
-  const apiData = (customPermissions.value || props.urlPath === '') ? aclTable.value?.getAcl() : null
+  const apiData = (customPermissions.value || props.urlPath === '')
+    ? aclTable.value?.getAcl()
+    : null
 
   await apiFetch(`/pages/${props.urlPath}`, {
     method: 'PATCH',
-    body: [{
-      op: 'replace',
-      path: props.isFolder ? '/folder/meta/acl' : '/page/meta/acl',
-      value: apiData,
-    }],
+    body: [
+      {
+        op: 'replace',
+        path: props.isFolder ? '/folder/meta/acl' : '/page/meta/acl',
+        value: apiData,
+      },
+    ],
   })
 
   emit('refresh')

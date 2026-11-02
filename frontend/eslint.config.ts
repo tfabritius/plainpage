@@ -22,7 +22,11 @@ export default withNuxt(
     rules: {
       curly: ['warn', 'all'],
 
-      'style/brace-style': ['warn', '1tbs', { allowSingleLine: true }],
+      'style/brace-style': [
+        'warn',
+        '1tbs',
+        { allowSingleLine: true },
+      ],
       'style/quote-props': ['warn', 'as-needed'],
 
       // Enable additional vue rules

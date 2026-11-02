@@ -20,7 +20,9 @@ export function useMarkdownFormatter() {
 
     for (const token of tokens) {
       const tokenLines = token.raw.split('\n')
-      const tokenLineCount = tokenLines.length - (token.raw.endsWith('\n') ? 1 : 0)
+      const tokenLineCount = tokenLines.length - (token.raw.endsWith('\n')
+        ? 1
+        : 0)
       const tokenStartLine = currentLine
 
       if (token.type === 'table') {
@@ -171,7 +173,9 @@ export function useMarkdownFormatter() {
 
     items.forEach((item, index) => {
       const number = startNumber + index
-      const bullet = ordered ? `${number}.` : '-'
+      const bullet = ordered
+        ? `${number}.`
+        : '-'
       // Calculate this item's marker width for potential nested children
       const markerWidth = bullet.length + 1 // +1 for the space after the bullet
       const checkboxPrefix = item.checked === true

@@ -20,12 +20,31 @@ type TableRow = {
 }
 
 const columns: TableColumn<TableRow>[] = [
-  { header: t('acl.subject'), id: 'subject', accessorKey: 'subject' },
-  { header: t('read'), accessorKey: 'read' },
-  { header: t('write'), accessorKey: 'write' },
-  { header: t('delete'), accessorKey: 'delete' },
-  { header: t('register'), accessorKey: 'register' },
-  { header: t('acl.admin'), accessorKey: 'admin' },
+  {
+    header: t('acl.subject'),
+    id: 'subject',
+    accessorKey: 'subject',
+  },
+  {
+    header: t('read'),
+    accessorKey: 'read',
+  },
+  {
+    header: t('write'),
+    accessorKey: 'write',
+  },
+  {
+    header: t('delete'),
+    accessorKey: 'delete',
+  },
+  {
+    header: t('register'),
+    accessorKey: 'register',
+  },
+  {
+    header: t('acl.admin'),
+    accessorKey: 'admin',
+  },
   { header: '', id: 'actions' },
 ]
 
@@ -169,15 +188,18 @@ function onAddRule() {
   if (!newUser.value) {
     return
   }
-  editableACL.value = [...editableACL.value, {
-    subject: `user:${newUser.value.id}`,
-    user: newUser.value,
-    read: props.showColumns.includes('read'),
-    write: false,
-    delete: false,
-    register: false,
-    admin: false,
-  }]
+  editableACL.value = [
+    ...editableACL.value,
+    {
+      subject: `user:${newUser.value.id}`,
+      user: newUser.value,
+      read: props.showColumns.includes('read'),
+      write: false,
+      delete: false,
+      register: false,
+      admin: false,
+    },
+  ]
   newUserName.value = ''
 }
 

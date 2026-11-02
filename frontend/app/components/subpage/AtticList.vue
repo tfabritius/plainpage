@@ -16,7 +16,10 @@ useHead(() => ({ title: `${t('revisions')}: ${props.title}` }))
 const { data } = await useAsyncData(`/attic/${props.urlPath}`, async () => {
   const data = await apiFetch<GetAtticListResponse>(`/attic/${props.urlPath}`)
 
-  const entries = data.entries.map(e => ({ ...e, date: new Date(e.rev * 1000) }))
+  const entries = data.entries.map(e => ({
+    ...e,
+    date: new Date(e.rev * 1000),
+  }))
     .sort((a, b) => b.rev - a.rev)
 
   return {
@@ -68,7 +71,12 @@ function navigateToCompare() {
     return
   }
   const [rev1, rev2] = selectedArray.value
-  navigateTo({ query: { rev: String(rev1), diff: String(rev2) } })
+  navigateTo({
+    query: {
+      rev: String(rev1),
+      diff: String(rev2),
+    },
+  })
 }
 
 const navTo = navigateTo

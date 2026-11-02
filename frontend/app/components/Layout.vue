@@ -16,9 +16,16 @@ const breadcrumbItems = computed(() => {
 
   props.breadcrumbs?.forEach((crumb, idx) => {
     if (idx !== (props.breadcrumbs?.length ?? 1) - 1) {
-      items.push({ label: crumb.title || crumb.name, to: { path: `/${crumb.url}` } })
+      items.push({
+        label: crumb.title || crumb.name,
+        to: { path: `/${crumb.url}` },
+      })
     } else {
-      items.push({ label: crumb.title || crumb.name, to: { path: `/${crumb.url}` }, class: 'text-[var(--ui-text-muted)]' })
+      items.push({
+        label: crumb.title || crumb.name,
+        to: { path: `/${crumb.url}` },
+        class: 'text-[var(--ui-text-muted)]',
+      })
     }
   })
 

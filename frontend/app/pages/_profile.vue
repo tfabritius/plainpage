@@ -11,7 +11,9 @@ definePageMeta({
 const { t } = useI18n()
 const toast = useToast()
 
-useHead({ title: t('profile') })
+useHead({
+  title: t('profile'),
+})
 
 const auth = useAuthStore()
 
@@ -27,9 +29,15 @@ const profileState = reactive<ProfileSchema>({
 async function onSaveProfile() {
   try {
     await auth.updateMe({ displayName: profileState.displayName })
-    toast.add({ description: t('saved'), color: 'success' })
+    toast.add({
+      description: t('saved'),
+      color: 'success',
+    })
   } catch (err) {
-    toast.add({ description: String(err), color: 'error' })
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
   }
 }
 
@@ -39,7 +47,10 @@ const passwordSchema = z.object({
   password: z.string().min(1, t('new-password-required')),
   passwordConfirm: z.string(),
 })
-  .refine(({ password, passwordConfirm }) => password === passwordConfirm, { message: t('password-repeat-not-equal'), path: ['passwordConfirm'] })
+  .refine(({ password, passwordConfirm }) => password === passwordConfirm, {
+    message: t('password-repeat-not-equal'),
+    path: ['passwordConfirm'],
+  })
 
 type PasswordSchema = z.output<typeof passwordSchema>
 const passwordState = reactive<PasswordSchema>({
@@ -61,13 +72,22 @@ async function onSavePassword() {
     passwordState.password = ''
     passwordState.passwordConfirm = ''
     passwordExpanded.value = false
-    toast.add({ description: t('password-changed'), color: 'success' })
+    toast.add({
+      description: t('password-changed'),
+      color: 'success',
+    })
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 403) {
-      toast.add({ description: t('incorrect-password'), color: 'error' })
+      toast.add({
+        description: t('incorrect-password'),
+        color: 'error',
+      })
       return
     }
-    toast.add({ description: String(err), color: 'error' })
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
   }
 }
 
@@ -83,20 +103,32 @@ const deletePasswordInput = ref('')
 
 async function onDeleteConfirm() {
   if (!deletePasswordInput.value) {
-    toast.add({ description: t('current-password-required'), color: 'error' })
+    toast.add({
+      description: t('current-password-required'),
+      color: 'error',
+    })
     return
   }
 
   try {
     await auth.deleteMe(deletePasswordInput.value)
-    toast.add({ description: t('account-deleted'), color: 'success' })
+    toast.add({
+      description: t('account-deleted'),
+      color: 'success',
+    })
     await navigateTo('/')
   } catch (err) {
     if (err instanceof FetchError && err.statusCode === 403) {
-      toast.add({ description: t('incorrect-password'), color: 'error' })
+      toast.add({
+        description: t('incorrect-password'),
+        color: 'error',
+      })
       return
     }
-    toast.add({ description: String(err), color: 'error' })
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
   }
 }
 

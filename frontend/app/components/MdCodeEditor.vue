@@ -160,7 +160,12 @@ function replaceSelection(generator: MdEditorGenerator) {
   view.focus()
 }
 
-defineExpose({ scrollToLineNo, replaceSelection, replaceLine, replaceDocument })
+defineExpose({
+  scrollToLineNo,
+  replaceSelection,
+  replaceLine,
+  replaceDocument,
+})
 
 // Compartment to switch editor theme
 const editorTheme = new Compartment()
@@ -189,9 +194,13 @@ function updateTheme() {
     return
   }
 
-  const theme = isDark.value ? oneDark : []
+  const theme = isDark.value
+    ? oneDark
+    : []
 
-  view.dispatch({ effects: editorTheme.reconfigure(theme) })
+  view.dispatch({
+    effects: editorTheme.reconfigure(theme),
+  })
 }
 onMounted(() => updateTheme())
 watch(isDark, updateTheme)

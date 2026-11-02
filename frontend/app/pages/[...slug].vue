@@ -14,14 +14,20 @@ const urlPath = computed(() => route.path.replace(/^\//, ''))
 // undefined if rev isn't used as query parameter,
 // is null if ?rev=123&rev=456 is passed (multiple values) - not used
 const revQuery = useRouteQuery('rev', undefined, {
-  transform: (data: string | string[] | null | undefined) => Array.isArray(data) ? null : data,
+  transform: (data: string | string[] | null | undefined) => Array.isArray(data)
+    ? null
+    : data,
 })
 
 const diffQuery = useRouteQuery('diff', undefined, {
-  transform: (data: string | string[] | null | undefined) => Array.isArray(data) ? null : data,
+  transform: (data: string | string[] | null | undefined) => Array.isArray(data)
+    ? null
+    : data,
 })
 
-const aclQuery = useRouteQuery('acl', undefined, { transform: data => data !== undefined })
+const aclQuery = useRouteQuery('acl', undefined, {
+  transform: data => data !== undefined,
+})
 
 const auth = useAuthStore()
 const { loggedIn } = storeToRefs(auth)

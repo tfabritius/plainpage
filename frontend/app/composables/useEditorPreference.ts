@@ -23,7 +23,9 @@ export function useEditorPreference() {
   const isVisualEditor = computed(() => editorType.value === 'visual')
 
   function toggleEditor() {
-    editorType.value = editorType.value === 'source' ? 'visual' : 'source'
+    editorType.value = editorType.value === 'source'
+      ? 'visual'
+      : 'source'
   }
 
   function setEditor(type: EditorType) {

@@ -6,7 +6,9 @@ defineProps<{
 
 const { t } = useI18n()
 
-useHead(() => ({ title: t('error') }))
+useHead(() => ({
+  title: t('error'),
+}))
 </script>
 
 <template>

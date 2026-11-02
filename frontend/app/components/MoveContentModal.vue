@@ -81,20 +81,26 @@ const pickerBreadcrumbItems = computed(() => {
   items.push({
     icon: 'tabler:home',
     class: isAtRoot ? 'text-[var(--ui-text-muted)] pointer-events-none' : 'cursor-pointer',
-    onClick: isAtRoot ? undefined : () => loadFolder(''),
+    onClick: isAtRoot
+      ? undefined
+      : () => loadFolder(''),
   })
 
   if (currentFolderPath.value) {
     const parts = currentFolderPath.value.split('/')
     let path = ''
     for (const [i, part] of parts.entries()) {
-      path = path ? `${path}/${part}` : part
+      path = path
+        ? `${path}/${part}`
+        : part
       const isLast = i === parts.length - 1
       const itemPath = path // Capture path for closure
       items.push({
         label: part,
         class: isLast ? 'text-[var(--ui-text-muted)] pointer-events-none' : 'cursor-pointer',
-        onClick: isLast ? undefined : () => loadFolder(itemPath),
+        onClick: isLast
+          ? undefined
+          : () => loadFolder(itemPath),
       })
     }
   }
@@ -153,11 +159,15 @@ async function performMove() {
     const patchPath = props.isFolder ? '/folder/url' : '/page/url'
     await apiFetch(`/pages/${props.currentPath}`, {
       method: 'PATCH',
-      body: [{ op: 'replace', path: patchPath, value: destinationPath.value }],
+      body: [
+        { op: 'replace', path: patchPath, value: destinationPath.value },
+      ],
     })
 
     toast.add({
-      description: props.isFolder ? t('folder-moved') : t('page-moved'),
+      description: props.isFolder
+        ? t('folder-moved')
+        : t('page-moved'),
       color: 'success',
     })
 

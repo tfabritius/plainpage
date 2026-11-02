@@ -7,7 +7,9 @@ const { t } = useI18n()
 
 const loginFormData = ref({ username: '', password: '' })
 
-useHead(() => ({ title: t('sign-in') }))
+useHead(() => ({
+  title: t('sign-in'),
+}))
 
 const auth = useAuthStore()
 const route = useRoute()
@@ -26,19 +28,30 @@ async function submit() {
     const loginResponse = await auth.login(loginFormData.value)
 
     if (loginResponse === true) {
-      const returnTo = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/'
+      const returnTo = typeof route.query.returnTo === 'string'
+        ? route.query.returnTo
+        : '/'
       await navigateTo(returnTo)
     } else {
       if (loginResponse.statusCode === 401) {
-        toast.add({ description: t('invalid-credentials'), color: 'error' })
+        toast.add({
+          description: t('invalid-credentials'),
+          color: 'error',
+        })
       } else if (loginResponse.statusCode === 429) {
-        toast.add({ description: t('too-many-login-requests', [loginResponse.retryAfter]), color: 'error' })
+        toast.add({
+          description: t('too-many-login-requests', [loginResponse.retryAfter]),
+          color: 'error',
+        })
       }
 
       loading.value = false
     }
   } catch (err) {
-    toast.add({ description: String(err), color: 'error' })
+    toast.add({
+      description: String(err),
+      color: 'error',
+    })
     loading.value = false
   }
 }

@@ -1368,16 +1368,8 @@ packages:
     resolution: {integrity: sha512-HgmnQV/lBBX8KgxoNwngzzq8DLw/jECJgz9eBfQGdkEYte7Bw1RSqhIskcWp0DEWrSg2wijUi6dJjpq1WUD+zg==}
     engines: {node: '>= 22'}
 
-  '@intlify/message-compiler@11.4.8':
-    resolution: {integrity: sha512-vbzk17dYwduYiv52EK61+FDCyhfVg1uPUtPmiD/d45W99uJIcXywrweOBcHv7n9/iEqmXiMGT52bgJbZDQqK3w==}
-    engines: {node: '>= 22'}
-
   '@intlify/shared@11.4.23':
     resolution: {integrity: sha512-1iqGalDCOlHZ8y7LOC3yisSm52K5AmkTmaNO23XGFYWU6Z1oIX8VeAGRq9rn2KrDFb8nMtQaxNyMa1n8EeDm5g==}
-    engines: {node: '>= 22'}
-
-  '@intlify/shared@11.4.8':
-    resolution: {integrity: sha512-XbRgrv+XEuvDr7UCY55oibVrh+o4u+A0VB6nSL0F5Z8LcZxE/8j573LYG6bCrOigIcHdGpSNI7Rh5UpC5/B/eg==}
     engines: {node: '>= 22'}
 
   '@intlify/unplugin-vue-i18n@11.2.4':
@@ -8601,7 +8593,7 @@ snapshots:
 
   '@intlify/bundle-utils@11.2.4(vue-i18n@11.4.23(vue@3.5.46(typescript@6.0.3)))':
     dependencies:
-      '@intlify/message-compiler': 11.4.8
+      '@intlify/message-compiler': 11.4.23
       '@intlify/shared': 11.4.23
       acorn: 8.18.0
       esbuild: 0.25.12
@@ -8639,14 +8631,7 @@ snapshots:
       '@intlify/shared': 11.4.23
       source-map-js: 1.2.4
 
-  '@intlify/message-compiler@11.4.8':
-    dependencies:
-      '@intlify/shared': 11.4.8
-      source-map-js: 1.2.2
-
   '@intlify/shared@11.4.23': {}
-
-  '@intlify/shared@11.4.8': {}
 
   '@intlify/unplugin-vue-i18n@11.2.4(eslint@10.15.0(jiti@2.7.0)(supports-color@10.2.2))(rollup@4.68.0)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.5(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.108.2)(sass@1.108.2)(terser@5.49.2)(yaml@2.9.0))(vue-i18n@11.4.23(vue@3.5.46(typescript@6.0.3)))(vue@3.5.46(typescript@6.0.3))':
     dependencies:
@@ -9779,7 +9764,7 @@ snapshots:
     dependencies:
       '@intlify/core': 11.4.23
       '@intlify/h3': 0.7.4
-      '@intlify/message-compiler': 11.4.8
+      '@intlify/message-compiler': 11.4.23
       '@intlify/shared': 11.4.23
       '@intlify/unplugin-vue-i18n': 11.2.4(eslint@10.15.0(jiti@2.7.0)(supports-color@10.2.2))(rollup@4.68.0)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.5(@types/node@26.4.1)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.108.2)(sass@1.108.2)(terser@5.49.2)(yaml@2.9.0))(vue-i18n@11.4.23(vue@3.5.46(typescript@6.0.3)))(vue@3.5.46(typescript@6.0.3))
       '@intlify/utils': 0.14.1

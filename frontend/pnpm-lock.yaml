@@ -261,8 +261,8 @@ importers:
         specifier: ^15.1.0
         version: 15.1.0(vue@3.5.46(typescript@6.0.3))
       '@vueuse/core':
-        specifier: ^15.0.0
-        version: 15.0.0(vue@3.5.46(typescript@6.0.3))
+        specifier: ^15.1.0
+        version: 15.1.0(vue@3.5.46(typescript@6.0.3))
       '@vueuse/nuxt':
         specifier: ^15.0.0
         version: 15.0.0(8fb8b5b2297754cfa1c8adf69d915215)
